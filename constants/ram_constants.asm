@@ -77,6 +77,7 @@ DEF GBPRINTER_DARKEST  EQU $7f
 	const_def
 	const MENU_ACCOUNT           ; 0
 	const CONTINUOUS_AUTO_BATTLE ; 1
+	const NO_FOLLOWER            ; 2 your lead Pokémon doesn't follow you
 
 ; wDST::
 DEF DST_F EQU 7

@@ -9,7 +9,9 @@
 ; Pokémon, the lead Pokémon for the CHANSEY) and walks into them in turn, at its
 ; leader's speed. A hidden follower stands on the player's tile: it comes out on
 ; the tile its leader leaves. Followers hide after warps and while surfing, and
-; the player walks through them.
+; the player walks through them. The lead Pokémon goes back in its ball on the
+; BICYCLE, or when the player turns it off (NO_FOLLOWER); the CHANSEY then
+; follows the player itself.
 
 	assert FOLLOWER_LEAD == 0 && NUM_FOLLOWERS == 2
 
@@ -38,9 +40,40 @@ UpdateFollower:
 	ld a, [wCurFollower]
 	call FindFollowerStruct
 	ret nc
+	ld a, [wCurFollower]
+	and a ; FOLLOWER_LEAD
+	call z, .LeadLeaves
 	call DeleteMapObject
 	ld a, [wCurFollower]
 	jp ClearFollowerQueue
+
+.LeadLeaves:
+; The CHANSEY takes the lead Pokémon's place behind the player.
+	ld hl, OBJECT_FLAGS1
+	add hl, bc
+	bit INVISIBLE_F, [hl]
+	ret nz
+	ld hl, OBJECT_MAP_X
+	add hl, bc
+	ld d, [hl]
+	ld hl, OBJECT_MAP_Y
+	add hl, bc
+	ld e, [hl]
+	push bc
+	ld a, FOLLOWER_CHANSEY
+	call FindFollowerStruct
+	jr nc, .no_chansey
+	ld hl, OBJECT_FLAGS1
+	add hl, bc
+	bit INVISIBLE_F, [hl]
+	jr nz, .no_chansey
+	ld a, STEP_BIKE
+	ld [wFollowerStepSpeed], a
+	ld a, FOLLOWER_CHANSEY
+	call PushFollowerQueue
+.no_chansey
+	pop bc
+	ret
 
 .wanted
 	ld a, [wCurFollower]
@@ -66,7 +99,8 @@ UpdateFollower:
 	cp PLAYER_SURF_PIKA
 	jr z, .hide
 
-; A follower that stands still hides when someone else steps onto its tile.
+; A follower that stands still hides when someone else steps onto its tile,
+; the player included.
 	ld hl, OBJECT_STEP_TYPE
 	add hl, bc
 	ld a, [hl]
@@ -78,6 +112,13 @@ UpdateFollower:
 	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld e, [hl]
+	ld a, [wPlayerMapX]
+	cp d
+	jr nz, .not_on_player
+	ld a, [wPlayerMapY]
+	cp e
+	jr z, .hide
+.not_on_player
 	push bc
 	call IsObjectOnFollowerTile
 	pop bc
@@ -276,6 +317,14 @@ IsFollowerWanted:
 	ld a, [wCurFollower]
 	and a ; FOLLOWER_LEAD
 	jr nz, .chansey
+; The lead Pokémon can be turned off in the OPTIONS, and goes back
+; in its ball while the player rides the BICYCLE.
+	ld a, [wOptions2]
+	bit NO_FOLLOWER, a
+	jr nz, .no
+	ld a, [wPlayerState]
+	cp PLAYER_BIKE
+	jr z, .no
 	call GetLeadFollowerSpecies
 	and a
 	ret
@@ -844,7 +893,7 @@ MovementFunction_Follower:
 	and a
 	ld a, [wFollowerStepSpeed]
 	jr z, .got_speed
-	cp STEP_BIKE
+	cp FOLLOWER_CATCH_UP_SPEED
 	jr nc, .got_speed
 	inc a
 	ld [wFollowerStepSpeed], a

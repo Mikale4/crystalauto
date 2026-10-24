@@ -301,6 +301,8 @@ DEF NUM_FOLLOWERS EQU const_value
 
 ; the steps a follower can be behind its leader
 DEF FOLLOWER_QUEUE_LENGTH EQU 4
+; a follower more than a step behind hurries, up to this speed (see StepVectors)
+DEF FOLLOWER_CATCH_UP_SPEED EQU STEP_BIKE + 1
 DEF FOLLOWER_QUEUE_ENTRY_SIZE EQU 3 ; x, y, speed
 
 ; wFollowerFlags bits

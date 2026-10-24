@@ -1,15 +1,24 @@
 ; GetOptionPointer.Pointers indexes
+; The options are on pages (see OptionsPages): each page ends with CANCEL,
+; then BACK and/or NEXT to turn the page.
 	const_def
+; page 1: Crystal's own options
 	const OPT_TEXT_SPEED    ; 0
 	const OPT_BATTLE_SCENE  ; 1
 	const OPT_BATTLE_STYLE  ; 2
 	const OPT_SOUND         ; 3
 	const OPT_PRINT         ; 4
 	const OPT_MENU_ACCOUNT  ; 5
-	const OPT_AUTO_BATTLE   ; 6
-	const OPT_FRAME         ; 7
-	const OPT_CANCEL        ; 8
-DEF NUM_OPTIONS EQU const_value ; 9
+	const OPT_FRAME         ; 6
+	const OPT_CANCEL_1      ; 7
+	const OPT_NEXT_1        ; 8
+DEF OPT_PAGE_2 EQU const_value
+; page 2
+	const OPT_AUTO_BATTLE   ; 9
+	const OPT_FOLLOWER      ; 10
+	const OPT_CANCEL_2      ; 11
+	const OPT_BACK_2        ; 12
+DEF NUM_OPTIONS EQU const_value ; 13
 
 _Option:
 ; BUG: Options menu fails to clear joypad state on initialization (see docs/bugs_and_glitches.md)
@@ -18,33 +27,11 @@ _Option:
 	push af
 	ld [hl], TRUE
 	call ClearBGPalettes
-	hlcoord 0, 0
-	ld b, SCREEN_HEIGHT - 2
-	ld c, SCREEN_WIDTH - 2
-	call Textbox
-	hlcoord 2, 1
-	ld de, StringOptions
-	call PlaceString
 	xor a
 	ld [wJumptableIndex], a
-
-; display the settings of each option when the menu is opened
-	ld c, NUM_OPTIONS - 2 ; omit frame type, the last option
-.print_text_loop
-	push bc
-	xor a
-	ldh [hJoyLast], a
-	call GetOptionPointer
-	pop bc
-	ld hl, wJumptableIndex
-	inc [hl]
-	dec c
-	jr nz, .print_text_loop
-	call UpdateFrame ; display the frame type
-
-	xor a
-	ld [wJumptableIndex], a
-	inc a
+	ldh [hBGMapMode], a
+	call Options_DrawPage
+	ld a, 1
 	ldh [hBGMapMode], a
 	call WaitBGMap
 	ld b, SCGB_DIPLOMA
@@ -75,39 +62,121 @@ _Option:
 	ldh [hInMenu], a
 	ret
 
-StringOptions:
-; FRAME takes one line, to make room for AUTO BATTLE
+OptionsPages:
+; first option, last option, strings
+	db OPT_TEXT_SPEED, OPT_NEXT_1
+	dw StringOptionsPage1
+	db OPT_AUTO_BATTLE, OPT_BACK_2
+	dw StringOptionsPage2
+	db -1 ; end
+
+GetOptionsPage:
+; Return the page with option [wJumptableIndex]: its first option in b,
+; its last option in c and its strings in de.
+	ld a, [wJumptableIndex]
+	ld hl, OptionsPages
+.loop
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	inc hl
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	inc hl
+	cp c
+	jr z, .done
+	jr nc, .loop
+.done
+	ret
+
+Options_DrawPage:
+; Draw the page with option [wJumptableIndex], and the settings on it.
+	hlcoord 0, 0
+	ld b, SCREEN_HEIGHT - 2
+	ld c, SCREEN_WIDTH - 2
+	call Textbox
+	call GetOptionsPage
+	push bc
+	hlcoord 2, 2
+	call PlaceString
+	pop bc
+	ld a, [wJumptableIndex]
+	push af
+	xor a
+	ldh [hJoyLast], a
+	ldh [hJoyPressed], a
+	ld a, b
+.print_settings_loop
+	ld [wJumptableIndex], a
+	push bc
+	call GetOptionPointer
+	pop bc
+	ld a, [wJumptableIndex]
+	cp c
+	jr z, .printed_settings
+	inc a
+	jr .print_settings_loop
+
+.printed_settings
+	pop af
+	ld [wJumptableIndex], a
+	jp Options_UpdateCursorPosition
+
+StringOptionsPage1:
 	db "TEXT SPEED<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
 	db "BATTLE SCENE<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
 	db "BATTLE STYLE<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
 	db "SOUND<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
 	db "PRINT<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
 	db "MENU ACCOUNT<LF>"
-	db "      :<LF>"
+	db "        :<LF>"
+	db "FRAME<LF>"
+	db "        :TYPE<LF>"
+	db "CANCEL     NEXT@"
+
+StringOptionsPage2:
 	db "AUTO BATTLE<LF>"
 	db "      :<LF>"
-	db "FRAME :TYPE<LF>"
-	db "CANCEL@"
+	db "FOLLOWER<LF>"
+	db "      :<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "<LF>"
+	db "CANCEL     BACK@"
 
 GetOptionPointer:
 	jumptable .Pointers, wJumptableIndex
 
 .Pointers:
 ; entries correspond to OPT_* constants
+	table_width 2
 	dw Options_TextSpeed
 	dw Options_BattleScene
 	dw Options_BattleStyle
 	dw Options_Sound
 	dw Options_Print
 	dw Options_MenuAccount
-	dw Options_AutoBattle
 	dw Options_Frame
 	dw Options_Cancel
+	dw Options_NextPage
+	dw Options_AutoBattle
+	dw Options_Follower
+	dw Options_Cancel
+	dw Options_PreviousPage
+	assert_table_length NUM_OPTIONS
 
 	const_def
 	const OPT_TEXT_SPEED_FAST ; 0
@@ -156,7 +225,7 @@ Options_TextSpeed:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	hlcoord 9, 2
+	hlcoord 11, 3
 	call PlaceString
 	and a
 	ret
@@ -226,7 +295,7 @@ Options_BattleScene:
 	ld de, .Off
 
 .Display:
-	hlcoord 9, 4
+	hlcoord 11, 5
 	call PlaceString
 	and a
 	ret
@@ -264,7 +333,7 @@ Options_BattleStyle:
 	ld de, .Set
 
 .Display:
-	hlcoord 9, 6
+	hlcoord 11, 7
 	call PlaceString
 	and a
 	ret
@@ -309,7 +378,7 @@ Options_Sound:
 	ld de, .Stereo
 
 .Display:
-	hlcoord 9, 8
+	hlcoord 11, 9
 	call PlaceString
 	and a
 	ret
@@ -363,7 +432,7 @@ Options_Print:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	hlcoord 9, 10
+	hlcoord 11, 11
 	call PlaceString
 	and a
 	ret
@@ -449,7 +518,7 @@ Options_MenuAccount:
 	ld de, .On
 
 .Display:
-	hlcoord 9, 12
+	hlcoord 11, 13
 	call PlaceString
 	and a
 	ret
@@ -473,13 +542,38 @@ Options_AutoBattle:
 	ld de, .Continuous
 
 .Display:
-	hlcoord 9, 14
+	hlcoord 9, 3
 	call PlaceString
 	and a
 	ret
 
 .Normal:     db "NORMAL    @"
 .Continuous: db "CONTINUOUS@"
+
+Options_Follower:
+; Your lead Pokémon follows you (a rented CHANSEY always does).
+	ld hl, wOptions2
+	ldh a, [hJoyPressed]
+	and PAD_LEFT | PAD_RIGHT
+	jr z, .NonePressed
+	ld a, [hl]
+	xor 1 << NO_FOLLOWER
+	ld [hl], a
+
+.NonePressed:
+	bit NO_FOLLOWER, [hl]
+	ld de, .On
+	jr z, .Display
+	ld de, .Off
+
+.Display:
+	hlcoord 9, 5
+	call PlaceString
+	and a
+	ret
+
+.On:  db "ON @"
+.Off: db "OFF@"
 
 Options_Frame:
 	ld hl, wTextboxFrame
@@ -488,8 +582,7 @@ Options_Frame:
 	jr nz, .LeftPressed
 	bit B_PAD_RIGHT, a
 	jr nz, .RightPressed
-	and a
-	ret
+	jr UpdateFrame
 
 .RightPressed:
 	ld a, [hl]
@@ -505,7 +598,7 @@ Options_Frame:
 	ld [hl], a
 UpdateFrame:
 	ld a, [wTextboxFrame]
-	hlcoord 14, 15 ; where on the screen the number is drawn
+	hlcoord 16, 15 ; where on the screen the number is drawn
 	add '1'
 	ld [hl], a
 	call LoadFontsExtra
@@ -523,7 +616,37 @@ Options_Cancel:
 	scf
 	ret
 
+Options_NextPage:
+	ldh a, [hJoyPressed]
+	and PAD_A | PAD_RIGHT
+	ret z ; no carry
+	call GetOptionsPage
+	ld a, c
+	inc a ; the next page's first option
+	jr Options_TurnPage
+
+Options_PreviousPage:
+	ldh a, [hJoyPressed]
+	and PAD_A | PAD_LEFT
+	ret z ; no carry
+	call GetOptionsPage
+	ld a, b
+	dec a ; the previous page's last option…
+	ld [wJumptableIndex], a
+	call GetOptionsPage
+	ld a, b ; …and its first option
+Options_TurnPage:
+	ld [wJumptableIndex], a
+	ld de, SFX_READ_TEXT_2
+	call PlaySFX
+	call Options_DrawPage
+	call WaitBGMap
+	and a
+	ret
+
 OptionsControl:
+; Up and down go around the options on the page.
+	call GetOptionsPage
 	ld hl, wJumptableIndex
 	ldh a, [hJoyLast]
 	cp PAD_DOWN
@@ -535,9 +658,9 @@ OptionsControl:
 
 .DownPressed:
 	ld a, [hl]
-	cp OPT_CANCEL ; maximum option index
+	cp c ; the page's last option
 	jr nz, .Increase
-	ld [hl], OPT_TEXT_SPEED ; first option
+	ld [hl], b ; its first option
 	scf
 	ret
 
@@ -548,9 +671,11 @@ OptionsControl:
 
 .UpPressed:
 	ld a, [hl]
-	and a ; OPT_TEXT_SPEED, minimum option index
+	cp b ; the page's first option
 	jr nz, .Decrease
-	ld [hl], NUM_OPTIONS ; decrements to OPT_CANCEL, maximum option index
+	ld [hl], c ; its last option
+	scf
+	ret
 
 .Decrease:
 	dec [hl]
@@ -566,17 +691,46 @@ Options_UpdateCursorPosition:
 	add hl, de
 	dec c
 	jr nz, .loop
+	hlcoord 12, 16
+	ld [hl], ' '
 	ld a, [wJumptableIndex]
-	cp OPT_CANCEL
-	jr z, .cancel
-	hlcoord 1, 1
-	ld bc, 2 * SCREEN_WIDTH
-	call AddNTimes
+	ld c, a
+	ld b, 0
+	ld hl, OptionsCursorCoords
+	add hl, bc
+	add hl, bc
+	ld c, [hl] ; x
+	inc hl
+	ld b, [hl] ; y
+	hlcoord 0, 0
+	ld a, b
+	and a
+	jr z, .got_row
+	ld de, SCREEN_WIDTH
+.row
+	add hl, de
+	dec b
+	jr nz, .row
+.got_row
+	ld b, 0
+	add hl, bc
 	ld [hl], '▶'
 	ret
 
-.cancel
-; FRAME only takes one line
-	hlcoord 1, 16
-	ld [hl], '▶'
-	ret
+OptionsCursorCoords:
+; x, y of each option's cursor
+	table_width 2
+	db  1,  2 ; OPT_TEXT_SPEED
+	db  1,  4 ; OPT_BATTLE_SCENE
+	db  1,  6 ; OPT_BATTLE_STYLE
+	db  1,  8 ; OPT_SOUND
+	db  1, 10 ; OPT_PRINT
+	db  1, 12 ; OPT_MENU_ACCOUNT
+	db  1, 14 ; OPT_FRAME
+	db  1, 16 ; OPT_CANCEL_1
+	db 12, 16 ; OPT_NEXT_1
+	db  1,  2 ; OPT_AUTO_BATTLE
+	db  1,  4 ; OPT_FOLLOWER
+	db  1, 16 ; OPT_CANCEL_2
+	db 12, 16 ; OPT_BACK_2
+	assert_table_length NUM_OPTIONS

@@ -1898,6 +1898,7 @@ wGBPrinterBrightness::
 wOptions2::
 ; bit 0: menu account off/on
 ; bit 1: auto battle normal/continuous
+; bit 2: follower on/off
 	db
 	ds 2
 wOptionsEnd::

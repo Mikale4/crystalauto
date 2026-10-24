@@ -35,7 +35,8 @@ battles and the Battle Tower.
 
 ### Normal or continuous
 
-**OPTION** (in the START menu or on the title screen) has an **AUTO BATTLE** setting:
+**OPTION** (in the START menu or on the title screen) has an **AUTO BATTLE** setting on
+its second page (choose **NEXT** at the bottom of the first page):
 
 - **NORMAL** (the default): auto battle turns off when the battle ends, so every
   battle starts with the menu, and a wild Pokémon you want to catch is never
@@ -107,7 +108,7 @@ right after its level-up, before the next foe is sent out:
 ## Your Pokémon follows you
 
 The first Pokémon in your party that isn't fainted (or an egg) walks behind you,
-one step back, at your speed, on foot or on the BICYCLE.
+one step back, at your speed.
 
 - It walks where you walked: around corners, through doors, down ledges (it hops
   them right after you) and across from one route or town to the next.
@@ -115,6 +116,10 @@ one step back, at your speed, on foot or on the BICYCLE.
 - After going through a door, up stairs or any other warp, it waits on your tile
   and comes out behind you on your first step. It also stays out of sight while you
   SURF, and comes back once you're on land.
+- Like in HEARTGOLD and SOULSILVER, it goes back in its ball while you ride the
+  BICYCLE, and comes back out when you get off.
+- Don't want it? Set **FOLLOWER** to **OFF** on the second page of the **OPTION**
+  menu.
 - Talk to it to see how it's doing: it may be happily trotting along, sniffing the
   breeze or ready for a battle, or it may tell you it needs a rest.
 - Change your lead Pokémon (in the party menu, at the PC, or when it faints) and
@@ -141,7 +146,9 @@ it to take it with you:
 | 10    | ¥1,000 |
 | 15    | ¥1,500 |
 
-- The CHANSEY walks behind your Pokémon.
+- The CHANSEY walks behind your Pokémon, or right behind you when your Pokémon isn't
+  out (on the BICYCLE, or with FOLLOWER set to OFF). It always comes along, on foot or
+  on the BICYCLE; only SURF puts it away for a while.
 - Talk to it, or press **B** anywhere to call it, and it offers to use SOFTBOILED:
   your whole team is fully healed (HP, status and PP), fainted Pokémon included. It
   tells you how many heals it has left, and doesn't use one if your team is already
@@ -199,10 +206,12 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   move menu while it is on, and evolves Pokémon after the party gains experience.
 - `wAutoBattle` in [`ram/wram.asm`](ram/wram.asm) is an unused byte of battle RAM, so it
   is cleared at the start of every battle.
-- [`engine/menus/options_menu.asm`](engine/menus/options_menu.asm) has the AUTO BATTLE
-  option, stored in a spare bit of `wOptions2` (`CONTINUOUS_AUTO_BATTLE`), which is
-  saved with the other options. To fit it in, the options start one line higher, the
-  values two columns further left, and FRAME takes a single line.
+- [`engine/menus/options_menu.asm`](engine/menus/options_menu.asm) now has pages
+  (`OptionsPages`). The first is Crystal's own options, as they were; the second has
+  AUTO BATTLE and FOLLOWER, stored in spare bits of `wOptions2`
+  (`CONTINUOUS_AUTO_BATTLE`, `NO_FOLLOWER`), which is saved with the other options.
+  Each page ends with CANCEL and NEXT or BACK. To add an option, add its `OPT_*`
+  constant, handler and cursor position, and its name to a page's strings.
 - [`engine/battle/evolve_in_battle.asm`](engine/battle/evolve_in_battle.asm) runs the
   game's own `EvolveAfterBattle` during the battle, then restores the battle screen,
   music and the evolved Pokémon's battle data.

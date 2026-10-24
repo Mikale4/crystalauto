@@ -379,6 +379,11 @@ StepVectors:
 	db  0, -4,  4, 4
 	db -4,  0,  4, 4
 	db  4,  0,  4, 4
+	; fastest (FOLLOWER_CATCH_UP_SPEED)
+	db  0,  8,  2, 8
+	db  0, -8,  2, 8
+	db -8,  0,  2, 8
+	db  8,  0,  2, 8
 
 GetStepVectorSign:
 	add a
