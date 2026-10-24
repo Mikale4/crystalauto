@@ -708,3 +708,8 @@ SECTION "Stadium 2 Checksums", ROMX[$7DE0], BANK[$7F]
 ; If it is removed, also remove the "tools/stadium" command in the Makefile.
 
 	ds $220
+
+
+SECTION "Capture Rule", ROMX
+
+INCLUDE "engine/battle/capture_rule.asm"

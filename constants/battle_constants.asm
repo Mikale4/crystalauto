@@ -268,6 +268,11 @@ DEF BATTLERESULT_CAUGHT_CELEBI EQU 6
 DEF BATTLERESULT_BOX_FULL EQU 7
 DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERESULT_BOX_FULL)
 
+; wCaptureFlags bits (see engine/battle/capture_rule.asm)
+	const_def
+	const CAPTURE_WORN_OUT_F ; 0: a beaten wild Pokémon is waiting for a BALL
+	const CAPTURE_TRIED_F    ; 1: a BALL has been thrown at it
+
 ; link_battle_record struct
 DEF LINK_BATTLE_RECORD_LENGTH EQU 2 + (NAME_LENGTH - 1) + 2 * 3
 DEF NUM_LINK_BATTLE_RECORDS EQU 5

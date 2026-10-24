@@ -9,6 +9,10 @@ Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
 whenever you ask.
 
+Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
+your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
+you the RATTATA he catches.
+
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
 carry over.
@@ -39,8 +43,7 @@ battles and the Battle Tower.
 its second page (choose **NEXT** at the bottom of the first page):
 
 - **NORMAL** (the default): auto battle turns off when the battle ends, so every
-  battle starts with the menu, and a wild Pokémon you want to catch is never
-  knocked out by surprise.
+  battle starts with the menu.
 - **CONTINUOUS**: every battle starts in auto battle, from the first turn. Press
   SELECT to stop it for the rest of that battle, even during "Wild … appeared!"
   if you want to make the first move yourself. The next battle starts in auto again.
@@ -54,8 +57,10 @@ its second page (choose **NEXT** at the bottom of the first page):
   waits for A or B again. Text outside of battle, like what a trainer says before
   and after, is unchanged.
 
-The catching demonstration on Route 29 is never automatic. The setting is saved
-with your game.
+The catching demonstration on Route 29 is never automatic. When auto battle beats a
+wild Pokémon you've already caught, the battle just ends; one you haven't caught yet
+still stops and asks whether to throw a BALL (see [Catching](#catching)). The setting
+is saved with your game.
 
 
 ## How it picks a move
@@ -103,6 +108,28 @@ right after its level-up, before the next foe is sent out:
   (Golbat, Chansey, Eevee and the baby Pokémon) and Tyrogue's. Pokémon that level up
   from an Exp. Share evolve too.
 - Moves learned on evolving (like Gyarados's Bite) can be used right away.
+
+
+## Catching
+
+Catching works the way it does in PalletToPewter:
+
+- A wild Pokémon won't go in a BALL while it can still battle. Try, and you're told
+  to beat it first; the BALL isn't used up.
+- Beat it, and once your team has its EXP. it gets back up with 1 HP, **worn out**:
+  it can't battle any more.
+- "Throw a BALL?" opens your BALLS, with how many of each you have. Pick one, or
+  **LEAVE** it be. You get **3 tries, plus one for each badge**, before it gets away;
+  the prompt counts them down. The Pokémon TEAM ROCKET disguises as items in their
+  hideout never run off, so you can throw as many as you like at them.
+- A Pokémon you catch comes out of its BALL rested: full HP, no status, full PP.
+- In the BUG-CATCHING CONTEST it works the same way, with your PARK BALLS.
+
+### The DUDE on ROUTE 29
+
+The DUDE's catching lesson shows the rule: he beats the wild RATTATA with a stone,
+then throws his BALL. Afterwards he gives you that RATTATA (the very one he caught,
+at level 5), and you can give it a nickname. It goes to the PC if your party is full.
 
 
 ## Your Pokémon follows you
@@ -233,10 +260,26 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   and a new 8-tile `ICON_SPRITE` type. Every map loads them, so to make room
   `ArrangeUsedSprites` now fills the end of the first VRAM table with later, shorter
   sprites and lets a sprite end exactly at the end of the second.
+- [`engine/battle/capture_rule.asm`](engine/battle/capture_rule.asm) has the capture
+  rule. `PokeBallEffect` asks `CaptureRule_CheckBall` before a BALL is thrown;
+  `HandleEnemyMonFaint` calls `WildMonWornOut` after the EXP., which brings the
+  Pokémon back with 1 HP and runs the BALL menu (the BALLS pocket in a scrolling menu,
+  with LEAVE for CANCEL) and the tries, throwing with the game's own `PokeBallEffect`.
+  `wCaptureFlags` and `wCaptureTriesLeft` are two unused bytes of battle RAM, cleared
+  at the start of every battle.
+- The same file has the DUDE's part of the lesson: `DudeBeatsWildMon` runs before his
+  BALL in the tutorial battle, the tutorial catch keeps the RATTATA's DVs in
+  `wDudeMonDVs`, and [`maps/Route29.asm`](maps/Route29.asm) gives it with `givepoke`,
+  then `GiveDudeMonCaughtDVs` gives it those DVs.
 - The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it
   came from.
+
+
+## Other changes
+
+- The player's sprite (CHRIS) has black pixels instead of red ones beside his face.
 
 
 ## Based on pret/pokecrystal

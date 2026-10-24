@@ -352,7 +352,9 @@ wBattleMonNickname:: ds MON_NAME_LENGTH
 
 wBattleMon:: battle_struct wBattleMon
 
-	ds 2
+; PalletToPewter's capture rule (see engine/battle/capture_rule.asm)
+wCaptureFlags:: db
+wCaptureTriesLeft:: db ; -1: as many as the player likes
 
 wWildMon:: db
 
@@ -1927,6 +1929,13 @@ for n, NUM_FOLLOWERS
 wFollower{d:n}QueueLength:: db
 wFollower{d:n}Queue:: ds FOLLOWER_QUEUE_LENGTH * FOLLOWER_QUEUE_ENTRY_SIZE
 endr
+
+
+SECTION "PalletToPewter RAM", WRAM0
+
+; the DVs of the RATTATA the DUDE catches on ROUTE 29, which he gives to the
+; player afterwards (see engine/battle/capture_rule.asm)
+wDudeMonDVs:: dw
 
 
 SECTION "WRAM 1", WRAMX

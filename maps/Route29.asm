@@ -55,7 +55,8 @@ Route29Tutorial1:
 	turnobject ROUTE29_COOLTRAINER_M1, UP
 	opentext
 	writetext CatchingTutorialDebriefText
-	waitbutton
+	promptbutton
+	scall Route29DudeGivesRattataScript
 	closetext
 	setscene SCENE_ROUTE29_NOOP
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
@@ -80,10 +81,22 @@ Route29Tutorial2:
 	turnobject ROUTE29_COOLTRAINER_M1, UP
 	opentext
 	writetext CatchingTutorialDebriefText
-	waitbutton
+	promptbutton
+	scall Route29DudeGivesRattataScript
 	closetext
 	setscene SCENE_ROUTE29_NOOP
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
+	end
+
+Route29DudeGivesRattataScript:
+; The RATTATA he caught is the player's now (see GiveDudeMonCaughtDVs).
+	writetext CatchingTutorialGiftText
+	promptbutton
+	writetext ReceivedDudeRattataText
+	playsound SFX_CAUGHT_MON
+	waitsfx
+	givepoke RATTATA, 5
+	callasm GiveDudeMonCaughtDVs
 	end
 
 Script_RefusedTutorial1:
@@ -119,7 +132,8 @@ CatchingTutorialDudeScript:
 	catchtutorial BATTLETYPE_TUTORIAL
 	opentext
 	writetext CatchingTutorialDebriefText
-	waitbutton
+	promptbutton
+	scall Route29DudeGivesRattataScript
 	closetext
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
 	end
@@ -270,9 +284,27 @@ CatchingTutorialDebriefText:
 	text "That's how you do"
 	line "it."
 
-	para "If you weaken them"
-	line "first, #MON are"
-	cont "easier to catch."
+	para "First, beat the"
+	line "wild #MON. Then"
+	cont "throw a BALL!"
+
+	para "You only get a few"
+	line "tries before it"
+	cont "gets away, though."
+	done
+
+CatchingTutorialGiftText:
+	text "Here, this RATTATA"
+	line "is yours."
+
+	para "It'll see more of"
+	line "the world with you"
+	cont "than with me!"
+	done
+
+ReceivedDudeRattataText:
+	text "<PLAYER> received"
+	line "RATTATA!"
 	done
 
 CatchingTutorialDeclinedText:

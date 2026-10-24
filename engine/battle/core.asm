@@ -2044,6 +2044,7 @@ HandleEnemyMonFaint:
 	dec a
 	jr nz, .trainer
 
+	farcall WildMonWornOut
 	ld a, 1
 	ld [wBattleEnded], a
 	ret
@@ -4921,6 +4922,7 @@ BattleMenu:
 	ld a, [wInputType]
 	or a
 	jr z, .skip_dude_pack_select
+	farcall DudeBeatsWildMon
 	farcall _DudeAutoInput_DownA
 .skip_dude_pack_select
 	call LoadBattleMenu2
@@ -5006,6 +5008,11 @@ BattleMenu_Pack:
 	ld a, PARK_BALL
 	ld [wCurItem], a
 	call DoItemEffect
+	ld a, [wItemEffectSucceeded]
+	cp $2
+	jr nz, .got_item
+	call ExitMenu ; it can still battle (see CaptureRule_CheckBall)
+	jp BattleMenu
 
 .got_item
 	call .UseItem

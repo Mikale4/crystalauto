@@ -309,6 +309,8 @@ ROMX $77
 ROMX $78
 	"Debug Room"
 	"Tileset Data 8"
+ROMX $79
+	"Capture Rule"
 ROMX $7b
 	"Battle Tower Text"
 ROMX $7c
@@ -336,6 +338,7 @@ WRAM0
 	align 4
 	"Video"
 	"Followers RAM"
+	"PalletToPewter RAM"
 WRAMX 1
 	"WRAM 1"
 	"Miscellaneous WRAM 1"

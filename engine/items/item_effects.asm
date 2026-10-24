@@ -215,6 +215,14 @@ PokeBallEffect:
 	dec a
 	jp nz, UseBallInTrainerBattle
 
+	farcall CaptureRule_CheckBall
+	jr nc, .can_throw
+	; Item wasn't used.
+	ld a, $2
+	ld [wItemEffectSucceeded], a
+	ret
+
+.can_throw
 	ld a, [wPartyCount]
 	cp PARTY_LENGTH
 	jr nz, .room_in_party
@@ -686,6 +694,11 @@ PokeBallEffect:
 	jr .return_from_capture
 
 .FinishTutorial:
+	; the DUDE gives it to the player after the battle (see maps/Route29.asm)
+	ld a, [wEnemyMonDVs]
+	ld [wDudeMonDVs], a
+	ld a, [wEnemyMonDVs + 1]
+	ld [wDudeMonDVs + 1], a
 	ld hl, Text_GotchaMonWasCaught
 
 .shake_and_break_free
