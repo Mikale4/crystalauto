@@ -724,3 +724,8 @@ SECTION "Difficulty", ROMX
 
 INCLUDE "engine/events/difficulty.asm"
 INCLUDE "engine/battle/difficulty_trainers.asm"
+
+
+SECTION "Bosses", ROMX
+
+INCLUDE "engine/battle/bosses.asm"

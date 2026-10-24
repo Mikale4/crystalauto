@@ -2374,6 +2374,8 @@ WinTrainerBattle:
 	and a
 	ld a, b
 	call z, PlayVictoryMusic
+	farcall BossJoins
+	ret c
 	callfar Battle_GetTrainerName
 	ld hl, BattleText_EnemyWasDefeated
 	call StdBattleTextbox
@@ -3255,6 +3257,8 @@ AddBattleParticipant:
 	predef_jump SmallFarFlagAction
 
 FindMonInOTPartyToSwitchIntoBattle:
+	farcall BossNextMon
+	ret c
 	ld b, -1
 	ld a, %000001
 	ld [wEnemyEffectivenessVsPlayerMons], a
@@ -3559,7 +3563,8 @@ ClearEnemyMonBox:
 
 ShowBattleTextEnemySentOut:
 	callfar Battle_GetTrainerName
-	ld hl, BattleText_EnemySentOut
+	ld de, BattleText_EnemySentOut
+	farcall BossBattleText
 	call StdBattleTextbox
 	jp WaitBGMap
 
@@ -3816,7 +3821,8 @@ TryToRunAwayFromBattle:
 	jr .print_inescapable_text
 
 .cant_run_from_trainer
-	ld hl, BattleText_TheresNoEscapeFromTrainerBattle
+	ld de, BattleText_TheresNoEscapeFromTrainerBattle
+	farcall BossBattleText
 
 .print_inescapable_text
 	call StdBattleTextbox
@@ -8104,6 +8110,7 @@ BattleIntro:
 	call DisableSpriteUpdates
 	farcall ClearBattleRAM
 	farcall InitAutoBattle
+	farcall BeginBossBattle
 	call InitEnemy
 	call BackUpBGMap2
 	ld b, SCGB_BATTLE_GRAYSCALE
@@ -8346,6 +8353,7 @@ CleanUpBattleRAM:
 	ld [wAttackMissed], a
 	ld [wTempWildMonSpecies], a
 	ld [wOtherTrainerClass], a
+	ld [wBossBattle], a
 	ld [wFailedToFlee], a
 	ld [wNumFleeAttempts], a
 	ld [wForcedSwitch], a
@@ -9130,7 +9138,8 @@ BattleStartMessage:
 
 	farcall Battle_GetTrainerName
 
-	ld hl, WantsToBattleText
+	ld de, WantsToBattleText
+	farcall BossBattleText
 	jr .PrintBattleStartText
 
 .wild

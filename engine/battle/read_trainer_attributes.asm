@@ -61,6 +61,7 @@ GetTrainerAttributes:
 	ld [de], a
 	ld a, [hl]
 	ld [wEnemyTrainerBaseReward], a
+	farcall BossTrainerAttributes
 	ret
 
 INCLUDE "data/trainers/attributes.asm"

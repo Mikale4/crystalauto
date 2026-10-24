@@ -307,6 +307,9 @@ GSIntro_GetMonFrontpic: ; unreferenced
 	ret
 
 GetTrainerPic:
+	ld a, [wBossBattle]
+	and a
+	jr nz, .boss
 	ld a, [wTrainerClass]
 	and a
 	ret z
@@ -343,6 +346,18 @@ GetTrainerPic:
 	call Get2bpp
 	pop af
 	ldh [rWBK], a
+	call WaitBGMap
+	ld a, 1
+	ldh [hBGMapMode], a
+	ret
+
+.boss
+; a boss battle shows the boss itself (see engine/battle/bosses.asm)
+	ld [wCurPartySpecies], a
+	call WaitBGMap
+	xor a
+	ldh [hBGMapMode], a
+	call GetMonFrontpic
 	call WaitBGMap
 	ld a, 1
 	ldh [hBGMapMode], a

@@ -313,6 +313,7 @@ ROMX $79
 	"Capture Rule"
 	"Level Caps"
 	"Difficulty"
+	"Bosses"
 ROMX $7b
 	"Battle Tower Text"
 ROMX $7c

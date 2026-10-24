@@ -18,6 +18,9 @@ ReadTrainerParty:
 	xor a
 	call ByteFill
 
+	farcall LoadBossParty
+	ret c
+
 	ld a, [wOtherTrainerClass]
 	cp CAL
 	jr nz, .not_cal2
@@ -329,6 +332,13 @@ ComputeTrainerReward:
 	ret
 
 Battle_GetTrainerName::
+	ld a, [wBossBattle]
+	and a
+	jr z, .not_boss
+	ld [wNamedObjectIndex], a
+	jp GetPokemonName ; (see engine/battle/bosses.asm)
+
+.not_boss
 	ld a, [wInBattleTowerBattle]
 	bit IN_BATTLE_TOWER_BATTLE_F, a
 	ld hl, wOTPlayerName

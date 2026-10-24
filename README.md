@@ -11,8 +11,8 @@ whenever you ask.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
-you the RATTATA he catches. PalletToPewter's **level caps** and **difficulties**
-(NORMAL, HARD and EXTREME) are here too.
+you the RATTATA he catches. PalletToPewter's **level caps**, **difficulties**
+(NORMAL, HARD and EXTREME) and **boss Pokémon** are here too.
 
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
@@ -132,6 +132,31 @@ The DUDE's catching lesson shows the rule: he beats the wild RATTATA with a ston
 then throws his BALL. Afterwards he gives you that RATTATA (the very one he caught,
 at level 5), and you can give it a nickname. It goes to the PC if your party is full.
 
+
+## Boss Pokémon
+
+As in PalletToPewter, the one-of-a-kind Pokémon of the story don't fight alone. Each
+brings **five allies** that suit it and cover its weaknesses: "SUDOWOODO and its
+allies attack!" They come at you one at a time ("GEODUDE comes first!", "ONIX rushes
+in!"), then "SUDOWOODO joins the fight itself!" There's no running, and no BALL will
+hold them. Beat the boss and it **decides to join you**: it gets back up, looks at you
+for a long moment, and comes along, rested (to the PC if your party is full).
+
+| Boss | Lv | Allies (each as evolved as its level allows) |
+|---|---|---|
+| SUDOWOODO (ROUTE 36) | 20 | GEODUDE, ONIX, BELLSPROUT, HOPPIP, PINECO |
+| LAPRAS (UNION CAVE, Fridays) | 20 | SHELLDER, SEEL, WOOPER, ZUBAT, SLOWPOKE |
+| the red GYARADOS (LAKE OF RAGE) | 30 | MAGIKARP, WOOPER, POLIWAG, TENTACOOL, GOLDEEN |
+| ELECTRODE ×3 (TEAM ROCKET's hideout) | 23 | VOLTORB, MAGNEMITE, PIKACHU, ZUBAT, KOFFING |
+| SNORLAX (VERMILION CITY) | 50 | SLOWBRO, WIGGLYTUFF, LICKITUNG, HYPNO, KANGASKHAN |
+| SUICUNE (TIN TOWER) | 40 | STARYU, SEEL, WOOPER, HORSEA, SMOOCHUM |
+| LUGIA (WHIRL ISLANDS) | 60 | HORSEA, CHINCHOU, MANTINE, SLOWPOKE, SKARMORY |
+| HO-OH (TIN TOWER's roof) | 60 | FLAREON, VAPOREON, JOLTEON, ESPEON, UMBREON |
+| CELEBI (ILEX FOREST) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
+
+On NORMAL the allies are two levels under the boss. On HARD and EXTREME they're at
+the level cap, and the boss at least two above it. The random wild GYARADOS of the
+LAKE OF RAGE are ordinary wild Pokémon: only the ones met in the story are bosses.
 
 ## Level caps
 
@@ -334,6 +359,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   [`engine/battle/difficulty_trainers.asm`](engine/battle/difficulty_trainers.asm)
   changes trainers' teams after `ReadTrainerParty` makes them (`FitEvolution` reads the
   game's own evolution data).
+- [`engine/battle/bosses.asm`](engine/battle/bosses.asm) makes a scripted wild battle
+  with a boss (`BossTeams`) a trainer battle that borrows `BOSS_TRAINER_CLASS`, and
+  changes what that class would decide: the party (`LoadBossParty`), name, picture and
+  palette (the boss's), the order the allies come in (`BossNextMon`), the AI
+  (`GetAIMoveWeights`, `GetAIItemSwitchAttributes`: smart, never switching), the texts
+  (`BossBattleText`) and the win (`BossJoins`). `wBossBattle` holds the boss until the
+  battle ends.
 - The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it

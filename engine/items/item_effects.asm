@@ -211,10 +211,6 @@ ItemEffects:
 
 PokeBallEffect:
 ; BUG: The Dude's catching tutorial may crash if his Poké Ball can't be used (see docs/bugs_and_glitches.md)
-	ld a, [wBattleMode]
-	dec a
-	jp nz, UseBallInTrainerBattle
-
 	farcall CaptureRule_CheckBall
 	jr nc, .can_throw
 	; Item wasn't used.
@@ -223,6 +219,10 @@ PokeBallEffect:
 	ret
 
 .can_throw
+	ld a, [wBattleMode]
+	dec a
+	jp nz, UseBallInTrainerBattle
+
 	ld a, [wPartyCount]
 	cp PARTY_LENGTH
 	jr nz, .room_in_party

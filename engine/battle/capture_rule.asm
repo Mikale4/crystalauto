@@ -10,6 +10,12 @@ DEF CAPTURE_TRIES_UNLIMITED EQU -1
 
 CaptureRule_CheckBall::
 ; Return carry if a ball can't be thrown at the wild Pokémon yet.
+	ld a, [wBossBattle]
+	and a
+	jr nz, .boss
+	ld a, [wBattleMode]
+	dec a ; WILD_BATTLE?
+	jr nz, .ok ; (trainers block BALLs themselves)
 	ld a, [wBattleType]
 	cp BATTLETYPE_TUTORIAL
 	jr z, .ok
@@ -19,6 +25,12 @@ CaptureRule_CheckBall::
 	bit CAPTURE_WORN_OUT_F, a
 	jr nz, .ok
 	ld hl, CaptureRuleStillBattlingText
+	call PrintText
+	scf
+	ret
+
+.boss
+	ld hl, BossBallBlockedText_
 	call PrintText
 	scf
 	ret

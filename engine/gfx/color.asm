@@ -699,6 +699,15 @@ GetPlayerOrMonPalettePointer:
 GetFrontpicPalettePointer:
 	and a
 	jp nz, GetMonNormalOrShinyPalettePointer
+	ld a, [wBossBattle]
+	and a
+	jr z, .trainer
+; a boss battle shows the boss itself (see engine/battle/bosses.asm)
+	farcall GetBossDVsPointer
+	ld a, [wBossBattle]
+	jp GetMonNormalOrShinyPalettePointer
+
+.trainer
 	ld a, [wTrainerClass]
 
 GetTrainerPalettePointer:

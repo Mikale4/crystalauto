@@ -40,6 +40,27 @@ WantsToBattleText::
 	line "wants to battle!"
 	prompt
 
+; boss battles (see engine/battle/bosses.asm)
+BossAttacksText::
+	text_far BossAttacksText_
+	text_end
+
+BossFirstAllyText::
+	text_far BossFirstAllyText_
+	text_end
+
+BossAllyRushesInText::
+	text_far BossAllyRushesInText_
+	text_end
+
+BossJoinsTheFightText::
+	text_far BossJoinsTheFightText_
+	text_end
+
+BossNoEscapeText::
+	text_far BossNoEscapeText_
+	text_end
+
 BattleText_WildFled:
 	text "Wild @"
 	text_ram wEnemyMonNickname

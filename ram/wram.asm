@@ -1937,6 +1937,11 @@ SECTION "PalletToPewter RAM", WRAM0
 ; player afterwards (see engine/battle/capture_rule.asm)
 wDudeMonDVs:: dw
 
+; a boss battle (see engine/battle/bosses.asm); not in battle RAM, which other
+; things share outside of battles
+wBossBattle:: db ; the boss's species
+wBossBaseLevel:: db
+
 
 SECTION "PalletToPewter RAM 1", WRAMX
 

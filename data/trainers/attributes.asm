@@ -405,3 +405,10 @@ TrainerClassAttributes:
 	dw CONTEXT_USE | SWITCH_SOMETIMES
 
 	assert_table_length NUM_TRAINER_CLASSES
+
+; PalletToPewter's EXTREME trainers and boss Pokémon (see GetAIMoveWeights and
+; GetAIItemSwitchAttributes in engine/battle/bosses.asm)
+PalletToPewterAIMoveWeights:
+	dw AI_BASIC | AI_SETUP | AI_TYPES | AI_SMART | AI_AGGRESSIVE | AI_CAUTIOUS | AI_STATUS | AI_RISKY
+PalletToPewterAIBossItemSwitch:
+	dw CONTEXT_USE ; (a boss's allies never switch out)
