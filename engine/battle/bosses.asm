@@ -157,6 +157,9 @@ LoadBossParty::
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call AddNTimes
 	call RecalcOTPartyMonStats
+	call GetDifficulty
+	cp DIFFICULTY_EXTREME
+	call z, ExtremeBossParty
 	scf
 	ret
 

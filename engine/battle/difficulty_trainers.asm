@@ -95,7 +95,10 @@ DifficultyAdjustTrainerParty::
 	ld a, [wOTPartyCount]
 	cp c
 	jr nz, .loop
-	ret
+	call GetDifficulty
+	cp DIFFICULTY_EXTREME
+	ret nz
+	jp ExtremeTrainerParty
 
 GetOTPartyMonParam:
 ; hl: the param in wOTPartyMon1; a: which mon
@@ -152,8 +155,10 @@ GetTrainerMonSeed:
 FitEvolution::
 ; Return in a the furthest that species a evolves to by level wCurPartyLevel;
 ; e picks the way at each branch.
-	ld [wDifficultySpecies], a
 	ld d, 3 ; (no line evolves more than twice)
+FitEvolutionStages::
+; The same, but evolving no more than d (1-3) times.
+	ld [wDifficultySpecies], a
 .next_stage
 	push de
 	ld a, [wDifficultySpecies]

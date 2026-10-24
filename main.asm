@@ -729,3 +729,8 @@ INCLUDE "engine/battle/difficulty_trainers.asm"
 SECTION "Bosses", ROMX
 
 INCLUDE "engine/battle/bosses.asm"
+
+
+SECTION "Extreme Trainers", ROMX
+
+INCLUDE "engine/battle/extreme_trainers.asm"

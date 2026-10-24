@@ -157,9 +157,10 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | CELEBI (ILEX FOREST) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
 
 On NORMAL the allies are two levels under the boss. On HARD and EXTREME they're at
-the level cap, and the boss at least two above it. The random wild GYARADOS of the
-LAKE OF RAGE are ordinary wild Pokémon: only the ones met in the story are bosses.
-Lose to a boss and it's still there to try again.
+the level cap, and the boss at least two above it; on EXTREME they also have their
+best movesets and perfect DVs. The random wild GYARADOS of the LAKE OF RAGE are
+ordinary wild Pokémon: only the ones met in the story are bosses. Lose to a boss and
+it's still there to try again.
 
 **RAIKOU and ENTEI don't roam.** After they bolt from the BURNED TOWER's basement,
 they come back to where you first saw them and wait there. They won't battle you
@@ -211,9 +212,28 @@ shows it.
   level evolutions at their level, stone evolutions from Lv 20, trade evolutions from
   Lv 34 and friendship ones from Lv 30, each trainer going its own way where a line
   branches. Items can't be used in battle (BALLS still can, once a Pokémon is beaten).
-- **EXTREME**: you get the **ENDLESSCANDY**, a RARE CANDY that never runs out, right
-  up to the level cap. For now the trainers are as on HARD; PalletToPewter's
-  six-Pokémon EXTREME teams are on their way.
+- **EXTREME**: as HARD, and you get the **ENDLESSCANDY**, a RARE CANDY that never
+  runs out, right up to the level cap. But every trainer brings **six Pokémon**
+  (except your rival in CHERRYGROVE CITY, who has just his starter). Their own are
+  joined by others that suit them, from a list for each kind of trainer: birds for
+  FALKNER and the BIRD KEEPERS, ice for PRYCE and the SKIERS, water for MISTY and the
+  SWIMMERS, and so on, with a few that cover the theme's weaknesses (SKARMORY for the
+  birds, a water Pokémon for the fire trainers). They join at the trainer's level, as
+  evolved as that allows, but no stronger than is fair for it (their base stats add
+  up to no more than 300 + 6 × the level; otherwise they join as an earlier form), so
+  a SNORLAX or a LAPRAS waits until the late game. Then every one of them gets:
+  - **its best moveset**, from the moves it has learned by its level and the TMs, HMs
+    and tutor moves a player could have by then (by your badges): its three strongest
+    attacks of different types (power, the attack stat that move type uses, its own
+    type, accuracy, and moves that hit more than once or need a turn to charge), then
+    its best support move (sleep, paralysis, a stat boost, recovery, TOXIC, …).
+  - **perfect DVs**.
+  - **a held item**: the one that boosts its best attack's type, else LEFTOVERS, QUICK
+    CLAW, KING'S ROCK, SCOPE LENS, BRIGHTPOWDER or a berry, no two the same on a team.
+  - **smarter battling**: the AI uses every one of its tricks.
+
+  Boss Pokémon and their allies get their best movesets and perfect DVs too (the red
+  GYARADOS stays red).
 
 
 ## Your Pokémon follows you
@@ -366,7 +386,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   unused), blocks items in battle and prints the TRAINER CARD's new line.
   [`engine/battle/difficulty_trainers.asm`](engine/battle/difficulty_trainers.asm)
   changes trainers' teams after `ReadTrainerParty` makes them (`FitEvolution` reads the
-  game's own evolution data).
+  game's own evolution data), and
+  [`engine/battle/extreme_trainers.asm`](engine/battle/extreme_trainers.asm) makes
+  EXTREME's: `FillExtremeTeam` (from
+  [`data/trainers/extreme_pools.asm`](data/trainers/extreme_pools.asm)),
+  `PickBestMoves` (learnsets, `TMHMMoves` and `TMHMBadgesNeeded`) and
+  `GiveExtremeHeldItem`. `GetEnemyMonTrainerDVs` gives a boss's and EXTREME trainers'
+  Pokémon their own DVs in battle, where other trainers' use their class's.
 - [`engine/battle/bosses.asm`](engine/battle/bosses.asm) makes a scripted wild battle
   with a boss (`BossTeams`) a trainer battle that borrows `BOSS_TRAINER_CLASS`, and
   changes what that class would decide: the party (`LoadBossParty`), name, picture and

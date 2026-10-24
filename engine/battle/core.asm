@@ -6097,8 +6097,8 @@ LoadEnemyMon:
 ; Trainer DVs
 
 ; All trainers have preset DVs, determined by class
-; See GetTrainerDVs for more on that
-	farcall GetTrainerDVs
+; See GetTrainerDVs for more on that (and GetEnemyMonTrainerDVs)
+	farcall GetEnemyMonTrainerDVs
 ; These are the DVs we'll use if we're actually in a trainer battle
 	ld a, [wBattleMode]
 	dec a
