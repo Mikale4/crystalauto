@@ -137,7 +137,7 @@ ItemDescriptions:
 	dw PassDesc
 	dw TeruSama9Desc
 	dw TeruSama10Desc
-	dw TeruSama11Desc
+	dw EndlessCandyDesc
 	dw CharcoalDesc
 	dw BerryJuiceDesc
 	dw ScopeLensDesc
@@ -787,8 +787,9 @@ TeruSama9Desc:
 TeruSama10Desc:
 	db   "?@"
 
-TeruSama11Desc:
-	db   "?@"
+EndlessCandyDesc:
+	db   "A RARE CANDY that"
+	next "never runs out.@"
 
 CharcoalDesc:
 	db   "Powers up fire-"

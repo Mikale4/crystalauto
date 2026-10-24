@@ -91,6 +91,7 @@ AzaleaTownRivalBattleScript:
 	sjump .AfterBattle
 
 .AfterBattle:
+	setevent EVENT_BEAT_RIVAL_IN_AZALEA
 	playmusic MUSIC_RIVAL_AFTER
 	opentext
 	writetext AzaleaTownRivalAfterText

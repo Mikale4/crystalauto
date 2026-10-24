@@ -26,7 +26,7 @@
 	const EVENT_GOT_HM04_STRENGTH
 	const EVENT_GOT_HM05_FLASH
 	const EVENT_GOT_HM06_WHIRLPOOL
-	const_skip ; unused
+	const EVENT_BEAT_RIVAL_IN_CHERRYGROVE ; (formerly unused) for level caps
 ; Rods
 	const EVENT_GOT_OLD_ROD
 	const EVENT_GOT_GOOD_ROD
@@ -65,8 +65,8 @@
 	const EVENT_LAKE_OF_RAGE_EXPLAINED_WEIRD_MAGIKARP
 	const EVENT_LAKE_OF_RAGE_ASKED_FOR_MAGIKARP
 	const EVENT_LAKE_OF_RAGE_ELIXIR_ON_STANDBY
-	const_skip ; unused
-	const_skip ; unused
+	const EVENT_BEAT_RIVAL_IN_AZALEA ; (formerly unused) for level caps
+	const EVENT_BEAT_RIVAL_IN_BURNED_TOWER ; (formerly unused) for level caps
 	const EVENT_HEALED_MOOMOO
 	const EVENT_GOT_TM13_SNORE_FROM_MOOMOO_FARM
 	const EVENT_TALKED_TO_FARMER_ABOUT_MOOMOO
@@ -136,8 +136,8 @@
 	const EVENT_TIN_TOWER_5F_HIDDEN_FULL_RESTORE
 	const EVENT_TIN_TOWER_5F_HIDDEN_CARBOS
 	const EVENT_BURNED_TOWER_1F_HIDDEN_ETHER
-	const_skip ; unused in Crystal
-	const_skip ; unused in Crystal
+	const EVENT_BEAT_RIVAL_IN_VICTORY_ROAD ; (formerly unused) for level caps
+	const EVENT_BEAT_RED ; (formerly unused) for level caps
 	const_skip ; unused in Crystal
 	const EVENT_NATIONAL_PARK_HIDDEN_FULL_HEAL
 	const EVENT_OLIVINE_LIGHTHOUSE_5F_HIDDEN_HYPER_POTION

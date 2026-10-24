@@ -91,6 +91,7 @@ BurnedTowerRivalBattleScript:
 	sjump .returnfrombattle
 
 .returnfrombattle
+	setevent EVENT_BEAT_RIVAL_IN_BURNED_TOWER
 	playmusic MUSIC_RIVAL_AFTER
 	opentext
 	writetext BurnedTowerRival_AfterText1

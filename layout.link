@@ -311,6 +311,8 @@ ROMX $78
 	"Tileset Data 8"
 ROMX $79
 	"Capture Rule"
+	"Level Caps"
+	"Difficulty"
 ROMX $7b
 	"Battle Tower Text"
 ROMX $7c
@@ -345,6 +347,7 @@ WRAMX 1
 	"More WRAM 1"
 	"Enemy Party"
 	"Party"
+	"PalletToPewter RAM 1"
 WRAMX 2
 	"Pic Animations"
 WRAMX 3

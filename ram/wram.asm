@@ -1938,6 +1938,22 @@ SECTION "PalletToPewter RAM", WRAM0
 wDudeMonDVs:: dw
 
 
+SECTION "PalletToPewter RAM 1", WRAMX
+
+; level caps during a battle (see engine/pokemon/level_caps.asm)
+wCurLevelCap:: db
+wCapFlags:: db ; CAP_SHARING_F
+wCapExcessExp:: dw ; EXP that Pokémon at the cap couldn't take (big-endian)
+wCapShareExp:: dw ; each teammate's share of it
+
+; making a trainer's team (see engine/battle/difficulty_trainers.asm)
+wTrainerPartyType:: db ; TRAINERTYPE_*
+wDifficultyLeader:: db
+wDifficultyFloor:: db
+wDifficultySpecies:: db
+wDifficultySlot:: db
+
+
 SECTION "WRAM 1", WRAMX
 
 wGBCOnlyDecompressBuffer:: ; a $540-byte buffer that continues past this SECTION
@@ -3182,7 +3198,12 @@ wRentalChanseyHeals:: db ; heals left (0: no CHANSEY)
 wRentalChanseyMapGroup:: db ; the POKéMON CENTER it came from
 wRentalChanseyMapNumber:: db
 
-	ds 10
+; PalletToPewter's difficulty (see engine/events/difficulty.asm)
+wDifficulty:: db ; DIFFICULTY_* in bits 0-1, DIFFICULTY_CHOSEN_F
+; how many level cap steps are done (see engine/pokemon/level_caps.asm)
+wLevelCapStep:: db
+
+	ds 8
 
 ; map scene ids
 wPokecenter2FSceneID::                            db

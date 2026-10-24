@@ -142,7 +142,7 @@
 	const PASS         ; 86
 	const ITEM_87      ; 87
 	const ITEM_88      ; 88
-	const ITEM_89      ; 89
+	const ENDLESS_CANDY ; 89 (formerly unused, see engine/events/difficulty.asm)
 	const CHARCOAL     ; 8a
 	const BERRY_JUICE  ; 8b
 	const SCOPE_LENS   ; 8c

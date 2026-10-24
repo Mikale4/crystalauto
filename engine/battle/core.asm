@@ -2185,9 +2185,10 @@ UpdateBattleStateAndExperienceAfterEnemyFaint:
 	call CopyBytes
 	xor a
 	ld [wGivingExperienceToExpShareHolders], a
+	farcall LevelCap_BeginExp
 	call GiveExperiencePoints
 	call IsAnyMonHoldingExpShare
-	ret z
+	jr z, .share_excess
 
 	ld a, [wBattleParticipantsNotFainted]
 	push af
@@ -2202,6 +2203,8 @@ UpdateBattleStateAndExperienceAfterEnemyFaint:
 	call GiveExperiencePoints
 	pop af
 	ld [wBattleParticipantsNotFainted], a
+.share_excess
+	farcall LevelCap_ShareExcess
 	ret
 
 IsAnyMonHoldingExpShare:
@@ -4983,6 +4986,9 @@ BattleMenu_Pack:
 	and a
 	jp nz, .ItemsCantBeUsed
 
+	farcall CheckItemsAllowedInBattle
+	jp c, BattleMenu
+
 	call LoadStandardMenuHeader
 
 	ld a, [wBattleType]
@@ -7036,7 +7042,15 @@ GiveExperiencePoints:
 	and a
 	pop bc
 	jp z, .next_mon
+	ld a, [wCapFlags]
+	bit CAP_SHARING_F, a
+	jr z, .give_stat_exp
+; sharing what teammates at the level cap couldn't take (see engine/pokemon/level_caps.asm)
+	farcall LevelCap_LoadShareExp
+	push bc
+	jp .got_exp
 
+.give_stat_exp
 ; give stat exp
 	ld hl, MON_STAT_EXP + 1
 	add hl, bc
@@ -7133,6 +7147,11 @@ GiveExperiencePoints:
 	ld a, [hl]
 	cp LUCKY_EGG
 	call z, BoostExp
+.got_exp
+	pop bc
+	farcall LevelCap_ClampExp
+	push bc
+	jp z, .at_level_cap
 	ldh a, [hQuotient + 3]
 	ld [wStringBuffer2 + 1], a
 	ldh a, [hQuotient + 2]
@@ -7365,6 +7384,10 @@ GiveExperiencePoints:
 	pop af
 	ld [wCurPartyLevel], a
 
+	jr .next_mon
+
+.at_level_cap
+	pop bc
 .next_mon
 	ld a, [wPartyCount]
 	ld b, a

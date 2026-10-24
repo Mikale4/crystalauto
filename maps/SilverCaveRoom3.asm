@@ -18,6 +18,7 @@ Red:
 	startbattle
 	dontrestartmapmusic
 	reloadmapafterbattle
+	setevent EVENT_BEAT_RED
 	special FadeOutMusic
 	opentext
 	writetext RedLeavesText

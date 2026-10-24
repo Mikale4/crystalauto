@@ -6,6 +6,7 @@ GetBreedMon1LevelGrowth:
 	callfar CalcLevel
 	ld a, [wBreedMon1Level]
 	ld b, a
+	farcall CapBreedMonLevel
 	ld a, d
 	ld e, a
 	sub b
@@ -20,6 +21,7 @@ GetBreedMon2LevelGrowth:
 	callfar CalcLevel
 	ld a, [wBreedMon2Level]
 	ld b, a
+	farcall CapBreedMonLevel
 	ld a, d
 	ld e, a
 	sub b

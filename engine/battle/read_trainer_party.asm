@@ -56,6 +56,7 @@ ReadTrainerParty:
 
 	ld a, [hli]
 	ld c, a
+	ld [wTrainerPartyType], a
 	ld b, 0
 	ld d, h
 	ld e, l
@@ -70,9 +71,13 @@ ReadTrainerParty:
 	jp hl
 
 .done
-	jp ComputeTrainerReward
+	call ComputeTrainerReward
+	farcall DifficultyAdjustTrainerParty
+	ret
 
 .cal2
+	ld a, TRAINERTYPE_MOVES
+	ld [wTrainerPartyType], a
 	ld a, BANK(sMysteryGiftTrainer)
 	call OpenSRAM
 	ld de, sMysteryGiftTrainer

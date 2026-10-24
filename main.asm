@@ -713,3 +713,14 @@ SECTION "Stadium 2 Checksums", ROMX[$7DE0], BANK[$7F]
 SECTION "Capture Rule", ROMX
 
 INCLUDE "engine/battle/capture_rule.asm"
+
+
+SECTION "Level Caps", ROMX
+
+INCLUDE "engine/pokemon/level_caps.asm"
+
+
+SECTION "Difficulty", ROMX
+
+INCLUDE "engine/events/difficulty.asm"
+INCLUDE "engine/battle/difficulty_trainers.asm"

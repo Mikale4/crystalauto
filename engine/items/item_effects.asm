@@ -150,7 +150,7 @@ ItemEffects:
 	dw NoEffect            ; PASS
 	dw NoEffect            ; ITEM_87
 	dw NoEffect            ; ITEM_88
-	dw NoEffect            ; ITEM_89
+	dw RareCandyEffect     ; ENDLESS_CANDY
 	dw NoEffect            ; CHARCOAL
 	dw RestoreHPEffect     ; BERRY_JUICE
 	dw NoEffect            ; SCOPE_LENS
@@ -1298,6 +1298,11 @@ RareCandyEffect:
 	ld a, MON_LEVEL
 	call GetPartyParamLocation
 
+	push hl
+	farcall CheckLevelCapForCandy
+	pop hl
+	jp c, RareCandy_StatBooster_ExitMenu
+
 	ld a, [hl]
 	cp MAX_LEVEL
 	jp nc, NoEffectMessage
@@ -1375,6 +1380,9 @@ RareCandyEffect:
 	ld [wForceEvolution], a
 	farcall EvolvePokemon
 
+	ld a, [wCurItem]
+	cp ENDLESS_CANDY
+	ret z ; (it never runs out)
 	jp UseDisposableItem
 
 HealPowderEffect:

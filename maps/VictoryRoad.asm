@@ -87,6 +87,7 @@ VictoryRoadRivalNext:
 	sjump .AfterBattle
 
 .AfterBattle:
+	setevent EVENT_BEAT_RIVAL_IN_VICTORY_ROAD
 	playmusic MUSIC_RIVAL_AFTER
 	opentext
 	writetext VictoryRoadRivalAfterText

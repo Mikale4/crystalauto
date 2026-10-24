@@ -369,6 +369,7 @@ Continue:
 	call ClearTilemap
 	ld c, 20
 	call DelayFrames
+	farcall AskDifficultyIfUnset
 	farcall JumpRoamMons
 	farcall CopyMysteryGiftReceivedDecorationsToPC
 	farcall ClockContinue
@@ -698,6 +699,7 @@ OakSpeech:
 	ld hl, OakText6
 	call PrintText
 	call NamePlayer
+	farcall ChooseDifficulty
 	ld hl, OakText7
 	call PrintText
 	ret

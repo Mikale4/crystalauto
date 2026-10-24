@@ -150,6 +150,7 @@ CherrygroveRivalSceneNorth:
 	sjump .AfterYourDefeat
 
 .AfterVictorious:
+	setevent EVENT_BEAT_RIVAL_IN_CHERRYGROVE
 	playmusic MUSIC_RIVAL_AFTER
 	opentext
 	writetext CherrygroveRivalText_YouWon
@@ -158,6 +159,7 @@ CherrygroveRivalSceneNorth:
 	sjump .FinishRival
 
 .AfterYourDefeat:
+	setevent EVENT_BEAT_RIVAL_IN_CHERRYGROVE
 	playmusic MUSIC_RIVAL_AFTER
 	opentext
 	writetext CherrygroveRivalText_YouLost

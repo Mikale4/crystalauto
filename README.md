@@ -11,7 +11,8 @@ whenever you ask.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
-you the RATTATA he catches.
+you the RATTATA he catches. PalletToPewter's **level caps** and **difficulties**
+(NORMAL, HARD and EXTREME) are here too.
 
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
@@ -130,6 +131,56 @@ Catching works the way it does in PalletToPewter:
 The DUDE's catching lesson shows the rule: he beats the wild RATTATA with a stone,
 then throws his BALL. Afterwards he gives you that RATTATA (the very one he caught,
 at level 5), and you can give it a nickname. It goes to the PC if your party is full.
+
+
+## Level caps
+
+As in PalletToPewter, your Pokémon only grow to **two levels below the strongest
+Pokémon of your next big battle**. The cap never goes back down, and once RED is
+beaten there is none. Your TRAINER CARD shows it.
+
+| Next big battle | Its strongest Pokémon | Level cap |
+|---|---|---|
+| Your rival in CHERRYGROVE CITY | Lv 5 | 5 |
+| FALKNER | PIDGEOTTO, Lv 9 | 7 |
+| BUGSY, then your rival in AZALEA TOWN | SCYTHER and his starter, Lv 16 | 14 |
+| WHITNEY, then the odd tree on ROUTE 36 | MILTANK and SUDOWOODO, Lv 20 | 18 |
+| Your rival in the BURNED TOWER | his starter, Lv 22 | 20 |
+| MORTY | GENGAR, Lv 25 | 23 |
+| CHUCK, JASMINE and PRYCE (and the red GYARADOS and TEAM ROCKET's hideout on the way) | JASMINE's STEELIX, Lv 35 | 33 |
+| TEAM ROCKET in the RADIO TOWER | an EXECUTIVE's GOLBAT, Lv 36 | 34 |
+| CLAIR, then your rival on VICTORY ROAD | KINGDRA, Lv 40 | 38 |
+| WILL, KOGA, BRUNO, KAREN | Lv 42, 44, 46, 47 | 40, 42, 44, 45 |
+| LANCE | DRAGONITE, Lv 50 | 48 |
+| KANTO's other GYM LEADERS | BLAINE's RAPIDASH, Lv 50 | 48 |
+| BLUE | GYARADOS, Lv 58 | 56 |
+| RED | PIKACHU, Lv 81 | 79 |
+
+Where Crystal lets you take the battles in any order (the middle of JOHTO, the RADIO
+TOWER, KANTO's GYMS), they count as one, with the strongest Pokémon among them, the
+way PalletToPewter groups CELADON's battles.
+
+- A Pokémon at the cap gets no EXP ("… is at the level cap!"), and what it can't take
+  is shared evenly among teammates that are still below it.
+- RARE CANDY stops at the cap, and says who to beat next. So does the DAY-CARE.
+- Saves from before the level caps start at the right cap for your badges.
+
+## Difficulty
+
+PROF. OAK asks how tough a journey you want after you choose your name. A game saved
+before there were difficulties is asked once, when you CONTINUE. Your TRAINER CARD
+shows it.
+
+- **NORMAL**: the journey as it was meant to be, except that a GYM LEADER's whole team
+  stands at its strongest Pokémon's level (so do the ELITE FOUR's, LANCE's and RED's).
+- **HARD**: every trainer's Pokémon are at least at the level cap, and the leaders'
+  whole teams at least two levels above it. They're as evolved as their level allows:
+  level evolutions at their level, stone evolutions from Lv 20, trade evolutions from
+  Lv 34 and friendship ones from Lv 30, each trainer going its own way where a line
+  branches. Items can't be used in battle (BALLS still can, once a Pokémon is beaten).
+- **EXTREME**: you get the **ENDLESSCANDY**, a RARE CANDY that never runs out, right
+  up to the level cap. For now the trainers are as on HARD; PalletToPewter's
+  six-Pokémon EXTREME teams are on their way.
 
 
 ## Your Pokémon follows you
@@ -271,6 +322,18 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   BALL in the tutorial battle, the tutorial catch keeps the RATTATA's DVs in
   `wDudeMonDVs`, and [`maps/Route29.asm`](maps/Route29.asm) gives it with `givepoke`,
   then `GiveDudeMonCaughtDVs` gives it those DVs.
+- [`engine/pokemon/level_caps.asm`](engine/pokemon/level_caps.asm) has the level cap
+  steps (`LevelCapStepAces`, `LevelCapStepFlags`), `GetLevelCap`, and the EXP hooks
+  `GiveExperiencePoints` calls: `LevelCap_ClampExp` for each Pokémon, and
+  `LevelCap_ShareExcess`, which runs `GiveExperiencePoints` once more to share what
+  was left over. `wLevelCapStep` (saved) counts the steps done; new event flags mark
+  the rival battles and RED (`EVENT_BEAT_RIVAL_IN_*`, `EVENT_BEAT_RED`).
+- [`engine/events/difficulty.asm`](engine/events/difficulty.asm) asks for the
+  difficulty (`wDifficulty`, saved), gives the ENDLESSCANDY (item `$89`, formerly
+  unused), blocks items in battle and prints the TRAINER CARD's new line.
+  [`engine/battle/difficulty_trainers.asm`](engine/battle/difficulty_trainers.asm)
+  changes trainers' teams after `ReadTrainerParty` makes them (`FitEvolution` reads the
+  game's own evolution data).
 - The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it
