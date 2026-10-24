@@ -1910,6 +1910,24 @@ wHoursSince:: db
 wDaysSince:: db
 
 
+SECTION "Followers RAM", WRAM0
+
+; the party's lead Pokémon and a rented CHANSEY follow the player
+; (see engine/overworld/followers.asm)
+wFollowerFlags:: db
+wFollowerSpecies:: db ; the lead Pokémon whose icon and palette the follower has
+wCurFollower:: db
+wFollowerStepSpeed:: db
+; where each follower stood, relative to the player, before a map connection
+wFollowerConnectionOffsets:: ds NUM_FOLLOWERS * 2
+; the tiles each follower's leader left, oldest first
+wFollowerQueues::
+for n, NUM_FOLLOWERS
+wFollower{d:n}QueueLength:: db
+wFollower{d:n}Queue:: ds FOLLOWER_QUEUE_LENGTH * FOLLOWER_QUEUE_ENTRY_SIZE
+endr
+
+
 SECTION "WRAM 1", WRAMX
 
 wGBCOnlyDecompressBuffer:: ; a $540-byte buffer that continues past this SECTION
@@ -3149,7 +3167,12 @@ wMooMooBerries:: db
 wUndergroundSwitchPositions:: db
 wFarfetchdPosition:: db
 
-	ds 13
+; the CHANSEY rented at a POKéMON CENTER (see engine/overworld/followers.asm)
+wRentalChanseyHeals:: db ; heals left (0: no CHANSEY)
+wRentalChanseyMapGroup:: db ; the POKéMON CENTER it came from
+wRentalChanseyMapNumber:: db
+
+	ds 10
 
 ; map scene ids
 wPokecenter2FSceneID::                            db

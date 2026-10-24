@@ -16,6 +16,7 @@ HandleContinueMap:
 
 EnterMapConnection:
 ; Return carry if a connection has been entered.
+	farcall SaveFollowerConnectionOffsets
 	ld a, [wPlayerStepDirection]
 	and a ; DOWN
 	jp z, .south

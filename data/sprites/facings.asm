@@ -33,6 +33,8 @@ Facings:
 	dw FacingBoulderDust2
 	dw FacingGrass1
 	dw FacingGrass2
+	dw FacingFollowerRight0
+	dw FacingFollowerRight1
 	assert_table_length NUM_FACINGS
 	dw 0 ; end
 
@@ -236,3 +238,17 @@ FacingGrass2:
 	db 2 ; #
 	db  9, -1, ABSOLUTE_TILE_ID, $fe
 	db  9,  9, ABSOLUTE_TILE_ID | OAM_XFLIP, $fe
+
+FacingFollowerRight0: ; Pokémon icon, frame 1, facing right
+	db 4 ; #
+	db  0,  8, OAM_XFLIP, $00
+	db  0,  0, OAM_XFLIP, $01
+	db  8,  8, RELATIVE_ATTRIBUTES | OAM_XFLIP, $02
+	db  8,  0, RELATIVE_ATTRIBUTES | OAM_XFLIP, $03
+
+FacingFollowerRight1: ; Pokémon icon, frame 2, facing right
+	db 4 ; #
+	db  0,  8, OAM_XFLIP, $04
+	db  0,  0, OAM_XFLIP, $05
+	db  8,  8, RELATIVE_ATTRIBUTES | OAM_XFLIP, $06
+	db  8,  0, RELATIVE_ATTRIBUTES | OAM_XFLIP, $07

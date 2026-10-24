@@ -71,6 +71,7 @@ ROMX $11
 	"bank11"
 	"Auto Battle"
 	"Evolve In Battle"
+	"Followers"
 ROMX $12
 	"Crystal Features 1"
 ROMX $13
@@ -334,6 +335,7 @@ WRAM0
 	"Overworld Map"
 	align 4
 	"Video"
+	"Followers RAM"
 WRAMX 1
 	"WRAM 1"
 	"Miscellaneous WRAM 1"

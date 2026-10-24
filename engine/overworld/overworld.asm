@@ -96,10 +96,16 @@ AddMapSprites:
 	call CheckOutdoorMap
 	jr z, .outdoor
 	call AddIndoorSprites
-	ret
+	jr .followers
 
 .outdoor
 	call AddOutdoorSprites
+.followers
+; Pokémon followers can show up on any map.
+	ld a, SPRITE_FOLLOWER
+	call AddSpriteGFX
+	ld a, SPRITE_RENTAL_CHANSEY
+	call AddSpriteGFX
 	ret
 
 AddIndoorSprites:
@@ -203,6 +209,10 @@ GetMonSprite:
 	jr z, .BreedMon1
 	cp SPRITE_DAY_CARE_MON_2
 	jr z, .BreedMon2
+	cp SPRITE_FOLLOWER
+	jr z, .Follower
+	cp SPRITE_RENTAL_CHANSEY
+	jr z, .RentalChansey
 	cp SPRITE_VARS
 	jr nc, .Variable
 	jr .Icon
@@ -235,6 +245,27 @@ GetMonSprite:
 	farcall LoadOverworldMonIcon
 
 	ld l, WALKING_SPRITE
+	ld h, 0
+	scf
+	ret
+
+.Follower:
+; (UpdateFollowers notices the new lead too, and sets wFollowerSpecies.)
+	farcall GetLeadFollowerSpecies
+	ld a, EGG ; no follower: any icon will do
+	jr nc, .FollowerMon
+	ld b, 0
+	ld hl, wPartySpecies
+	add hl, bc
+	ld a, [hl]
+	jr .FollowerMon
+
+.RentalChansey:
+	ld a, CHANSEY
+.FollowerMon:
+	ld e, a
+	farcall LoadOverworldMonIcon
+	ld l, ICON_SPRITE
 	ld h, 0
 	scf
 	ret
@@ -442,59 +473,48 @@ SortUsedSprites:
 ArrangeUsedSprites:
 ; Get the length of each sprite and space them out in VRAM.
 ; Crystal introduces a second table in VRAM bank 0.
+; A sprite that doesn't fit in the first table goes in the second one,
+; and a shorter sprite after it can still fill the end of the first.
+; (This leaves room for the Pokémon followers' icons on every map.)
 
 	ld hl, wUsedSprites
 	ld c, SPRITE_GFX_LIST_CAPACITY
-	ld b, 0
-.FirstTableLength:
-; Keep going until the end of the list.
-	ld a, [hli]
-	and a
-	jr z, .quit
-
-	ld a, [hl]
-	call GetSpriteLength
-
-; Spill over into the second table after $80 tiles.
-	add b
-	cp $80
-	jr z, .loop
-	jr nc, .SecondTable
-
+	ld d, 0 ; next tile in the first table
+	ld e, $80 ; next tile in the second table
 .loop
-	ld [hl], b
-	inc hl
-	ld b, a
-
-; Assumes the next table will be reached before c hits 0.
-	dec c
-	jr nz, .FirstTableLength
-
-.SecondTable:
-; The second tile table starts at tile $80.
-	ld b, $80
-	dec hl
-.SecondTableLength:
 ; Keep going until the end of the list.
 	ld a, [hli]
 	and a
-	jr z, .quit
+	ret z
 
 	ld a, [hl]
 	call GetSpriteLength
-
-; There are only two tables, so don't go any further than that.
-	add b
-	jr c, .quit
-
-	ld [hl], b
 	ld b, a
+
+	add d
+	cp $80 + 1
+	jr nc, .second_table
+	ld [hl], d
+	ld d, a
+	jr .next
+
+.second_table
+; The second tile table starts at tile $80.
+	ld a, e
+	and a
+	ret z ; full
+	add b
+	jr nc, .fits
+; There are only two tables, so don't go any further than that.
+	ret nz
+.fits
+	ld [hl], e
+	ld e, a ; 0 once the table is full
+
+.next
 	inc hl
-
 	dec c
-	jr nz, .SecondTableLength
-
-.quit
+	jr nz, .loop
 	ret
 
 GetSpriteLength:
@@ -506,6 +526,8 @@ GetSpriteLength:
 	jr z, .AnyDirection
 	cp STILL_SPRITE
 	jr z, .OneDirection
+	cp ICON_SPRITE
+	jr z, .Icon
 
 	ld a, 12
 	ret
@@ -516,6 +538,10 @@ GetSpriteLength:
 
 .OneDirection:
 	ld a, 4
+	ret
+
+.Icon:
+	ld a, 8
 	ret
 
 GetUsedSprites:
@@ -587,6 +613,10 @@ endr
 	jr nz, .done
 
 	ldh a, [hUsedSpriteIndex]
+	cp SPRITE_FOLLOWER
+	jr z, .done ; icons have no walking frames
+	cp SPRITE_RENTAL_CHANSEY
+	jr z, .done
 	call _DoesSpriteHaveFacings
 	jr c, .done
 
@@ -628,6 +658,36 @@ endr
 	call Get2bpp
 	pop af
 	ldh [rVBK], a
+	ret
+
+ReloadFollowerSpriteGFX::
+; Load the lead Pokémon's icon into SPRITE_FOLLOWER's tiles.
+	ld hl, wUsedSprites
+	ld c, SPRITE_GFX_LIST_CAPACITY
+.loop
+	ld a, [hli]
+	and a
+	ret z
+	cp SPRITE_FOLLOWER
+	jr z, .found
+	inc hl
+	dec c
+	jr nz, .loop
+	ret
+
+.found
+	ldh [hUsedSpriteIndex], a
+	ld a, [hl]
+	ldh [hUsedSpriteTile], a
+	ld hl, wSpriteFlags
+	res SPRITES_VRAM_BANK_0_F, [hl]
+	bit 7, a ; tiles $80+ are in VRAM bank 0
+	jr z, .got_bank
+	set SPRITES_VRAM_BANK_0_F, [hl]
+.got_bank
+	call GetUsedSprite
+	ld hl, wSpriteFlags
+	res SPRITES_VRAM_BANK_0_F, [hl]
 	ret
 
 LoadEmote::

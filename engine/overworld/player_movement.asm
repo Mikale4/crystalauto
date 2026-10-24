@@ -630,8 +630,13 @@ ENDM
 	add e
 	ld e, a
 ; Find an object struct with coordinates equal to d,e
+; (the player walks through Pokémon followers)
+	ld hl, wFollowerFlags
+	set FOLLOWERS_PASSABLE_F, [hl]
 	ld bc, wObjectStructs ; redundant
 	farcall IsNPCAtCoord
+	ld hl, wFollowerFlags
+	res FOLLOWERS_PASSABLE_F, [hl]
 	jr nc, .no_npc
 	call .CheckStrengthBoulder
 	jr c, .no_bump

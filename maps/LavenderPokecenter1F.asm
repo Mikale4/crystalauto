@@ -3,6 +3,7 @@
 	const LAVENDERPOKECENTER1F_GENTLEMAN
 	const LAVENDERPOKECENTER1F_TEACHER
 	const LAVENDERPOKECENTER1F_YOUNGSTER
+	const LAVENDERPOKECENTER1F_CHANSEY
 
 LavenderPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -11,6 +12,9 @@ LavenderPokecenter1F_MapScripts:
 
 LavenderPokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+LavenderPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 LavenderPokecenter1FGentlemanScript:
 	jumptextfaceplayer LavenderPokecenter1FGentlemanText
@@ -95,3 +99,4 @@ LavenderPokecenter1F_MapEvents:
 	object_event  7,  6, SPRITE_GENTLEMAN, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, LavenderPokecenter1FGentlemanScript, -1
 	object_event  5,  3, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, LavenderPokecenter1FTeacherScript, -1
 	object_event  1,  5, SPRITE_YOUNGSTER, SPRITEMOVEDATA_WALK_UP_DOWN, 0, 1, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, LavenderPokecenter1FYoungsterScript, -1
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, LavenderPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

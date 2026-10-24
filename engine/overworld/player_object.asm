@@ -146,6 +146,9 @@ CopyObjectStruct::
 	inc a
 	cp NUM_OBJECT_STRUCTS
 	jr nz, .loop
+; Map objects come first: send a Pokémon follower away to make room.
+	farcall FreeFollowerStruct
+	jr c, CopyObjectStruct
 	scf
 	ret ; overflow
 

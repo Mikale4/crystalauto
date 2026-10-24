@@ -324,6 +324,16 @@ IsNPCAtCoord:
 	bit EMOTE_OBJECT_F, [hl]
 	jr nz, .next
 
+	ld a, [wFollowerFlags]
+	bit FOLLOWERS_PASSABLE_F, a
+	jr z, .not_passable
+	ld hl, OBJECT_MOVEMENT_TYPE
+	add hl, bc
+	ld a, [hl]
+	cp SPRITEMOVEDATA_FOLLOWER
+	jr z, .next
+.not_passable
+
 	ld hl, OBJECT_PALETTE
 	add hl, bc
 	bit BIG_OBJECT_F, [hl]

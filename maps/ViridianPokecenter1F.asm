@@ -3,6 +3,7 @@
 	const VIRIDIANPOKECENTER1F_COOLTRAINER_M
 	const VIRIDIANPOKECENTER1F_COOLTRAINER_F
 	const VIRIDIANPOKECENTER1F_BUG_CATCHER
+	const VIRIDIANPOKECENTER1F_CHANSEY
 
 ViridianPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -11,6 +12,9 @@ ViridianPokecenter1F_MapScripts:
 
 ViridianPokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+ViridianPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 ViridianPokecenter1FCooltrainerMScript:
 	faceplayer
@@ -86,3 +90,4 @@ ViridianPokecenter1F_MapEvents:
 	object_event  8,  4, SPRITE_COOLTRAINER_M, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, ViridianPokecenter1FCooltrainerMScript, -1
 	object_event  5,  3, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, ViridianPokecenter1FCooltrainerFScript, -1
 	object_event  1,  6, SPRITE_BUG_CATCHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, ViridianPokecenter1FBugCatcherScript, -1
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, ViridianPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

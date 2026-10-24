@@ -12,6 +12,7 @@ DEF NUM_SPRITEDATA_FIELDS EQU _RS
 	const WALKING_SPRITE  ; 1
 	const STANDING_SPRITE ; 2
 	const STILL_SPRITE    ; 3
+	const ICON_SPRITE     ; 4 a Pokémon follower's icon: two frames, no walking frames
 
 ; sprite palettes
 	const_def

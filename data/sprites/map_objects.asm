@@ -298,6 +298,14 @@ SpriteMovementData::
 	db 0 ; flags2
 	db SWIMMING ; palette flags
 
+; SPRITEMOVEDATA_FOLLOWER
+	db SPRITEMOVEFN_FOLLOWER ; movement function
+	db DOWN ; facing
+	db OBJECT_ACTION_FOLLOWER ; action
+	db WONT_DELETE | NOCLIP_TILES | NOCLIP_OBJS | MOVE_ANYWHERE ; flags1
+	db 0 ; flags2
+	db 0 ; palette flags
+
 	assert_table_length NUM_SPRITEMOVEDATA
 
 ; unused

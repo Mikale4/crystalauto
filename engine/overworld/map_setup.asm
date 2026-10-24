@@ -76,6 +76,7 @@ SuspendMapAnims:
 	ret
 
 LoadMapObjects:
+	farcall FollowersLoadMapObjects
 	ld a, MAPCALLBACK_OBJECTS
 	call RunMapCallback
 	farcall LoadObjectMasks

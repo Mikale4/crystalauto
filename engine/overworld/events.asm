@@ -201,6 +201,7 @@ HandleMapTimeAndJoypad:
 	ret
 
 HandleMapObjects:
+	farcall UpdateFollowers
 	farcall HandleNPCStep
 	farcall _HandlePlayerStep
 	call _CheckObjectEnteringVisibleRange
@@ -495,6 +496,9 @@ OWPlayerInput:
 	call CheckAPressOW
 	jr c, .Action
 
+	call CheckBPressOW
+	jr c, .Action
+
 	call CheckMenuOW
 	jr c, .Action
 
@@ -522,6 +526,17 @@ CheckAPressOW:
 	xor a
 	ret
 
+CheckBPressOW:
+; B calls the rented CHANSEY over.
+	ldh a, [hJoyPressed]
+	and PAD_B
+	ret z
+	farcall CallRentalChansey
+	ret nc
+	ld a, PLAYEREVENT_MAPSCRIPT
+	scf
+	ret
+
 PlayTalkObject:
 	push de
 	ld de, SFX_READ_TEXT_2
@@ -539,6 +554,13 @@ TryObjectEvent:
 	call PlayTalkObject
 	ldh a, [hObjectStructIndex]
 	call GetObjectStruct
+	farcall TryTalkToFollower
+	jr nc, .not_follower
+	ld a, PLAYEREVENT_MAPSCRIPT
+	scf
+	ret
+
+.not_follower
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
 	ld a, [hl]

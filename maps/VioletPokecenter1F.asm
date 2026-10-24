@@ -4,6 +4,7 @@
 	const VIOLETPOKECENTER1F_GENTLEMAN
 	const VIOLETPOKECENTER1F_YOUNGSTER
 	const VIOLETPOKECENTER1F_ELMS_AIDE
+	const VIOLETPOKECENTER1F_CHANSEY
 
 VioletPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -12,6 +13,9 @@ VioletPokecenter1F_MapScripts:
 
 VioletPokecenterNurse:
 	jumpstd PokecenterNurseScript
+
+VioletPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 VioletPokecenter1F_ElmsAideScript:
 	faceplayer
@@ -231,3 +235,4 @@ VioletPokecenter1F_MapEvents:
 	object_event  1,  4, SPRITE_GENTLEMAN, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, VioletPokecenter1FGentlemanScript, -1
 	object_event  8,  1, SPRITE_YOUNGSTER, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, VioletPokecenter1FYoungsterScript, -1
 	object_event  4,  3, SPRITE_SCIENTIST, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, VioletPokecenter1F_ElmsAideScript, EVENT_ELMS_AIDE_IN_VIOLET_POKEMON_CENTER
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, VioletPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

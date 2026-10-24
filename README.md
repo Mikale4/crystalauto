@@ -5,6 +5,10 @@ game picks your Pokémon's moves for you, turn after turn, until you turn it off
 Pokémon also **evolve as soon as they reach their evolution level** in battle,
 instead of waiting for the battle to end.
 
+Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
+CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
+whenever you ask.
+
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
 carry over.
@@ -100,6 +104,55 @@ right after its level-up, before the next foe is sent out:
 - Moves learned on evolving (like Gyarados's Bite) can be used right away.
 
 
+## Your Pokémon follows you
+
+The first Pokémon in your party that isn't fainted (or an egg) walks behind you,
+one step back, at your speed, on foot or on the BICYCLE.
+
+- It walks where you walked: around corners, through doors, down ledges (it hops
+  them right after you) and across from one route or town to the next.
+- You can walk through it: step back into it and you swap places.
+- After going through a door, up stairs or any other warp, it waits on your tile
+  and comes out behind you on your first step. It also stays out of sight while you
+  SURF, and comes back once you're on land.
+- Talk to it to see how it's doing: it may be happily trotting along, sniffing the
+  breeze or ready for a battle, or it may tell you it needs a rest.
+- Change your lead Pokémon (in the party menu, at the PC, or when it faints) and
+  the new one takes its place. Its color matches its type.
+- If someone walks into its spot, it gets out of the way and comes back out behind
+  you on your next step.
+
+It looks like the Pokémon's party icon, like every Pokémon you see walking around in
+Crystal (the Day-Care Pokémon, the Pokémon in people's houses).
+
+Followers don't come along in the link rooms or the BATTLE TOWER. A map's own
+people and objects always come first: in the rare spot where a map needs every
+object slot, the followers make room and come back when there's space again.
+
+
+## Rent NURSE JOY's CHANSEY
+
+Every POKéMON CENTER has a CHANSEY behind the counter, next to NURSE JOY. Talk to
+it to take it with you:
+
+| Heals | Price  |
+| ----- | ------ |
+| 5     | ¥500   |
+| 10    | ¥1,000 |
+| 15    | ¥1,500 |
+
+- The CHANSEY walks behind your Pokémon.
+- Talk to it, or press **B** anywhere to call it, and it offers to use SOFTBOILED:
+  your whole team is fully healed (HP, status and PP), fainted Pokémon included. It
+  tells you how many heals it has left, and doesn't use one if your team is already
+  in perfect shape.
+- You can only have one CHANSEY at a time. The one from that POKéMON CENTER is away
+  while it's with you; the others tell you their friend is already out traveling.
+- When its last heal is used, it heads back home to its POKéMON CENTER.
+
+The CHANSEY and its heals are saved with your game.
+
+
 ## Playing it
 
 You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
@@ -110,7 +163,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: f5cf1854a75fc0b6f944188f4460e96d23c6c8a6`.
+The patched ROM has `sha1: c78aaf0c1d36e5741fa3d741d48d3f1154ec37b0`.
 
 
 ## Building it
@@ -153,6 +206,28 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
 - [`engine/battle/evolve_in_battle.asm`](engine/battle/evolve_in_battle.asm) runs the
   game's own `EvolveAfterBattle` during the battle, then restores the battle screen,
   music and the evolved Pokémon's battle data.
+- [`engine/overworld/followers.asm`](engine/overworld/followers.asm) runs the
+  followers. Each one is an object struct with no map object, so it never takes one
+  of a map's object slots (`CopyObjectStruct` sends a follower away if a map object
+  needs its struct). `UpdateFollowers` runs every overworld frame from
+  `HandleMapObjects`: it brings the followers out or puts them away, hides them, and
+  loads the lead Pokémon's icon when it changes. `DoMovementFunction` tells it about
+  every step the player takes; each follower keeps a short queue of the tiles its
+  leader left and walks into them (`MovementFunction_Follower`, a new
+  `SPRITEMOVEDATA_FOLLOWER`). The player walks through followers (`IsNPCAtCoord`
+  skips them for the player's own moves), they keep their places across map
+  connections, and `ApplyMovement` lets them follow the player's scripted walks.
+- [`engine/events/follower_scripts.asm`](engine/events/follower_scripts.asm) has what
+  the followers say, the CHANSEY's SOFTBOILED, and the rental at the counter
+  (`PokecenterChanseyScript`, a new standard script used by every POKéMON CENTER's map).
+- The icons use two new sprite IDs, `SPRITE_FOLLOWER` and `SPRITE_RENTAL_CHANSEY`,
+  and a new 8-tile `ICON_SPRITE` type. Every map loads them, so to make room
+  `ArrangeUsedSprites` now fills the end of the first VRAM table with later, shorter
+  sprites and lets a sprite end exactly at the end of the second.
+- The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
+  player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
+  formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it
+  came from.
 
 
 ## Based on pret/pokecrystal

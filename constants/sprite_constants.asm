@@ -150,6 +150,8 @@ DEF NUM_POKEMON_SPRITES EQU const_value - SPRITE_POKEMON
 	const_next $e0
 	const SPRITE_DAY_CARE_MON_1 ; e0
 	const SPRITE_DAY_CARE_MON_2 ; e1
+	const SPRITE_FOLLOWER       ; e2 the party's lead Pokémon (see engine/overworld/followers.asm)
+	const SPRITE_RENTAL_CHANSEY ; e3
 
 ; wVariableSprites indexes (see wram.asm)
 	const_next $f0

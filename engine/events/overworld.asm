@@ -1341,6 +1341,8 @@ GetFacingObject:
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
 	ld a, [hl]
+	cp -1 ; a Pokémon follower has no map object
+	jr z, .fail
 	ldh [hLastTalked], a
 	call GetMapObject
 	ld hl, MAPOBJECT_MOVEMENT

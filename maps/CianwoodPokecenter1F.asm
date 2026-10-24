@@ -3,6 +3,7 @@
 	const CIANWOODPOKECENTER1F_LASS
 	const CIANWOODPOKECENTER1F_GYM_GUIDE
 	const CIANWOODPOKECENTER1F_SUPER_NERD
+	const CIANWOODPOKECENTER1F_CHANSEY
 
 CianwoodPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -11,6 +12,9 @@ CianwoodPokecenter1F_MapScripts:
 
 CianwoodPokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+CianwoodPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 CianwoodPokecenter1FLassScript:
 	jumptextfaceplayer CianwoodPokecenter1FLassText
@@ -146,3 +150,4 @@ CianwoodPokecenter1F_MapEvents:
 	object_event  1,  5, SPRITE_LASS, SPRITEMOVEDATA_WALK_UP_DOWN, 0, 1, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CianwoodPokecenter1FLassScript, -1
 	object_event  5,  3, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CianwoodGymGuideScript, -1
 	object_event  8,  6, SPRITE_SUPER_NERD, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CianwoodPokecenter1FSuperNerdScript, -1
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CianwoodPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

@@ -155,6 +155,7 @@ DEF MAPOBJECT_SCREEN_HEIGHT EQU (SCREEN_HEIGHT / 2) + 2
 	const SPRITEMOVEDATA_BOULDERDUST          ; 22
 	const SPRITEMOVEDATA_GRASS                ; 23
 	const SPRITEMOVEDATA_SWIM_WANDER          ; 24
+	const SPRITEMOVEDATA_FOLLOWER             ; 25
 DEF NUM_SPRITEMOVEDATA EQU const_value
 
 ; StepFunction_FromMovement.Pointers indexes (see engine/overworld/map_objects.asm)
@@ -187,6 +188,7 @@ DEF NUM_SPRITEMOVEDATA EQU const_value
 	const SPRITEMOVEFN_SPIN_COUNTERCLOCKWISE ; 19
 	const SPRITEMOVEFN_BOULDERDUST           ; 1a
 	const SPRITEMOVEFN_GRASS                 ; 1b
+	const SPRITEMOVEFN_FOLLOWER              ; 1c
 DEF NUM_SPRITEMOVEFN EQU const_value
 
 ; StepTypesJumptable indexes (see engine/overworld/map_objects.asm)
@@ -238,6 +240,7 @@ DEF NUM_STEP_TYPES EQU const_value
 	const OBJECT_ACTION_BOULDER_DUST  ; 0e
 	const OBJECT_ACTION_GRASS_SHAKE   ; 0f
 	const OBJECT_ACTION_SKYFALL       ; 10
+	const OBJECT_ACTION_FOLLOWER      ; 11
 DEF NUM_OBJECT_ACTIONS EQU const_value
 
 ; Facings indexes (see data/sprites/facings.asm)
@@ -274,6 +277,8 @@ DEF NUM_OBJECT_ACTIONS EQU const_value
 	const FACING_BOULDER_DUST_2 ; 1d
 	const FACING_GRASS_1        ; 1e
 	const FACING_GRASS_2        ; 1f
+	const FACING_FOLLOWER_RIGHT_0 ; 20
+	const FACING_FOLLOWER_RIGHT_1 ; 21
 DEF NUM_FACINGS EQU const_value
 
 ; DoPlayerMovement.DoStep arguments (see engine/overworld/player_movement.asm)
@@ -287,3 +292,18 @@ DEF NUM_FACINGS EQU const_value
 	const STEP_BACK_LEDGE    ; 6
 	const STEP_WALK_IN_PLACE ; 7
 DEF NUM_STEPS EQU const_value
+
+; Pokémon followers (see engine/overworld/followers.asm)
+	const_def
+	const FOLLOWER_LEAD    ; 0 the party's lead Pokémon
+	const FOLLOWER_CHANSEY ; 1 a CHANSEY rented at a POKéMON CENTER
+DEF NUM_FOLLOWERS EQU const_value
+
+; the steps a follower can be behind its leader
+DEF FOLLOWER_QUEUE_LENGTH EQU 4
+DEF FOLLOWER_QUEUE_ENTRY_SIZE EQU 3 ; x, y, speed
+
+; wFollowerFlags bits
+	const_def
+	const FOLLOWERS_PASSABLE_F   ; 0 IsNPCAtCoord ignores followers (the player walks through them)
+	const FOLLOWERS_CONNECTION_F ; 1 wFollowerConnectionOffsets places the followers on the new map

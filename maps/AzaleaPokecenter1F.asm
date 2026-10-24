@@ -3,6 +3,7 @@
 	const AZALEAPOKECENTER1F_GENTLEMAN
 	const AZALEAPOKECENTER1F_FISHING_GURU
 	const AZALEAPOKECENTER1F_POKEFAN_F
+	const AZALEAPOKECENTER1F_CHANSEY
 
 AzaleaPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -15,6 +16,9 @@ AzaleaPokecenter1FNoopScene:
 
 AzaleaPokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+AzaleaPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 AzaleaPokecenter1FGentlemanScript:
 	jumptextfaceplayer AzaleaPokecenter1FGentlemanText
@@ -91,3 +95,4 @@ AzaleaPokecenter1F_MapEvents:
 	object_event  9,  6, SPRITE_GENTLEMAN, SPRITEMOVEDATA_WALK_UP_DOWN, 0, 1, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FGentlemanScript, -1
 	object_event  6,  1, SPRITE_FISHING_GURU, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FFishingGuruScript, -1
 	object_event  1,  4, SPRITE_POKEFAN_F, SPRITEMOVEDATA_WANDER, 1, 2, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FPokefanFScript, -1
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

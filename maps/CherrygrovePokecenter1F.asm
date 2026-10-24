@@ -3,6 +3,7 @@
 	const CHERRYGROVEPOKECENTER1F_FISHER
 	const CHERRYGROVEPOKECENTER1F_GENTLEMAN
 	const CHERRYGROVEPOKECENTER1F_TEACHER
+	const CHERRYGROVEPOKECENTER1F_CHANSEY
 
 CherrygrovePokecenter1F_MapScripts:
 	def_scene_scripts
@@ -11,6 +12,9 @@ CherrygrovePokecenter1F_MapScripts:
 
 CherrygrovePokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+CherrygrovePokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 CherrygrovePokecenter1FFisherScript:
 	jumptextfaceplayer CherrygrovePokecenter1FFisherText
@@ -83,3 +87,4 @@ CherrygrovePokecenter1F_MapEvents:
 	object_event  2,  3, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CherrygrovePokecenter1FFisherScript, -1
 	object_event  8,  6, SPRITE_GENTLEMAN, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, CherrygrovePokecenter1FGentlemanScript, -1
 	object_event  1,  6, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CherrygrovePokecenter1FTeacherScript, -1
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CherrygrovePokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE

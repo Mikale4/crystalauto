@@ -553,6 +553,7 @@ StepFunction_FromMovement:
 	dw MovementFunction_SpinCounterclockwise ; 19
 	dw MovementFunction_BoulderDust          ; 1a
 	dw MovementFunction_ShakingGrass         ; 1b
+	dw MovementFunction_Follower             ; 1c
 	assert_table_length NUM_SPRITEMOVEFN
 
 MovementFunction_Null:
@@ -1935,6 +1936,9 @@ ContinueReadingMovement:
 DoMovementFunction:
 	push af
 	call ApplyMovementToFollower
+	pop af
+	push af
+	call ApplyMovementToFollowers
 	pop af
 	ld hl, MovementPointers
 	rst JumpTable

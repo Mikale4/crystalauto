@@ -820,6 +820,7 @@ ApplyMovement:
 
 	push bc
 	call UnfreezeFollowerObject
+	farcall UnfreezeFollowers
 	pop bc
 
 	call GetScriptByte

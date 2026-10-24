@@ -19,6 +19,7 @@ ObjectActionPairPointers:
 	dw SetFacingBoulderDust,           SetFacingStanding
 	dw SetFacingGrassShake,            SetFacingStanding
 	dw SetFacingSkyfall,               SetFacingCurrent
+	dw SetFacingFollower,              SetFacingFrozenFollower
 	assert_table_length NUM_OBJECT_ACTIONS
 
 SetFacingStanding:
@@ -226,6 +227,43 @@ SetFacingFreezeBounce:
 	ld hl, OBJECT_FACING
 	add hl, bc
 	ld [hl], FACING_STEP_DOWN_0
+	ret
+
+SetFacingFollower:
+; A Pokémon follower's icon switches between its two frames,
+; mirrored while the follower faces right.
+	ld hl, OBJECT_STEP_FRAME
+	add hl, bc
+	ld a, [hl]
+	inc a
+	and %00001111
+	ld [hl], a
+SetFacingFrozenFollower:
+	ld hl, OBJECT_STEP_FRAME
+	add hl, bc
+	ld a, [hl]
+	and %00001000
+	ld d, a
+	call GetSpriteDirection
+	cp OW_RIGHT
+	jr z, .right
+	ld a, d
+	and a
+	ld a, FACING_STEP_DOWN_0 ; tiles 0-3: the icon's first frame
+	jr z, .done
+	ld a, FACING_STEP_UP_0 ; tiles 4-7: its second frame
+	jr .done
+
+.right
+	ld a, d
+	and a
+	ld a, FACING_FOLLOWER_RIGHT_0
+	jr z, .done
+	ld a, FACING_FOLLOWER_RIGHT_1
+.done
+	ld hl, OBJECT_FACING
+	add hl, bc
+	ld [hl], a
 	ret
 
 SetFacingWeirdTree:

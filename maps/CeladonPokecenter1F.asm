@@ -4,6 +4,7 @@
 	const CELADONPOKECENTER1F_PHARMACIST
 	const CELADONPOKECENTER1F_COOLTRAINER_F
 	const CELADONPOKECENTER1F_EUSINE
+	const CELADONPOKECENTER1F_CHANSEY
 
 CeladonPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -12,6 +13,9 @@ CeladonPokecenter1F_MapScripts:
 
 CeladonPokecenter1FNurseScript:
 	jumpstd PokecenterNurseScript
+
+CeladonPokecenter1FChanseyScript:
+	jumpstd PokecenterChanseyScript
 
 CeladonPokecenter1FGentlemanScript:
 	jumpstd HappinessCheckScript
@@ -161,3 +165,4 @@ CeladonPokecenter1F_MapEvents:
 	object_event  0,  3, SPRITE_PHARMACIST, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CeladonPokecenter1FPharmacistScript, -1
 	object_event  8,  6, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CeladonPokecenter1FCooltrainerFScript, -1
 	object_event  4,  3, SPRITE_SUPER_NERD, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CeladonEusine, EVENT_SET_WHEN_FOUGHT_HO_OH
+	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CeladonPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
