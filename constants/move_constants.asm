@@ -289,4 +289,5 @@ DEF BATTLE_AFTERANIMS EQU const_value
 	const ANIM_WOBBLE            ; 113
 	const ANIM_SHAKE             ; 114
 	const ANIM_HIT_CONFUSION     ; 115
+	const ANIM_DUDE_STONE        ; 116 (the catching tutorial's stone: no HUDs to redraw)
 DEF NUM_BATTLE_ANIMS EQU const_value - 1

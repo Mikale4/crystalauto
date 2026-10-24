@@ -426,7 +426,9 @@ DudeBeatsWildMon::
 .beat_it
 	ld hl, DudeWatchCloselyText
 	call BattleTextbox
-	ld de, ROCK_THROW
+; (not the ROCK THROW move's animation: after a move's, the HUDs are redrawn, and
+; the player has no Pokémon out to draw)
+	ld de, ANIM_DUDE_STONE
 	ld a, e
 	ld [wFXAnimID], a
 	ld a, d
