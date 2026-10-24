@@ -301,7 +301,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: c78aaf0c1d36e5741fa3d741d48d3f1154ec37b0`.
+The patched ROM has `sha1: 56e61a7f1497d8b24896827bebc096d76ee30ddd`.
 
 
 ## Building it
