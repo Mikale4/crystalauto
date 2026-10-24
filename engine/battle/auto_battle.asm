@@ -4,6 +4,7 @@
 ; Every battle starts with it off, or on with the CONTINUOUS option.
 
 DEF AUTO_BATTLE_DELAY EQU 30 ; frames to show the auto battle text each turn
+DEF AUTO_BATTLE_TEXT_DELAY EQU 40 ; frames before battle text moves on by itself
 
 ; AutoBattle_RateMove results, from worst to best
 DEF AUTO_BATTLE_FAILS         EQU 0 ; the move would have no effect
@@ -29,6 +30,40 @@ InitAutoBattle:
 ; SELECT from now on, even during the opening text, turns it off.
 	ld hl, hJoypadSum
 	res B_PAD_SELECT, [hl]
+	ret
+
+AutoBattleTextDelay::
+; Called when text waits for A or B (see PromptButton).
+; In battles with continuous auto battle, wait a moment instead and
+; return carry, so the player doesn't have to press anything.
+; A or B still moves on right away, and SELECT turns this off
+; along with auto battle.
+	ld a, [wBattleMode]
+	and a
+	ret z
+	ld a, [wOptions2]
+	bit CONTINUOUS_AUTO_BATTLE, a
+	ret z
+	ld a, [wAutoBattle]
+	and a
+	ret z
+	ldh a, [hJoypadSum]
+	bit B_PAD_SELECT, a
+	ret nz
+
+	push bc
+	ld c, AUTO_BATTLE_TEXT_DELAY
+.wait
+	call DelayFrame
+	call JoyTextDelay
+	ldh a, [hJoyPressed]
+	and PAD_A | PAD_B
+	jr nz, .done
+	dec c
+	jr nz, .wait
+.done
+	pop bc
+	scf
 	ret
 
 AutoBattleTurn:

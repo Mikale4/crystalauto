@@ -346,6 +346,10 @@ WaitPressAorB_BlinkCursor::
 ;
 ; NOTE: The cursor has to be shown before calling
 ; this function or no cursor will be shown at all.
+	push hl
+	farcall AutoBattleTextDelay
+	pop hl
+	ret c
 	ldh a, [hMapObjectIndex]
 	push af
 	ldh a, [hObjectStructIndex]
@@ -387,6 +391,10 @@ PromptButton::
 	ld a, [wLinkMode]
 	and a
 	jr nz, .link
+	push hl
+	farcall AutoBattleTextDelay
+	pop hl
+	ret c
 	call .wait_input
 	push de
 	ld de, SFX_READ_TEXT_2

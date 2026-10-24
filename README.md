@@ -40,6 +40,15 @@ battles and the Battle Tower.
   SELECT to stop it for the rest of that battle, even during "Wild … appeared!"
   if you want to make the first move yourself. The next battle starts in auto again.
 
+  The battle text moves along by itself too, so a whole battle plays out without
+  pressing anything: "Wild … appeared!", "… wants to battle!", fainting, EXP and
+  level-up stats, evolutions, the trainer's defeat line and the prize money. Each
+  text box stays up for two-thirds of a second, and A or B still skips ahead.
+  Choices still wait for you: whether to learn a move (and which one to forget),
+  "Use next POKéMON?", and which Pokémon to send out. After pressing SELECT, text
+  waits for A or B again. Text outside of battle, like what a trainer says before
+  and after, is unchanged.
+
 The catching demonstration on Route 29 is never automatic. The setting is saved
 with your game.
 
@@ -101,7 +110,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 4e1b32cd7566b41e49f0b1adef33517c7befcf68`.
+The patched ROM has `sha1: f5cf1854a75fc0b6f944188f4460e96d23c6c8a6`.
 
 
 ## Building it
@@ -126,8 +135,11 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
 ## The code
 
 - [`engine/battle/auto_battle.asm`](engine/battle/auto_battle.asm) has the auto battle
-  turn, the move rating, and `InitAutoBattle`, which turns it on at the start of a
-  battle with the CONTINUOUS option.
+  turn, the move rating, `InitAutoBattle`, which turns it on at the start of a
+  battle with the CONTINUOUS option, and `AutoBattleTextDelay`, which moves battle
+  text along. `PromptButton` and `WaitPressAorB_BlinkCursor` in
+  [`home/joypad.asm`](home/joypad.asm), where text waits for A or B, call it first,
+  the same way they already skip the wait in link battles.
 - [`engine/battle/menu.asm`](engine/battle/menu.asm) turns it on when SELECT is pressed
   in the battle menu, and shows the hint.
 - [`engine/battle/core.asm`](engine/battle/core.asm) skips the battle menu and the
