@@ -75,7 +75,8 @@ DEF GBPRINTER_DARKEST  EQU $7f
 
 ; wOptions2::
 	const_def
-	const MENU_ACCOUNT ; 0
+	const MENU_ACCOUNT           ; 0
+	const CONTINUOUS_AUTO_BATTLE ; 1
 
 ; wDST::
 DEF DST_F EQU 7

@@ -8073,6 +8073,7 @@ BattleIntro:
 	farcall FindFirstAliveMonAndStartBattle
 	call DisableSpriteUpdates
 	farcall ClearBattleRAM
+	farcall InitAutoBattle
 	call InitEnemy
 	call BackUpBGMap2
 	ld b, SCGB_BATTLE_GRAYSCALE

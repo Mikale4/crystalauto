@@ -6,9 +6,10 @@
 	const OPT_SOUND         ; 3
 	const OPT_PRINT         ; 4
 	const OPT_MENU_ACCOUNT  ; 5
-	const OPT_FRAME         ; 6
-	const OPT_CANCEL        ; 7
-DEF NUM_OPTIONS EQU const_value ; 8
+	const OPT_AUTO_BATTLE   ; 6
+	const OPT_FRAME         ; 7
+	const OPT_CANCEL        ; 8
+DEF NUM_OPTIONS EQU const_value ; 9
 
 _Option:
 ; BUG: Options menu fails to clear joypad state on initialization (see docs/bugs_and_glitches.md)
@@ -21,7 +22,7 @@ _Option:
 	ld b, SCREEN_HEIGHT - 2
 	ld c, SCREEN_WIDTH - 2
 	call Textbox
-	hlcoord 2, 2
+	hlcoord 2, 1
 	ld de, StringOptions
 	call PlaceString
 	xor a
@@ -75,20 +76,22 @@ _Option:
 	ret
 
 StringOptions:
+; FRAME takes one line, to make room for AUTO BATTLE
 	db "TEXT SPEED<LF>"
-	db "        :<LF>"
+	db "      :<LF>"
 	db "BATTLE SCENE<LF>"
-	db "        :<LF>"
+	db "      :<LF>"
 	db "BATTLE STYLE<LF>"
-	db "        :<LF>"
+	db "      :<LF>"
 	db "SOUND<LF>"
-	db "        :<LF>"
+	db "      :<LF>"
 	db "PRINT<LF>"
-	db "        :<LF>"
+	db "      :<LF>"
 	db "MENU ACCOUNT<LF>"
-	db "        :<LF>"
-	db "FRAME<LF>"
-	db "        :TYPE<LF>"
+	db "      :<LF>"
+	db "AUTO BATTLE<LF>"
+	db "      :<LF>"
+	db "FRAME :TYPE<LF>"
 	db "CANCEL@"
 
 GetOptionPointer:
@@ -102,6 +105,7 @@ GetOptionPointer:
 	dw Options_Sound
 	dw Options_Print
 	dw Options_MenuAccount
+	dw Options_AutoBattle
 	dw Options_Frame
 	dw Options_Cancel
 
@@ -152,7 +156,7 @@ Options_TextSpeed:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	hlcoord 11, 3
+	hlcoord 9, 2
 	call PlaceString
 	and a
 	ret
@@ -222,7 +226,7 @@ Options_BattleScene:
 	ld de, .Off
 
 .Display:
-	hlcoord 11, 5
+	hlcoord 9, 4
 	call PlaceString
 	and a
 	ret
@@ -260,7 +264,7 @@ Options_BattleStyle:
 	ld de, .Set
 
 .Display:
-	hlcoord 11, 7
+	hlcoord 9, 6
 	call PlaceString
 	and a
 	ret
@@ -305,7 +309,7 @@ Options_Sound:
 	ld de, .Stereo
 
 .Display:
-	hlcoord 11, 9
+	hlcoord 9, 8
 	call PlaceString
 	and a
 	ret
@@ -359,7 +363,7 @@ Options_Print:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	hlcoord 11, 11
+	hlcoord 9, 10
 	call PlaceString
 	and a
 	ret
@@ -445,13 +449,37 @@ Options_MenuAccount:
 	ld de, .On
 
 .Display:
-	hlcoord 11, 13
+	hlcoord 9, 12
 	call PlaceString
 	and a
 	ret
 
 .Off: db "OFF@"
 .On:  db "ON @"
+
+Options_AutoBattle:
+	ld hl, wOptions2
+	ldh a, [hJoyPressed]
+	and PAD_LEFT | PAD_RIGHT
+	jr z, .NonePressed
+	ld a, [hl]
+	xor 1 << CONTINUOUS_AUTO_BATTLE
+	ld [hl], a
+
+.NonePressed:
+	bit CONTINUOUS_AUTO_BATTLE, [hl]
+	ld de, .Normal
+	jr z, .Display
+	ld de, .Continuous
+
+.Display:
+	hlcoord 9, 14
+	call PlaceString
+	and a
+	ret
+
+.Normal:     db "NORMAL    @"
+.Continuous: db "CONTINUOUS@"
 
 Options_Frame:
 	ld hl, wTextboxFrame
@@ -477,7 +505,7 @@ Options_Frame:
 	ld [hl], a
 UpdateFrame:
 	ld a, [wTextboxFrame]
-	hlcoord 16, 15 ; where on the screen the number is drawn
+	hlcoord 14, 15 ; where on the screen the number is drawn
 	add '1'
 	ld [hl], a
 	call LoadFontsExtra
@@ -508,15 +536,10 @@ OptionsControl:
 .DownPressed:
 	ld a, [hl]
 	cp OPT_CANCEL ; maximum option index
-	jr nz, .CheckMenuAccount
+	jr nz, .Increase
 	ld [hl], OPT_TEXT_SPEED ; first option
 	scf
 	ret
-
-.CheckMenuAccount: ; I have no idea why this exists...
-	cp OPT_MENU_ACCOUNT
-	jr nz, .Increase
-	ld [hl], OPT_MENU_ACCOUNT
 
 .Increase:
 	inc [hl]
@@ -525,15 +548,6 @@ OptionsControl:
 
 .UpPressed:
 	ld a, [hl]
-
-; Another thing where I'm not sure why it exists
-	cp OPT_FRAME
-	jr nz, .NotFrame
-	ld [hl], OPT_MENU_ACCOUNT
-	scf
-	ret
-
-.NotFrame:
 	and a ; OPT_TEXT_SPEED, minimum option index
 	jr nz, .Decrease
 	ld [hl], NUM_OPTIONS ; decrements to OPT_CANCEL, maximum option index
@@ -552,9 +566,17 @@ Options_UpdateCursorPosition:
 	add hl, de
 	dec c
 	jr nz, .loop
-	hlcoord 1, 2
-	ld bc, 2 * SCREEN_WIDTH
 	ld a, [wJumptableIndex]
+	cp OPT_CANCEL
+	jr z, .cancel
+	hlcoord 1, 1
+	ld bc, 2 * SCREEN_WIDTH
 	call AddNTimes
+	ld [hl], '▶'
+	ret
+
+.cancel
+; FRAME only takes one line
+	hlcoord 1, 16
 	ld [hl], '▶'
 	ret

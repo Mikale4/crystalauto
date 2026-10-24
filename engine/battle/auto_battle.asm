@@ -1,7 +1,7 @@
 ; Auto battle: the game picks the player's move every turn.
 ; Pressing SELECT in the battle menu turns it on (see EnableAutoBattle);
 ; pressing SELECT again at any time turns it off from the next turn.
-; It is off again at the start of every battle.
+; Every battle starts with it off, or on with the CONTINUOUS option.
 
 DEF AUTO_BATTLE_DELAY EQU 30 ; frames to show the auto battle text each turn
 
@@ -12,6 +12,24 @@ DEF AUTO_BATTLE_NO_DAMAGE     EQU 2 ; status moves and unpredictable damage
 DEF AUTO_BATTLE_DAMAGE        EQU 3 ; + expected damage this turn
 DEF AUTO_BATTLE_SNORE         EQU $4000 ; can attack while asleep
 DEF AUTO_BATTLE_SLEEP_TALK    EQU $8000 ; can use other moves while asleep
+
+InitAutoBattle:
+; With AUTO BATTLE set to CONTINUOUS in the options, battles start with it on.
+; Called after ClearBattleRAM has turned it off.
+	ld a, [wOptions2]
+	bit CONTINUOUS_AUTO_BATTLE, a
+	ret z
+	ld a, [wBattleType]
+	cp BATTLETYPE_TUTORIAL
+	ret z
+	cp BATTLETYPE_DEBUG
+	ret z
+	ld a, TRUE
+	ld [wAutoBattle], a
+; SELECT from now on, even during the opening text, turns it off.
+	ld hl, hJoypadSum
+	res B_PAD_SELECT, [hl]
+	ret
 
 AutoBattleTurn:
 ; Return carry and pick FIGHT if auto battle is on for this turn.

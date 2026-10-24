@@ -23,12 +23,25 @@ Auto battle only picks moves. Choices that matter still go to you: switching
 after a Pokémon faints, catching, evolving (B still stops an evolution), and
 learning new moves. When a Pokémon with four moves wants to learn another, the game
 waits for you to choose which move to forget, or not to learn it, even with auto
-battle on. It turns off at the end of every battle, so a wild Pokémon you want to
-catch is never knocked out by surprise.
+battle on.
 
 It works in wild and trainer battles and in the Bug-Catching Contest (whose menu
 has no room for the hint, but SELECT works the same). It is also enabled in link
 battles and the Battle Tower.
+
+### Normal or continuous
+
+**OPTION** (in the START menu or on the title screen) has an **AUTO BATTLE** setting:
+
+- **NORMAL** (the default): auto battle turns off when the battle ends, so every
+  battle starts with the menu, and a wild Pokémon you want to catch is never
+  knocked out by surprise.
+- **CONTINUOUS**: every battle starts in auto battle, from the first turn. Press
+  SELECT to stop it for the rest of that battle, even during "Wild … appeared!"
+  if you want to make the first move yourself. The next battle starts in auto again.
+
+The catching demonstration on Route 29 is never automatic. The setting is saved
+with your game.
 
 
 ## How it picks a move
@@ -88,7 +101,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 8db1b0f882e58389306e45e85f63a556658330b9`.
+The patched ROM has `sha1: 4e1b32cd7566b41e49f0b1adef33517c7befcf68`.
 
 
 ## Building it
@@ -113,13 +126,18 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
 ## The code
 
 - [`engine/battle/auto_battle.asm`](engine/battle/auto_battle.asm) has the auto battle
-  turn and the move rating.
+  turn, the move rating, and `InitAutoBattle`, which turns it on at the start of a
+  battle with the CONTINUOUS option.
 - [`engine/battle/menu.asm`](engine/battle/menu.asm) turns it on when SELECT is pressed
   in the battle menu, and shows the hint.
 - [`engine/battle/core.asm`](engine/battle/core.asm) skips the battle menu and the
   move menu while it is on, and evolves Pokémon after the party gains experience.
 - `wAutoBattle` in [`ram/wram.asm`](ram/wram.asm) is an unused byte of battle RAM, so it
   is cleared at the start of every battle.
+- [`engine/menus/options_menu.asm`](engine/menus/options_menu.asm) has the AUTO BATTLE
+  option, stored in a spare bit of `wOptions2` (`CONTINUOUS_AUTO_BATTLE`), which is
+  saved with the other options. To fit it in, the options start one line higher, the
+  values two columns further left, and FRAME takes a single line.
 - [`engine/battle/evolve_in_battle.asm`](engine/battle/evolve_in_battle.asm) runs the
   game's own `EvolveAfterBattle` during the battle, then restores the battle screen,
   music and the evolved Pokémon's battle data.

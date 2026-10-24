@@ -358,7 +358,8 @@ wWildMon:: db
 
 wAutoBattle::
 ; nonzero if the game picks the player's moves (toggled with SELECT)
-; cleared at the start of every battle by ClearBattleRAM
+; cleared at the start of every battle by ClearBattleRAM,
+; then set by InitAutoBattle with the CONTINUOUS_AUTO_BATTLE option
 	db
 
 wEnemyTrainerItem1:: db
@@ -1895,7 +1896,8 @@ wGBPrinterBrightness::
 ;   darkest:  $7F
 	db
 wOptions2::
-; bit 1: menu account off/on
+; bit 0: menu account off/on
+; bit 1: auto battle normal/continuous
 	db
 	ds 2
 wOptionsEnd::
