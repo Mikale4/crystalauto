@@ -181,6 +181,11 @@ SECTION "Auto Battle", ROMX
 INCLUDE "engine/battle/auto_battle.asm"
 
 
+SECTION "Evolve In Battle", ROMX
+
+INCLUDE "engine/battle/evolve_in_battle.asm"
+
+
 SECTION "Crystal Features 1", ROMX
 
 INCLUDE "engine/menus/init_gender.asm"

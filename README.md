@@ -2,6 +2,8 @@
 
 Pokémon Crystal with an **auto battle** button. Turn it on in any battle and the
 game picks your Pokémon's moves for you, turn after turn, until you turn it off.
+Pokémon also **evolve as soon as they reach their evolution level** in battle,
+instead of waiting for the battle to end.
 
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
@@ -18,8 +20,11 @@ carry over.
    of the next turn.
 
 Auto battle only picks moves. Choices that matter still go to you: switching
-after a Pokémon faints, learning new moves, and catching. It turns off at the end
-of every battle, so a wild Pokémon you want to catch is never knocked out by surprise.
+after a Pokémon faints, catching, evolving (B still stops an evolution), and
+learning new moves. When a Pokémon with four moves wants to learn another, the game
+waits for you to choose which move to forget, or not to learn it, even with auto
+battle on. It turns off at the end of every battle, so a wild Pokémon you want to
+catch is never knocked out by surprise.
 
 It works in wild and trainer battles and in the Bug-Catching Contest (whose menu
 has no room for the hint, but SELECT works the same). It is also enabled in link
@@ -56,6 +61,23 @@ and Disabled moves) and uses the best one:
 If no move can be selected, your Pokémon uses Struggle, as usual.
 
 
+## Evolving in battle
+
+In the original game, a Pokémon that reaches its evolution level in battle only
+evolves once the battle is won, so not at all if you go on to lose. Here it evolves
+right after its level-up, before the next foe is sent out:
+
+- The usual evolution scene plays, then the battle picks up where it left off.
+  If the Pokémon in battle evolved, it keeps fighting with its new species, types,
+  stats and name, and any stat changes from the battle are kept.
+- Pressing B still stops the evolution, and an Everstone still prevents it. Like
+  after a battle, a stopped evolution is tried again at the next level-up.
+- This covers every evolution that happens on level-up: by level, by friendship
+  (Golbat, Chansey, Eevee and the baby Pokémon) and Tyrogue's. Pokémon that level up
+  from an Exp. Share evolve too.
+- Moves learned on evolving (like Gyarados's Bite) can be used right away.
+
+
 ## Playing it
 
 You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
@@ -66,7 +88,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: b333bdc593bc826a42ad300fafb8ecc0d1337bcd`.
+The patched ROM has `sha1: 8db1b0f882e58389306e45e85f63a556658330b9`.
 
 
 ## Building it
@@ -95,9 +117,12 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
 - [`engine/battle/menu.asm`](engine/battle/menu.asm) turns it on when SELECT is pressed
   in the battle menu, and shows the hint.
 - [`engine/battle/core.asm`](engine/battle/core.asm) skips the battle menu and the
-  move menu while it is on.
+  move menu while it is on, and evolves Pokémon after the party gains experience.
 - `wAutoBattle` in [`ram/wram.asm`](ram/wram.asm) is an unused byte of battle RAM, so it
   is cleared at the start of every battle.
+- [`engine/battle/evolve_in_battle.asm`](engine/battle/evolve_in_battle.asm) runs the
+  game's own `EvolveAfterBattle` during the battle, then restores the battle screen,
+  music and the evolved Pokémon's battle data.
 
 
 ## Based on pret/pokecrystal

@@ -70,6 +70,7 @@ ROMX $10
 ROMX $11
 	"bank11"
 	"Auto Battle"
+	"Evolve In Battle"
 ROMX $12
 	"Crystal Features 1"
 ROMX $13

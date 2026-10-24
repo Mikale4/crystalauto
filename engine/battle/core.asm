@@ -2028,6 +2028,7 @@ HandleEnemyMonFaint:
 	ld a, d
 	and a
 	jp z, LostBattle
+	farcall EvolveInBattle
 
 	ld hl, wBattleMonHP
 	ld a, [hli]
@@ -2633,6 +2634,7 @@ HandlePlayerMonFaint:
 	or [hl]
 	jr nz, .notfainted
 	call UpdateBattleStateAndExperienceAfterEnemyFaint
+	farcall EvolveInBattle
 	ld a, [wBattleMode]
 	dec a
 	jr nz, .trainer
