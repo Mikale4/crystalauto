@@ -29,11 +29,13 @@ Lugia:
 	cry LUGIA
 	pause 15
 	closetext
-	setevent EVENT_FOUGHT_LUGIA
 	loadvar VAR_BATTLETYPE, BATTLETYPE_FORCEITEM
 	loadwildmon LUGIA, 60
 	startbattle
+	ifequal LOSE, .Lost ; (it's still there to try again)
+	setevent EVENT_FOUGHT_LUGIA
 	disappear WHIRLISLANDLUGIACHAMBER_LUGIA
+.Lost:
 	reloadmapafterbattle
 	end
 

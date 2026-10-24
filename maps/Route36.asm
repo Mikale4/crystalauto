@@ -76,10 +76,15 @@ WateredWeirdTreeScript:: ; export (for when you use Squirtbottle from pack)
 	closetext
 	loadwildmon SUDOWOODO, 20
 	startbattle
+	ifequal LOSE, SudowoodoWonScript ; (it's still there to try again)
 	setevent EVENT_FOUGHT_SUDOWOODO
 	ifequal DRAW, DidntCatchSudowoodo
 	disappear ROUTE36_WEIRD_TREE
 	variablesprite SPRITE_WEIRD_TREE, SPRITE_TWIN
+	reloadmapafterbattle
+	end
+
+SudowoodoWonScript:
 	reloadmapafterbattle
 	end
 

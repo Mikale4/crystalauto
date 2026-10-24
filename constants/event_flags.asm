@@ -138,7 +138,7 @@
 	const EVENT_BURNED_TOWER_1F_HIDDEN_ETHER
 	const EVENT_BEAT_RIVAL_IN_VICTORY_ROAD ; (formerly unused) for level caps
 	const EVENT_BEAT_RED ; (formerly unused) for level caps
-	const_skip ; unused in Crystal
+	const EVENT_BURNED_TOWER_B1F_RAIKOU ; (formerly unused)
 	const EVENT_NATIONAL_PARK_HIDDEN_FULL_HEAL
 	const EVENT_OLIVINE_LIGHTHOUSE_5F_HIDDEN_HYPER_POTION
 	const EVENT_TEAM_ROCKET_BASE_B1F_HIDDEN_REVIVE
@@ -282,7 +282,7 @@
 	const EVENT_GAVE_KURT_PNK_APRICORN
 ; Phone events
 	const EVENT_JACK_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_BURNED_TOWER_B1F_ENTEI ; (formerly unused)
 	const EVENT_BEVERLY_ASKED_FOR_PHONE_NUMBER
 	const_skip ; unused in Crystal
 	const EVENT_HUEY_ASKED_FOR_PHONE_NUMBER
@@ -321,8 +321,8 @@
 	const_skip ; unused in Crystal
 	const EVENT_ALAN_ASKED_FOR_PHONE_NUMBER
 	const_skip ; unused in Crystal
-	const_skip ; unused
-	const_skip ; unused
+	const EVENT_FOUGHT_RAIKOU ; (formerly unused)
+	const EVENT_FOUGHT_ENTEI ; (formerly unused)
 	const EVENT_DANA_ASKED_FOR_PHONE_NUMBER
 	const_skip ; unused in Crystal
 	const EVENT_CHAD_ASKED_FOR_PHONE_NUMBER

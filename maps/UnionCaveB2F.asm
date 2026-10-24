@@ -30,8 +30,10 @@ UnionCaveLapras:
 	cry LAPRAS
 	loadwildmon LAPRAS, 20
 	startbattle
+	ifequal LOSE, .Lost ; (it's still there to try again)
 	disappear UNIONCAVEB2F_LAPRAS
 	setflag ENGINE_UNION_CAVE_LAPRAS
+.Lost:
 	reloadmapafterbattle
 	end
 

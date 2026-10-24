@@ -491,36 +491,20 @@ LookUpWildmonsForMapDE:
 	ret
 
 InitRoamMons:
-; initialize wRoamMon structs
-
-; species
-	ld a, RAIKOU
+; RAIKOU and ENTEI don't roam any more: they wait in the BURNED TOWER (see
+; maps/BurnedTowerB1F.asm). Continuing a game saved while they roamed calls
+; this too, to stop them.
+	xor a
 	ld [wRoamMon1Species], a
-	ld a, ENTEI
 	ld [wRoamMon2Species], a
-
-; level
-	ld a, 40
-	ld [wRoamMon1Level], a
-	ld [wRoamMon2Level], a
-
-; raikou starting map
-	ld a, GROUP_ROUTE_42
-	ld [wRoamMon1MapGroup], a
-	ld a, MAP_ROUTE_42
-	ld [wRoamMon1MapNumber], a
-
-; entei starting map
-	ld a, GROUP_ROUTE_37
-	ld [wRoamMon2MapGroup], a
-	ld a, MAP_ROUTE_37
-	ld [wRoamMon2MapNumber], a
-
-; hp
-	xor a ; generate new stats
 	ld [wRoamMon1HP], a
 	ld [wRoamMon2HP], a
-
+	ld a, GROUP_N_A
+	ld [wRoamMon1MapGroup], a
+	ld [wRoamMon2MapGroup], a
+	ld a, MAP_N_A
+	ld [wRoamMon1MapNumber], a
+	ld [wRoamMon2MapNumber], a
 	ret
 
 CheckEncounterRoamMon:

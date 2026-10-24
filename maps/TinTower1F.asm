@@ -119,6 +119,7 @@ TinTower1FSuicuneBattleScript:
 	loadwildmon SUICUNE, 40
 	loadvar VAR_BATTLETYPE, BATTLETYPE_SUICUNE
 	startbattle
+	ifequal LOSE, TinTower1FLostToSuicuneScript ; (it's still there to try again)
 	dontrestartmapmusic
 	disappear TINTOWER1F_SUICUNE
 	setevent EVENT_FOUGHT_SUICUNE
@@ -267,6 +268,10 @@ TinTower1FSuicuneApproachesMovement:
 	fast_jump_step DOWN
 	remove_sliding
 	step_end
+
+TinTower1FLostToSuicuneScript:
+	reloadmapafterbattle
+	end
 
 TinTower1FPlayerBacksUpMovement:
 	fix_facing

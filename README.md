@@ -150,6 +150,8 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | ELECTRODE ×3 (TEAM ROCKET's hideout) | 23 | VOLTORB, MAGNEMITE, PIKACHU, ZUBAT, KOFFING |
 | SNORLAX (VERMILION CITY) | 50 | SLOWBRO, WIGGLYTUFF, LICKITUNG, HYPNO, KANGASKHAN |
 | SUICUNE (TIN TOWER) | 40 | STARYU, SEEL, WOOPER, HORSEA, SMOOCHUM |
+| RAIKOU (BURNED TOWER) | 40 | ELEKID, JOLTEON, CHINCHOU, MAREEP, HOPPIP |
+| ENTEI (BURNED TOWER) | 40 | GROWLITHE, MAGBY, HOUNDOUR, VULPIX, EXEGGCUTE |
 | LUGIA (WHIRL ISLANDS) | 60 | HORSEA, CHINCHOU, MANTINE, SLOWPOKE, SKARMORY |
 | HO-OH (TIN TOWER's roof) | 60 | FLAREON, VAPOREON, JOLTEON, ESPEON, UMBREON |
 | CELEBI (ILEX FOREST) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
@@ -157,6 +159,12 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 On NORMAL the allies are two levels under the boss. On HARD and EXTREME they're at
 the level cap, and the boss at least two above it. The random wild GYARADOS of the
 LAKE OF RAGE are ordinary wild Pokémon: only the ones met in the story are bosses.
+Lose to a boss and it's still there to try again.
+
+**RAIKOU and ENTEI don't roam.** After they bolt from the BURNED TOWER's basement,
+they come back to where you first saw them and wait there. They won't battle you
+until SUICUNE has joined you; after that, each is a boss. (A game saved while they
+roamed stops them roaming; if you already caught one, it doesn't come back.)
 
 ## Level caps
 
@@ -365,7 +373,9 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   palette (the boss's), the order the allies come in (`BossNextMon`), the AI
   (`GetAIMoveWeights`, `GetAIItemSwitchAttributes`: smart, never switching), the texts
   (`BossBattleText`) and the win (`BossJoins`). `wBossBattle` holds the boss until the
-  battle ends.
+  battle ends. RAIKOU and ENTEI wait in
+  [`maps/BurnedTowerB1F.asm`](maps/BurnedTowerB1F.asm); `InitRoamMons` now stops
+  roaming instead of starting it.
 - The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it

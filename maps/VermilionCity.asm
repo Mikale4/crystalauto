@@ -55,8 +55,10 @@ VermilionSnorlax:
 	loadvar VAR_BATTLETYPE, BATTLETYPE_FORCEITEM
 	loadwildmon SNORLAX, 50
 	startbattle
+	ifequal LOSE, .Lost ; (it's still there to try again)
 	disappear VERMILIONCITY_BIG_SNORLAX
 	setevent EVENT_FOUGHT_SNORLAX
+.Lost:
 	reloadmapafterbattle
 	end
 

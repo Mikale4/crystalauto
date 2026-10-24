@@ -8,6 +8,8 @@
 	const BURNEDTOWERB1F_SUICUNE2
 	const BURNEDTOWERB1F_POKE_BALL
 	const BURNEDTOWERB1F_EUSINE
+	const BURNEDTOWERB1F_RAIKOU3
+	const BURNEDTOWERB1F_ENTEI3
 
 BurnedTowerB1F_MapScripts:
 	def_scene_scripts
@@ -16,6 +18,7 @@ BurnedTowerB1F_MapScripts:
 
 	def_callbacks
 	callback MAPCALLBACK_TILES, BurnedTowerB1FLadderCallback
+	callback MAPCALLBACK_OBJECTS, BurnedTowerB1FBeastsCallback
 
 BurnedTowerB1FNoop1Scene:
 	end
@@ -29,6 +32,73 @@ BurnedTowerB1FLadderCallback:
 	changeblock 6, 14, $02 ; floor
 .HideLadder:
 	endcallback
+
+BurnedTowerB1FBeastsCallback:
+; Once released, RAIKOU and ENTEI wait where they were, until they join the player
+; (or if the player has one already, from a game saved when they roamed).
+	disappear BURNEDTOWERB1F_RAIKOU3
+	disappear BURNEDTOWERB1F_ENTEI3
+	checkevent EVENT_RELEASED_THE_BEASTS
+	iffalse .Done
+	checkevent EVENT_FOUGHT_RAIKOU
+	iftrue .NoRaikou
+	setval RAIKOU
+	special MonCheck
+	iftrue .NoRaikou
+	appear BURNEDTOWERB1F_RAIKOU3
+.NoRaikou:
+	checkevent EVENT_FOUGHT_ENTEI
+	iftrue .Done
+	setval ENTEI
+	special MonCheck
+	iftrue .Done
+	appear BURNEDTOWERB1F_ENTEI3
+.Done:
+	endcallback
+
+BurnedTowerB1FRaikouScript:
+	opentext
+	writetext BurnedTowerB1FRaikouText
+	cry RAIKOU
+	waitsfx
+	callasm CheckBeastsWillBattle
+	iffalse BurnedTowerB1FBeastWaitsScript
+	writetext BurnedTowerB1FBeastReadyText
+	waitbutton
+	closetext
+	loadwildmon RAIKOU, 40
+	startbattle
+	ifequal LOSE, .Lost
+	disappear BURNEDTOWERB1F_RAIKOU3
+	setevent EVENT_FOUGHT_RAIKOU
+.Lost:
+	reloadmapafterbattle
+	end
+
+BurnedTowerB1FEnteiScript:
+	opentext
+	writetext BurnedTowerB1FEnteiText
+	cry ENTEI
+	waitsfx
+	callasm CheckBeastsWillBattle
+	iffalse BurnedTowerB1FBeastWaitsScript
+	writetext BurnedTowerB1FBeastReadyText
+	waitbutton
+	closetext
+	loadwildmon ENTEI, 40
+	startbattle
+	ifequal LOSE, .Lost
+	disappear BURNEDTOWERB1F_ENTEI3
+	setevent EVENT_FOUGHT_ENTEI
+.Lost:
+	reloadmapafterbattle
+	end
+
+BurnedTowerB1FBeastWaitsScript:
+	writetext BurnedTowerB1FBeastWaitsText
+	waitbutton
+	closetext
+	end
 
 ReleaseTheBeasts:
 	playmusic MUSIC_NONE
@@ -190,6 +260,30 @@ BurnedTowerB1FEusineMovement1:
 	step DOWN
 	step_end
 
+BurnedTowerB1FRaikouText:
+	text "RAIKOU is staring"
+	line "at <PLAYER>…"
+	done
+
+BurnedTowerB1FEnteiText:
+	text "ENTEI is staring"
+	line "at <PLAYER>…"
+	done
+
+BurnedTowerB1FBeastWaitsText:
+	text "It won't battle"
+	line "yet."
+
+	para "It seems to be"
+	line "waiting for"
+	cont "SUICUNE…"
+	done
+
+BurnedTowerB1FBeastReadyText:
+	text "It's ready to"
+	line "battle!"
+	done
+
 BurnedTowerB1FEusineText:
 	text "EUSINE: I dug a"
 	line "hole here, too…"
@@ -259,3 +353,5 @@ BurnedTowerB1F_MapEvents:
 	object_event 10,  4, SPRITE_SUICUNE, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_EMOTE, OBJECTTYPE_SCRIPT, 0, ObjectEvent, EVENT_BURNED_TOWER_B1F_BEASTS_2
 	object_event 16,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, BurnedTowerB1FTMEndure, EVENT_BURNED_TOWER_B1F_TM_ENDURE
 	object_event 10, 12, SPRITE_SUPER_NERD, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, BurnedTowerB1FEusine, EVENT_EUSINE_IN_BURNED_TOWER
+	object_event  7,  3, SPRITE_RAIKOU, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, BurnedTowerB1FRaikouScript, EVENT_BURNED_TOWER_B1F_RAIKOU
+	object_event 12,  3, SPRITE_ENTEI, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, BurnedTowerB1FEnteiScript, EVENT_BURNED_TOWER_B1F_ENTEI

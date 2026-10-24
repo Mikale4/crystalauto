@@ -539,3 +539,16 @@ BossSentToPCText:
 	text " was"
 	line "sent to BILL's PC."
 	prompt
+
+CheckBeastsWillBattle::
+; RAIKOU and ENTEI won't battle until SUICUNE has joined the player
+; (see maps/BurnedTowerB1F.asm).
+	ld a, SUICUNE - 1
+	call CheckCaughtMon
+	ld a, c
+	and a
+	jr z, .done
+	ld a, TRUE
+.done
+	ld [wScriptVar], a
+	ret

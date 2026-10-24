@@ -29,13 +29,18 @@ TinTowerHoOh:
 	cry HO_OH
 	pause 15
 	closetext
-	setevent EVENT_FOUGHT_HO_OH
 	loadvar VAR_BATTLETYPE, BATTLETYPE_FORCEITEM
 	loadwildmon HO_OH, 60
 	startbattle
+	ifequal LOSE, .Lost ; (it's still there to try again)
+	setevent EVENT_FOUGHT_HO_OH
 	disappear TINTOWERROOF_HO_OH
 	reloadmapafterbattle
 	setevent EVENT_SET_WHEN_FOUGHT_HO_OH
+	end
+
+.Lost:
+	reloadmapafterbattle
 	end
 
 HoOhText:
