@@ -143,6 +143,7 @@ RentalChanseyScript::
 	playmusic MUSIC_HEAL
 	special HealParty
 	pause 60
+	callasm RentalChanseyReloadMapPals
 	special FadeInFromWhite
 	special RestartMapMusic
 	opentext
@@ -162,6 +163,14 @@ RentalChanseyScript::
 	waitbutton
 	closetext
 	end
+
+RentalChanseyReloadMapPals:
+; FadeOutToWhite paints over the background color of every map palette, so
+; load them again before fading back in (as BlindingFlash does).
+	ld b, SCGB_MAPPALS
+	call GetSGBLayout
+	farcall LoadOW_BGPal7
+	ret
 
 RentalChanseyCheckParty:
 ; Set wScriptVar to TRUE if a party Pokémon is hurt, fainted, has a status
