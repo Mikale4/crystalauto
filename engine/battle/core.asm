@@ -627,7 +627,7 @@ ParsePlayerAction:
 	assert POUND == 1
 	inc a
 	ld [wFXAnimID], a
-	call MoveSelectionScreen
+	call ChoosePlayerMove
 	push af
 	call SafeLoadTempTilemapToTilemap
 	call UpdateBattleHuds
@@ -696,6 +696,17 @@ ParsePlayerAction:
 	ld [wPlayerRageCounter], a
 	ld hl, wPlayerSubStatus4
 	res SUBSTATUS_RAGE, [hl]
+	xor a
+	ret
+
+ChoosePlayerMove:
+; Like MoveSelectionScreen, but auto battle picks the move without a menu.
+	ld a, [wAutoBattle]
+	and a
+	jp z, MoveSelectionScreen
+	call CheckPlayerHasUsableMoves
+	ret z ; use Struggle
+	farcall AutoBattle_ChooseMove
 	xor a
 	ret
 
@@ -4893,6 +4904,8 @@ BattleMenu:
 	call EmptyBattleTextbox
 	call LoadTilemapToTempTilemap
 .ok
+	farcall AutoBattleTurn
+	jr c, .next
 
 .loop
 	ld a, [wBattleType]

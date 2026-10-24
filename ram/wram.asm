@@ -355,7 +355,11 @@ wBattleMon:: battle_struct wBattleMon
 	ds 2
 
 wWildMon:: db
-	ds 1
+
+wAutoBattle::
+; nonzero if the game picks the player's moves (toggled with SELECT)
+; cleared at the start of every battle by ClearBattleRAM
+	db
 
 wEnemyTrainerItem1:: db
 wEnemyTrainerItem2:: db

@@ -1,20 +1,108 @@
-# Pokémon Crystal [![Build Status][ci-badge]][ci]
+# Pokémon Crystal: Auto Battle
 
-This is a disassembly of Pokémon Crystal.
+Pokémon Crystal with an **auto battle** button. Turn it on in any battle and the
+game picks your Pokémon's moves for you, turn after turn, until you turn it off.
 
-It builds the following ROMs:
-
-- Pokemon - Crystal Version (UE) (V1.0) [C][!].gbc `sha1: f4cd194bdee0d04ca4eac29e09b8e4e9d818c133`
-- Pokemon - Crystal Version (UE) (V1.1) [C][!].gbc `sha1: f2f52230b536214ef7c9924f483392993e226cfb`
-- Pokemon - Crystal Version (A) [C][!].gbc `sha1: a0fc810f1d4e124434f7be2c989ab5b5892ddf36`
-- CRYSTAL_ps3_010328d.bin `sha1: c60d57a24bbe8ecf7cba54ab3f90669f97bd330d`
-- CRYSTAL_ps3_us_revise_010710d.bin `sha1: 391ae86b1d5a26db712ffe6c28bbf2a1f804c3c4`
-- CGBBYTE1.784.patch `sha1: a25517f60ca0e887d39ec698aa56a0040532a4b3`
-
-To set up the repository, see [INSTALL.md](INSTALL.md).
+It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
+game is unchanged, and so is the save format, so saves from the original game
+carry over.
 
 
-## See also
+## How to use it
+
+1. In a battle, the menu shows **SELECT →AUTO** next to FIGHT / PKMN / PACK / RUN.
+2. Press **SELECT**. Your Pokémon attacks right away, and every following turn
+   is automatic. The text box shows **AUTO BATTLE / SELECT to stop** for half a
+   second at the start of each turn.
+3. Press **SELECT** at any time to stop. The normal menu comes back at the start
+   of the next turn.
+
+Auto battle only picks moves. Choices that matter still go to you: switching
+after a Pokémon faints, learning new moves, and catching. It turns off at the end
+of every battle, so a wild Pokémon you want to catch is never knocked out by surprise.
+
+It works in wild and trainer battles and in the Bug-Catching Contest (whose menu
+has no room for the hint, but SELECT works the same). It is also enabled in link
+battles and the Battle Tower.
+
+
+## How it picks a move
+
+Each turn it rates every move that can be selected (it skips moves with no PP left
+and Disabled moves) and uses the best one:
+
+- **Damaging moves** are rated by the damage they should deal this turn. This uses
+  the game's own damage formula: your stats and stat changes, the foe's
+  Defense, STAB, type matchups, held items, weather, badges, Reflect and Light Screen.
+  - It counts on the lowest of the game's random damage rolls, and damage beyond
+    the foe's remaining HP counts for nothing. The result is then scaled by
+    accuracy, so a sure knockout beats a stronger move that might miss.
+  - If more than one move would knock the foe out, it prefers a priority move
+    such as Quick Attack, so the foe doesn't get to attack first.
+  - Multi-hit moves count every hit. Two-turn moves (Solar Beam outside of
+    sunlight, Fly, Dig, Sky Attack, Skull Bash, Razor Wind) and Hyper Beam count half.
+  - Fixed-damage moves (Seismic Toss, Night Shade, Dragon Rage, Sonic Boom,
+    Super Fang, Psywave), Hidden Power, Return, Frustration, Flail and Reversal
+    use their real damage. Magnitude and Present use typical values.
+  - One-hit KO moves count the foe's whole HP times their accuracy, and are skipped
+    against a higher-level foe.
+- **Status moves** (and Counter, Mirror Coat, Bide and Future Sight, whose damage
+  can't be predicted) are only used when no damaging move can hurt the foe.
+- **Self-Destruct and Explosion** are a last resort.
+- **Moves that would fail** come last: moves the foe is immune to, Dream Eater on
+  an awake foe, Snore and Sleep Talk while awake, and False Swipe on a foe with 1 HP.
+- **While asleep**, it prefers Sleep Talk, then Snore.
+
+If no move can be selected, your Pokémon uses Struggle, as usual.
+
+
+## Playing it
+
+You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
+(`sha1: f2f52230b536214ef7c9924f483392993e226cfb`). Apply one of these patches to it
+with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
+
+- [`patches/pokecrystal11_auto_battle.bps`](patches/pokecrystal11_auto_battle.bps)
+  (checks that the ROM is the right one)
+- [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
+
+The patched ROM has `sha1: b333bdc593bc826a42ad300fafb8ecc0d1337bcd`.
+
+
+## Building it
+
+Set up the tools as described in [INSTALL.md](INSTALL.md) (rgbds 1.0.4), then:
+
+```sh
+make crystal11    # builds pokecrystal11.gbc (Rev 1)
+```
+
+`make` builds the original release (`pokecrystal.gbc`), and the other targets in
+the Makefile work too. `make compare` no longer matches the original ROMs, since
+the game has changed.
+
+To remake the patches from your own Rev 1 ROM:
+
+```sh
+python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrystal11_auto_battle
+```
+
+
+## The code
+
+- [`engine/battle/auto_battle.asm`](engine/battle/auto_battle.asm) has the auto battle
+  turn and the move rating.
+- [`engine/battle/menu.asm`](engine/battle/menu.asm) turns it on when SELECT is pressed
+  in the battle menu, and shows the hint.
+- [`engine/battle/core.asm`](engine/battle/core.asm) skips the battle menu and the
+  move menu while it is on.
+- `wAutoBattle` in [`ram/wram.asm`](ram/wram.asm) is an unused byte of battle RAM, so it
+  is cleared at the start of every battle.
+
+
+## Based on pret/pokecrystal
+
+This is a disassembly of Pokémon Crystal by [pret][pret]. For the disassembly itself, see:
 
 - [**FAQ**](FAQ.md)
 - [**Documentation**][docs]
@@ -22,14 +110,11 @@ To set up the repository, see [INSTALL.md](INSTALL.md).
 - [**Symbols**][symbols]
 - [**Tools**][tools]
 
-You can find us on [Discord (pret, #pokecrystal)](https://discord.gg/d5dubZ3).
-
-For other pret projects, see [pret.github.io](https://pret.github.io/).
-
+[pokecrystal]: https://github.com/pret/pokecrystal
+[pret]: https://pret.github.io/
+[rompatcher]: https://www.marcrobledo.com/RomPatcher.js/
 [docs]: https://pret.github.io/pokecrystal/
 [wiki]: https://github.com/pret/pokecrystal/wiki
 [tutorials]: https://github.com/pret/pokecrystal/wiki/Tutorials
 [symbols]: https://github.com/pret/pokecrystal/tree/symbols
 [tools]: https://github.com/pret/gb-asm-tools
-[ci]: https://github.com/pret/pokecrystal/actions
-[ci-badge]: https://github.com/pret/pokecrystal/actions/workflows/main.yml/badge.svg

@@ -4,6 +4,7 @@ LoadBattleMenu:
 	ld a, [wBattleMenuCursorPosition]
 	ld [wMenuCursorPosition], a
 	call InterpretBattleMenu
+	call c, EnableAutoBattle
 	ld a, [wMenuCursorPosition]
 	ld [wBattleMenuCursorPosition], a
 	call ExitMenu
@@ -23,9 +24,22 @@ CommonBattleMenu:
 	ld a, [wBattleMenuCursorPosition]
 	ld [wMenuCursorPosition], a
 	call _2DMenu
+	call c, EnableAutoBattle
 	ld a, [wMenuCursorPosition]
 	ld [wBattleMenuCursorPosition], a
 	call ExitMenu
+	ret
+
+EnableAutoBattle:
+; The battle menu returns carry when SELECT is pressed.
+; Turn on auto battle and let it FIGHT for this turn.
+	ld a, TRUE
+	ld [wAutoBattle], a
+; Only presses from now on can turn it back off (see AutoBattleTurn).
+	ld hl, hJoypadSum
+	res B_PAD_SELECT, [hl]
+	ld a, 1 ; FIGHT
+	ld [wMenuCursorPosition], a
 	ret
 
 BattleMenuHeader:
@@ -35,17 +49,30 @@ BattleMenuHeader:
 	db 1 ; default option
 
 .MenuData:
-	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
+	db STATICMENU_CURSOR | STATICMENU_DISABLE_B | STATICMENU_ENABLE_SELECT ; flags
 	dn 2, 2 ; rows, columns
 	db 6 ; spacing
 	dba .Text
-	dbw BANK(@), NULL
+	dba .PrintAutoBattleHint
 
 .Text:
 	db "FIGHT@"
 	db "<PKMN>@"
 	db "PACK@"
 	db "RUN@"
+
+.PrintAutoBattleHint:
+; Fill the empty space left of the menu.
+	ld a, [wBattleType]
+	cp BATTLETYPE_TUTORIAL
+	ret z
+	hlcoord 1, 14
+	ld de, .AutoBattleHintText
+	jp PlaceString
+
+.AutoBattleHintText:
+	db   "SELECT"
+	next "→AUTO@"
 
 SafariBattleMenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -80,7 +107,7 @@ ContestBattleMenuHeader:
 	db 1 ; default option
 
 .MenuData:
-	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
+	db STATICMENU_CURSOR | STATICMENU_DISABLE_B | STATICMENU_ENABLE_SELECT ; flags
 	dn 2, 2 ; rows, columns
 	db 12 ; spacing
 	dba .Text

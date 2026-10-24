@@ -176,6 +176,11 @@ INCLUDE "engine/pokedex/pokedex_2.asm"
 INCLUDE "engine/pokemon/mail.asm"
 
 
+SECTION "Auto Battle", ROMX
+
+INCLUDE "engine/battle/auto_battle.asm"
+
+
 SECTION "Crystal Features 1", ROMX
 
 INCLUDE "engine/menus/init_gender.asm"
