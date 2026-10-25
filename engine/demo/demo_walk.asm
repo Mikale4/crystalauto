@@ -955,7 +955,9 @@ DemoMark:
 	ret
 
 DemoSeedGoal:
-; Cell (d, e) is a goal, if it's on the map and free (WRAM bank 2).
+; Cell (d, e) is a goal, if it's on the map and free, and not a warp (standing
+; on it is going through it: a pit in MORTY's GYM, say) unless the goal is to
+; go through it (WRAM bank 2).
 	ld a, [wDemoGridW]
 	dec a
 	cp d
@@ -970,6 +972,13 @@ DemoSeedGoal:
 	call DemoCollAtIndex
 	cp COLL_WALL
 	ret z
+	and $f0
+	cp HI_NYBBLE_WARPS
+	jr nz, .free
+	ld a, [wDemoGoal]
+	cp DGOAL_WARP
+	ret nz
+.free
 	call DemoFlowAtIndex
 	cp DFLOW_GOAL
 	ret z
