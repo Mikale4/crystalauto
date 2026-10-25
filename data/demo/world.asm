@@ -666,505 +666,505 @@ DemoWorldMaps:
 	dw 73
 	db 4
 	dw 70
-	db 2
+	db 1
 .RadioTower4F:
 	map_id RADIO_TOWER_4F
 	dw 77
 	db 4
-	dw 72
+	dw 71
 	db 2
 .RadioTower5F:
 	map_id RADIO_TOWER_5F
 	dw 81
 	db 2
-	dw 74
+	dw 73
 	db 2
 .RuinsOfAlphOutside:
 	map_id RUINS_OF_ALPH_OUTSIDE
 	dw 83
 	db 1
-	dw 76
+	dw 75
 	db 9
 .RuinsOfAlphHoOhChamber:
 	map_id RUINS_OF_ALPH_HO_OH_CHAMBER
 	dw 84
 	db 0
-	dw 85
+	dw 84
 	db 1
 .RuinsOfAlphKabutoChamber:
 	map_id RUINS_OF_ALPH_KABUTO_CHAMBER
 	dw 84
 	db 0
-	dw 86
+	dw 85
 	db 1
 .RuinsOfAlphOmanyteChamber:
 	map_id RUINS_OF_ALPH_OMANYTE_CHAMBER
 	dw 84
 	db 0
-	dw 87
+	dw 86
 	db 1
 .RuinsOfAlphAerodactylChamber:
 	map_id RUINS_OF_ALPH_AERODACTYL_CHAMBER
 	dw 84
 	db 0
-	dw 88
+	dw 87
 	db 1
 .RuinsOfAlphInnerChamber:
 	map_id RUINS_OF_ALPH_INNER_CHAMBER
 	dw 84
 	db 0
-	dw 89
+	dw 88
 	db 1
 .RuinsOfAlphResearchCenter:
 	map_id RUINS_OF_ALPH_RESEARCH_CENTER
 	dw 84
 	db 0
-	dw 90
+	dw 89
 	db 1
 .RuinsOfAlphHoOhItemRoom:
 	map_id RUINS_OF_ALPH_HO_OH_ITEM_ROOM
 	dw 84
 	db 4
-	dw 91
+	dw 90
 	db 1
 .RuinsOfAlphKabutoItemRoom:
 	map_id RUINS_OF_ALPH_KABUTO_ITEM_ROOM
 	dw 88
 	db 4
-	dw 92
+	dw 91
 	db 1
 .RuinsOfAlphOmanyteItemRoom:
 	map_id RUINS_OF_ALPH_OMANYTE_ITEM_ROOM
 	dw 92
 	db 4
-	dw 93
+	dw 92
 	db 1
 .RuinsOfAlphAerodactylItemRoom:
 	map_id RUINS_OF_ALPH_AERODACTYL_ITEM_ROOM
 	dw 96
 	db 4
-	dw 94
+	dw 93
 	db 1
 .RuinsOfAlphHoOhWordRoom:
 	map_id RUINS_OF_ALPH_HO_OH_WORD_ROOM
 	dw 100
 	db 0
-	dw 95
+	dw 94
 	db 1
 .RuinsOfAlphKabutoWordRoom:
 	map_id RUINS_OF_ALPH_KABUTO_WORD_ROOM
 	dw 100
 	db 0
-	dw 96
+	dw 95
 	db 1
 .RuinsOfAlphOmanyteWordRoom:
 	map_id RUINS_OF_ALPH_OMANYTE_WORD_ROOM
 	dw 100
 	db 0
-	dw 97
+	dw 96
 	db 1
 .RuinsOfAlphAerodactylWordRoom:
 	map_id RUINS_OF_ALPH_AERODACTYL_WORD_ROOM
 	dw 100
 	db 0
-	dw 98
+	dw 97
 	db 1
 .UnionCave1F:
 	map_id UNION_CAVE_1F
 	dw 100
 	db 9
-	dw 99
+	dw 98
 	db 2
 .UnionCaveB1F:
 	map_id UNION_CAVE_B1F
 	dw 109
 	db 6
-	dw 101
+	dw 100
 	db 5
 .UnionCaveB2F:
 	map_id UNION_CAVE_B2F
 	dw 115
 	db 5
-	dw 106
+	dw 105
 	db 1
 .SlowpokeWellB1F:
 	map_id SLOWPOKE_WELL_B1F
 	dw 120
 	db 5
-	dw 107
+	dw 106
 	db 2
 .SlowpokeWellB2F:
 	map_id SLOWPOKE_WELL_B2F
 	dw 125
 	db 1
-	dw 109
+	dw 108
 	db 1
 .OlivineLighthouse1F:
 	map_id OLIVINE_LIGHTHOUSE_1F
 	dw 126
 	db 0
-	dw 110
+	dw 109
 	db 1
 .OlivineLighthouse2F:
 	map_id OLIVINE_LIGHTHOUSE_2F
 	dw 126
 	db 2
-	dw 111
+	dw 110
 	db 1
 .OlivineLighthouse3F:
 	map_id OLIVINE_LIGHTHOUSE_3F
 	dw 128
 	db 4
-	dw 112
+	dw 111
 	db 2
 .OlivineLighthouse4F:
 	map_id OLIVINE_LIGHTHOUSE_4F
 	dw 132
 	db 2
-	dw 114
+	dw 113
 	db 2
 .OlivineLighthouse5F:
 	map_id OLIVINE_LIGHTHOUSE_5F
 	dw 134
 	db 6
-	dw 116
+	dw 115
 	db 2
 .OlivineLighthouse6F:
 	map_id OLIVINE_LIGHTHOUSE_6F
 	dw 140
 	db 1
-	dw 118
+	dw 117
 	db 1
 .MahoganyMart1F:
 	map_id MAHOGANY_MART_1F
 	dw 141
 	db 0
-	dw 119
+	dw 118
 	db 1
 .TeamRocketBaseB1F:
 	map_id TEAM_ROCKET_BASE_B1F
 	dw 141
 	db 6
-	dw 120
+	dw 119
 	db 1
 .TeamRocketBaseB2F:
 	map_id TEAM_ROCKET_BASE_B2F
 	dw 147
 	db 5
-	dw 121
+	dw 120
 	db 3
 .TeamRocketBaseB3F:
 	map_id TEAM_ROCKET_BASE_B3F
 	dw 152
 	db 9
-	dw 124
+	dw 123
 	db 2
 .IlexForest:
 	map_id ILEX_FOREST
 	dw 161
 	db 8
-	dw 126
+	dw 125
 	db 2
 .GoldenrodUnderground:
 	map_id GOLDENROD_UNDERGROUND
 	dw 169
 	db 8
-	dw 128
+	dw 127
 	db 2
 .GoldenrodUndergroundSwitchRoomEntrances:
 	map_id GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
 	dw 177
 	db 10
-	dw 130
-	db 4
+	dw 129
+	db 3
 .GoldenrodDeptStoreB1F:
 	map_id GOLDENROD_DEPT_STORE_B1F
 	dw 187
 	db 4
-	dw 134
-	db 2
+	dw 132
+	db 1
 .GoldenrodUndergroundWarehouse:
 	map_id GOLDENROD_UNDERGROUND_WAREHOUSE
 	dw 191
 	db 6
-	dw 136
+	dw 133
 	db 1
 .MountMortar1FOutside:
 	map_id MOUNT_MORTAR_1F_OUTSIDE
 	dw 197
 	db 3
-	dw 137
+	dw 134
 	db 6
 .MountMortar1FInside:
 	map_id MOUNT_MORTAR_1F_INSIDE
 	dw 200
 	db 10
-	dw 143
+	dw 140
 	db 2
 .MountMortar2FInside:
 	map_id MOUNT_MORTAR_2F_INSIDE
 	dw 210
 	db 8
-	dw 145
+	dw 142
 	db 2
 .MountMortarB1F:
 	map_id MOUNT_MORTAR_B1F
 	dw 218
 	db 6
-	dw 147
+	dw 144
 	db 2
 .IcePath1F:
 	map_id ICE_PATH_1F
 	dw 224
 	db 3
-	dw 149
+	dw 146
 	db 3
 .IcePathB1F:
 	map_id ICE_PATH_B1F
 	dw 227
 	db 2
-	dw 152
-	db 2
+	dw 149
+	db 3
 .IcePathB2FMahoganySide:
 	map_id ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 229
 	db 3
-	dw 154
+	dw 152
 	db 6
 .IcePathB2FBlackthornSide:
 	map_id ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 232
 	db 2
-	dw 160
+	dw 158
 	db 5
 .IcePathB3F:
 	map_id ICE_PATH_B3F
 	dw 234
 	db 1
-	dw 165
+	dw 163
 	db 1
 .WhirlIslandNw:
 	map_id WHIRL_ISLAND_NW
 	dw 235
 	db 0
-	dw 166
+	dw 164
 	db 2
 .WhirlIslandNe:
 	map_id WHIRL_ISLAND_NE
 	dw 235
 	db 1
-	dw 168
+	dw 166
 	db 3
 .WhirlIslandSw:
 	map_id WHIRL_ISLAND_SW
 	dw 236
 	db 1
-	dw 171
+	dw 169
 	db 4
 .WhirlIslandCave:
 	map_id WHIRL_ISLAND_CAVE
 	dw 237
 	db 0
-	dw 175
+	dw 173
 	db 1
 .WhirlIslandSe:
 	map_id WHIRL_ISLAND_SE
 	dw 237
 	db 0
-	dw 176
+	dw 174
 	db 1
 .WhirlIslandB1F:
 	map_id WHIRL_ISLAND_B1F
 	dw 237
 	db 8
-	dw 177
+	dw 175
 	db 6
 .WhirlIslandB2F:
 	map_id WHIRL_ISLAND_B2F
 	dw 245
 	db 3
-	dw 183
+	dw 181
 	db 5
 .WhirlIslandLugiaChamber:
 	map_id WHIRL_ISLAND_LUGIA_CHAMBER
 	dw 248
 	db 0
-	dw 188
+	dw 186
 	db 1
 .SilverCaveRoom1:
 	map_id SILVER_CAVE_ROOM_1
 	dw 248
 	db 6
-	dw 189
+	dw 187
 	db 2
 .SilverCaveRoom2:
 	map_id SILVER_CAVE_ROOM_2
 	dw 254
 	db 4
-	dw 191
+	dw 189
 	db 3
 .SilverCaveRoom3:
 	map_id SILVER_CAVE_ROOM_3
 	dw 258
 	db 0
-	dw 194
+	dw 192
 	db 1
 .SilverCaveItemRooms:
 	map_id SILVER_CAVE_ITEM_ROOMS
 	dw 258
 	db 2
-	dw 195
+	dw 193
 	db 2
 .DarkCaveVioletEntrance:
 	map_id DARK_CAVE_VIOLET_ENTRANCE
 	dw 260
 	db 5
-	dw 197
+	dw 195
 	db 4
 .DarkCaveBlackthornEntrance:
 	map_id DARK_CAVE_BLACKTHORN_ENTRANCE
 	dw 265
 	db 2
-	dw 201
+	dw 199
 	db 2
 .DragonsDen1F:
 	map_id DRAGONS_DEN_1F
 	dw 267
 	db 0
-	dw 203
+	dw 201
 	db 2
 .DragonsDenB1F:
 	map_id DRAGONS_DEN_B1F
 	dw 267
 	db 9
-	dw 205
+	dw 203
 	db 3
 .DragonShrine:
 	map_id DRAGON_SHRINE
 	dw 276
 	db 0
-	dw 208
+	dw 206
 	db 1
 .TohjoFalls:
 	map_id TOHJO_FALLS
 	dw 276
 	db 1
-	dw 209
+	dw 207
 	db 2
 .DiglettsCave:
 	map_id DIGLETTS_CAVE
 	dw 277
 	db 1
-	dw 211
+	dw 209
 	db 3
 .MountMoon:
 	map_id MOUNT_MOON
 	dw 278
 	db 0
-	dw 214
+	dw 212
 	db 4
 .UndergroundPath:
 	map_id UNDERGROUND_PATH
 	dw 278
 	db 2
-	dw 218
+	dw 216
 	db 1
 .RockTunnel1F:
 	map_id ROCK_TUNNEL_1F
 	dw 280
 	db 4
-	dw 219
+	dw 217
 	db 3
 .RockTunnelB1F:
 	map_id ROCK_TUNNEL_B1F
 	dw 284
 	db 4
-	dw 222
+	dw 220
 	db 2
 .SafariZoneFuchsiaGateBeta:
 	map_id SAFARI_ZONE_FUCHSIA_GATE_BETA
 	dw 288
 	db 0
-	dw 224
+	dw 222
 	db 1
 .SafariZoneBeta:
 	map_id SAFARI_ZONE_BETA
 	dw 288
 	db 0
-	dw 225
+	dw 223
 	db 1
 .VictoryRoad:
 	map_id VICTORY_ROAD
 	dw 288
 	db 7
-	dw 226
+	dw 224
 	db 7
 .EcruteakTinTowerEntrance:
 	map_id ECRUTEAK_TIN_TOWER_ENTRANCE
 	dw 295
 	db 0
-	dw 233
+	dw 231
 	db 2
 .WiseTriosRoom:
 	map_id WISE_TRIOS_ROOM
 	dw 295
 	db 3
-	dw 235
+	dw 233
 	db 1
 .EcruteakPokecenter1F:
 	map_id ECRUTEAK_POKECENTER_1F
 	dw 298
 	db 0
-	dw 236
+	dw 234
 	db 1
 .EcruteakLugiaSpeechHouse:
 	map_id ECRUTEAK_LUGIA_SPEECH_HOUSE
 	dw 298
 	db 0
-	dw 237
+	dw 235
 	db 1
 .DanceTheater:
 	map_id DANCE_THEATER
 	dw 298
 	db 5
-	dw 238
+	dw 236
 	db 1
 .EcruteakMart:
 	map_id ECRUTEAK_MART
 	dw 303
 	db 0
-	dw 239
+	dw 237
 	db 1
 .EcruteakGym:
 	map_id ECRUTEAK_GYM
 	dw 303
 	db 4
-	dw 240
-	db 1
+	dw 238
+	db 2
 .EcruteakItemfinderHouse:
 	map_id ECRUTEAK_ITEMFINDER_HOUSE
 	dw 307
 	db 0
-	dw 241
+	dw 240
 	db 1
 .EcruteakCity:
 	map_id ECRUTEAK_CITY
 	dw 307
 	db 1
-	dw 242
+	dw 241
 	db 2
 .BlackthornGym1F:
 	map_id BLACKTHORN_GYM_1F
 	dw 308
 	db 3
-	dw 244
+	dw 243
 	db 2
 .BlackthornGym2F:
 	map_id BLACKTHORN_GYM_2F
 	dw 311
 	db 2
-	dw 246
-	db 1
+	dw 245
+	db 2
 .BlackthornDragonSpeechHouse:
 	map_id BLACKTHORN_DRAGON_SPEECH_HOUSE
 	dw 313

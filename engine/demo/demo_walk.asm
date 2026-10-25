@@ -702,15 +702,35 @@ DemoMapCollisions:
 
 DemoWarpTileHere:
 ; a: the collision at cell d, e. A warp's tile only warps where the map has a warp
-; (GetDestinationWarpNumber): anywhere else it's floor. Return the collision.
+; (GetDestinationWarpNumber): anywhere else it's floor; and a pit with a warp is
+; a way down, as a warp panel is (CheckWarpCollision). Return the collision.
 	ld b, a
+	cp COLL_PIT
+	jr z, .pit
+	cp COLL_PIT_68
+	jr z, .pit
 	and $f0
 	cp HI_NYBBLE_WARPS
 	ld a, b
 	ret nz
+	call .IsWarp
+	ld a, b
+	ret c
+	ld a, COLL_FLOOR
+	ret
+
+.pit
+	call .IsWarp
+	ld a, b
+	ret nc ; (no one stands on a pit)
+	ld a, COLL_WARP_PANEL
+	ret
+
+.IsWarp:
+; Return carry if the map has a warp at cell d, e (b kept).
 	ld a, [wCurMapWarpEventCount]
 	and a
-	jr z, .floor
+	ret z
 	ld c, a
 	ld hl, wCurMapWarpEventsPointer
 	ld a, [hli]
@@ -727,7 +747,7 @@ DemoWarpTileHere:
 	dec hl
 	cp d
 	jr nz, .next
-	ld a, b
+	scf
 	ret
 
 .next
@@ -739,8 +759,7 @@ DemoWarpTileHere:
 .no_carry
 	dec c
 	jr nz, .loop
-.floor
-	ld a, COLL_FLOOR
+	and a
 	ret
 
 DemoStandable:

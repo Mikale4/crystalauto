@@ -949,9 +949,15 @@ DemoPlan:
 	dskipif EVENT_BEAT_RED, .BeatRed
 	djump .Red
 .BeatRed:
+; SLOWPOKE WELL B2F: its ladder is past the boulder (pushed left, with STRENGTH)
+	dstatus DSTATUS_EXPLORING
+	dskipif EVENT_SLOWPOKE_WELL_B2F_TM_RAIN_DANCE, .WellB2F
+	dtravel SLOWPOKE_WELL_B1F
+	dpush 8, LEFT
+	dsweep SLOWPOKE_WELL_B2F
+.WellB2F:
 ; everything else: every map's items, hidden items and trainers (twice: what it
 ; couldn't get to the first time may be in reach the second)
-	dstatus DSTATUS_EXPLORING
 	dretry
 	dsweepall
 	dretry

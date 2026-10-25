@@ -141,6 +141,30 @@ def warp_events(label):
     return out
 
 
+def changeblocks(label):
+    """[(x, y, block)]: the blocks a map's scripts can put in (changeblock, and
+    the GOLDENROD UNDERGROUND's doors, open)"""
+    out = []
+    for line in open(ROOT / f"maps/{label}.asm"):
+        s = line.split(";")[0]
+        m = re.match(r"\s*changeblock\s+(\d+),\s*(\d+),\s*\$([0-9a-fA-F]+)", s)
+        if m:
+            out.append((int(m.group(1)), int(m.group(2)), int(m.group(3), 16)))
+        m = re.match(r"\s*ugdoor_def\s+(.*)", s)
+        if m:
+            a = [t.strip() for t in m.group(1).split(",")]
+            for i in range(0, len(a) - 3, 4):
+                out.append((int(a[i]), int(a[i + 1]), int(a[i + 3].lstrip("$"), 16)))
+    return out
+
+
+# boulders the plan pushes out of the way (data/demo/plan.asm: dpush) before it
+# goes past them: where they go
+PUSHED_BOULDERS = {
+    "SlowpokeWellB1F": {(3, 2): (2, 2)},  # (to B2F's ladder)
+}
+
+
 class Map:
     """A map's cells as the Demo walks them."""
 
@@ -149,13 +173,39 @@ class Map:
         self.grid, self.w, self.h = collision(label)
         c = collision_consts()
         self.c = c
-        # a warp's tile only warps where the map has a warp: anywhere else it's floor
         warps = {(x, y) for x, y, _, _ in warp_events(label)}
+        # a door, stairs or a ladder the map's scripts put in (changeblock) count as
+        # there: the way may open later (the Demo's walking sees what's there now)
+        coll = tileset_collisions(map_tilesets()[label])
+        perm = permissions()
+
+        def land(v):
+            return v < len(perm) and perm[v][0] == "LAND_TILE" and v & 0xf0 not in (
+                c["COLL_PIT"] & 0xf0, c["HI_NYBBLE_CURRENT"])
+
+        def warp(v, cell):
+            return cell in warps and (v & 0xf0 == c["HI_NYBBLE_WARPS"] or v in (c["COLL_PIT"], c["COLL_PIT_68"]))
+        for cx, cy, b in changeblocks(label):
+            if b >= len(coll):
+                continue
+            for q, v1 in enumerate(coll[b]):
+                cell = (cx + q % 2, cy + q // 2)
+                v0 = self.grid.get(cell)
+                if v0 is None or warp(v0, cell):
+                    continue
+                if warp(v1, cell) or (land(v1) and not land(v0)):
+                    self.grid[cell] = v1
+        # a warp's tile only warps where the map has a warp: anywhere else it's
+        # floor; and a pit with a warp is a way down, as a warp panel is
         for cell, v in self.grid.items():
             if v & 0xf0 == c["HI_NYBBLE_WARPS"] and cell not in warps:
                 self.grid[cell] = c["COLL_FLOOR"]
-        self.rocks ={(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_ROCK"}
+            elif v in (c["COLL_PIT"], c["COLL_PIT_68"]) and cell in warps:
+                self.grid[cell] = c["COLL_WARP_PANEL"]
+        self.rocks = {(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_ROCK"}
         self.boulders = {(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_BOULDER"}
+        for here, there in PUSHED_BOULDERS.get(label, {}).items():
+            self.boulders = self.boulders - {here} | {there}
 
     def kind(self, cell):
         """'land', 'ice', 'water', 'waterfall', 'whirlpool', 'cut', 'rock' or None (no one stands there)"""

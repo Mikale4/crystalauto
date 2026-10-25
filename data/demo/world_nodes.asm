@@ -218,533 +218,533 @@ DemoWorldNodes:
 	dw 39
 	db 0, 1
 	dw .Node70 ; RADIO_TOWER_3F
-	dw 39
-	db 17, 1
-	dw .Node71 ; RADIO_TOWER_3F
 	dw 40
 	db 0, 1
+	dw .Node71 ; RADIO_TOWER_4F
+	dw 40
+	db 12, 1
 	dw .Node72 ; RADIO_TOWER_4F
-	dw 40
-	db 12, 1
-	dw .Node73 ; RADIO_TOWER_4F
 	dw 41
 	db 0, 1
-	dw .Node74 ; RADIO_TOWER_5F
+	dw .Node73 ; RADIO_TOWER_5F
 	dw 41
 	db 12, 1
-	dw .Node75 ; RADIO_TOWER_5F
+	dw .Node74 ; RADIO_TOWER_5F
 	dw 42
 	db 14, 8
-	dw .Node76 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node75 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 14, 6
-	dw .Node77 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node76 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 2, 16
-	dw .Node78 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node77 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 2, 18
-	dw .Node79 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node78 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 2, 28
-	dw .Node80 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node79 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 16, 34
-	dw .Node81 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node80 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 2, 30
-	dw .Node82 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node81 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 6, 28
-	dw .Node83 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node82 ; RUINS_OF_ALPH_OUTSIDE
 	dw 42
 	db 16, 32
-	dw .Node84 ; RUINS_OF_ALPH_OUTSIDE
+	dw .Node83 ; RUINS_OF_ALPH_OUTSIDE
 	dw 43
 	db 3, 8
-	dw .Node85 ; RUINS_OF_ALPH_HO_OH_CHAMBER
+	dw .Node84 ; RUINS_OF_ALPH_HO_OH_CHAMBER
 	dw 44
 	db 3, 8
-	dw .Node86 ; RUINS_OF_ALPH_KABUTO_CHAMBER
+	dw .Node85 ; RUINS_OF_ALPH_KABUTO_CHAMBER
 	dw 45
 	db 3, 8
-	dw .Node87 ; RUINS_OF_ALPH_OMANYTE_CHAMBER
+	dw .Node86 ; RUINS_OF_ALPH_OMANYTE_CHAMBER
 	dw 46
 	db 3, 8
-	dw .Node88 ; RUINS_OF_ALPH_AERODACTYL_CHAMBER
+	dw .Node87 ; RUINS_OF_ALPH_AERODACTYL_CHAMBER
 	dw 47
 	db 10, 12
-	dw .Node89 ; RUINS_OF_ALPH_INNER_CHAMBER
+	dw .Node88 ; RUINS_OF_ALPH_INNER_CHAMBER
 	dw 48
 	db 2, 6
-	dw .Node90 ; RUINS_OF_ALPH_RESEARCH_CENTER
+	dw .Node89 ; RUINS_OF_ALPH_RESEARCH_CENTER
 	dw 49
 	db 3, 8
-	dw .Node91 ; RUINS_OF_ALPH_HO_OH_ITEM_ROOM
+	dw .Node90 ; RUINS_OF_ALPH_HO_OH_ITEM_ROOM
 	dw 50
 	db 3, 8
-	dw .Node92 ; RUINS_OF_ALPH_KABUTO_ITEM_ROOM
+	dw .Node91 ; RUINS_OF_ALPH_KABUTO_ITEM_ROOM
 	dw 51
 	db 3, 8
-	dw .Node93 ; RUINS_OF_ALPH_OMANYTE_ITEM_ROOM
+	dw .Node92 ; RUINS_OF_ALPH_OMANYTE_ITEM_ROOM
 	dw 52
 	db 3, 8
-	dw .Node94 ; RUINS_OF_ALPH_AERODACTYL_ITEM_ROOM
+	dw .Node93 ; RUINS_OF_ALPH_AERODACTYL_ITEM_ROOM
 	dw 53
 	db 9, 9
-	dw .Node95 ; RUINS_OF_ALPH_HO_OH_WORD_ROOM
+	dw .Node94 ; RUINS_OF_ALPH_HO_OH_WORD_ROOM
 	dw 54
 	db 9, 5
-	dw .Node96 ; RUINS_OF_ALPH_KABUTO_WORD_ROOM
+	dw .Node95 ; RUINS_OF_ALPH_KABUTO_WORD_ROOM
 	dw 55
 	db 9, 7
-	dw .Node97 ; RUINS_OF_ALPH_OMANYTE_WORD_ROOM
+	dw .Node96 ; RUINS_OF_ALPH_OMANYTE_WORD_ROOM
 	dw 56
 	db 9, 5
-	dw .Node98 ; RUINS_OF_ALPH_AERODACTYL_WORD_ROOM
+	dw .Node97 ; RUINS_OF_ALPH_AERODACTYL_WORD_ROOM
 	dw 57
 	db 5, 18
-	dw .Node99 ; UNION_CAVE_1F
+	dw .Node98 ; UNION_CAVE_1F
 	dw 57
 	db 3, 32
-	dw .Node100 ; UNION_CAVE_1F
+	dw .Node99 ; UNION_CAVE_1F
 	dw 58
 	db 3, 2
+	dw .Node100 ; UNION_CAVE_B1F
+	dw 58
+	db 3, 10
 	dw .Node101 ; UNION_CAVE_B1F
 	dw 58
-	db 3, 10
+	db 7, 18
 	dw .Node102 ; UNION_CAVE_B1F
 	dw 58
-	db 7, 18
+	db 3, 32
 	dw .Node103 ; UNION_CAVE_B1F
 	dw 58
-	db 3, 32
-	dw .Node104 ; UNION_CAVE_B1F
-	dw 58
 	db 17, 30
-	dw .Node105 ; UNION_CAVE_B1F
+	dw .Node104 ; UNION_CAVE_B1F
 	dw 59
 	db 5, 2
-	dw .Node106 ; UNION_CAVE_B2F
+	dw .Node105 ; UNION_CAVE_B2F
 	dw 60
 	db 17, 14
-	dw .Node107 ; SLOWPOKE_WELL_B1F
+	dw .Node106 ; SLOWPOKE_WELL_B1F
 	dw 60
 	db 7, 10
-	dw .Node108 ; SLOWPOKE_WELL_B1F
+	dw .Node107 ; SLOWPOKE_WELL_B1F
 	dw 61
 	db 9, 10
-	dw .Node109 ; SLOWPOKE_WELL_B2F
+	dw .Node108 ; SLOWPOKE_WELL_B2F
 	dw 62
 	db 10, 16
-	dw .Node110 ; OLIVINE_LIGHTHOUSE_1F
+	dw .Node109 ; OLIVINE_LIGHTHOUSE_1F
 	dw 63
 	db 3, 10
-	dw .Node111 ; OLIVINE_LIGHTHOUSE_2F
+	dw .Node110 ; OLIVINE_LIGHTHOUSE_2F
 	dw 64
 	db 13, 2
-	dw .Node112 ; OLIVINE_LIGHTHOUSE_3F
+	dw .Node111 ; OLIVINE_LIGHTHOUSE_3F
 	dw 64
 	db 9, 4
-	dw .Node113 ; OLIVINE_LIGHTHOUSE_3F
+	dw .Node112 ; OLIVINE_LIGHTHOUSE_3F
 	dw 65
 	db 13, 2
-	dw .Node114 ; OLIVINE_LIGHTHOUSE_4F
+	dw .Node113 ; OLIVINE_LIGHTHOUSE_4F
 	dw 65
 	db 9, 6
-	dw .Node115 ; OLIVINE_LIGHTHOUSE_4F
+	dw .Node114 ; OLIVINE_LIGHTHOUSE_4F
 	dw 66
 	db 3, 4
-	dw .Node116 ; OLIVINE_LIGHTHOUSE_5F
+	dw .Node115 ; OLIVINE_LIGHTHOUSE_5F
 	dw 66
 	db 9, 14
-	dw .Node117 ; OLIVINE_LIGHTHOUSE_5F
+	dw .Node116 ; OLIVINE_LIGHTHOUSE_5F
 	dw 67
 	db 9, 14
-	dw .Node118 ; OLIVINE_LIGHTHOUSE_6F
+	dw .Node117 ; OLIVINE_LIGHTHOUSE_6F
 	dw 68
 	db 3, 6
-	dw .Node119 ; MAHOGANY_MART_1F
+	dw .Node118 ; MAHOGANY_MART_1F
 	dw 69
 	db 27, 1
-	dw .Node120 ; TEAM_ROCKET_BASE_B1F
+	dw .Node119 ; TEAM_ROCKET_BASE_B1F
 	dw 70
 	db 3, 1
+	dw .Node120 ; TEAM_ROCKET_BASE_B2F
+	dw 70
+	db 3, 13
 	dw .Node121 ; TEAM_ROCKET_BASE_B2F
 	dw 70
 	db 3, 5
 	dw .Node122 ; TEAM_ROCKET_BASE_B2F
-	dw 70
-	db 3, 13
-	dw .Node123 ; TEAM_ROCKET_BASE_B2F
 	dw 71
 	db 3, 1
-	dw .Node124 ; TEAM_ROCKET_BASE_B3F
+	dw .Node123 ; TEAM_ROCKET_BASE_B3F
 	dw 71
 	db 27, 1
-	dw .Node125 ; TEAM_ROCKET_BASE_B3F
+	dw .Node124 ; TEAM_ROCKET_BASE_B3F
 	dw 72
 	db 1, 6
-	dw .Node126 ; ILEX_FOREST
+	dw .Node125 ; ILEX_FOREST
 	dw 72
 	db 3, 41
-	dw .Node127 ; ILEX_FOREST
+	dw .Node126 ; ILEX_FOREST
 	dw 73
 	db 3, 1
-	dw .Node128 ; GOLDENROD_UNDERGROUND
+	dw .Node127 ; GOLDENROD_UNDERGROUND
 	dw 73
 	db 21, 30
-	dw .Node129 ; GOLDENROD_UNDERGROUND
+	dw .Node128 ; GOLDENROD_UNDERGROUND
 	dw 74
 	db 23, 2
+	dw .Node129 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+	dw 74
+	db 5, 24
 	dw .Node130 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
 	dw 74
-	db 22, 11
-	dw .Node131 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
-	dw 74
-	db 5, 24
-	dw .Node132 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
-	dw 74
 	db 21, 24
-	dw .Node133 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+	dw .Node131 ; GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
 	dw 75
 	db 17, 1
-	dw .Node134 ; GOLDENROD_DEPT_STORE_B1F
-	dw 75
-	db 9, 5
-	dw .Node135 ; GOLDENROD_DEPT_STORE_B1F
+	dw .Node132 ; GOLDENROD_DEPT_STORE_B1F
 	dw 76
 	db 2, 11
-	dw .Node136 ; GOLDENROD_UNDERGROUND_WAREHOUSE
+	dw .Node133 ; GOLDENROD_UNDERGROUND_WAREHOUSE
 	dw 77
 	db 17, 6
-	dw .Node137 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node134 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 77
 	db 17, 32
-	dw .Node138 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node135 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 77
 	db 33, 12
-	dw .Node139 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node136 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 77
 	db 7, 12
-	dw .Node140 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node137 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 77
 	db 3, 32
-	dw .Node141 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node138 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 77
 	db 37, 32
-	dw .Node142 ; MOUNT_MORTAR_1F_OUTSIDE
+	dw .Node139 ; MOUNT_MORTAR_1F_OUTSIDE
 	dw 78
 	db 11, 46
-	dw .Node143 ; MOUNT_MORTAR_1F_INSIDE
+	dw .Node140 ; MOUNT_MORTAR_1F_INSIDE
 	dw 78
 	db 3, 18
-	dw .Node144 ; MOUNT_MORTAR_1F_INSIDE
+	dw .Node141 ; MOUNT_MORTAR_1F_INSIDE
 	dw 79
 	db 3, 4
-	dw .Node145 ; MOUNT_MORTAR_2F_INSIDE
+	dw .Node142 ; MOUNT_MORTAR_2F_INSIDE
 	dw 79
 	db 17, 32
-	dw .Node146 ; MOUNT_MORTAR_2F_INSIDE
+	dw .Node143 ; MOUNT_MORTAR_2F_INSIDE
 	dw 80
 	db 3, 2
-	dw .Node147 ; MOUNT_MORTAR_B1F
+	dw .Node144 ; MOUNT_MORTAR_B1F
 	dw 80
 	db 19, 28
-	dw .Node148 ; MOUNT_MORTAR_B1F
+	dw .Node145 ; MOUNT_MORTAR_B1F
 	dw 81
 	db 4, 18
-	dw .Node149 ; ICE_PATH_1F
+	dw .Node146 ; ICE_PATH_1F
 	dw 81
 	db 37, 4
-	dw .Node150 ; ICE_PATH_1F
+	dw .Node147 ; ICE_PATH_1F
 	dw 81
 	db 36, 26
-	dw .Node151 ; ICE_PATH_1F
+	dw .Node148 ; ICE_PATH_1F
 	dw 82
 	db 3, 14
-	dw .Node152 ; ICE_PATH_B1F
+	dw .Node149 ; ICE_PATH_B1F
+	dw 82
+	db 5, 11
+	dw .Node150 ; ICE_PATH_B1F
 	dw 82
 	db 5, 24
-	dw .Node153 ; ICE_PATH_B1F
+	dw .Node151 ; ICE_PATH_B1F
 	dw 83
 	db 17, 0
-	dw .Node154 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node152 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 83
 	db 4, 6
-	dw .Node155 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node153 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 83
 	db 9, 17
-	dw .Node156 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node154 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 83
 	db 19, 11
-	dw .Node157 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node155 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 83
 	db 10, 11
-	dw .Node158 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node156 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 83
 	db 9, 12
-	dw .Node159 ; ICE_PATH_B2F_MAHOGANY_SIDE
+	dw .Node157 ; ICE_PATH_B2F_MAHOGANY_SIDE
 	dw 84
 	db 3, 14
-	dw .Node160 ; ICE_PATH_B2F_BLACKTHORN_SIDE
+	dw .Node158 ; ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 84
 	db 3, 17
-	dw .Node161 ; ICE_PATH_B2F_BLACKTHORN_SIDE
+	dw .Node159 ; ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 84
 	db 7, 15
-	dw .Node162 ; ICE_PATH_B2F_BLACKTHORN_SIDE
+	dw .Node160 ; ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 84
 	db 4, 15
-	dw .Node163 ; ICE_PATH_B2F_BLACKTHORN_SIDE
+	dw .Node161 ; ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 84
 	db 3, 16
-	dw .Node164 ; ICE_PATH_B2F_BLACKTHORN_SIDE
+	dw .Node162 ; ICE_PATH_B2F_BLACKTHORN_SIDE
 	dw 85
 	db 3, 4
-	dw .Node165 ; ICE_PATH_B3F
+	dw .Node163 ; ICE_PATH_B3F
 	dw 86
 	db 5, 6
-	dw .Node166 ; WHIRL_ISLAND_NW
+	dw .Node164 ; WHIRL_ISLAND_NW
 	dw 86
 	db 3, 14
-	dw .Node167 ; WHIRL_ISLAND_NW
+	dw .Node165 ; WHIRL_ISLAND_NW
 	dw 87
 	db 17, 2
-	dw .Node168 ; WHIRL_ISLAND_NE
+	dw .Node166 ; WHIRL_ISLAND_NE
 	dw 87
 	db 13, 10
-	dw .Node169 ; WHIRL_ISLAND_NE
+	dw .Node167 ; WHIRL_ISLAND_NE
 	dw 87
 	db 3, 12
-	dw .Node170 ; WHIRL_ISLAND_NE
+	dw .Node168 ; WHIRL_ISLAND_NE
 	dw 88
 	db 5, 6
+	dw .Node169 ; WHIRL_ISLAND_SW
+	dw 88
+	db 17, 2
+	dw .Node170 ; WHIRL_ISLAND_SW
+	dw 88
+	db 3, 14
 	dw .Node171 ; WHIRL_ISLAND_SW
 	dw 88
-	db 17, 2
-	dw .Node172 ; WHIRL_ISLAND_SW
-	dw 88
-	db 3, 14
-	dw .Node173 ; WHIRL_ISLAND_SW
-	dw 88
 	db 17, 14
-	dw .Node174 ; WHIRL_ISLAND_SW
+	dw .Node172 ; WHIRL_ISLAND_SW
 	dw 89
 	db 7, 4
-	dw .Node175 ; WHIRL_ISLAND_CAVE
+	dw .Node173 ; WHIRL_ISLAND_CAVE
 	dw 90
 	db 5, 12
-	dw .Node176 ; WHIRL_ISLAND_SE
+	dw .Node174 ; WHIRL_ISLAND_SE
 	dw 91
 	db 9, 30
-	dw .Node177 ; WHIRL_ISLAND_B1F
+	dw .Node175 ; WHIRL_ISLAND_B1F
 	dw 91
 	db 5, 4
-	dw .Node178 ; WHIRL_ISLAND_B1F
+	dw .Node176 ; WHIRL_ISLAND_B1F
 	dw 91
 	db 35, 2
-	dw .Node179 ; WHIRL_ISLAND_B1F
+	dw .Node177 ; WHIRL_ISLAND_B1F
 	dw 91
 	db 17, 20
-	dw .Node180 ; WHIRL_ISLAND_B1F
+	dw .Node178 ; WHIRL_ISLAND_B1F
 	dw 91
 	db 23, 30
-	dw .Node181 ; WHIRL_ISLAND_B1F
+	dw .Node179 ; WHIRL_ISLAND_B1F
 	dw 91
 	db 17, 22
-	dw .Node182 ; WHIRL_ISLAND_B1F
+	dw .Node180 ; WHIRL_ISLAND_B1F
 	dw 92
 	db 11, 4
-	dw .Node183 ; WHIRL_ISLAND_B2F
+	dw .Node181 ; WHIRL_ISLAND_B2F
 	dw 92
 	db 13, 30
-	dw .Node184 ; WHIRL_ISLAND_B2F
+	dw .Node182 ; WHIRL_ISLAND_B2F
 	dw 92
 	db 7, 26
-	dw .Node185 ; WHIRL_ISLAND_B2F
+	dw .Node183 ; WHIRL_ISLAND_B2F
 	dw 92
 	db 11, 6
-	dw .Node186 ; WHIRL_ISLAND_B2F
+	dw .Node184 ; WHIRL_ISLAND_B2F
 	dw 92
 	db 7, 10
-	dw .Node187 ; WHIRL_ISLAND_B2F
+	dw .Node185 ; WHIRL_ISLAND_B2F
 	dw 93
 	db 9, 12
-	dw .Node188 ; WHIRL_ISLAND_LUGIA_CHAMBER
+	dw .Node186 ; WHIRL_ISLAND_LUGIA_CHAMBER
 	dw 94
 	db 15, 0
-	dw .Node189 ; SILVER_CAVE_ROOM_1
+	dw .Node187 ; SILVER_CAVE_ROOM_1
 	dw 94
 	db 9, 32
-	dw .Node190 ; SILVER_CAVE_ROOM_1
+	dw .Node188 ; SILVER_CAVE_ROOM_1
 	dw 95
 	db 23, 4
-	dw .Node191 ; SILVER_CAVE_ROOM_2
+	dw .Node189 ; SILVER_CAVE_ROOM_2
 	dw 95
 	db 17, 30
-	dw .Node192 ; SILVER_CAVE_ROOM_2
+	dw .Node190 ; SILVER_CAVE_ROOM_2
 	dw 95
 	db 13, 22
-	dw .Node193 ; SILVER_CAVE_ROOM_2
+	dw .Node191 ; SILVER_CAVE_ROOM_2
 	dw 96
 	db 9, 32
-	dw .Node194 ; SILVER_CAVE_ROOM_3
+	dw .Node192 ; SILVER_CAVE_ROOM_3
 	dw 97
 	db 13, 2
-	dw .Node195 ; SILVER_CAVE_ITEM_ROOMS
+	dw .Node193 ; SILVER_CAVE_ITEM_ROOMS
 	dw 97
 	db 7, 14
-	dw .Node196 ; SILVER_CAVE_ITEM_ROOMS
+	dw .Node194 ; SILVER_CAVE_ITEM_ROOMS
 	dw 98
 	db 17, 0
-	dw .Node197 ; DARK_CAVE_VIOLET_ENTRANCE
+	dw .Node195 ; DARK_CAVE_VIOLET_ENTRANCE
 	dw 98
 	db 17, 2
-	dw .Node198 ; DARK_CAVE_VIOLET_ENTRANCE
+	dw .Node196 ; DARK_CAVE_VIOLET_ENTRANCE
 	dw 98
 	db 3, 14
-	dw .Node199 ; DARK_CAVE_VIOLET_ENTRANCE
+	dw .Node197 ; DARK_CAVE_VIOLET_ENTRANCE
 	dw 98
 	db 35, 32
-	dw .Node200 ; DARK_CAVE_VIOLET_ENTRANCE
+	dw .Node198 ; DARK_CAVE_VIOLET_ENTRANCE
 	dw 99
 	db 3, 24
-	dw .Node201 ; DARK_CAVE_BLACKTHORN_ENTRANCE
+	dw .Node199 ; DARK_CAVE_BLACKTHORN_ENTRANCE
 	dw 99
 	db 23, 2
-	dw .Node202 ; DARK_CAVE_BLACKTHORN_ENTRANCE
+	dw .Node200 ; DARK_CAVE_BLACKTHORN_ENTRANCE
 	dw 100
 	db 3, 4
-	dw .Node203 ; DRAGONS_DEN_1F
+	dw .Node201 ; DRAGONS_DEN_1F
 	dw 100
 	db 5, 14
-	dw .Node204 ; DRAGONS_DEN_1F
+	dw .Node202 ; DRAGONS_DEN_1F
 	dw 101
 	db 20, 2
-	dw .Node205 ; DRAGONS_DEN_B1F
+	dw .Node203 ; DRAGONS_DEN_B1F
 	dw 101
 	db 20, 4
-	dw .Node206 ; DRAGONS_DEN_B1F
+	dw .Node204 ; DRAGONS_DEN_B1F
 	dw 101
 	db 19, 30
-	dw .Node207 ; DRAGONS_DEN_B1F
+	dw .Node205 ; DRAGONS_DEN_B1F
 	dw 102
 	db 4, 8
-	dw .Node208 ; DRAGON_SHRINE
+	dw .Node206 ; DRAGON_SHRINE
 	dw 103
 	db 13, 14
-	dw .Node209 ; TOHJO_FALLS
+	dw .Node207 ; TOHJO_FALLS
 	dw 103
 	db 25, 14
-	dw .Node210 ; TOHJO_FALLS
+	dw .Node208 ; TOHJO_FALLS
 	dw 104
 	db 17, 32
-	dw .Node211 ; DIGLETTS_CAVE
+	dw .Node209 ; DIGLETTS_CAVE
 	dw 104
 	db 15, 4
-	dw .Node212 ; DIGLETTS_CAVE
+	dw .Node210 ; DIGLETTS_CAVE
 	dw 104
 	db 3, 32
-	dw .Node213 ; DIGLETTS_CAVE
+	dw .Node211 ; DIGLETTS_CAVE
 	dw 105
 	db 3, 2
-	dw .Node214 ; MOUNT_MOON
+	dw .Node212 ; MOUNT_MOON
 	dw 105
 	db 25, 4
-	dw .Node215 ; MOUNT_MOON
+	dw .Node213 ; MOUNT_MOON
 	dw 105
 	db 15, 10
-	dw .Node216 ; MOUNT_MOON
+	dw .Node214 ; MOUNT_MOON
 	dw 105
 	db 25, 14
-	dw .Node217 ; MOUNT_MOON
+	dw .Node215 ; MOUNT_MOON
 	dw 106
 	db 3, 1
-	dw .Node218 ; UNDERGROUND_PATH
+	dw .Node216 ; UNDERGROUND_PATH
 	dw 107
 	db 5, 2
-	dw .Node219 ; ROCK_TUNNEL_1F
+	dw .Node217 ; ROCK_TUNNEL_1F
 	dw 107
 	db 15, 2
-	dw .Node220 ; ROCK_TUNNEL_1F
+	dw .Node218 ; ROCK_TUNNEL_1F
 	dw 107
 	db 11, 24
-	dw .Node221 ; ROCK_TUNNEL_1F
+	dw .Node219 ; ROCK_TUNNEL_1F
 	dw 108
 	db 3, 2
-	dw .Node222 ; ROCK_TUNNEL_B1F
+	dw .Node220 ; ROCK_TUNNEL_B1F
 	dw 108
 	db 23, 2
-	dw .Node223 ; ROCK_TUNNEL_B1F
+	dw .Node221 ; ROCK_TUNNEL_B1F
 	dw 109
 	db 4, 1
-	dw .Node224 ; SAFARI_ZONE_FUCHSIA_GATE_BETA
+	dw .Node222 ; SAFARI_ZONE_FUCHSIA_GATE_BETA
 	dw 110
 	db 9, 23
-	dw .Node225 ; SAFARI_ZONE_BETA
+	dw .Node223 ; SAFARI_ZONE_BETA
 	dw 111
 	db 13, 4
-	dw .Node226 ; VICTORY_ROAD
+	dw .Node224 ; VICTORY_ROAD
 	dw 111
 	db 17, 18
-	dw .Node227 ; VICTORY_ROAD
+	dw .Node225 ; VICTORY_ROAD
 	dw 111
 	db 13, 16
-	dw .Node228 ; VICTORY_ROAD
+	dw .Node226 ; VICTORY_ROAD
 	dw 111
 	db 1, 34
-	dw .Node229 ; VICTORY_ROAD
+	dw .Node227 ; VICTORY_ROAD
 	dw 111
 	db 0, 27
-	dw .Node230 ; VICTORY_ROAD
+	dw .Node228 ; VICTORY_ROAD
 	dw 111
 	db 17, 32
-	dw .Node231 ; VICTORY_ROAD
+	dw .Node229 ; VICTORY_ROAD
 	dw 111
 	db 9, 66
-	dw .Node232 ; VICTORY_ROAD
+	dw .Node230 ; VICTORY_ROAD
 	dw 112
 	db 4, 16
-	dw .Node233 ; ECRUTEAK_TIN_TOWER_ENTRANCE
+	dw .Node231 ; ECRUTEAK_TIN_TOWER_ENTRANCE
 	dw 112
 	db 17, 14
-	dw .Node234 ; ECRUTEAK_TIN_TOWER_ENTRANCE
+	dw .Node232 ; ECRUTEAK_TIN_TOWER_ENTRANCE
 	dw 113
 	db 7, 3
-	dw .Node235 ; WISE_TRIOS_ROOM
+	dw .Node233 ; WISE_TRIOS_ROOM
 	dw 114
 	db 3, 6
-	dw .Node236 ; ECRUTEAK_POKECENTER_1F
+	dw .Node234 ; ECRUTEAK_POKECENTER_1F
 	dw 115
 	db 3, 6
-	dw .Node237 ; ECRUTEAK_LUGIA_SPEECH_HOUSE
+	dw .Node235 ; ECRUTEAK_LUGIA_SPEECH_HOUSE
 	dw 116
 	db 5, 12
-	dw .Node238 ; DANCE_THEATER
+	dw .Node236 ; DANCE_THEATER
 	dw 117
 	db 2, 6
-	dw .Node239 ; ECRUTEAK_MART
+	dw .Node237 ; ECRUTEAK_MART
 	dw 118
 	db 4, 16
-	dw .Node240 ; ECRUTEAK_GYM
+	dw .Node238 ; ECRUTEAK_GYM
+	dw 118
+	db 2, 5
+	dw .Node239 ; ECRUTEAK_GYM
 	dw 119
 	db 3, 6
-	dw .Node241 ; ECRUTEAK_ITEMFINDER_HOUSE
+	dw .Node240 ; ECRUTEAK_ITEMFINDER_HOUSE
 	dw 120
 	db 21, 2
-	dw .Node242 ; ECRUTEAK_CITY
+	dw .Node241 ; ECRUTEAK_CITY
 	dw 120
 	db 34, 26
-	dw .Node243 ; ECRUTEAK_CITY
+	dw .Node242 ; ECRUTEAK_CITY
+	dw 121
+	db 7, 8
+	dw .Node243 ; BLACKTHORN_GYM_1F
 	dw 121
 	db 4, 16
 	dw .Node244 ; BLACKTHORN_GYM_1F
-	dw 121
-	db 7, 8
-	dw .Node245 ; BLACKTHORN_GYM_1F
 	dw 122
 	db 1, 6
+	dw .Node245 ; BLACKTHORN_GYM_2F
+	dw 122
+	db 9, 3
 	dw .Node246 ; BLACKTHORN_GYM_2F
 	dw 123
 	db 2, 6
@@ -2079,7 +2079,7 @@ DemoWorldNodes:
 	dw 12
 	db %00000
 	db DEDGE_WARP, 3
-	dw 243
+	dw 242
 	db %00000
 	db -1
 .Node9:
@@ -2172,7 +2172,7 @@ DemoWorldNodes:
 	dw 7
 	db %00000
 	db DEDGE_WARP, 9
-	dw 110
+	dw 109
 	db %00000
 	db DEDGE_WARP, 10
 	dw 461
@@ -2222,7 +2222,7 @@ DemoWorldNodes:
 	db -1
 .Node27:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
 	db %00000
 	db DEDGE_WARP, 3
 	dw 29
@@ -2230,13 +2230,13 @@ DemoWorldNodes:
 	db -1
 .Node28:
 	db DEDGE_WARP, 3
-	dw 141
-	db %00000
-	db DEDGE_WARP, 4
 	dw 138
 	db %00000
+	db DEDGE_WARP, 4
+	dw 135
+	db %00000
 	db DEDGE_WARP, 5
-	dw 142
+	dw 139
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 35
@@ -2247,7 +2247,7 @@ DemoWorldNodes:
 	dw 27
 	db %00000
 	db DEDGE_WARP, 3
-	dw 141
+	dw 138
 	db %00000
 	db DEDGE_WALK, 0
 	dw 30
@@ -2258,7 +2258,7 @@ DemoWorldNodes:
 	db -1
 .Node30:
 	db DEDGE_WARP, 4
-	dw 138
+	dw 135
 	db %00000
 	db DEDGE_WALK, 0
 	dw 29
@@ -2269,7 +2269,7 @@ DemoWorldNodes:
 	db -1
 .Node31:
 	db DEDGE_WARP, 5
-	dw 142
+	dw 139
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 36
@@ -2288,7 +2288,7 @@ DemoWorldNodes:
 	db -1
 .Node33:
 	db DEDGE_WARP, 1
-	dw 149
+	dw 146
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 37
@@ -2302,7 +2302,7 @@ DemoWorldNodes:
 	db -1
 .Node34:
 	db DEDGE_WARP, 1
-	dw 149
+	dw 146
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 36
@@ -2318,7 +2318,7 @@ DemoWorldNodes:
 	db -1
 .Node36:
 	db DEDGE_WARP, 1
-	dw 119
+	dw 118
 	db %00000
 	db DEDGE_WARP, 2
 	dw 24
@@ -2394,7 +2394,7 @@ DemoWorldNodes:
 	db -1
 .Node44:
 	db DEDGE_WARP, 1
-	dw 242
+	dw 241
 	db %00000
 	db DEDGE_WARP, 3
 	dw 45
@@ -2544,9 +2544,9 @@ DemoWorldNodes:
 	db -1
 .Node62:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
 	db %00000
-	db DEDGE_WARP, 14
+	db DEDGE_WARP, 3
 	dw 65
 	db %00000
 	db DEDGE_WALK, 0
@@ -2599,49 +2599,47 @@ DemoWorldNodes:
 	dw 69
 	db %00000
 	db DEDGE_WARP, 2
+	dw 71
+	db %00000
+	db DEDGE_WARP, 3
 	dw 72
 	db %00000
 	db -1
 .Node71:
-	db DEDGE_WARP, 3
-	dw 73
-	db %00000
-	db -1
-.Node72:
 	db DEDGE_WARP, 1
-	dw 74
+	dw 73
 	db %00000
 	db DEDGE_WARP, 2
 	dw 70
 	db %00000
 	db -1
-.Node73:
+.Node72:
 	db DEDGE_WARP, 3
-	dw 75
+	dw 74
 	db %00000
 	db DEDGE_WARP, 4
+	dw 70
+	db %00000
+	db -1
+.Node73:
+	db DEDGE_WARP, 1
 	dw 71
 	db %00000
 	db -1
 .Node74:
-	db DEDGE_WARP, 1
+	db DEDGE_WARP, 2
 	dw 72
 	db %00000
 	db -1
 .Node75:
 	db DEDGE_WARP, 2
-	dw 73
-	db %00000
-	db -1
-.Node76:
-	db DEDGE_WARP, 2
-	dw 86
+	dw 85
 	db %00000
 	db DEDGE_WARP, 5
-	dw 89
+	dw 88
 	db %00000
 	db DEDGE_WARP, 6
-	dw 90
+	dw 89
 	db %00000
 	db DEDGE_WARP, 9
 	dw 362
@@ -2650,85 +2648,102 @@ DemoWorldNodes:
 	dw 358
 	db %00000
 	db DEDGE_WALK, 0
-	dw 81
+	dw 80
 	db %00010
 	db -1
-.Node77:
+.Node76:
 	db DEDGE_WARP, 2
-	dw 86
+	dw 85
+	db %00000
+	db -1
+.Node77:
+	db DEDGE_WARP, 1
+	dw 84
+	db %00000
+	db DEDGE_WARP, 5
+	dw 88
+	db %00000
+	db DEDGE_WARP, 7
+	dw 100
 	db %00000
 	db -1
 .Node78:
 	db DEDGE_WARP, 1
-	dw 85
-	db %00000
-	db DEDGE_WARP, 5
-	dw 89
+	dw 84
 	db %00000
 	db DEDGE_WARP, 7
-	dw 101
+	dw 100
 	db %00000
 	db -1
 .Node79:
-	db DEDGE_WARP, 1
-	dw 85
+	db DEDGE_WARP, 3
+	dw 86
 	db %00000
-	db DEDGE_WARP, 7
+	db DEDGE_WARP, 8
 	dw 101
 	db %00000
 	db -1
 .Node80:
-	db DEDGE_WARP, 3
+	db DEDGE_WARP, 4
 	dw 87
 	db %00000
-	db DEDGE_WARP, 8
-	dw 102
-	db %00000
+	db DEDGE_WALK, 0
+	dw 75
+	db %00010
 	db -1
 .Node81:
-	db DEDGE_WARP, 4
-	dw 88
+	db DEDGE_WARP, 3
+	dw 86
 	db %00000
 	db DEDGE_WALK, 0
-	dw 76
+	dw 75
 	db %00010
+	db DEDGE_WALK, 0
+	dw 80
+	db %00000
 	db -1
 .Node82:
-	db DEDGE_WARP, 3
-	dw 87
+	db DEDGE_WARP, 8
+	dw 101
 	db %00000
 	db DEDGE_WALK, 0
-	dw 76
+	dw 75
 	db %00010
+	db DEDGE_WALK, 0
+	dw 80
+	db %00000
 	db DEDGE_WALK, 0
 	dw 81
 	db %00000
 	db -1
 .Node83:
-	db DEDGE_WARP, 8
-	dw 102
-	db %00000
-	db DEDGE_WALK, 0
-	dw 76
-	db %00010
-	db DEDGE_WALK, 0
-	dw 81
-	db %00000
-	db DEDGE_WALK, 0
-	dw 82
+	db DEDGE_WARP, 4
+	dw 87
 	db %00000
 	db -1
 .Node84:
-	db DEDGE_WARP, 4
+	db DEDGE_WARP, 1
+	dw 78
+	db %00000
+	db DEDGE_WARP, 1
+	dw 77
+	db %00000
+	db DEDGE_WARP, 3
 	dw 88
+	db %00000
+	db DEDGE_WARP, 5
+	dw 90
 	db %00000
 	db -1
 .Node85:
 	db DEDGE_WARP, 1
-	dw 79
+	dw 75
 	db %00000
 	db DEDGE_WARP, 1
-	dw 78
+	dw 76
+	db %00000
+	db DEDGE_WARP, 3
+	dw 88
 	db %00000
 	db DEDGE_WARP, 5
 	dw 91
@@ -2736,10 +2751,13 @@ DemoWorldNodes:
 	db -1
 .Node86:
 	db DEDGE_WARP, 1
-	dw 76
+	dw 81
 	db %00000
 	db DEDGE_WARP, 1
-	dw 77
+	dw 79
+	db %00000
+	db DEDGE_WARP, 3
+	dw 88
 	db %00000
 	db DEDGE_WARP, 5
 	dw 92
@@ -2747,10 +2765,13 @@ DemoWorldNodes:
 	db -1
 .Node87:
 	db DEDGE_WARP, 1
-	dw 82
+	dw 80
 	db %00000
 	db DEDGE_WARP, 1
-	dw 80
+	dw 83
+	db %00000
+	db DEDGE_WARP, 3
+	dw 88
 	db %00000
 	db DEDGE_WARP, 5
 	dw 93
@@ -2758,59 +2779,72 @@ DemoWorldNodes:
 	db -1
 .Node88:
 	db DEDGE_WARP, 1
-	dw 81
+	dw 75
 	db %00000
 	db DEDGE_WARP, 1
-	dw 84
-	db %00000
-	db DEDGE_WARP, 5
-	dw 94
+	dw 77
 	db %00000
 	db -1
 .Node89:
 	db DEDGE_WARP, 1
-	dw 76
-	db %00000
-	db DEDGE_WARP, 1
-	dw 78
+	dw 75
 	db %00000
 	db -1
 .Node90:
 	db DEDGE_WARP, 1
-	dw 76
+	dw 84
+	db %00000
+	db DEDGE_WARP, 3
+	dw 94
 	db %00000
 	db -1
 .Node91:
 	db DEDGE_WARP, 1
 	dw 85
 	db %00000
+	db DEDGE_WARP, 3
+	dw 95
+	db %00000
 	db -1
 .Node92:
 	db DEDGE_WARP, 1
 	dw 86
+	db %00000
+	db DEDGE_WARP, 3
+	dw 96
 	db %00000
 	db -1
 .Node93:
 	db DEDGE_WARP, 1
 	dw 87
 	db %00000
+	db DEDGE_WARP, 3
+	dw 97
+	db %00000
 	db -1
 .Node94:
-	db DEDGE_WARP, 1
+	db DEDGE_WARP, 3
 	dw 88
 	db %00000
 	db -1
 .Node95:
+	db DEDGE_WARP, 3
+	dw 88
+	db %00000
 	db -1
 .Node96:
+	db DEDGE_WARP, 3
+	dw 88
+	db %00000
 	db -1
 .Node97:
+	db DEDGE_WARP, 3
+	dw 88
+	db %00000
 	db -1
 .Node98:
-	db -1
-.Node99:
 	db DEDGE_WARP, 1
-	dw 103
+	dw 102
 	db %00000
 	db DEDGE_WARP, 3
 	dw 330
@@ -2825,284 +2859,295 @@ DemoWorldNodes:
 	dw 344
 	db %00000
 	db DEDGE_WALK, 0
-	dw 100
-	db %00010
-	db -1
-.Node100:
-	db DEDGE_WARP, 2
-	dw 104
-	db %00000
-	db DEDGE_WALK, 0
 	dw 99
 	db %00010
 	db -1
-.Node101:
-	db DEDGE_WARP, 1
-	dw 79
+.Node99:
+	db DEDGE_WARP, 2
+	dw 103
 	db %00000
+	db DEDGE_WALK, 0
+	dw 98
+	db %00010
+	db -1
+.Node100:
 	db DEDGE_WARP, 1
 	dw 78
+	db %00000
+	db DEDGE_WARP, 1
+	dw 77
+	db %00000
+	db DEDGE_WALK, 0
+	dw 102
+	db %00010
+	db -1
+.Node101:
+	db DEDGE_WARP, 2
+	dw 82
+	db %00000
+	db DEDGE_WARP, 2
+	dw 79
+	db %00000
+	db -1
+.Node102:
+	db DEDGE_WARP, 3
+	dw 98
+	db %00000
+	db DEDGE_WALK, 0
+	dw 100
+	db %00010
+	db -1
+.Node103:
+	db DEDGE_WARP, 4
+	dw 99
+	db %00000
+	db DEDGE_WALK, 0
+	dw 104
+	db %00010
+	db -1
+.Node104:
+	db DEDGE_WARP, 5
+	dw 105
 	db %00000
 	db DEDGE_WALK, 0
 	dw 103
 	db %00010
 	db -1
-.Node102:
-	db DEDGE_WARP, 2
-	dw 83
-	db %00000
-	db DEDGE_WARP, 2
-	dw 80
-	db %00000
-	db -1
-.Node103:
-	db DEDGE_WARP, 3
-	dw 99
-	db %00000
-	db DEDGE_WALK, 0
-	dw 101
-	db %00010
-	db -1
-.Node104:
-	db DEDGE_WARP, 4
-	dw 100
-	db %00000
-	db DEDGE_WALK, 0
-	dw 105
-	db %00010
-	db -1
 .Node105:
-	db DEDGE_WARP, 5
-	dw 106
-	db %00000
-	db DEDGE_WALK, 0
+	db DEDGE_WARP, 1
 	dw 104
-	db %00010
+	db %00000
 	db -1
 .Node106:
 	db DEDGE_WARP, 1
-	dw 105
-	db %00000
-	db -1
-.Node107:
-	db DEDGE_WARP, 1
 	dw 331
 	db %00000
+	db DEDGE_WALK, 0
+	dw 107
+	db %00010
+	db -1
+.Node107:
+	db DEDGE_WARP, 2
+	dw 108
+	db %00000
+	db DEDGE_WALK, 0
+	dw 106
+	db %00010
 	db -1
 .Node108:
-	db DEDGE_WARP, 2
-	dw 109
+	db DEDGE_WARP, 1
+	dw 107
 	db %00000
 	db -1
 .Node109:
 	db DEDGE_WARP, 1
-	dw 108
+	dw 20
+	db %00000
+	db DEDGE_WARP, 3
+	dw 110
 	db %00000
 	db -1
 .Node110:
 	db DEDGE_WARP, 1
-	dw 20
+	dw 109
 	db %00000
-	db DEDGE_WARP, 3
+	db DEDGE_WARP, 2
 	dw 111
 	db %00000
 	db -1
 .Node111:
 	db DEDGE_WARP, 1
-	dw 110
+	dw 113
 	db %00000
 	db DEDGE_WARP, 2
-	dw 112
+	dw 110
 	db %00000
 	db -1
 .Node112:
-	db DEDGE_WARP, 1
+	db DEDGE_WARP, 3
 	dw 114
-	db %00000
-	db DEDGE_WARP, 2
-	dw 111
 	db %00000
 	db -1
 .Node113:
-	db DEDGE_WARP, 3
+	db DEDGE_WARP, 1
+	dw 111
+	db %00000
+	db DEDGE_WARP, 2
 	dw 115
+	db %00000
+	db DEDGE_WARP, 7
+	dw 112
 	db %00000
 	db -1
 .Node114:
-	db DEDGE_WARP, 1
-	dw 112
-	db %00000
-	db DEDGE_WARP, 2
+	db DEDGE_WARP, 3
 	dw 116
+	db %00000
+	db DEDGE_WARP, 4
+	dw 112
 	db %00000
 	db -1
 .Node115:
-	db DEDGE_WARP, 3
-	dw 117
-	db %00000
-	db DEDGE_WARP, 4
+	db DEDGE_WARP, 2
 	dw 113
 	db %00000
 	db -1
 .Node116:
-	db DEDGE_WARP, 2
+	db DEDGE_WARP, 1
+	dw 117
+	db %00000
+	db DEDGE_WARP, 3
 	dw 114
 	db %00000
 	db -1
 .Node117:
 	db DEDGE_WARP, 1
-	dw 118
+	dw 116
 	db %00000
-	db DEDGE_WARP, 3
+	db DEDGE_WARP, 2
 	dw 115
 	db %00000
 	db -1
 .Node118:
 	db DEDGE_WARP, 1
-	dw 117
+	dw 36
+	db %00000
+	db DEDGE_WARP, 3
+	dw 119
 	db %00000
 	db -1
 .Node119:
 	db DEDGE_WARP, 1
-	dw 36
+	dw 118
+	db %00000
+	db DEDGE_WARP, 2
+	dw 121
+	db %00000
+	db DEDGE_WARP, 3
+	dw 119
 	db %00000
 	db -1
 .Node120:
-	db DEDGE_WARP, 1
-	dw 119
-	db %00000
 	db DEDGE_WARP, 2
 	dw 123
 	db %00000
 	db DEDGE_WARP, 3
-	dw 120
+	dw 124
 	db %00000
 	db -1
 .Node121:
-	db DEDGE_WARP, 2
-	dw 124
+	db DEDGE_WARP, 1
+	dw 119
 	db %00000
-	db DEDGE_WARP, 3
-	dw 125
+	db DEDGE_WARP, 5
+	dw 124
 	db %00000
 	db -1
 .Node122:
 	db DEDGE_WARP, 4
-	dw 124
+	dw 123
 	db %00000
 	db -1
 .Node123:
 	db DEDGE_WARP, 1
 	dw 120
 	db %00000
-	db DEDGE_WARP, 5
-	dw 125
-	db %00000
-	db -1
-.Node124:
-	db DEDGE_WARP, 1
-	dw 121
-	db %00000
 	db DEDGE_WARP, 3
 	dw 122
 	db %00000
 	db -1
-.Node125:
+.Node124:
 	db DEDGE_WARP, 2
-	dw 121
+	dw 120
 	db %00000
 	db DEDGE_WARP, 4
-	dw 123
+	dw 121
 	db %00000
 	db -1
-.Node126:
+.Node125:
 	db DEDGE_WARP, 1
 	dw 395
-	db %00000
-	db DEDGE_WALK, 0
-	dw 127
-	db %00001
-	db -1
-.Node127:
-	db DEDGE_WARP, 2
-	dw 394
 	db %00000
 	db DEDGE_WALK, 0
 	dw 126
 	db %00001
 	db -1
-.Node128:
+.Node126:
+	db DEDGE_WARP, 2
+	dw 394
+	db %00000
+	db DEDGE_WALK, 0
+	dw 125
+	db %00001
+	db -1
+.Node127:
 	db DEDGE_WARP, 1
-	dw 133
+	dw 131
 	db %00000
 	db DEDGE_WARP, 2
-	dw 132
+	dw 130
 	db %00000
 	db DEDGE_WARP, 3
+	dw 128
+	db %00000
+	db -1
+.Node128:
+	db DEDGE_WARP, 4
+	dw 127
+	db %00000
+	db DEDGE_WARP, 6
 	dw 129
 	db %00000
 	db -1
 .Node129:
-	db DEDGE_WARP, 4
+	db DEDGE_WARP, 1
 	dw 128
 	db %00000
-	db DEDGE_WARP, 6
-	dw 130
+	db DEDGE_WARP, 2
+	dw 133
 	db %00000
 	db -1
 .Node130:
-	db DEDGE_WARP, 1
-	dw 129
-	db %00000
-	db -1
-.Node131:
-	db DEDGE_WARP, 2
-	dw 136
-	db %00000
-	db -1
-.Node132:
 	db DEDGE_WARP, 4
-	dw 128
+	dw 127
 	db %00000
 	db DEDGE_WARP, 5
 	dw 371
 	db %00000
 	db -1
-.Node133:
+.Node131:
 	db DEDGE_WARP, 7
-	dw 128
+	dw 127
 	db %00000
 	db DEDGE_WARP, 8
 	dw 371
 	db %00000
 	db -1
-.Node134:
+.Node132:
 	db DEDGE_WARP, 1
-	dw 136
+	dw 133
 	db %00000
-	db -1
-.Node135:
 	db DEDGE_WARP, 2
 	dw 390
 	db %00000
 	db -1
-.Node136:
+.Node133:
 	db DEDGE_WARP, 1
-	dw 131
+	dw 129
 	db %00000
 	db DEDGE_WARP, 3
-	dw 134
+	dw 132
 	db %00000
 	db -1
-.Node137:
+.Node134:
 	db DEDGE_WARP, 4
-	dw 146
+	dw 143
 	db %00000
 	db DEDGE_WALK, 0
-	dw 138
+	dw 135
 	db %00010
 	db -1
-.Node138:
+.Node135:
 	db DEDGE_WARP, 2
 	dw 30
 	db %00000
@@ -3110,23 +3155,23 @@ DemoWorldNodes:
 	dw 28
 	db %00000
 	db DEDGE_WARP, 7
-	dw 148
+	dw 145
 	db %00000
 	db DEDGE_WALK, 0
-	dw 137
+	dw 134
 	db %01010
 	db -1
-.Node139:
+.Node136:
 	db DEDGE_WARP, 9
-	dw 143
+	dw 140
 	db %00000
 	db -1
-.Node140:
+.Node137:
 	db DEDGE_WARP, 8
-	dw 143
+	dw 140
 	db %00000
 	db -1
-.Node141:
+.Node138:
 	db DEDGE_WARP, 1
 	dw 29
 	db %00000
@@ -3134,10 +3179,10 @@ DemoWorldNodes:
 	dw 28
 	db %00000
 	db DEDGE_WARP, 5
-	dw 143
+	dw 140
 	db %00000
 	db -1
-.Node142:
+.Node139:
 	db DEDGE_WARP, 3
 	dw 31
 	db %00000
@@ -3145,61 +3190,61 @@ DemoWorldNodes:
 	dw 28
 	db %00000
 	db DEDGE_WARP, 6
-	dw 143
-	db %00000
-	db -1
-.Node143:
-	db DEDGE_WARP, 1
-	dw 141
-	db %00000
-	db DEDGE_WARP, 2
-	dw 142
-	db %00000
-	db DEDGE_WARP, 3
 	dw 140
 	db %00000
-	db DEDGE_WARP, 4
+	db -1
+.Node140:
+	db DEDGE_WARP, 1
+	dw 138
+	db %00000
+	db DEDGE_WARP, 2
 	dw 139
 	db %00000
+	db DEDGE_WARP, 3
+	dw 137
+	db %00000
+	db DEDGE_WARP, 4
+	dw 136
+	db %00000
 	db -1
-.Node144:
+.Node141:
 	db DEDGE_WARP, 5
-	dw 147
+	dw 144
 	db %00000
 	db DEDGE_WARP, 6
-	dw 145
+	dw 142
+	db %00000
+	db DEDGE_WALK, 0
+	dw 140
+	db %00000
+	db -1
+.Node142:
+	db DEDGE_WARP, 2
+	dw 141
 	db %00000
 	db DEDGE_WALK, 0
 	dw 143
+	db %00010
+	db -1
+.Node143:
+	db DEDGE_WARP, 1
+	dw 134
+	db %00000
+	db DEDGE_WALK, 0
+	dw 142
+	db %00010
+	db -1
+.Node144:
+	db DEDGE_WARP, 1
+	dw 141
 	db %00000
 	db -1
 .Node145:
 	db DEDGE_WARP, 2
-	dw 144
+	dw 135
 	db %00000
-	db DEDGE_WALK, 0
-	dw 146
-	db %00010
 	db -1
 .Node146:
-	db DEDGE_WARP, 1
-	dw 137
-	db %00000
-	db DEDGE_WALK, 0
-	dw 145
-	db %00010
-	db -1
-.Node147:
-	db DEDGE_WARP, 1
-	dw 144
-	db %00000
-	db -1
-.Node148:
-	db DEDGE_WARP, 2
-	dw 138
-	db %00000
-	db -1
-.Node149:
 	db DEDGE_WARP, 1
 	dw 34
 	db %00000
@@ -3207,15 +3252,15 @@ DemoWorldNodes:
 	dw 33
 	db %00000
 	db -1
-.Node150:
+.Node147:
 	db DEDGE_WARP, 3
-	dw 152
-	db %00000
-	db DEDGE_WALK, 0
 	dw 149
 	db %00000
+	db DEDGE_WALK, 0
+	dw 146
+	db %00000
 	db -1
-.Node151:
+.Node148:
 	db DEDGE_WARP, 2
 	dw 262
 	db %00000
@@ -3223,131 +3268,139 @@ DemoWorldNodes:
 	dw 260
 	db %00000
 	db DEDGE_WARP, 4
+	dw 151
+	db %00000
+	db -1
+.Node149:
+	db DEDGE_WARP, 1
+	dw 147
+	db %00000
+	db DEDGE_WARP, 2
+	dw 152
+	db %00000
+	db DEDGE_WARP, 4
 	dw 153
 	db %00000
 	db -1
-.Node152:
-	db DEDGE_WARP, 1
-	dw 150
-	db %00000
-	db DEDGE_WARP, 2
-	dw 154
+.Node150:
+	db DEDGE_WARP, 5
+	dw 152
 	db %00000
 	db -1
-.Node153:
+.Node151:
 	db DEDGE_WARP, 7
-	dw 151
+	dw 148
 	db %00000
 	db DEDGE_WARP, 8
-	dw 161
+	dw 159
+	db %00000
+	db DEDGE_WARP, 8
+	dw 158
 	db %00000
 	db DEDGE_WARP, 8
 	dw 160
 	db %00000
-	db DEDGE_WARP, 8
-	dw 162
+	db -1
+.Node152:
+	db DEDGE_WARP, 1
+	dw 149
+	db %00000
+	db DEDGE_WARP, 2
+	dw 163
+	db %00000
+	db -1
+.Node153:
+	db DEDGE_WALK, 0
+	dw 152
 	db %00000
 	db -1
 .Node154:
-	db DEDGE_WARP, 1
+	db DEDGE_WALK, 0
 	dw 152
-	db %00000
-	db DEDGE_WARP, 2
-	dw 165
 	db %00000
 	db -1
 .Node155:
 	db DEDGE_WALK, 0
-	dw 154
+	dw 152
 	db %00000
 	db -1
 .Node156:
+	db DEDGE_WARP, 2
+	dw 163
+	db %00000
 	db DEDGE_WALK, 0
-	dw 154
+	dw 152
+	db %00000
+	db DEDGE_WALK, 0
+	dw 155
 	db %00000
 	db -1
 .Node157:
+	db DEDGE_WARP, 2
+	dw 163
+	db %00000
+	db DEDGE_WALK, 0
+	dw 152
+	db %00000
 	db DEDGE_WALK, 0
 	dw 154
 	db %00000
 	db -1
 .Node158:
+	db DEDGE_WARP, 1
+	dw 151
+	db %00000
 	db DEDGE_WARP, 2
-	dw 165
-	db %00000
-	db DEDGE_WALK, 0
-	dw 154
-	db %00000
-	db DEDGE_WALK, 0
-	dw 157
+	dw 163
 	db %00000
 	db -1
 .Node159:
-	db DEDGE_WARP, 2
-	dw 165
-	db %00000
 	db DEDGE_WALK, 0
-	dw 154
-	db %00000
-	db DEDGE_WALK, 0
-	dw 156
+	dw 158
 	db %00000
 	db -1
 .Node160:
-	db DEDGE_WARP, 1
-	dw 153
-	db %00000
-	db DEDGE_WARP, 2
-	dw 165
+	db DEDGE_WALK, 0
+	dw 158
 	db %00000
 	db -1
 .Node161:
+	db DEDGE_WARP, 1
+	dw 151
+	db %00000
+	db DEDGE_WALK, 0
+	dw 158
+	db %00000
 	db DEDGE_WALK, 0
 	dw 160
 	db %00000
 	db -1
 .Node162:
+	db DEDGE_WARP, 1
+	dw 151
+	db %00000
 	db DEDGE_WALK, 0
-	dw 160
+	dw 158
+	db %00000
+	db DEDGE_WALK, 0
+	dw 159
 	db %00000
 	db -1
 .Node163:
 	db DEDGE_WARP, 1
-	dw 153
-	db %00000
-	db DEDGE_WALK, 0
-	dw 160
-	db %00000
-	db DEDGE_WALK, 0
-	dw 162
-	db %00000
-	db -1
-.Node164:
-	db DEDGE_WARP, 1
-	dw 153
-	db %00000
-	db DEDGE_WALK, 0
-	dw 160
-	db %00000
-	db DEDGE_WALK, 0
-	dw 161
-	db %00000
-	db -1
-.Node165:
-	db DEDGE_WARP, 1
-	dw 156
-	db %00000
-	db DEDGE_WARP, 1
 	dw 154
 	db %00000
 	db DEDGE_WARP, 1
-	dw 157
+	dw 152
+	db %00000
+	db DEDGE_WARP, 1
+	dw 155
 	db %00000
 	db DEDGE_WARP, 2
-	dw 160
+	dw 158
 	db %00000
 	db -1
-.Node166:
+.Node164:
 	db DEDGE_WARP, 1
 	dw 575
 	db %00000
@@ -3355,28 +3408,28 @@ DemoWorldNodes:
 	dw 574
 	db %00000
 	db DEDGE_WARP, 2
-	dw 178
+	dw 176
+	db %00000
+	db -1
+.Node165:
+	db DEDGE_WARP, 3
+	dw 171
+	db %00000
+	db DEDGE_WARP, 4
+	dw 173
+	db %00000
+	db -1
+.Node166:
+	db DEDGE_WARP, 2
+	dw 177
 	db %00000
 	db -1
 .Node167:
 	db DEDGE_WARP, 3
-	dw 173
-	db %00000
-	db DEDGE_WARP, 4
-	dw 175
+	dw 176
 	db %00000
 	db -1
 .Node168:
-	db DEDGE_WARP, 2
-	dw 179
-	db %00000
-	db -1
-.Node169:
-	db DEDGE_WARP, 3
-	dw 178
-	db %00000
-	db -1
-.Node170:
 	db DEDGE_WARP, 1
 	dw 573
 	db %00000
@@ -3384,13 +3437,13 @@ DemoWorldNodes:
 	dw 576
 	db %00000
 	db DEDGE_WALK, 0
-	dw 168
+	dw 166
 	db %00000
 	db DEDGE_WALK, 0
-	dw 169
+	dw 167
 	db %00000
 	db -1
-.Node171:
+.Node169:
 	db DEDGE_WARP, 1
 	dw 577
 	db %00000
@@ -3398,48 +3451,48 @@ DemoWorldNodes:
 	dw 579
 	db %00000
 	db DEDGE_WARP, 3
-	dw 177
+	dw 175
+	db %00000
+	db DEDGE_WALK, 0
+	dw 170
+	db %00010
+	db -1
+.Node170:
+	db DEDGE_WARP, 2
+	dw 179
+	db %00000
+	db DEDGE_WALK, 0
+	dw 169
+	db %00010
+	db -1
+.Node171:
+	db DEDGE_WARP, 4
+	dw 165
 	db %00000
 	db DEDGE_WALK, 0
 	dw 172
 	db %00010
 	db -1
 .Node172:
-	db DEDGE_WARP, 2
-	dw 181
+	db DEDGE_WARP, 5
+	dw 182
 	db %00000
 	db DEDGE_WALK, 0
 	dw 171
 	db %00010
 	db -1
 .Node173:
-	db DEDGE_WARP, 4
-	dw 167
-	db %00000
-	db DEDGE_WALK, 0
-	dw 174
-	db %00010
-	db -1
-.Node174:
-	db DEDGE_WARP, 5
-	dw 184
-	db %00000
-	db DEDGE_WALK, 0
-	dw 173
-	db %00010
-	db -1
-.Node175:
-	db DEDGE_WARP, 1
-	dw 182
-	db %00000
 	db DEDGE_WARP, 1
 	dw 180
 	db %00000
+	db DEDGE_WARP, 1
+	dw 178
+	db %00000
 	db DEDGE_WARP, 2
-	dw 167
+	dw 165
 	db %00000
 	db -1
-.Node176:
+.Node174:
 	db DEDGE_WARP, 1
 	dw 578
 	db %00000
@@ -3447,132 +3500,132 @@ DemoWorldNodes:
 	dw 580
 	db %00000
 	db DEDGE_WARP, 2
-	dw 181
+	dw 179
+	db %00000
+	db -1
+.Node175:
+	db DEDGE_WARP, 4
+	dw 169
+	db %00000
+	db -1
+.Node176:
+	db DEDGE_WARP, 1
+	dw 164
+	db %00000
+	db DEDGE_WARP, 3
+	dw 167
+	db %00000
+	db DEDGE_WARP, 8
+	dw 185
+	db %00000
+	db DEDGE_WALK, 0
+	dw 175
 	db %00000
 	db -1
 .Node177:
-	db DEDGE_WARP, 4
-	dw 171
+	db DEDGE_WARP, 2
+	dw 166
+	db %00000
+	db DEDGE_WARP, 7
+	dw 184
+	db %00010
+	db DEDGE_WARP, 7
+	dw 181
 	db %00000
 	db -1
 .Node178:
-	db DEDGE_WARP, 1
-	dw 166
-	db %00000
-	db DEDGE_WARP, 3
-	dw 169
-	db %00000
-	db DEDGE_WARP, 8
-	dw 187
-	db %00000
-	db DEDGE_WALK, 0
-	dw 177
+	db DEDGE_WARP, 9
+	dw 173
 	db %00000
 	db -1
 .Node179:
-	db DEDGE_WARP, 2
-	dw 168
+	db DEDGE_WARP, 5
+	dw 170
 	db %00000
-	db DEDGE_WARP, 7
-	dw 186
-	db %00010
-	db DEDGE_WARP, 7
-	dw 183
+	db DEDGE_WARP, 6
+	dw 174
 	db %00000
 	db -1
 .Node180:
 	db DEDGE_WARP, 9
+	dw 173
+	db %00000
+	db DEDGE_WALK, 0
 	dw 175
 	db %00000
 	db -1
 .Node181:
-	db DEDGE_WARP, 5
+	db DEDGE_WARP, 1
+	dw 177
+	db %00000
+	db DEDGE_WALK, 0
+	dw 182
+	db %00010
+	db DEDGE_WALK, 0
+	dw 183
+	db %00010
+	db DEDGE_WALK, 0
+	dw 184
+	db %00010
+	db -1
+.Node182:
+	db DEDGE_WARP, 4
 	dw 172
 	db %00000
-	db DEDGE_WARP, 6
+	db DEDGE_WALK, 0
+	dw 181
+	db %01010
+	db DEDGE_WALK, 0
+	dw 183
+	db %00010
+	db DEDGE_WALK, 0
+	dw 184
+	db %01010
+	db -1
+.Node183:
+	db DEDGE_WARP, 3
+	dw 186
+	db %00000
+	db DEDGE_WALK, 0
+	dw 181
+	db %01010
+	db DEDGE_WALK, 0
+	dw 182
+	db %00010
+	db DEDGE_WALK, 0
+	dw 184
+	db %01010
+	db -1
+.Node184:
+	db DEDGE_WARP, 1
+	dw 177
+	db %00000
+	db DEDGE_WALK, 0
+	dw 181
+	db %00000
+	db DEDGE_WALK, 0
+	dw 182
+	db %00000
+	db DEDGE_WALK, 0
+	dw 183
+	db %00000
+	db -1
+.Node185:
+	db DEDGE_WARP, 2
 	dw 176
 	db %00000
 	db -1
-.Node182:
-	db DEDGE_WARP, 9
-	dw 175
-	db %00000
-	db DEDGE_WALK, 0
-	dw 177
-	db %00000
-	db -1
-.Node183:
-	db DEDGE_WARP, 1
-	dw 179
-	db %00000
-	db DEDGE_WALK, 0
-	dw 184
-	db %00010
-	db DEDGE_WALK, 0
-	dw 185
-	db %00010
-	db DEDGE_WALK, 0
-	dw 186
-	db %00010
-	db -1
-.Node184:
-	db DEDGE_WARP, 4
-	dw 174
-	db %00000
-	db DEDGE_WALK, 0
-	dw 183
-	db %01010
-	db DEDGE_WALK, 0
-	dw 185
-	db %00010
-	db DEDGE_WALK, 0
-	dw 186
-	db %01010
-	db -1
-.Node185:
-	db DEDGE_WARP, 3
-	dw 188
-	db %00000
-	db DEDGE_WALK, 0
-	dw 183
-	db %01010
-	db DEDGE_WALK, 0
-	dw 184
-	db %00010
-	db DEDGE_WALK, 0
-	dw 186
-	db %01010
-	db -1
 .Node186:
 	db DEDGE_WARP, 1
-	dw 179
-	db %00000
-	db DEDGE_WALK, 0
 	dw 183
-	db %00000
-	db DEDGE_WALK, 0
-	dw 184
-	db %00000
-	db DEDGE_WALK, 0
-	dw 185
 	db %00000
 	db -1
 .Node187:
 	db DEDGE_WARP, 2
-	dw 178
+	dw 190
 	db %00000
 	db -1
 .Node188:
-	db DEDGE_WARP, 1
-	dw 185
-	db %00000
-	db -1
-.Node189:
-	db DEDGE_WARP, 2
-	dw 192
-	db %00000
-	db -1
-.Node190:
 	db DEDGE_WARP, 1
 	dw 529
 	db %00000
@@ -3580,80 +3633,80 @@ DemoWorldNodes:
 	dw 528
 	db %00000
 	db DEDGE_WARP, 2
-	dw 192
+	dw 190
 	db %00000
 	db -1
-.Node191:
+.Node189:
 	db DEDGE_WARP, 4
-	dw 196
+	dw 194
 	db %00000
 	db DEDGE_WALK, 0
-	dw 192
+	dw 190
 	db %00010
 	db DEDGE_WALK, 0
-	dw 193
+	dw 191
 	db %01010
+	db -1
+.Node190:
+	db DEDGE_WARP, 1
+	dw 188
+	db %00000
+	db DEDGE_WARP, 1
+	dw 187
+	db %00000
+	db DEDGE_WARP, 2
+	dw 192
+	db %00000
+	db DEDGE_WALK, 0
+	dw 189
+	db %01010
+	db DEDGE_WALK, 0
+	dw 191
+	db %01010
+	db -1
+.Node191:
+	db DEDGE_WARP, 3
+	dw 193
+	db %00000
+	db DEDGE_WALK, 0
+	dw 189
+	db %01010
+	db DEDGE_WALK, 0
+	dw 190
+	db %00010
 	db -1
 .Node192:
 	db DEDGE_WARP, 1
 	dw 190
 	db %00000
-	db DEDGE_WARP, 1
-	dw 189
-	db %00000
-	db DEDGE_WARP, 2
-	dw 194
-	db %00000
-	db DEDGE_WALK, 0
-	dw 191
-	db %01010
-	db DEDGE_WALK, 0
-	dw 193
-	db %01010
 	db -1
 .Node193:
-	db DEDGE_WARP, 3
-	dw 195
-	db %00000
-	db DEDGE_WALK, 0
+	db DEDGE_WARP, 1
 	dw 191
-	db %01010
-	db DEDGE_WALK, 0
-	dw 192
-	db %00010
+	db %00000
 	db -1
 .Node194:
-	db DEDGE_WARP, 1
-	dw 192
+	db DEDGE_WARP, 2
+	dw 189
 	db %00000
 	db -1
 .Node195:
-	db DEDGE_WARP, 1
-	dw 193
+	db DEDGE_WARP, 2
+	dw 199
 	db %00000
 	db -1
 .Node196:
 	db DEDGE_WARP, 2
-	dw 191
-	db %00000
-	db -1
-.Node197:
-	db DEDGE_WARP, 2
-	dw 201
-	db %00000
-	db -1
-.Node198:
-	db DEDGE_WARP, 2
-	dw 201
+	dw 199
 	db %00000
 	db DEDGE_WALK, 0
-	dw 199
+	dw 197
 	db %00010
 	db DEDGE_WALK, 0
-	dw 200
+	dw 198
 	db %10010
 	db -1
-.Node199:
+.Node197:
 	db DEDGE_WARP, 1
 	dw 666
 	db %00000
@@ -3661,13 +3714,13 @@ DemoWorldNodes:
 	dw 665
 	db %00000
 	db DEDGE_WALK, 0
-	dw 198
+	dw 196
 	db %00010
 	db DEDGE_WALK, 0
-	dw 200
+	dw 198
 	db %10000
 	db -1
-.Node200:
+.Node198:
 	db DEDGE_WARP, 3
 	dw 258
 	db %00000
@@ -3675,21 +3728,21 @@ DemoWorldNodes:
 	dw 256
 	db %00000
 	db DEDGE_WALK, 0
-	dw 198
+	dw 196
 	db %10010
 	db DEDGE_WALK, 0
-	dw 199
+	dw 197
 	db %10000
 	db -1
-.Node201:
+.Node199:
 	db DEDGE_WARP, 2
-	dw 198
+	dw 196
 	db %00000
 	db DEDGE_WARP, 2
-	dw 197
+	dw 195
 	db %00000
 	db -1
-.Node202:
+.Node200:
 	db DEDGE_WARP, 1
 	dw 254
 	db %00000
@@ -3697,10 +3750,10 @@ DemoWorldNodes:
 	dw 252
 	db %00000
 	db DEDGE_WALK, 0
-	dw 201
+	dw 199
 	db %00010
 	db -1
-.Node203:
+.Node201:
 	db DEDGE_WARP, 1
 	dw 261
 	db %00000
@@ -3708,47 +3761,47 @@ DemoWorldNodes:
 	dw 260
 	db %00000
 	db DEDGE_WARP, 2
+	dw 202
+	db %00000
+	db -1
+.Node202:
+	db DEDGE_WARP, 3
 	dw 204
+	db %00000
+	db DEDGE_WARP, 3
+	dw 203
+	db %00000
+	db DEDGE_WARP, 4
+	dw 201
+	db %00000
+	db -1
+.Node203:
+	db DEDGE_WARP, 1
+	dw 202
 	db %00000
 	db -1
 .Node204:
-	db DEDGE_WARP, 3
-	dw 206
+	db DEDGE_WARP, 1
+	dw 202
 	db %00000
-	db DEDGE_WARP, 3
+	db DEDGE_WALK, 0
 	dw 205
-	db %00000
-	db DEDGE_WARP, 4
-	dw 203
-	db %00000
+	db %00110
 	db -1
 .Node205:
-	db DEDGE_WARP, 1
-	dw 204
+	db DEDGE_WARP, 2
+	dw 206
 	db %00000
+	db DEDGE_WALK, 0
+	dw 204
+	db %00110
 	db -1
 .Node206:
 	db DEDGE_WARP, 1
-	dw 204
+	dw 205
 	db %00000
-	db DEDGE_WALK, 0
-	dw 207
-	db %00110
 	db -1
 .Node207:
-	db DEDGE_WARP, 2
-	dw 208
-	db %00000
-	db DEDGE_WALK, 0
-	dw 206
-	db %00110
-	db -1
-.Node208:
-	db DEDGE_WARP, 1
-	dw 207
-	db %00000
-	db -1
-.Node209:
 	db DEDGE_WARP, 1
 	dw 619
 	db %00000
@@ -3756,10 +3809,10 @@ DemoWorldNodes:
 	dw 618
 	db %00000
 	db DEDGE_WALK, 0
-	dw 210
+	dw 208
 	db %01010
 	db -1
-.Node210:
+.Node208:
 	db DEDGE_WARP, 2
 	dw 621
 	db %00000
@@ -3767,18 +3820,18 @@ DemoWorldNodes:
 	dw 618
 	db %00000
 	db DEDGE_WALK, 0
-	dw 209
+	dw 207
 	db %01010
 	db -1
-.Node211:
+.Node209:
 	db DEDGE_WARP, 5
-	dw 213
+	dw 211
 	db %00000
 	db DEDGE_WARP, 6
-	dw 212
+	dw 210
 	db %00000
 	db -1
-.Node212:
+.Node210:
 	db DEDGE_WARP, 3
 	dw 591
 	db %00000
@@ -3786,10 +3839,10 @@ DemoWorldNodes:
 	dw 592
 	db %00000
 	db DEDGE_WARP, 4
-	dw 211
+	dw 209
 	db %00000
 	db -1
-.Node213:
+.Node211:
 	db DEDGE_WARP, 1
 	dw 402
 	db %00000
@@ -3797,10 +3850,10 @@ DemoWorldNodes:
 	dw 405
 	db %00000
 	db DEDGE_WARP, 2
-	dw 211
+	dw 209
 	db %00000
 	db -1
-.Node214:
+.Node212:
 	db DEDGE_WARP, 1
 	dw 433
 	db %00000
@@ -3814,10 +3867,10 @@ DemoWorldNodes:
 	dw 288
 	db %00000
 	db DEDGE_WARP, 3
-	dw 215
+	dw 213
 	db %00000
 	db -1
-.Node215:
+.Node213:
 	db DEDGE_WARP, 5
 	dw 465
 	db %00000
@@ -3825,18 +3878,18 @@ DemoWorldNodes:
 	dw 464
 	db %00000
 	db DEDGE_WARP, 7
-	dw 214
+	dw 212
 	db %00000
 	db -1
-.Node216:
+.Node214:
 	db DEDGE_WARP, 4
-	dw 217
+	dw 215
 	db %00000
 	db DEDGE_WALK, 0
-	dw 214
+	dw 212
 	db %00000
 	db -1
-.Node217:
+.Node215:
 	db DEDGE_WARP, 6
 	dw 465
 	db %00000
@@ -3844,10 +3897,10 @@ DemoWorldNodes:
 	dw 464
 	db %00000
 	db DEDGE_WARP, 8
-	dw 216
+	dw 214
 	db %00000
 	db -1
-.Node218:
+.Node216:
 	db DEDGE_WARP, 1
 	dw 661
 	db %00000
@@ -3855,15 +3908,15 @@ DemoWorldNodes:
 	dw 414
 	db %00000
 	db -1
-.Node219:
+.Node217:
 	db DEDGE_WARP, 3
-	dw 223
+	dw 221
 	db %00000
 	db DEDGE_WARP, 4
-	dw 222
+	dw 220
 	db %00000
 	db -1
-.Node220:
+.Node218:
 	db DEDGE_WARP, 1
 	dw 300
 	db %00000
@@ -3871,10 +3924,10 @@ DemoWorldNodes:
 	dw 299
 	db %00000
 	db DEDGE_WARP, 5
-	dw 223
+	dw 221
 	db %00000
 	db -1
-.Node221:
+.Node219:
 	db DEDGE_WARP, 2
 	dw 509
 	db %00000
@@ -3882,168 +3935,179 @@ DemoWorldNodes:
 	dw 508
 	db %00000
 	db DEDGE_WARP, 6
-	dw 222
+	dw 220
+	db %00000
+	db -1
+.Node220:
+	db DEDGE_WARP, 1
+	dw 219
+	db %00000
+	db DEDGE_WARP, 2
+	dw 217
+	db %00000
+	db -1
+.Node221:
+	db DEDGE_WARP, 3
+	dw 217
+	db %00000
+	db DEDGE_WARP, 4
+	dw 218
 	db %00000
 	db -1
 .Node222:
 	db DEDGE_WARP, 1
-	dw 221
-	db %00000
-	db DEDGE_WARP, 2
-	dw 219
+	dw 223
 	db %00000
 	db -1
 .Node223:
-	db DEDGE_WARP, 3
-	dw 219
-	db %00000
-	db DEDGE_WARP, 4
-	dw 220
-	db %00000
 	db -1
 .Node224:
-	db DEDGE_WARP, 1
-	dw 225
+	db DEDGE_WARP, 10
+	dw 468
 	db %00000
 	db -1
 .Node225:
+	db DEDGE_WARP, 7
+	dw 229
+	db %00000
 	db -1
 .Node226:
+	db DEDGE_WARP, 5
+	dw 227
+	db %00000
+	db DEDGE_WARP, 8
+	dw 228
+	db %00000
 	db DEDGE_WARP, 10
 	dw 468
+	db %00000
+	db DEDGE_WALK, 0
+	dw 225
 	db %00000
 	db -1
 .Node227:
-	db DEDGE_WARP, 7
-	dw 231
+	db DEDGE_WARP, 3
+	dw 230
+	db %00000
+	db DEDGE_WARP, 4
+	dw 226
 	db %00000
 	db -1
 .Node228:
-	db DEDGE_WARP, 5
-	dw 229
-	db %00000
-	db DEDGE_WARP, 10
-	dw 468
-	db %00000
 	db DEDGE_WALK, 0
 	dw 227
 	db %00000
 	db -1
 .Node229:
-	db DEDGE_WARP, 3
-	dw 232
+	db DEDGE_WARP, 6
+	dw 225
 	db %00000
-	db DEDGE_WARP, 4
-	dw 228
+	db DEDGE_WALK, 0
+	dw 227
 	db %00000
 	db -1
 .Node230:
-	db DEDGE_WALK, 0
-	dw 229
-	db %00000
-	db -1
-.Node231:
-	db DEDGE_WARP, 6
-	dw 227
-	db %00000
-	db DEDGE_WALK, 0
-	dw 229
-	db %00000
-	db -1
-.Node232:
 	db DEDGE_WARP, 1
 	dw 612
 	db %00000
 	db DEDGE_WARP, 2
-	dw 229
+	dw 227
+	db %00000
+	db -1
+.Node231:
+	db DEDGE_WARP, 1
+	dw 242
+	db %00000
+	db DEDGE_WARP, 3
+	dw 232
+	db %00000
+	db -1
+.Node232:
+	db DEDGE_WARP, 4
+	dw 231
+	db %00000
+	db DEDGE_WARP, 5
+	dw 233
 	db %00000
 	db -1
 .Node233:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 241
 	db %00000
 	db DEDGE_WARP, 3
-	dw 234
+	dw 232
 	db %00000
 	db -1
 .Node234:
-	db DEDGE_WARP, 4
-	dw 233
-	db %00000
-	db DEDGE_WARP, 5
-	dw 235
+	db DEDGE_WARP, 1
+	dw 242
 	db %00000
 	db -1
 .Node235:
 	db DEDGE_WARP, 1
 	dw 242
 	db %00000
-	db DEDGE_WARP, 3
-	dw 234
-	db %00000
 	db -1
 .Node236:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
 	db %00000
 	db -1
 .Node237:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
 	db %00000
 	db -1
 .Node238:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
+	db %00000
+	db DEDGE_WARP, 4
+	dw 238
 	db %00000
 	db -1
 .Node239:
-	db DEDGE_WARP, 1
-	dw 243
+	db DEDGE_WARP, 4
+	dw 238
 	db %00000
 	db -1
 .Node240:
 	db DEDGE_WARP, 1
-	dw 243
+	dw 242
 	db %00000
 	db -1
 .Node241:
-	db DEDGE_WARP, 1
-	dw 243
-	db %00000
-	db -1
-.Node242:
 	db DEDGE_WARP, 4
-	dw 235
+	dw 233
 	db %00000
 	db DEDGE_WARP, 12
 	dw 44
 	db %00000
 	db -1
-.Node243:
+.Node242:
 	db DEDGE_WARP, 1
 	dw 27
 	db %00000
 	db DEDGE_WARP, 3
-	dw 233
+	dw 231
 	db %00000
 	db DEDGE_WARP, 6
-	dw 236
+	dw 234
 	db %00000
 	db DEDGE_WARP, 7
-	dw 237
+	dw 235
 	db %00000
 	db DEDGE_WARP, 8
-	dw 238
+	dw 236
 	db %00000
 	db DEDGE_WARP, 9
-	dw 239
+	dw 237
 	db %00000
 	db DEDGE_WARP, 10
-	dw 240
+	dw 238
 	db %00000
 	db DEDGE_WARP, 11
-	dw 241
+	dw 240
 	db %00000
 	db DEDGE_WARP, 13
 	dw 62
@@ -4055,25 +4119,30 @@ DemoWorldNodes:
 	dw 350
 	db %00000
 	db -1
+.Node243:
+	db DEDGE_WARP, 4
+	dw 245
+	db %00000
+	db -1
 .Node244:
 	db DEDGE_WARP, 1
 	dw 262
 	db %00000
 	db DEDGE_WARP, 3
-	dw 246
+	dw 245
 	db %00000
 	db -1
 .Node245:
-	db DEDGE_WARP, 4
-	dw 246
-	db %00000
-	db -1
-.Node246:
 	db DEDGE_WARP, 1
 	dw 244
 	db %00000
 	db DEDGE_WARP, 2
-	dw 245
+	dw 243
+	db %00000
+	db -1
+.Node246:
+	db DEDGE_WARP, 5
+	dw 243
 	db %00000
 	db -1
 .Node247:
@@ -4103,7 +4172,7 @@ DemoWorldNodes:
 	db -1
 .Node252:
 	db DEDGE_WARP, 1
-	dw 202
+	dw 200
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 260
@@ -4119,7 +4188,7 @@ DemoWorldNodes:
 	db -1
 .Node254:
 	db DEDGE_WARP, 1
-	dw 202
+	dw 200
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 262
@@ -4138,7 +4207,7 @@ DemoWorldNodes:
 	db -1
 .Node256:
 	db DEDGE_WARP, 3
-	dw 200
+	dw 198
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 252
@@ -4151,7 +4220,7 @@ DemoWorldNodes:
 	db -1
 .Node258:
 	db DEDGE_WARP, 3
-	dw 200
+	dw 198
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 253
@@ -4167,10 +4236,10 @@ DemoWorldNodes:
 	db -1
 .Node260:
 	db DEDGE_WARP, 7
-	dw 151
+	dw 148
 	db %00000
 	db DEDGE_WARP, 8
-	dw 203
+	dw 201
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 252
@@ -4184,7 +4253,7 @@ DemoWorldNodes:
 	db -1
 .Node261:
 	db DEDGE_WARP, 8
-	dw 203
+	dw 201
 	db %00000
 	db DEDGE_WALK, 0
 	dw 262
@@ -4210,7 +4279,7 @@ DemoWorldNodes:
 	dw 251
 	db %00000
 	db DEDGE_WARP, 7
-	dw 151
+	dw 148
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 254
@@ -4385,7 +4454,7 @@ DemoWorldNodes:
 	db -1
 .Node288:
 	db DEDGE_WARP, 1
-	dw 214
+	dw 212
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 432
@@ -4404,7 +4473,7 @@ DemoWorldNodes:
 	db -1
 .Node290:
 	db DEDGE_WARP, 1
-	dw 214
+	dw 212
 	db %00000
 	db DEDGE_WALK, 0
 	dw 289
@@ -4470,7 +4539,7 @@ DemoWorldNodes:
 	db -1
 .Node299:
 	db DEDGE_WARP, 1
-	dw 220
+	dw 218
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 301
@@ -4478,7 +4547,7 @@ DemoWorldNodes:
 	db -1
 .Node300:
 	db DEDGE_WARP, 1
-	dw 220
+	dw 218
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 302
@@ -4725,7 +4794,7 @@ DemoWorldNodes:
 	db -1
 .Node329:
 	db DEDGE_WARP, 1
-	dw 99
+	dw 98
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 344
@@ -4736,7 +4805,7 @@ DemoWorldNodes:
 	db -1
 .Node330:
 	db DEDGE_WARP, 1
-	dw 99
+	dw 98
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 331
@@ -4759,7 +4828,7 @@ DemoWorldNodes:
 	dw 328
 	db %00000
 	db DEDGE_WARP, 6
-	dw 107
+	dw 106
 	db %00000
 	db DEDGE_WARP, 7
 	dw 394
@@ -4852,7 +4921,7 @@ DemoWorldNodes:
 	dw 358
 	db %00000
 	db DEDGE_WARP, 4
-	dw 99
+	dw 98
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 351
@@ -4860,7 +4929,7 @@ DemoWorldNodes:
 	db -1
 .Node344:
 	db DEDGE_WARP, 4
-	dw 99
+	dw 98
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 329
@@ -4914,7 +4983,7 @@ DemoWorldNodes:
 	db -1
 .Node350:
 	db DEDGE_EDGE, 1
-	dw 243
+	dw 242
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 349
@@ -4984,7 +5053,7 @@ DemoWorldNodes:
 	db -1
 .Node358:
 	db DEDGE_WARP, 1
-	dw 76
+	dw 75
 	db %00000
 	db DEDGE_WARP, 3
 	dw 343
@@ -5016,7 +5085,7 @@ DemoWorldNodes:
 	dw 349
 	db %00000
 	db DEDGE_WARP, 3
-	dw 76
+	dw 75
 	db %00000
 	db -1
 .Node363:
@@ -5115,10 +5184,10 @@ DemoWorldNodes:
 	dw 360
 	db %00000
 	db DEDGE_WARP, 13
-	dw 133
+	dw 131
 	db %00000
 	db DEDGE_WARP, 14
-	dw 132
+	dw 130
 	db %00000
 	db DEDGE_WARP, 15
 	dw 393
@@ -5278,7 +5347,7 @@ DemoWorldNodes:
 	db -1
 .Node394:
 	db DEDGE_WARP, 1
-	dw 127
+	dw 126
 	db %00000
 	db DEDGE_WARP, 3
 	dw 331
@@ -5289,7 +5358,7 @@ DemoWorldNodes:
 	dw 367
 	db %00000
 	db DEDGE_WARP, 3
-	dw 126
+	dw 125
 	db %00000
 	db -1
 .Node396:
@@ -5357,7 +5426,7 @@ DemoWorldNodes:
 	dw 463
 	db %00000
 	db DEDGE_WARP, 10
-	dw 213
+	dw 211
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 397
@@ -5390,7 +5459,7 @@ DemoWorldNodes:
 	db -1
 .Node405:
 	db DEDGE_WARP, 10
-	dw 213
+	dw 211
 	db %00000
 	db -1
 .Node406:
@@ -5441,7 +5510,7 @@ DemoWorldNodes:
 	dw 397
 	db %00000
 	db DEDGE_WARP, 3
-	dw 218
+	dw 216
 	db %00000
 	db -1
 .Node415:
@@ -5570,7 +5639,7 @@ DemoWorldNodes:
 	db -1
 .Node432:
 	db DEDGE_WARP, 1
-	dw 214
+	dw 212
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 436
@@ -5581,7 +5650,7 @@ DemoWorldNodes:
 	db -1
 .Node433:
 	db DEDGE_WARP, 1
-	dw 214
+	dw 212
 	db %00000
 	db DEDGE_EDGE, 2
 	dw 435
@@ -5808,18 +5877,18 @@ DemoWorldNodes:
 	db -1
 .Node464:
 	db DEDGE_WARP, 1
-	dw 215
+	dw 213
 	db %00000
 	db DEDGE_WARP, 2
-	dw 217
+	dw 215
 	db %00000
 	db -1
 .Node465:
 	db DEDGE_WARP, 1
-	dw 215
+	dw 213
 	db %00000
 	db DEDGE_WARP, 2
-	dw 217
+	dw 215
 	db %00000
 	db DEDGE_WARP, 3
 	dw 466
@@ -5840,10 +5909,10 @@ DemoWorldNodes:
 	dw 469
 	db %00000
 	db DEDGE_WARP, 3
-	dw 228
+	dw 226
 	db %00000
 	db DEDGE_WARP, 3
-	dw 226
+	dw 224
 	db %00000
 	db -1
 .Node469:
@@ -5858,12 +5927,33 @@ DemoWorldNodes:
 	db DEDGE_WARP, 1
 	dw 469
 	db %00000
+	db DEDGE_WARP, 2
+	dw 471
+	db %00000
 	db -1
 .Node471:
+	db DEDGE_WARP, 1
+	dw 470
+	db %00000
+	db DEDGE_WARP, 3
+	dw 472
+	db %00000
 	db -1
 .Node472:
+	db DEDGE_WARP, 1
+	dw 471
+	db %00000
+	db DEDGE_WARP, 3
+	dw 473
+	db %00000
 	db -1
 .Node473:
+	db DEDGE_WARP, 1
+	dw 472
+	db %00000
+	db DEDGE_WARP, 3
+	dw 474
+	db %00000
 	db -1
 .Node474:
 	db -1
@@ -6112,7 +6202,7 @@ DemoWorldNodes:
 	db -1
 .Node508:
 	db DEDGE_WARP, 1
-	dw 221
+	dw 219
 	db %00000
 	db DEDGE_EDGE, 1
 	dw 301
@@ -6126,7 +6216,7 @@ DemoWorldNodes:
 	db -1
 .Node509:
 	db DEDGE_WARP, 1
-	dw 221
+	dw 219
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 511
@@ -6275,7 +6365,7 @@ DemoWorldNodes:
 	db -1
 .Node528:
 	db DEDGE_WARP, 2
-	dw 190
+	dw 188
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 525
@@ -6286,7 +6376,7 @@ DemoWorldNodes:
 	dw 531
 	db %00000
 	db DEDGE_WARP, 2
-	dw 190
+	dw 188
 	db %00000
 	db DEDGE_EDGE, 3
 	dw 526
@@ -6650,7 +6740,7 @@ DemoWorldNodes:
 	db -1
 .Node573:
 	db DEDGE_WARP, 2
-	dw 170
+	dw 168
 	db %00000
 	db DEDGE_WALK, 0
 	dw 572
@@ -6667,12 +6757,12 @@ DemoWorldNodes:
 	db -1
 .Node574:
 	db DEDGE_WARP, 1
-	dw 166
+	dw 164
 	db %00000
 	db -1
 .Node575:
 	db DEDGE_WARP, 1
-	dw 166
+	dw 164
 	db %00000
 	db DEDGE_WALK, 0
 	dw 572
@@ -6689,12 +6779,12 @@ DemoWorldNodes:
 	db -1
 .Node576:
 	db DEDGE_WARP, 2
-	dw 170
+	dw 168
 	db %00000
 	db -1
 .Node577:
 	db DEDGE_WARP, 3
-	dw 171
+	dw 169
 	db %00000
 	db DEDGE_WALK, 0
 	dw 572
@@ -6711,7 +6801,7 @@ DemoWorldNodes:
 	db -1
 .Node578:
 	db DEDGE_WARP, 4
-	dw 176
+	dw 174
 	db %00000
 	db DEDGE_WALK, 0
 	dw 572
@@ -6728,12 +6818,12 @@ DemoWorldNodes:
 	db -1
 .Node579:
 	db DEDGE_WARP, 3
-	dw 171
+	dw 169
 	db %00000
 	db -1
 .Node580:
 	db DEDGE_WARP, 4
-	dw 176
+	dw 174
 	db %00000
 	db -1
 .Node581:
@@ -6827,7 +6917,7 @@ DemoWorldNodes:
 	dw 610
 	db %00000
 	db DEDGE_WARP, 5
-	dw 212
+	dw 210
 	db %00000
 	db DEDGE_WALK, 0
 	dw 590
@@ -6841,7 +6931,7 @@ DemoWorldNodes:
 	db -1
 .Node592:
 	db DEDGE_WARP, 5
-	dw 212
+	dw 210
 	db %00000
 	db -1
 .Node593:
@@ -6998,7 +7088,7 @@ DemoWorldNodes:
 	dw 614
 	db %00000
 	db DEDGE_WARP, 5
-	dw 232
+	dw 230
 	db %00000
 	db DEDGE_WARP, 7
 	dw 526
@@ -7076,15 +7166,15 @@ DemoWorldNodes:
 	db -1
 .Node618:
 	db DEDGE_WARP, 2
-	dw 209
+	dw 207
 	db %00000
 	db DEDGE_WARP, 3
-	dw 210
+	dw 208
 	db %00000
 	db -1
 .Node619:
 	db DEDGE_WARP, 2
-	dw 209
+	dw 207
 	db %00000
 	db DEDGE_WALK, 0
 	dw 620
@@ -7103,7 +7193,7 @@ DemoWorldNodes:
 	dw 637
 	db %00000
 	db DEDGE_WARP, 3
-	dw 210
+	dw 208
 	db %00000
 	db DEDGE_WALK, 0
 	dw 619
@@ -7534,7 +7624,7 @@ DemoWorldNodes:
 	dw 639
 	db %00000
 	db DEDGE_WARP, 3
-	dw 218
+	dw 216
 	db %00000
 	db -1
 .Node662:
@@ -7566,7 +7656,7 @@ DemoWorldNodes:
 	db -1
 .Node665:
 	db DEDGE_WARP, 3
-	dw 199
+	dw 197
 	db %00000
 	db -1
 .Node666:
@@ -7574,7 +7664,7 @@ DemoWorldNodes:
 	dw 675
 	db %00000
 	db DEDGE_WARP, 3
-	dw 199
+	dw 197
 	db %00000
 	db DEDGE_EDGE, 0
 	dw 664
