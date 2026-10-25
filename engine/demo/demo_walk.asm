@@ -27,8 +27,37 @@ DemoWalk:
 	jr z, .at_goal
 	cp DFLOW_UNREACHED
 	jr z, .no_way
+	ld b, a
+	push bc
+	call DemoObstacleAhead
+	pop bc
+	jr c, .field_move
+	ld a, b
 	call DemoDirPad
 	call DemoHold
+	jp DemoCheckStuck
+
+.field_move
+; face it, then A (the game asks whether to use the move: YES)
+	ld a, [wPlayerDirection]
+	rrca
+	rrca
+	and %11
+	cp b
+	jr z, .press_a
+	ld a, b
+	call DemoDirPad
+	call DemoHold
+	jp DemoCheckStuck
+
+.press_a
+	ldh a, [hJoyDown]
+	and PAD_A
+	ld a, PAD_A
+	jr z, .a
+	xor a ; (a fresh press each time)
+.a
+	ld [wDemoPad], a
 	jp DemoCheckStuck
 
 .no_way
@@ -128,6 +157,186 @@ DemoWalk:
 	jr z, .there
 	ld a, b
 	jr .hold_dir
+
+DemoObstacleAhead:
+; b: the way the flow goes. Return carry if what's that way needs a field move
+; first: a CUT tree, water (while it isn't surfing), a whirlpool, a waterfall to
+; go up, or a rock to smash.
+	ld a, [wXCoord]
+	ld d, a
+	ld a, [wYCoord]
+	ld e, a
+	ld a, b
+	and a ; DOWN
+	jr nz, .not_down
+	inc e
+	jr .got_cell
+.not_down
+	dec a ; UP
+	jr nz, .not_up
+	dec e
+	jr .got_cell
+.not_up
+	dec a ; LEFT
+	jr nz, .right
+	dec d
+	jr .got_cell
+.right
+	inc d
+.got_cell
+	push bc
+	push de
+	ld a, d
+	add 4
+	ld d, a
+	ld a, e
+	add 4
+	ld e, a
+	call GetCoordTileCollision
+	pop de
+	pop bc
+	cp COLL_CUT_TREE
+	jr z, .yes
+	cp COLL_CUT_TREE_1A
+	jr z, .yes
+	cp COLL_WHIRLPOOL
+	jr z, .yes
+	cp COLL_WHIRLPOOL_2C
+	jr z, .yes
+	cp COLL_WATERFALL
+	jr z, .waterfall
+	push bc
+	push de
+	call GetTilePermission
+	pop de
+	pop bc
+	and $f
+	cp WATER_TILE
+	jr nz, .rock
+	ld a, [wPlayerState]
+	cp PLAYER_SURF
+	jr z, .no
+	cp PLAYER_SURF_PIKA
+	jr z, .no
+.yes
+	scf
+	ret
+
+.waterfall
+	ld a, b
+	cp UP
+	jr z, .yes
+.no
+	and a
+	ret
+
+.rock
+; a rock to smash there?
+	ld a, d
+	add 4
+	ld d, a
+	ld a, e
+	add 4
+	ld e, a
+	ld hl, wObjectStructs + OBJECT_LENGTH ; (not the player)
+	ld c, NUM_OBJECT_STRUCTS - 1
+.object
+	ld a, [hl] ; OBJECT_SPRITE
+	cp SPRITE_ROCK
+	jr nz, .next_object
+	push hl
+	ld a, l
+	add OBJECT_MAP_X
+	ld l, a
+	adc h
+	sub l
+	ld h, a
+	ld a, [hli]
+	cp d
+	jr nz, .not_there
+	ld a, [hl]
+	cp e
+	jr nz, .not_there
+	pop hl
+	scf
+	ret
+
+.not_there
+	pop hl
+.next_object
+	push bc
+	ld bc, OBJECT_LENGTH
+	add hl, bc
+	pop bc
+	dec c
+	jr nz, .object
+	and a
+	ret
+
+DemoFieldMoves:
+; wDemoFieldMoves: what the team can get past, as the game checks it (someone
+; knows the move, or the PACK has its HM or TM; and the badge for it).
+	ld c, 0 ; (the flags)
+	ld b, 1 ; (this move's)
+	ld hl, .Moves
+.loop
+	ld a, [hli]
+	and a
+	jr z, .done
+	push hl
+	push bc
+	ld d, a
+	farcall CheckPartyMove
+	pop bc
+	pop hl
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	inc hl
+	jr c, .next
+	ld a, d
+	and e
+	inc a
+	jr z, .yes ; (no badge needed)
+	push hl
+	push bc
+	ld b, CHECK_FLAG
+	farcall EngineFlagAction
+	ld a, c
+	pop bc
+	pop hl
+	and a
+	jr z, .next
+.yes
+	ld a, c
+	or b
+	ld c, a
+.next
+	sla b
+	jr .loop
+
+.done
+	ld a, BANK(wDemoFieldMoves)
+	ldh [rWBK], a
+	ld a, c
+	ld [wDemoFieldMoves], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+.Moves:
+; in DEMOFIELD_* order: the move, and the badge it needs
+	db CUT
+	dw ENGINE_HIVEBADGE
+	db SURF
+	dw ENGINE_FOGBADGE
+	db WHIRLPOOL
+	dw ENGINE_GLACIERBADGE
+	db WATERFALL
+	dw ENGINE_RISINGBADGE
+	db ROCK_SMASH
+	dw -1 ; (none)
+	db 0 ; end
 
 DemoGrassThatWay:
 ; a: a direction. Return carry if the cell that way from the player is grass
@@ -337,6 +546,7 @@ DemoFlowAt:
 
 DemoBuildFlow:
 ; Work out every cell's way to the goal.
+	call DemoFieldMoves
 	ld a, [wMapWidth]
 	add a
 	ld [wDemoGridW], a
@@ -423,20 +633,60 @@ DemoMapCollisions:
 	ret
 
 DemoStandable:
-; a: a collision. Return it, or COLL_WALL if no one can stand there.
+; a: a collision. Return it, or COLL_WALL if no one can stand there, or the team
+; can't get there: CUT trees, water, whirlpools and waterfalls need their field
+; moves (wDemoFieldMoves). (WRAM bank 1.)
 	cp -1 ; (off the map)
 	jr z, .wall
 	ld b, a
+	ld c, DEMOFIELD_CUT_F
+	cp COLL_CUT_TREE
+	jr z, .field_move
+	cp COLL_CUT_TREE_1A
+	jr z, .field_move
+	ld c, DEMOFIELD_WHIRLPOOL_F
+	cp COLL_WHIRLPOOL
+	jr z, .field_move
+	cp COLL_WHIRLPOOL_2C
+	jr z, .field_move
+	ld c, DEMOFIELD_WATERFALL_F
+	cp COLL_WATERFALL
+	jr z, .field_move
 	and $f0
 	cp COLL_PIT & $f0
+	jr z, .wall
+	cp HI_NYBBLE_CURRENT ; (not yet)
 	jr z, .wall
 	ld a, b
 	push bc
 	call GetTilePermission
 	pop bc
 	and $f
+	jr z, .land
+	cp WATER_TILE
+	jr nz, .wall
+	ld c, DEMOFIELD_SURF_F
+.field_move
+	ld a, BANK(wDemoFieldMoves)
+	ldh [rWBK], a
+	ld a, [wDemoFieldMoves]
+	ld h, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, h
+	inc c
+.bit
+	dec c
+	jr z, .got_bit
+	rrca
+	jr .bit
+.got_bit
+	and 1
+	jr z, .wall
+.land
 	ld a, b
-	ret z ; LAND_TILE
+	ret
+
 .wall
 	ld a, COLL_WALL
 	ret
@@ -460,6 +710,17 @@ DemoMarkPeople:
 	pop hl
 	cp SPRITEMOVEDATA_FOLLOWER
 	jr z, .next
+	ld a, [hl] ; OBJECT_SPRITE
+	cp SPRITE_ROCK
+	jr nz, .in_the_way
+	ld a, BANK(wDemoFieldMoves)
+	ldh [rWBK], a
+	ld a, [wDemoFieldMoves]
+	bit DEMOFIELD_ROCK_SMASH_F, a
+	jr nz, .next ; (it smashes it)
+	ld a, BANK(wObjectStructs)
+	ldh [rWBK], a
+.in_the_way
 	ld bc, OBJECT_MAP_X
 	add hl, bc
 	ld a, [hli]
@@ -1025,7 +1286,23 @@ DemoSearch:
 
 DemoTryFrom:
 ; Could the player reach the cell being looked at by moving [wDemoCellDir]?
-; A step from the cell before it, or a jump from a ledge two cells back.
+; A step from the cell before it, a jump from a ledge two cells back, or a slide
+; over ice from further back (on ice the player slides on till off it, or till
+; something's in the way).
+	call DemoSearch.Cell
+	call DemoCollAtIndex
+	call DemoIsIce
+	jr nz, .stops
+; (no one sliding this way stops on this ice if they can go on)
+	call DemoStepToward
+	ret c ; (off the map: nowhere to go on)
+	push de
+	call DemoCellIndex
+	pop de
+	call DemoCollAtIndex
+	cp COLL_WALL
+	ret nz
+.stops
 	call DemoSearch.Cell
 	call DemoStepBack
 	ret c
@@ -1045,8 +1322,10 @@ DemoTryFrom:
 .no_step
 	pop hl
 	pop de
-; a jump: over a cell no one can stand on, from a ledge that way
 	call DemoCollAtIndex
+	call DemoIsIce
+	jr z, .slid
+; a jump: over a cell no one can stand on, from a ledge that way
 	cp COLL_WALL
 	ret nz
 	call DemoStepBack
@@ -1069,12 +1348,45 @@ DemoTryFrom:
 	ld a, [wDemoCellDir]
 	jp DemoMark
 
+.slid
+; the cell before was ice: the slide may have begun further back
+	call DemoStepBack
+	ret c
+	call DemoCollAtIndex
+	cp COLL_WALL
+	ret z
+	push af
+	call DemoFlowAtIndex
+	cp DFLOW_UNREACHED
+	jr nz, .slid_on
+	push de
+	push hl
+	ld a, [wDemoCellDir]
+	call DemoMark
+	pop hl
+	pop de
+.slid_on
+	pop af
+	call DemoIsIce
+	jr z, .slid
+	ret
+
+DemoIsIce:
+; a: a collision. Return z if it's ice.
+	cp COLL_ICE
+	ret z
+	cp COLL_ICE_2B
+	ret
+
 DemoCanStep:
 ; hl: a cell. Return carry if the player can step from it [wDemoCellDir] into
-; the cell being looked at (its side walls and the other's allowing).
+; the cell being looked at (its side walls and the other's allowing; and only
+; up or down a waterfall).
 	call DemoCollAtIndex
 	cp COLL_WALL
 	jr z, .no
+	call .Waterfall
+	jr nz, .no
 	ld hl, DemoSideWallExits
 	call .Walls
 	jr nz, .no
@@ -1082,10 +1394,27 @@ DemoCanStep:
 	call DemoSearch.Cell
 	pop de
 	call DemoCollAtIndex
+	call .Waterfall
+	jr nz, .no
 	ld hl, DemoSideWallEntries
 	call .Walls
 	jr nz, .no
 	scf
+	ret
+
+.Waterfall:
+; a: a collision. Return nz if it's a waterfall, and the way isn't up or down.
+	cp COLL_WATERFALL
+	jr nz, .not_waterfall
+	ld a, [wDemoCellDir]
+	cp LEFT
+	jr nc, .across
+.not_waterfall
+	xor a
+	ret
+
+.across
+	or 1
 	ret
 
 .no

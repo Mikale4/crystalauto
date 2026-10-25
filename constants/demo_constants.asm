@@ -89,6 +89,13 @@ DEF NUM_DEMO_TARGETS EQU 592
 	const DTARGET_HIDDEN   ; 1: a hidden item (its x, y)
 	const DTARGET_TRAINER  ; 2: a trainer (its object)
 DEF DEMO_MAX_BLOCKED EQU 32
+
+; wDemoFieldMoves: what the team can get past (see DemoFieldMoves)
+DEF DEMOFIELD_CUT_F        EQU 0 ; CUT trees
+DEF DEMOFIELD_SURF_F       EQU 1 ; water
+DEF DEMOFIELD_WHIRLPOOL_F  EQU 2 ; whirlpools
+DEF DEMOFIELD_WATERFALL_F  EQU 3 ; waterfalls (up them)
+DEF DEMOFIELD_ROCK_SMASH_F EQU 4 ; rocks
 DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 
 ; wDemoStatus: what the Demo says it's doing (DemoStatusTexts)
