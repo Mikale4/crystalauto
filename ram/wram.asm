@@ -652,6 +652,13 @@ wABCandidateOut:: db ; whether wABCandidate is the one out (its accuracy and eva
 wBattleHeldItems:: ds PARTY_LENGTH ; what the party held going in (see SaveBattleHeldItems)
 wPlayerHeldFlags:: db ; HELDFLAG_* (see MarkFirstAttack and BattleCommand_ApplyDamage)
 wEnemyHeldFlags:: db
+wAutoMove:: db ; a move used by itself (see AutoMove): its PP, but not a turn
+wAutoMoveBackup:: ds 2 + MOVE_LENGTH ; the move the user chose (its number, the move, its struct)
+wPlayerEntryDone:: db ; the POKéMON out has used its entry moves (see HandleEntryMoves)
+wEnemyEntryDone:: db
+wHitDamage:: dw ; what the last attack did to its target (not to a SUBSTITUTE): see HandleAutoCounter
+wPlayerTimesHit:: ds PARTY_LENGTH ; how many times each POKéMON was hit this battle (RAGE)
+wEnemyTimesHit:: ds PARTY_LENGTH
 wABCandidate:: battle_struct wABCandidate
 wBattleEnd::
 

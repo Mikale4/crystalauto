@@ -42,21 +42,31 @@ AIChooseMove:
 	add hl, bc
 	ld [hl], 80
 
-; Don't pick moves with 0 PP.
+; Don't pick moves with 0 PP, or COUNTER and MIRROR COAT (they work by themselves).
 .CheckPP:
 	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonPP
-	ld b, 0
+	ld bc, wEnemyMonMoves - 1
 .CheckMovePP:
-	inc b
-	ld a, b
-	cp NUM_MOVES + 1
+	inc bc
+	ld a, c
+	cp LOW(wEnemyMonMoves + NUM_MOVES)
 	jr z, .ApplyLayers
 	inc hl
+	ld a, [bc]
+	cp COUNTER
+	jr z, .Unusable
+	cp MIRROR_COAT
+	jr z, .Unusable
 	ld a, [de]
 	inc de
 	and PP_MASK
 	jr nz, .CheckMovePP
+	ld [hl], 80
+	jr .CheckMovePP
+
+.Unusable:
+	inc de
 	ld [hl], 80
 	jr .CheckMovePP
 

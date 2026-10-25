@@ -533,25 +533,30 @@ HeldKingsRock::
 
 ResetEntryHeldFlags::
 ; A POKéMON coming in by BATON PASS (the user's side): no moves or attacks since,
-; for its QUICK CLAW and KING'S ROCK.
+; for its QUICK CLAW and KING'S ROCK, and its entry moves to come.
 	call UserHeldFlags
 	ld a, [hl]
 	and HELDFLAGS_ON_ENTRY
 	ld [hl], a
 	ld hl, wPlayerTurnsTaken
+	ld de, wPlayerEntryDone
 	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_turns
 	ld hl, wEnemyTurnsTaken
+	ld de, wEnemyEntryDone
 .got_turns
-	ld [hl], 0
+	xor a
+	ld [hl], a
+	ld [de], a
 	ret
 
 HandleEntryTransform::
 ; TRANSFORM, as the latest games' IMPOSTER: a POKéMON that knows it turns into the
 ; foe as it comes in, before it does anything (each turn, see BattleTurn: one
 ; that hasn't moved since it came in). Not when it's already transformed, or the
-; foe is, or is out of sight (FLY, DIG).
+; foe is, or is out of sight (FLY, DIG). Its entry moves come first.
+	call HandleEntryMoves
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -617,4 +622,381 @@ HandleEntryTransform::
 	pop af
 	pop hl
 	ld [hl], a
+	ret
+
+HandleEntryMoves:
+; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT and LOCK-ON work as a
+; POKéMON comes in: at the start of its first turn out, it uses each of them it
+; knows with PP left (taking their PP), before it does anything else.
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .reverse
+	call .player
+	jr .enemy
+
+.reverse
+	call .enemy
+	; fallthrough
+
+.player
+	xor a
+	ldh [hBattleTurn], a
+	ld hl, wPlayerEntryDone
+	jr .go
+
+.enemy
+	ld a, 1
+	ldh [hBattleTurn], a
+	ld hl, wEnemyEntryDone
+.go
+	ld a, [hl]
+	and a
+	ret nz
+	ld [hl], TRUE
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, EntryMoves
+.loop
+	ld a, [hli]
+	cp -1
+	ret z
+	push hl
+	ld b, a
+	call .Use
+	pop hl
+	jr .loop
+
+.Use:
+	ld a, b
+	cp FUTURE_SIGHT
+	jr nz, .use
+; (not while one is on its way)
+	ld hl, wPlayerFutureSightCount
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .future_sight
+	ld hl, wEnemyFutureSightCount
+.future_sight
+	ld a, [hl]
+	and a
+	ret nz
+.use
+	farcall AutoMove_Setup
+	ret c
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+EntryMoves:
+; in the order they're used (LOCK-ON last: the next attack's aim, see
+; BattleCommand_CheckHit, is for an attack)
+	db SUNNY_DAY
+	db RAIN_DANCE
+	db SANDSTORM
+	db FORESIGHT
+	db FUTURE_SIGHT
+	db LOCK_ON
+	db -1
+
+CountHitTaken::
+; The target of the user's attack (not its SUBSTITUTE) takes wCurDamage: for
+; HandleAutoCounter (wHitDamage) and RAGE (the times each POKéMON was hit).
+	ld a, [wCurDamage]
+	ld [wHitDamage], a
+	ld b, a
+	ld a, [wCurDamage + 1]
+	ld [wHitDamage + 1], a
+	or b
+	ret z
+	ldh a, [hBattleTurn]
+	xor 1
+	call TimesHit
+	inc [hl]
+	ret nz
+	dec [hl] ; (it stops at 255)
+	ret
+
+TimesHit:
+; hl: how many times the POKéMON out on side a (0: the player's) was hit
+	and a
+	ld hl, wPlayerTimesHit
+	ld a, [wCurBattleMon]
+	jr z, .got_side
+	ld hl, wEnemyTimesHit
+	ld a, [wCurOTMon]
+.got_side
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ret
+
+DEF BASE_RAGE_POWER EQU 50
+DEF MAX_RAGE_POWER EQU 250
+
+GetRagePower::
+; BattleCommand_RagePower: d = RAGE's power, as the latest games' RAGE FIST: 50,
+; and 50 more for every time the user was hit this battle, up to 250. (bc and e
+; are the damage stats: see BattleCommand_DamageStats)
+	push bc
+	ldh a, [hBattleTurn]
+	call TimesHit
+	ld a, [hl]
+	cp (MAX_RAGE_POWER - BASE_RAGE_POWER) / BASE_RAGE_POWER
+	jr c, .got_hits
+	ld a, (MAX_RAGE_POWER - BASE_RAGE_POWER) / BASE_RAGE_POWER
+.got_hits
+	inc a
+	ld b, a
+	xor a
+.loop
+	add BASE_RAGE_POWER
+	dec b
+	jr nz, .loop
+	ld d, a
+	pop bc
+	ret
+
+FalseSwipeAgain::
+; BattleCommand_SwipeAgain: FALSE SWIPE missed? It swipes again, and hits for
+; double damage. (Not when the foe is protected, out of reach (FLY, DIG) or
+; immune.)
+	ld a, [wAttackMissed]
+	and a
+	ret z
+	ld a, [wTypeModifier]
+	and EFFECTIVENESS_MASK
+	jr z, .missed
+	ld a, BATTLE_VARS_SUBSTATUS1_OPP
+	call GetBattleVar
+	bit SUBSTATUS_PROTECT, a
+	jr nz, .missed
+	ld a, BATTLE_VARS_SUBSTATUS3_OPP
+	call GetBattleVar
+	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
+	jr nz, .missed
+	xor a
+	ld [wAttackMissed], a
+	ld hl, wCurDamage + 1
+	sla [hl]
+	dec hl
+	rl [hl]
+	jr nc, .doubled
+	ld a, $ff
+	ld [hli], a
+	ld [hl], a
+.doubled
+	ld hl, SwipedAgainText
+	jp StdBattleTextbox
+
+.missed
+; (no damage, as with any miss: BattleCommand_CheckHit kept it)
+	xor a
+	ld [wCurDamage], a
+	ld [wCurDamage + 1], a
+	ret
+
+DoPlayerTurnAndCounter::
+; The player's move, then the foe's COUNTER or MIRROR COAT (see HandleAutoCounter).
+	call ClearHitDamage
+	farcall DoPlayerTurn
+	jr HandleAutoCounter
+
+DoEnemyTurnAndCounter::
+; The foe's move, then the player's COUNTER or MIRROR COAT (see HandleAutoCounter).
+	call ClearHitDamage
+	farcall DoEnemyTurn
+	; fallthrough
+
+HandleAutoCounter:
+; COUNTER and MIRROR COAT work by themselves: right after an attack hit (the
+; POKéMON, not its SUBSTITUTE: wHitDamage), its target hits back for twice the
+; damage, if it knows the one for the attack's category (COUNTER for a physical
+; one, MIRROR COAT for a special one) with PP left. Not if it fainted, is asleep or
+; frozen, or the attacker is immune or fainted.
+	ld a, [wHitDamage]
+	ld b, a
+	ld a, [wHitDamage + 1]
+	or b
+	ret z
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	cp EFFECT_COUNTER
+	ret z
+	cp EFFECT_MIRROR_COAT
+	ret z
+	ld a, BATTLE_VARS_MOVE_TYPE
+	call GetBattleVar
+	and ~TYPE_MASK
+	ld b, COUNTER
+	cp PHYSICAL
+	jr z, .got_move
+	ld b, MIRROR_COAT
+	cp SPECIAL
+	ret nz
+.got_move
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld a, BATTLE_VARS_STATUS_OPP
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+; (as the one hit)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Counter
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Counter:
+	farcall AutoMove_Setup
+	ret c
+	farcall BattleCheckTypeMatchup
+	ld a, [wTypeMatchup]
+	and a
+	jr z, .immune
+; twice the damage
+	ld hl, wHitDamage + 1
+	ld a, [hld]
+	ld h, [hl]
+	ld l, a
+	add hl, hl
+	jr nc, .got_damage
+	ld hl, $ffff
+.got_damage
+	ld a, h
+	ld [wCurDamage], a
+	ld a, l
+	ld [wCurDamage + 1], a
+	ld de, AutoCounter
+	farcall AutoMove_Run
+	ret
+
+.immune
+	farcall AutoMove_Restore
+	ret
+
+ClearHitDamage:
+	xor a
+	ld [wHitDamage], a
+	ld [wHitDamage + 1], a
+	ret
+
+AutoPursuit::
+; A POKéMON that knows PURSUIT (with PP left) hits a foe switching out with it, by
+; itself (with PURSUIT's double damage), unless it's asleep or frozen. Return carry
+; if it did. One that had chosen PURSUIT has used it then.
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz ; (no carry)
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	push af
+	ld b, PURSUIT
+	farcall AutoMove_Setup
+	jr c, .none
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	pop af
+	cp PURSUIT
+	jr nz, .done
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVarAddr
+	ld [hl], CANNOT_MOVE
+.done
+	scf
+	ret
+
+.none
+	pop af
+	and a
+	ret
+
+DEF MOVEKIND_STATUS  EQU 0
+DEF MOVEKIND_ATTACK  EQU 1
+DEF MOVEKIND_COUNTER EQU 2 ; COUNTER and MIRROR COAT
+
+CheckMovesetConflict::
+; Return carry if move b can't be in a moveset with the moves at de (all
+; NUM_MOVES of them but the one in slot c: NUM_MOVES for none), and then b is the
+; move it can't be with. COUNTER and MIRROR COAT can't be in a moveset together,
+; nor with any attack.
+	ld a, b
+	call MoveKind
+	and a
+	ret z
+	ld h, a ; (the move's kind)
+	ld l, 0 ; (the slot)
+.loop
+	ld a, l
+	cp c
+	jr z, .next
+	ld a, [de]
+	and a
+	jr z, .next
+	cp b
+	jr z, .next
+	push bc
+	push hl
+	call MoveKind
+	pop hl
+	pop bc
+	and a
+	jr z, .next
+	cp MOVEKIND_COUNTER
+	jr z, .conflict
+	ld a, h
+	cp MOVEKIND_COUNTER
+	jr z, .conflict
+.next
+	inc de
+	inc l
+	ld a, l
+	cp NUM_MOVES
+	jr c, .loop
+	and a
+	ret
+
+.conflict
+	ld a, [de]
+	ld b, a
+	scf
+	ret
+
+MoveKind:
+; a: MOVEKIND_* of move a
+	cp COUNTER
+	jr z, .counter
+	cp MIRROR_COAT
+	jr z, .counter
+	dec a
+	ld hl, Moves + MOVE_TYPE
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	and ~TYPE_MASK
+	cp STATUS
+	ld a, MOVEKIND_STATUS
+	ret z
+	ld a, MOVEKIND_ATTACK
+	ret
+
+.counter
+	ld a, MOVEKIND_COUNTER
 	ret

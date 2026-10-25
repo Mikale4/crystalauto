@@ -952,13 +952,13 @@ Battle_PlayerFirst:
 PlayerTurn_EndOpponentProtectEndureDestinyBond:
 	call SetPlayerTurn
 	call EndUserDestinyBond
-	callfar DoPlayerTurn
+	callfar DoPlayerTurnAndCounter
 	jp EndOpponentProtectEndureDestinyBond
 
 EnemyTurn_EndOpponentProtectEndureDestinyBond:
 	call SetEnemyTurn
 	call EndUserDestinyBond
-	callfar DoEnemyTurn
+	callfar DoEnemyTurnAndCounter
 	jp EndOpponentProtectEndureDestinyBond
 
 EndOpponentProtectEndureDestinyBond:
@@ -3619,6 +3619,7 @@ endr
 	ld [wPlayerWrapCount], a
 	ld [wEnemyWrapCount], a
 	ld [wEnemyTurnsTaken], a
+	ld [wEnemyEntryDone], a
 	ld hl, wPlayerSubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wEnemyHeldFlags]
@@ -4110,6 +4111,7 @@ endr
 	ld [wEnemyWrapCount], a
 	ld [wPlayerWrapCount], a
 	ld [wPlayerTurnsTaken], a
+	ld [wPlayerEntryDone], a
 	ld hl, wEnemySubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wPlayerHeldFlags]
@@ -4165,35 +4167,20 @@ SpikesDamage:
 	jp hl
 
 PursuitSwitch:
-	ld a, BATTLE_VARS_MOVE
-	call GetBattleVar
-	ld b, a
-	call GetMoveEffect
-	ld a, b
-	cp EFFECT_PURSUIT
-	jr nz, .done
-
+; PURSUIT hits a foe switching out by itself (see AutoPursuit)
 	ld a, [wCurBattleMon]
 	push af
-
-	ld hl, DoPlayerTurn
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .do_turn
-	ld hl, DoEnemyTurn
+	jr z, .pursue
 	ld a, [wLastPlayerMon]
 	ld [wCurBattleMon], a
-.do_turn
-	ld a, BANK(DoPlayerTurn) ; aka BANK(DoEnemyTurn)
-	rst FarCall
-
-	ld a, BATTLE_VARS_MOVE
-	call GetBattleVarAddr
-	ld a, CANNOT_MOVE
-	ld [hl], a
-
-	pop af
+.pursue
+	farcall AutoPursuit
+	pop bc
+	ld a, b
 	ld [wCurBattleMon], a
+	jr nc, .done
 
 	ldh a, [hBattleTurn]
 	and a
@@ -5546,11 +5533,21 @@ MoveSelectionScreen:
 	ld b, 0
 	add hl, bc
 	ld a, [hl]
+	cp COUNTER
+	jr z, .works_by_itself
+	cp MIRROR_COAT
+	jr z, .works_by_itself
 
 .skip2
 	ld [wCurPlayerMove], a
 	xor a
 	ret
+
+.works_by_itself
+	ld [wNamedObjectIndex], a
+	call GetMoveName
+	ld hl, BattleText_MoveWorksByItself
+	jr .place_textbox_start_over
 
 .move_disabled
 	ld hl, BattleText_TheMoveIsDisabled
@@ -5773,43 +5770,36 @@ MoveInfoBox:
 	ret
 
 CheckPlayerHasUsableMoves:
+; Return nz if the player's POKéMON has a move to choose: one with PP left, not
+; disabled, and not COUNTER or MIRROR COAT (they work by themselves).
 	ld a, STRUGGLE
 	ld [wCurPlayerMove], a
 	ld a, [wPlayerDisableCount]
-	and a
-	ld hl, wBattleMonPP
-	jr nz, .disabled
-
-	ld a, [hli]
-	or [hl]
-	inc hl
-	or [hl]
-	inc hl
-	or [hl]
-	and PP_MASK
-	ret nz
-	jr .force_struggle
-
-.disabled
 	swap a
 	and $f
-	ld b, a
-	ld d, NUM_MOVES + 1
-	xor a
+	ld b, a ; (the disabled move's slot + 1, or 0)
+	ld c, 0
+	ld de, wBattleMonPP
+	ld hl, wBattleMonMoves
 .loop
-	dec d
-	jr z, .done
-	ld c, [hl]
-	inc hl
-	dec b
-	jr z, .loop
-	or c
-	jr .loop
-
-.done
-; BUG: A Disabled but PP Up–enhanced move may not trigger Struggle (see docs/bugs_and_glitches.md)
-	and a
+	inc c
+	ld a, [de]
+	inc de
+	and PP_MASK
+	jr z, .next
+	ld a, c
+	cp b
+	jr z, .next
+	ld a, [hl]
+	cp COUNTER
+	jr z, .next
+	cp MIRROR_COAT
 	ret nz
+.next
+	inc hl
+	ld a, c
+	cp NUM_MOVES
+	jr c, .loop
 
 .force_struggle
 	ld hl, BattleText_MonHasNoMovesLeft
@@ -5885,6 +5875,11 @@ ParseEnemyAction:
 	ld a, [wEnemyDisabledMove]
 	cp [hl]
 	jr z, .disabled
+	ld a, [hl]
+	cp COUNTER
+	jr z, .disabled
+	cp MIRROR_COAT
+	jr z, .disabled
 	ld a, [de]
 	and PP_MASK
 	jr nz, .enough_pp
@@ -5916,6 +5911,10 @@ ParseEnemyAction:
 	jr z, .loop2
 	ld a, [hl]
 	and a
+	jr z, .loop2
+	cp COUNTER
+	jr z, .loop2
+	cp MIRROR_COAT
 	jr z, .loop2
 	ld hl, wEnemyMonPP
 	add hl, bc

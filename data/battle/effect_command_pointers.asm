@@ -166,7 +166,7 @@ BattleCommandPointers:
 	dw BattleCommand_ThunderAccuracy
 	dw BattleCommand_Teleport
 	dw BattleCommand_BeatUp
-	dw BattleCommand_RageDamage
+	dw BattleCommand_RagePower
 	dw BattleCommand_ResetTypeMatchup
 	dw BattleCommand_AllStatsUp
 	dw BattleCommand_BideFailText
@@ -181,4 +181,5 @@ BattleCommandPointers:
 	dw BattleCommand_StartLoop
 	dw BattleCommand_Curl
 	dw BattleCommand_LowKick
+	dw BattleCommand_SwipeAgain
 	assert_table_length NUM_EFFECT_COMMANDS

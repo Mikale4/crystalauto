@@ -135,11 +135,11 @@ and Disabled moves) and uses the best one:
     such as Quick Attack, so the foe doesn't get to attack first.
   - Multi-hit moves count every hit. Two-turn moves (Solar Beam outside of
     sunlight, Fly, Dig, Sky Attack, Skull Bash, Razor Wind) and Hyper Beam count half.
-  - Fixed-damage moves (Seismic Toss, Night Shade, Dragon Rage, Sonic Boom,
-    Super Fang, Psywave), Hidden Power, Return, Frustration, Flail, Reversal and
-    Low Kick use their real damage. Magnitude and Present use typical values.
-  - One-hit KO moves count the foe's whole HP times their accuracy, and are skipped
-    against a higher-level foe.
+  - Fixed-damage moves (Seismic Toss, Night Shade, Dragon Rage, Sonic Boom, and
+    Super Fang and the one-hit KO moves, which halve the foe's HP), Hidden Power,
+    Rage, Flail, Reversal and Low Kick use their real damage. Magnitude, Psywave and
+    Present use typical values. False Swipe counts as sure to hit (a miss swipes
+    again).
 - **Healing moves** (RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS,
   MOONLIGHT) come first when the Pokémon is under half its HP (a third for REST) and
   the foe can't take that back in a turn, unless an attack knocks the foe out now.
@@ -156,11 +156,13 @@ and Disabled moves) and uses the best one:
   special ones) or evasion (DOUBLE TEAM), when the Pokémon is losing the race to a
   knockout and that would turn it around; lowering the foe's DEFENSE (LEER, TAIL
   WHIP) when that saves a turn and still wins it. Never more than two stages.
-- **Other status moves** (and Counter, Mirror Coat, Bide and Future Sight, whose
-  damage can't be predicted) are only used when no damaging move can hurt the foe.
+- **Other status moves** (and Bide and Future Sight, whose damage can't be
+  predicted) are only used when no damaging move can hurt the foe.
 - **Self-Destruct and Explosion** are a last resort.
-- **Moves that would fail** come last: moves the foe is immune to, Dream Eater on
-  an awake foe, Snore and Sleep Talk while awake, and False Swipe on a foe with 1 HP.
+- **Moves that would fail** come last: moves the foe is immune to, Snore and Sleep
+  Talk while awake, and Roar and Whirlwind in a wild battle (they'd end it).
+- **Counter and Mirror Coat** are never chosen: they work by themselves (see
+  [Reworked moves](#reworked-moves)).
 - **While asleep**, it prefers Sleep Talk, then Snore.
 
 If no move can be selected, your Pokémon uses Struggle, as usual.
@@ -217,16 +219,15 @@ Every move has its power, accuracy and PP from the latest games (TACKLE is 40 po
 THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
 
 - **Priority**: PROTECT, DETECT and ENDURE (+4), EXTREMESPEED (+2), QUICK ATTACK,
-  MACH PUNCH and BIDE (+1); VITAL THROW (−1), COUNTER and MIRROR COAT (−5),
-  WHIRLWIND, ROAR and TELEPORT (−6).
+  MACH PUNCH and BIDE (+1); VITAL THROW (−1), WHIRLWIND, ROAR and TELEPORT (−6).
 - **Recoil**: DOUBLE-EDGE costs 1/3 of the damage it does, other recoil moves 1/4,
   STRUGGLE 1/4 of the user's max HP. A missed JUMP KICK or HI JUMP KICK costs half
   of the user's max HP.
 - **Draining moves** heal half the damage they do; MORNING SUN, SYNTHESIS and
   MOONLIGHT heal 1/2 of the max HP, 2/3 in sunshine and 1/4 in rain or a sandstorm.
 - SELF-DESTRUCT and EXPLOSION no longer halve the foe's Defense. LOW KICK is
-  stronger the heavier the foe (20 to 120 power). PSYWAVE does 50–150% of the user's
-  level. FURY CUTTER stops growing at 160 power. SKY ATTACK is likely to land a
+  stronger the heavier the foe (20 to 120 power). FURY CUTTER stops growing at 160
+  power. SKY ATTACK is likely to land a
   critical hit. RAPID SPIN raises the user's Speed.
 - New added effects: ACID lowers Special Defense, CRUNCH lowers Defense, and
   WATERFALL can make the foe flinch.
@@ -241,6 +242,45 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   into the foe as soon as it comes in, before anything else happens (it takes no
   turn and no PP). A wild DITTO turns into your Pokémon right away. It doesn't when
   the foe has transformed too, or is out of sight (FLY, DIG).
+
+### Reworked moves
+
+Some moves work in new ways of their own:
+
+| Move | What it does |
+|---|---|
+| DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
+| BEAT UP | one of them now: 25 power, 2 to 5 hits |
+| DREAM EATER | works on a foe that's awake too |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| PURSUIT | 15 power; hits a foe switching out by itself (see below) |
+| FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
+| RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
+| CONSTRICT | always lowers SPEED |
+| GUILLOTINE, HORN DRILL, FISSURE | as RUINATION: they halve the foe's HP, 90% accurate |
+| PSYWAVE | its power varies as MAGNITUDE's does |
+| RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
+| COUNTER, MIRROR COAT | work by themselves (see below) |
+| WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
+
+**Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
+FUTURE SIGHT or LOCK-ON uses each of them as it comes in, at the start of its first
+turn out, before anything else happens. Each takes 1 PP (none is used without PP
+left), and it doesn't count as the Pokémon's move (QUICK CLAW and KING'S ROCK still
+wait for that). LOCK-ON goes last, so its aim is for the next attack. They can still
+be chosen as usual too.
+
+**PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
+on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
+does what it chose (if it chose PURSUIT, that was it).
+
+**COUNTER and MIRROR COAT.** Right after a physical attack hits a Pokémon that knows
+COUNTER (a special one, MIRROR COAT), it hits back by itself for twice the damage
+(1 PP), unless it fainted, is asleep or frozen, or the attacker is immune. They
+can't be chosen ("COUNTER works by itself!"); a Pokémon with nothing else left to
+choose STRUGGLEs. A Pokémon can't know both, nor either one with an attack: one
+that would is told it "can't learn COUNTER with TACKLE!" (with four moves, you can
+pick another one to forget), and wild and trainers' Pokémon go without those moves.
 
 ### Critical hits
 
@@ -598,7 +638,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: d7e9b160d52eeee927af12b8a75d5e89a59b2e2f`.
+The patched ROM has `sha1: e42d8a0bf4ccd9d934d53014cfa85b72b6415ab9`.
 
 
 ## Building it
@@ -750,6 +790,22 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `.CriticalMultiplier` makes it 1.5×.
 - `BattleCommand_CheckObedience` does nothing, so every Pokémon obeys (and
   `wAlreadyDisobeyed` stays 0).
+- Reworked moves: `AutoMove_Setup` and `AutoMove_Run` (in
+  [`engine/battle/effect_commands.asm`](engine/battle/effect_commands.asm)) use a move by
+  itself, outside its user's turn: its effect script (`DoMoveScript` runs another),
+  its PP (`BattleCommand_DoTurn` with `wAutoMove`), but not as its turn. They serve
+  `HandleEntryMoves` (from `HandleEntryTransform`, once per Pokémon out:
+  `wPlayerEntryDone`, `wEnemyEntryDone`), `AutoPursuit` (from `PursuitSwitch`) and
+  `HandleAutoCounter` (after each move, from `DoPlayerTurnAndCounter` and
+  `DoEnemyTurnAndCounter`, with the damage `CountHitTaken` keeps in `wHitDamage` from
+  `BattleCommand_ApplyDamage`). `CountHitTaken` also counts each Pokémon's hits
+  (`wPlayerTimesHit`, `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower`
+  command). FALSE SWIPE's miss is the `swipeagain` command (`FalseSwipeAgain`).
+  `CheckMovesetConflict` keeps COUNTER and MIRROR COAT out of movesets they can't be
+  in (`LearnMove`, `FillMoves`, `InitEggMoves`), and `CheckPlayerHasUsableMoves`,
+  the move menu, `ParseEnemyAction` and `AIChooseMove` don't choose them; all of
+  these are in [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm) but
+  the last ones.
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

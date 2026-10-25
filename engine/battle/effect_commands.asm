@@ -49,6 +49,8 @@ DoMove:
 	ld a, BANK(MoveEffectsPointers)
 	call GetFarWord
 
+DoMoveScript:
+; (hl: the effect script, in BANK(MoveEffects))
 	ld de, wBattleScriptBuffer
 
 .GetMoveEffect:
@@ -664,6 +666,10 @@ BattleCommand_DoTurn:
 	ld bc, wEnemyTurnsTaken
 
 .proceed
+; (a move used by itself, see AutoMove_Run: its PP, but it isn't a turn)
+	ld a, [wAutoMove]
+	and a
+	jr nz, .pp
 
 ; If we've gotten this far, this counts as a turn.
 	ld a, [bc]
@@ -675,6 +681,7 @@ BattleCommand_DoTurn:
 	pop hl
 	pop de
 
+.pp
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	cp STRUGGLE
@@ -1254,9 +1261,6 @@ BattleCommand_DamageVariation:
 	ret
 
 BattleCommand_CheckHit:
-	call .DreamEater
-	jp z, .Miss
-
 	call .Protect
 	jp nz, .Miss
 
@@ -1320,29 +1324,19 @@ BattleCommand_CheckHit:
 	ret
 
 .Miss:
-; Keep the damage value intact if we're using (Hi) Jump Kick.
+; Keep the damage value intact if we're using (Hi) Jump Kick, or FALSE SWIPE
+; (which swipes again, see FalseSwipeAgain).
 	ld a, BATTLE_VARS_MOVE_EFFECT
 	call GetBattleVar
 	cp EFFECT_JUMP_KICK
+	jr z, .Missed
+	cp EFFECT_FALSE_SWIPE
 	jr z, .Missed
 	call ResetDamage
 
 .Missed:
 	ld a, 1
 	ld [wAttackMissed], a
-	ret
-
-.DreamEater:
-; Return z if we're trying to eat the dream of
-; a monster that isn't sleeping.
-	ld a, BATTLE_VARS_MOVE_EFFECT
-	call GetBattleVar
-	cp EFFECT_DREAM_EATER
-	ret nz
-
-	ld a, BATTLE_VARS_STATUS_OPP
-	call GetBattleVar
-	and SLP_MASK
 	ret
 
 .Protect:
@@ -1888,6 +1882,8 @@ BattleCommand_ApplyDamage:
 	bit SUBSTATUS_SUBSTITUTE, a
 	ret nz
 
+	farcall CountHitTaken
+
 	ld de, wPlayerDamageTaken + 1
 	ldh a, [hBattleTurn]
 	and a
@@ -2167,30 +2163,9 @@ BattleCommand_BuildOpponentRage:
 	call StdBattleTextbox
 	jp BattleCommand_SwitchTurn
 
-BattleCommand_RageDamage:
-	ld a, [wCurDamage]
-	ld h, a
-	ld b, a
-	ld a, [wCurDamage + 1]
-	ld l, a
-	ld c, a
-	ldh a, [hBattleTurn]
-	and a
-	ld a, [wPlayerRageCounter]
-	jr z, .rage_loop
-	ld a, [wEnemyRageCounter]
-.rage_loop
-	and a
-	jr z, .done
-	dec a
-	add hl, bc
-	jr nc, .rage_loop
-	ld hl, $ffff
-.done
-	ld a, h
-	ld [wCurDamage], a
-	ld a, l
-	ld [wCurDamage + 1], a
+BattleCommand_RagePower:
+; (see GetRagePower)
+	farcall GetRagePower
 	ret
 
 EndMoveEffect:
@@ -3271,6 +3246,114 @@ DoSubstituteDamage:
 	call RefreshBattleHuds
 .done
 	jp ResetDamage
+
+AutoMove_Setup::
+; Get the user (hBattleTurn) ready to use its move b by itself, outside of its
+; turn (see AutoMove_Run). Return carry if it doesn't know it with PP left.
+	ld hl, wBattleMonMoves
+	ld de, wBattleMonPP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+	ld de, wEnemyMonPP
+.got_moves
+	ld c, 0
+.find
+	ld a, [hli]
+	cp b
+	jr nz, .next
+	ld a, [de]
+	and PP_MASK
+	jr nz, .found
+.next
+	inc de
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .find
+	scf
+	ret
+
+.found
+; keep the move it chose, for after (see AutoMove_Restore)
+	push bc
+	call .MoveNum
+	ld a, [hl]
+	ld [wAutoMoveBackup], a
+	ld [hl], c
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVarAddr
+	ld a, [hl]
+	ld [wAutoMoveBackup + 1], a
+	pop bc
+	ld [hl], b
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVarAddr
+	ld de, wAutoMoveBackup + 2
+	ld bc, MOVE_LENGTH
+	call CopyBytes
+	call UpdateMoveData
+	and a
+	ret
+
+.MoveNum:
+	ld hl, wCurMoveNum
+	ldh a, [hBattleTurn]
+	and a
+	ret z
+	ld hl, wCurEnemyMoveNum
+	ret
+
+AutoMove_Run::
+; Use the move AutoMove_Setup got ready, by itself: its own effect script (or
+; script de, if not 0), and its PP, but it isn't a turn. Then the move the user
+; chose is back.
+	ldh a, [hBattleTurn]
+	push af
+	ld a, TRUE
+	ld [wAutoMove], a
+	xor a
+	ld [wTurnEnded], a
+	ld [wAttackMissed], a
+	ld [wEffectFailed], a
+	ld [wBattleAnimParam], a
+	ld [wAlreadyFailed], a
+	ld a, EFFECTIVE
+	ld [wTypeModifier], a
+	ld a, d
+	or e
+	jr z, .own_script
+	ld h, d
+	ld l, e
+	call DoMoveScript
+	jr .done
+
+.own_script
+	call DoMove
+.done
+	xor a
+	ld [wAutoMove], a
+	pop af
+	ldh [hBattleTurn], a
+	; fallthrough
+
+AutoMove_Restore::
+; The move the user chose is back (after AutoMove_Setup).
+	call AutoMove_Setup.MoveNum
+	ld a, [wAutoMoveBackup]
+	ld [hl], a
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVarAddr
+	ld a, [wAutoMoveBackup + 1]
+	ld [hl], a
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVarAddr
+	ld d, h
+	ld e, l
+	ld hl, wAutoMoveBackup + 2
+	ld bc, MOVE_LENGTH
+	jp CopyBytes
 
 UpdateMoveData:
 	ld a, BATTLE_VARS_MOVE_ANIM
@@ -4656,6 +4739,16 @@ SetBattleDraw:
 	ret
 
 BattleCommand_ForceSwitch:
+; (ROAR and WHIRLWIND hit first: a foe still standing is driven off after)
+	ld hl, wEnemyMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wBattleMonHP
+.got_hp
+	ld a, [hli]
+	or [hl]
+	ret z
 	ld a, [wBattleType]
 	cp BATTLETYPE_FORCESHINY
 	jp z, .fail
@@ -4850,10 +4943,8 @@ BattleCommand_ForceSwitch:
 	jp CallBattleCore
 
 .fail
-	call BattleCommand_LowerSub
-	call BattleCommand_MoveDelay
-	call BattleCommand_RaiseSub
-	jp PrintButItFailed
+; (no "But it failed!": the foe was hit all the same)
+	ret
 
 .succeed
 	push af

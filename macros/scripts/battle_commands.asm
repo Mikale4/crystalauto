@@ -166,7 +166,7 @@ ENDM
 	command thunderaccuracy         ; 9f
 	command teleport                ; a0
 	command beatup                  ; a1
-	command ragedamage              ; a2
+	command ragepower               ; a2
 	command resettypematchup        ; a3
 	command allstatsup              ; a4
 	command bidefailtext            ; a5
@@ -181,6 +181,7 @@ ENDM
 	command startloop               ; ae
 	command curl                    ; af
 	command lowkick                 ; b0
+	command swipeagain              ; b1
 DEF NUM_EFFECT_COMMANDS EQU const_value - 1
 
 	const_def -1, -1

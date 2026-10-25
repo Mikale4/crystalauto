@@ -249,6 +249,10 @@ AutoBattle_RateMove:
 	ld a, [hl]
 	and a
 	jr z, .cant_select
+	cp COUNTER ; (it works by itself)
+	jr z, .cant_select
+	cp MIRROR_COAT
+	jr z, .cant_select
 	ld [wCurPlayerMove], a
 	callfar UpdateMoveData
 
@@ -268,8 +272,13 @@ AutoBattle_RateMove:
 	jp z, .last_resort
 	cp EFFECT_SLEEP_TALK
 	jr z, .sleep_talk
-	cp EFFECT_OHKO
-	jr z, .ohko
+; ROAR and WHIRLWIND would end a wild battle (with no EXP.)
+	cp EFFECT_FORCE_SWITCH
+	jr nz, .not_force_switch
+	ld a, [wBattleMode]
+	dec a
+	jr z, .fails
+.not_force_switch
 
 	ld hl, AutoBattleNoDamageEffects
 	ld de, 1
@@ -280,14 +289,6 @@ AutoBattle_RateMove:
 	jr z, .no_damage
 
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_DREAM_EATER
-	jr nz, .not_dream_eater
-	ld a, [wEnemyMonStatus]
-	and SLP_MASK
-	jr z, .fails
-	jr .estimate_damage
-
-.not_dream_eater
 	cp EFFECT_SNORE
 	jr nz, .estimate_damage
 	ld a, [wBattleMonStatus]
@@ -323,24 +324,6 @@ AutoBattle_RateMove:
 	ld hl, $ffff
 	ret
 
-.ohko
-; OHKO moves fail against higher-level or immune foes.
-	ld a, [wEnemyMonLevel]
-	ld b, a
-	ld a, [wBattleMonLevel]
-	cp b
-	jr c, .fails
-	callfar BattleCheckTypeMatchup
-	ld a, [wTypeMatchup]
-	and a
-	jr z, .fails
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
-	call AutoBattle_ApplyAccuracy
-	jr .got_damage
-
 .sleep_talk
 	ld a, [wBattleMonStatus]
 	and SLP_MASK
@@ -371,8 +354,6 @@ AutoBattle_RateMove:
 
 AutoBattleNoDamageEffects:
 ; Their damage isn't known in advance, so they are rated like status moves.
-	db EFFECT_COUNTER
-	db EFFECT_MIRROR_COAT
 	db EFFECT_BIDE
 	db EFFECT_FUTURE_SIGHT
 	db -1
@@ -395,10 +376,8 @@ AutoBattle_EstimateDamage:
 
 	callfar PlayerAttackDamage
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_RETURN
-	jr z, .return
-	cp EFFECT_FRUSTRATION
-	jr z, .frustration
+	cp EFFECT_RAGE
+	jr z, .rage
 	cp EFFECT_LOW_KICK
 	jr z, .low_kick
 ; Magnitude and Present have random power; use a typical value.
@@ -417,12 +396,8 @@ AutoBattle_EstimateDamage:
 	callfar BattleCommand_LowKick
 	jr .damage_calc
 
-.return
-	callfar BattleCommand_HappinessPower
-	jr .damage_calc
-
-.frustration
-	callfar BattleCommand_FrustrationPower
+.rage
+	callfar GetRagePower
 	jr .damage_calc
 
 .hidden_power
@@ -452,18 +427,8 @@ AutoBattle_EstimateDamage:
 	and a
 	ld hl, 0
 	ret z
-	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_PSYWAVE
-	jr z, .psywave
 	callfar BattleCommand_ConstantDamage
 	jr .got_damage
-
-.psywave
-; Psywave deals 0.5 to 1.5x the user's level at random; use the level.
-	ld a, [wBattleMonLevel]
-	ld l, a
-	ld h, 0
-	jr .got_damage_hl
 
 .got_damage
 	ld hl, wCurDamage
@@ -512,11 +477,6 @@ AutoBattle_EstimateDamage:
 	ld b, a
 	ld a, [wEnemyMonHP + 1]
 	ld c, a
-	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_FALSE_SWIPE
-	jr nz, .got_max_damage
-	dec bc ; False Swipe always leaves 1 HP
-.got_max_damage
 	ld a, c
 	sub l
 	ld a, b
@@ -656,6 +616,8 @@ AutoBattle_ApplyAccuracy:
 ; hl *= the move's chance to hit, with your Pokémon's accuracy and the foe's
 ; evasion
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_FALSE_SWIPE
+	ret z ; (a miss swipes again, for double the damage)
 	cp EFFECT_ALWAYS_HIT
 	ld a, [wPlayerMoveStruct + MOVE_ACC]
 	jr z, AutoBattle_MultiplyHL
@@ -697,10 +659,9 @@ AutoBattle_MultiplyHL:
 	ret
 
 AutoBattleConstantDamageEffects:
-	db EFFECT_SUPER_FANG
+	db EFFECT_SUPER_FANG ; (and the OHKO moves, as RUINATION)
 	db EFFECT_STATIC_DAMAGE
 	db EFFECT_LEVEL_DAMAGE
-	db EFFECT_PSYWAVE
 	db -1
 
 AutoBattleTwoTurnEffects:
@@ -1408,8 +1369,6 @@ AutoBattle_MoveDamage:
 	ld a, [wABMove + MOVE_EFFECT]
 	cp EFFECT_LEVEL_DAMAGE
 	jp z, .level
-	cp EFFECT_PSYWAVE
-	jp z, .level
 	cp EFFECT_STATIC_DAMAGE
 	jp z, .static
 	cp EFFECT_SUPER_FANG
@@ -1717,9 +1676,7 @@ AutoBattle_TypeEffectiveness:
 AutoBattleNeverDamagingEffects:
 ; no damage to count on from these
 	db EFFECT_SELFDESTRUCT
-	db EFFECT_DREAM_EATER
 	db EFFECT_SNORE
-	db EFFECT_OHKO
 	db EFFECT_COUNTER
 	db EFFECT_MIRROR_COAT
 	db EFFECT_BIDE
@@ -1728,13 +1685,10 @@ AutoBattleNeverDamagingEffects:
 
 AutoBattleTypicalPowers:
 ; moves whose power varies, and a typical power
-	db EFFECT_RETURN,      70
-	db EFFECT_FRUSTRATION, 70
 	db EFFECT_REVERSAL,    40
 	db EFFECT_PRESENT,     40
-	db EFFECT_MAGNITUDE,   70
+	db EFFECT_MAGNITUDE,   70 ; (and PSYWAVE)
 	db EFFECT_LOW_KICK,    60
-	db EFFECT_BEAT_UP,     30
 	db -1
 
 ; ---------- Healing, status and stat-raising moves, when they're worth it ----------

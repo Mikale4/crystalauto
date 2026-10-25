@@ -44,3 +44,8 @@ BattleCommand_FalseSwipe:
 .done
 	and a
 	ret
+
+BattleCommand_SwipeAgain:
+; (see FalseSwipeAgain)
+	farcall FalseSwipeAgain
+	ret

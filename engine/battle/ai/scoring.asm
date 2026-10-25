@@ -392,12 +392,8 @@ AI_Smart_EffectHandlers:
 	db -1 ; end
 
 AI_Smart_Sleep:
-; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare.
+; Greatly encourage sleep inducing moves if the enemy has Nightmare.
 ; 50% chance to greatly encourage sleep inducing moves otherwise.
-
-	ld b, EFFECT_DREAM_EATER
-	call AIHasMoveEffect
-	jr c, .encourage
 
 	ld b, EFFECT_NIGHTMARE
 	call AIHasMoveEffect
@@ -586,8 +582,7 @@ AI_Smart_Selfdestruct:
 
 AI_Smart_DreamEater:
 ; 90% chance to greatly encourage this move.
-; The AI_Basic layer will make sure that
-; Dream Eater is only used against sleeping targets.
+; (Dream Eater works on a target that's awake too.)
 	call Random
 	cp 10 percent
 	ret c

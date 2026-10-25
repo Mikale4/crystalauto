@@ -832,11 +832,34 @@ Rampage:
 	endmove
 
 ForceSwitch:
+; (it hits, then drives the foe away)
 	checkobedience
 	usedmovetext
 	doturn
+	critical
+	damagestats
+	damagecalc
+	stab
+	damagevariation
 	checkhit
+	moveanim
+	failuretext
+	applydamage
+	criticaltext
+	supereffectivetext
+	checkfaint
+	buildopponentrage
 	forceswitch
+	endmove
+
+AutoCounter::
+; COUNTER and MIRROR COAT, hitting back by themselves (see HandleAutoCounter, which
+; sets the damage)
+	usedmovetext
+	doturn
+	moveanim
+	applydamage
+	checkfaint
 	endmove
 
 MultiHit:
@@ -1109,19 +1132,19 @@ HyperBeam:
 	endmove
 
 Rage:
+; (as the latest games' RAGE FIST: stronger for every hit the user took)
 	checkobedience
 	usedmovetext
 	doturn
 	critical
 	damagestats
+	ragepower
 	damagecalc
 	stab
-	checkhit
-	ragedamage
 	damagevariation
+	checkhit
 	moveanim
 	failuretext
-	rage
 	applydamage
 	criticaltext
 	supereffectivetext
@@ -1380,8 +1403,8 @@ FalseSwipe:
 	damagecalc
 	stab
 	damagevariation
-	falseswipe
 	checkhit
+	swipeagain ; (a miss swipes again, for double the damage)
 	moveanim
 	failuretext
 	applydamage

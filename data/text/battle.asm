@@ -350,6 +350,17 @@ BattleText_TheMoveIsDisabled:
 	line "DISABLED!"
 	prompt
 
+BattleText_MoveWorksByItself:
+	text_ram wStringBuffer1
+	text " works"
+	line "by itself!"
+	prompt
+
+SwipedAgainText:
+	text "It missed, but it"
+	line "swiped again!"
+	prompt
+
 BattleText_MonHasNoMovesLeft:
 	text_ram wBattleMonNickname
 	text_start
