@@ -196,6 +196,8 @@ HandleMapTimeAndJoypad:
 	ret z
 
 	call UpdateTime
+	ld a, DEMOCTX_OVERWORLD ; (for the Demo: the player can walk)
+	ld [wDemoCtx], a
 	call GetJoypad
 	call TimeOfDayPals
 	ret

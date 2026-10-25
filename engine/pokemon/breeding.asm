@@ -321,6 +321,8 @@ HatchEggs:
 	push de
 	ld hl, .BreedAskNicknameText
 	call PrintText
+	ld a, 2 ; (the Demo says NO)
+	ld [wDemoAnswer], a
 	call YesNoBox
 	pop de
 	jr c, .nonickname

@@ -154,6 +154,8 @@ CheckPartyFullAfterContest:
 GiveANickname_YesNo:
 	ld hl, CaughtAskNicknameText
 	call PrintText
+	ld a, 2 ; (the Demo says NO)
+	ld [wDemoAnswer], a
 	jp YesNoBox
 
 CaughtAskNicknameText:

@@ -907,8 +907,25 @@ SECTION "Unused Map Buffer", WRAM0
 
 ; This was a buffer for map-related pointers in the 1997 G/S prototype.
 ; See wMapBuffer in pokegold-spaceworld's wram.asm.
-wUnusedMapBuffer:: ds 24
+wUnusedMapBuffer:: ds 8 ; (the test harness's requests)
 wUnusedMapBufferEnd::
+
+; the Demo (see engine/demo/demo.asm): kept through warps; NEW GAME clears it
+wDemoState:: db ; DEMO_OFF, DEMO_RUNNING, DEMO_STOPPED
+wDemoPadPressed:: db ; START and SELECT pressed on the real pad while it runs
+wDemoPadLast:: db ; the real pad last frame
+wDemoCtx:: db ; DEMOCTX_*
+wDemoSpeed:: db ; DEMOSPEED_*
+wDemoPad:: db ; the buttons it holds
+wDemoTapClock:: db ; hVBlankCounter when it last pressed or let go
+wDemoPlan:: dw ; the plan command it's on
+wDemoGoal:: db ; DGOAL_*
+wDemoGoalX:: db
+wDemoGoalY:: db
+wDemoGoalArg:: db
+wDemoLastX:: db
+wDemoLastY:: db
+wDemoStuck:: db ; frames without a step
 
 
 SECTION UNION "Overworld Map", WRAM0
@@ -917,6 +934,18 @@ SECTION UNION "Overworld Map", WRAM0
 wOverworldMapBlocks:: ds 1300
 wOverworldMapBlocksEnd::
 
+
+
+SECTION "Demo RAM 0", WRAM0
+
+; more of the Demo's (see wDemoState)
+wDemoFlowKey:: ds 5 ; the map group, number, goal, x and y the flow field is for
+wDemoWait:: db
+wDemoStatus:: db ; DSTATUS_*
+wDemoAnswer:: db ; the next YES/NO (0: whatever suits)
+wDemoTravel:: dw ; the map it's travelling to
+wDemoGridW:: db ; the map's width and height in steps (while working out paths)
+wDemoGridH:: db
 
 SECTION UNION "Overworld Map", WRAM0
 
@@ -3633,6 +3662,25 @@ wPokeAnimBitmaskCurBit:: db
 wPokeAnimBitmaskBuffer:: ds 7
 	ds 2
 wPokeAnimStructEnd::
+
+
+SECTION "Demo RAM", WRAMX
+
+; the Demo's working space (see engine/demo/demo.asm); the flow field is in
+; w4_d000 and the map's collisions in w3_d000 (banks only mobile features and
+; the BATTLE TOWER use, which the Demo never does)
+wDemoQueue:: ds 4 * DEMO_QUEUE_SIZE ; cells still to look at (a ring of x, y, index)
+wDemoQueueEnd::
+wDemoQueueHead:: dw
+wDemoQueueTail:: dw
+wDemoCellX:: db ; the cell being looked at
+wDemoCellY:: db
+wDemoCellIndex:: dw
+wDemoCellDir:: db
+wDemoBlocked:: ds 2 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to)
+wDemoBlockedNext:: db
+wDemoWorldPrev:: ds DEMO_MAX_WORLD_MAPS ; the map graph search: how it got to each map
+wDemoWorldQueue:: ds DEMO_MAX_WORLD_MAPS
 
 
 SECTION "Battle Tower RAM", WRAMX

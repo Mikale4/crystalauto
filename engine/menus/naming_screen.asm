@@ -322,6 +322,8 @@ NamingScreen_ApplyTextInputMode:
 	ret
 
 NamingScreenJoypadLoop:
+	ld a, DEMOCTX_NAMING ; (for the Demo)
+	ld [wDemoCtx], a
 	call JoyTextDelay
 	ld a, [wJumptableIndex]
 	bit JUMPTABLE_EXIT_F, a

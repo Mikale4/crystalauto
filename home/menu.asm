@@ -476,7 +476,7 @@ YesNoMenuHeader::
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo knows a YES/NO by it)
 	db STATICMENU_CURSOR | STATICMENU_NO_TOP_SPACING ; flags
 	db 2
 	db "YES@"

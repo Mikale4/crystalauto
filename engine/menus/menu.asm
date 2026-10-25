@@ -358,6 +358,8 @@ Menu_WasButtonPressed:
 	callfar PlaySpriteAnimationsAndDelayFrame
 
 .skip_to_joypad
+	ld a, DEMOCTX_MENU ; (for the Demo)
+	ld [wDemoCtx], a
 	call JoyTextDelay
 	call GetMenuJoypad
 	and a

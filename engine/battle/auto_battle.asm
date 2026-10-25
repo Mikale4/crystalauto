@@ -17,8 +17,7 @@ DEF AUTO_BATTLE_SLEEP_TALK    EQU $8000 ; can use other moves while asleep
 InitAutoBattle:
 ; With AUTO BATTLE set to CONTINUOUS in the options, battles start with it on.
 ; Called after ClearBattleRAM has turned it off.
-	ld a, [wOptions2]
-	bit CONTINUOUS_AUTO_BATTLE, a
+	call CheckContinuousAutoBattle
 	ret z
 	ld a, [wBattleType]
 	cp BATTLETYPE_TUTORIAL
@@ -41,8 +40,7 @@ AutoBattleTextDelay::
 	ld a, [wBattleMode]
 	and a
 	ret z
-	ld a, [wOptions2]
-	bit CONTINUOUS_AUTO_BATTLE, a
+	call CheckContinuousAutoBattle
 	ret z
 	ld a, [wAutoBattle]
 	and a
@@ -64,6 +62,20 @@ AutoBattleTextDelay::
 .done
 	pop bc
 	scf
+	ret
+
+CheckContinuousAutoBattle:
+; Return nz if battles play out by themselves: the CONTINUOUS option, or the
+; Demo playing.
+	ld a, [wDemoState]
+	cp DEMO_RUNNING
+	jr z, .yes
+	ld a, [wOptions2]
+	and 1 << CONTINUOUS_AUTO_BATTLE
+	ret
+
+.yes
+	and a
 	ret
 
 AutoBattleTurn:

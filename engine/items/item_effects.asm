@@ -586,6 +586,8 @@ PokeBallEffect:
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
+	ld a, 2 ; (the Demo says NO)
+	ld [wDemoAnswer], a
 	call YesNoBox
 	jp c, .return_from_capture
 
@@ -646,6 +648,8 @@ PokeBallEffect:
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
+	ld a, 2 ; (the Demo says NO)
+	ld [wDemoAnswer], a
 	call YesNoBox
 	jr c, .SkipBoxMonNickname
 

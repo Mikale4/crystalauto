@@ -71,6 +71,18 @@ endr
 	ld a, JOYP_GET_NONE
 	ldh [rJOYP], a
 
+; While the Demo runs, the game only gets its presses (see GetJoypad); the
+; real pad is for stopping it and its speed (see DemoRequests).
+	ld a, [wDemoState]
+	dec a ; DEMO_RUNNING
+	jr nz, .not_demo
+	ld hl, wDemoPadPressed
+	ld a, b
+	or [hl]
+	ld [hl], a
+	ld b, 0
+.not_demo
+
 ; To get the delta we xor the last frame's input with the new one.
 	ldh a, [hJoypadDown] ; last frame
 	ld e, a
@@ -129,6 +141,13 @@ GetJoypad::
 	ld a, [wInputType]
 	cp AUTO_INPUT
 	jr z, .auto
+
+; Or the Demo plays.
+	ld a, [wDemoState]
+	dec a ; DEMO_RUNNING
+	jr nz, .not_demo
+	farcall DemoJoypad
+.not_demo
 
 ; To get deltas, take this and last frame's input.
 	ldh a, [hJoypadDown] ; real input

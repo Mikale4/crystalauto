@@ -317,6 +317,7 @@ ROMX $79
 	"Extreme Trainers"
 ROMX $7a
 	"Modern Moves"
+	"Demo"
 ROMX $7b
 	"Battle Tower Text"
 ROMX $7c
@@ -341,6 +342,7 @@ WRAM0
 	"Unused Map Buffer"
 	align 8
 	"Overworld Map"
+	"Demo RAM 0"
 	align 4
 	"Video"
 	"Followers RAM"
@@ -354,6 +356,7 @@ WRAMX 1
 	"PalletToPewter RAM 1"
 WRAMX 2
 	"Pic Animations"
+	"Demo RAM"
 WRAMX 3
 	"Battle Tower RAM"
 WRAMX 4

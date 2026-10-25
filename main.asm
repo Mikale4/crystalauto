@@ -741,3 +741,8 @@ INCLUDE "engine/battle/extreme_trainers.asm"
 SECTION "Modern Moves", ROMX
 
 INCLUDE "engine/battle/modern_moves.asm"
+
+
+SECTION "Demo", ROMX
+
+INCLUDE "engine/demo/demo.asm"

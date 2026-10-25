@@ -58,10 +58,24 @@ Option:
 	farcall _Option
 	ret
 
+NewDemoGame::
+; A new game the Demo plays (see engine/demo/demo.asm).
+	ld a, DEMO_RUNNING
+	jr NewGameWithDemoState
+
 NewGame:
+	xor a ; DEMO_OFF
+NewGameWithDemoState:
+	push af
 	xor a
 	ld [wDebugFlags], a
 	call ResetWRAM
+	pop af
+	ld [wDemoState], a
+	and a
+	jr z, .no_demo
+	farcall InitDemo
+.no_demo
 	call NewGame_ClearTilemapEtc
 	call PlayerProfileSetup
 	call OakSpeech

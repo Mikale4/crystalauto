@@ -224,6 +224,12 @@ GetLevelCap::
 	pop bc
 	ret
 
+GetLevelCapInB::
+; GetLevelCap, for farcall: the level cap in b.
+	call GetLevelCap
+	ld b, a
+	ret
+
 GetDifficultyLevelCap::
 ; The level HARD and EXTREME trainers fight at: the level cap, or once there's
 ; none, the last one there was.
