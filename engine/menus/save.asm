@@ -264,6 +264,11 @@ SavedTheGame:
 	ret
 
 _SaveGameData:
+; (never while the Demo plays: its game isn't the player's, see
+; engine/demo/demo.asm; the HALL OF FAME and the PC's boxes save by themselves)
+	ld a, [wDemoState]
+	cp DEMO_RUNNING
+	ret z
 	ld a, TRUE
 	ld [wSaveFileExists], a
 	farcall StageRTCTimeForSave

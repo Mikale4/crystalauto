@@ -644,6 +644,82 @@ DemoPlan:
 	dgoto 16, 5
 	duntil EVENT_CLEARED_RADIO_TOWER, .CardKeyUsed
 .ClearedRadioTower:
+; east to BLACKTHORN CITY (HM07 WATERFALL lies on the ICE PATH's first floor)
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_44
+	dsweep ICE_PATH_1F
+	dsweep BLACKTHORN_CITY
+; CLAIR: her half of the GYM is across a pit, bridged by a boulder pushed into a
+; hole upstairs
+	dskipif EVENT_BEAT_CLAIR, .BeatClair
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_45
+.ClairBridge:
+	dskipif EVENT_BOULDER_IN_BLACKTHORN_GYM_2, .Clair
+	dstatus DSTATUS_CLAIR
+	dtravel BLACKTHORN_GYM_2F
+	dpush 4, DOWN
+	djump .ClairBridge
+.Clair:
+	dtutor
+	dstatus DSTATUS_CLAIR
+	dheal
+	dsweep BLACKTHORN_GYM_1F
+	dsweep BLACKTHORN_GYM_2F
+	dheal
+	dtravel BLACKTHORN_GYM_1F
+	dtalk 1 ; CLAIR
+	dskipif EVENT_BEAT_CLAIR, .BeatClair
+	djump .Clair
+.BeatClair:
+; the DRAGON'S DEN: the elders' test in its shrine (it starts as the player comes
+; in; it's for CLAIR's badge), then CLAIR's TM24 at the door on the way out
+	dskipif EVENT_GOT_TM24_DRAGONBREATH, .GotDragonbreath
+	dstatus DSTATUS_DRAGONS_DEN
+.Shrine:
+	dheal
+	dtravel DRAGON_SHRINE
+	dtravel DRAGONS_DEN_B1F
+	dgoto 19, 30
+	duntil EVENT_GOT_TM24_DRAGONBREATH, .Shrine
+.GotDragonbreath:
+	dstatus DSTATUS_EXPLORING
+	dsweep DRAGONS_DEN_1F
+	dsweep DRAGONS_DEN_B1F
+	dsweep ROUTE_45
+	dsweep ROUTE_46
+; west from NEW BARK TOWN over the water, up TOHJO FALLS, and through VICTORY
+; ROAD (the rival waits there) to the POKéMON LEAGUE
+	dsweep ROUTE_27
+	dsweep TOHJO_FALLS
+	dsweep ROUTE_26
+	dskipif EVENT_BEAT_ELITE_FOUR, .BeatEliteFour
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_26
+	dstatus DSTATUS_VICTORY_ROAD
+	dheal
+	dsweep VICTORY_ROAD
+; the ELITE FOUR and LANCE, one after the other (losing to one starts it over)
+.EliteFour:
+	dtutor
+	dstatus DSTATUS_ELITE_FOUR
+	dheal
+	dtravel WILLS_ROOM
+	dtalk 1 ; WILL
+	dskipifnot EVENT_BEAT_ELITE_4_WILL, .EliteFour
+	dtravel KOGAS_ROOM
+	dtalk 1 ; KOGA
+	dskipifnot EVENT_BEAT_ELITE_4_KOGA, .EliteFour
+	dtravel BRUNOS_ROOM
+	dtalk 1 ; BRUNO
+	dskipifnot EVENT_BEAT_ELITE_4_BRUNO, .EliteFour
+	dtravel KARENS_ROOM
+	dtalk 1 ; KAREN
+	dskipifnot EVENT_BEAT_ELITE_4_KAREN, .EliteFour
+	dtravel LANCES_ROOM
+	dtalk 1 ; LANCE
+	duntil EVENT_BEAT_ELITE_FOUR, .EliteFour
+.BeatEliteFour:
 	dstatus DSTATUS_DONE
 	dend
 

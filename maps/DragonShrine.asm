@@ -295,7 +295,7 @@ DragonShrineQuestion3_MenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo answers it: see DemoSecondItem)
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
 	db "Weak person@"
@@ -321,7 +321,7 @@ DragonShrineQuestion5_MenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo answers it: see DemoSecondItem)
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
 	db "Tough@"

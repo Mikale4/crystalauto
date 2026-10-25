@@ -223,6 +223,10 @@ DemoStatusTexts:
 	dw .Hideout
 	dw .Pryce
 	dw .RadioTower
+	dw .Clair
+	dw .DragonsDen
+	dw .VictoryRoad
+	dw .EliteFour
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -257,6 +261,10 @@ DemoStatusTexts:
 .Hideout:   db "The ROCKET hideout@"
 .Pryce:     db "PRYCE's GYM@"
 .RadioTower: db "The RADIO TOWER@"
+.Clair:     db "CLAIR's GYM@"
+.DragonsDen: db "The DRAGON'S DEN@"
+.VictoryRoad: db "VICTORY ROAD@"
+.EliteFour: db "The ELITE FOUR@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -371,6 +379,8 @@ DemoMenus:
 	demo_menu BallsPocketMenuHeader.MenuData, DemoPackMenu
 	demo_menu KeyItemsPocketMenuHeader.MenuData, DemoPackMenu
 	demo_menu ChooseRelearnerMove.MenuData, DemoRelearnerMenu
+	demo_menu DragonShrineQuestion3_MenuHeader.MenuData, DemoSecondItem
+	demo_menu DragonShrineQuestion5_MenuHeader.MenuData, DemoSecondItem
 	db -1
 
 DemoMoveCursor:
@@ -511,6 +521,14 @@ DemoPartyMenu:
 .got_mon
 	ld b, c
 	inc b
+	ld a, [wMenuCursorY]
+	ld c, a
+	jp DemoMoveCursor
+
+DemoSecondItem:
+; A menu whose second item is the answer (the DRAGON SHRINE's questions 3 and
+; 5; the first is right for the others).
+	ld b, 2
 	ld a, [wMenuCursorY]
 	ld c, a
 	jp DemoMoveCursor
@@ -1240,6 +1258,10 @@ DemoPlan_Farfetchd:
 	pop hl
 	push hl
 	ld a, [wFarfetchdPosition]
+	and a
+	jr nz, .got_position
+	inc a ; (0: not herded yet, where position 1 is)
+.got_position
 	ld e, a
 	ld d, 0
 	ld hl, .Sides - 1

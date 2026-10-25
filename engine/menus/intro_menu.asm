@@ -487,6 +487,18 @@ FinishContinueFunction:
 	ld a, [wSpawnAfterChampion]
 	cp SPAWN_RED
 	jr z, .AfterRed
+; (the Demo plays on after the HALL OF FAME: home, as a CONTINUE would have it)
+	cp SPAWN_LANCE
+	jr nz, .reset
+	ld a, [wDemoState]
+	cp DEMO_RUNNING
+	jr nz, .reset
+	ld a, SPAWN_NEW_BARK
+	ld [wDefaultSpawnpoint], a
+	call PostCreditsSpawn
+	jr .loop
+
+.reset
 	jp Reset
 
 .AfterRed:
