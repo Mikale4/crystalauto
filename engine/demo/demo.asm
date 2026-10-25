@@ -1140,6 +1140,7 @@ DemoRunCommand:
 	dw DemoPlan_Flute
 	dw DemoPlan_TalkAt
 	dw DemoPlan_SkipIfMap
+	dw DemoPlan_SweepAll
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1997,6 +1998,16 @@ DemoPlan_Sweep:
 	ld a, [hli]
 	ld b, a
 	ld c, [hl]
+	call DemoSweepMap
+	pop hl
+	ret nc
+	ld de, 3
+	add hl, de
+	jp DemoNextCommand
+
+DemoSweepMap:
+; b, c: a map. Go there and see to what there is to do on it that it can get to.
+; Return carry once there's nothing more.
 	ld a, [wMapGroup]
 	cp b
 	jr nz, .away
@@ -2005,12 +2016,7 @@ DemoPlan_Sweep:
 	jr nz, .away
 	call DemoHealingNow
 	jr c, .heal
-	call DemoSweepStep
-	jr nc, .walking
-	pop hl
-	ld de, 3
-	add hl, de
-	jp DemoNextCommand
+	jp DemoSweepStep
 
 .away
 	push bc
@@ -2019,13 +2025,168 @@ DemoPlan_Sweep:
 	pop bc
 	jr c, .heal
 	call DemoTravel
-	jr .walking
+	and a
+	ret
 
 .heal
 	call DemoHealUp
+	and a
+	ret
+
+DemoPlan_SweepAll:
+; dsweepall: see to everything there is to do on every map (DemoTargets), the
+; nearest map with something still to do first. What it can't get to on a map
+; (or the whole map, if it can't get there in DEMO_SWEEP_MAP_MINUTES) it leaves
+; for now (till dretry).
+	pop hl
+	push hl
+	call DemoGetSweepAllMap
+	ld a, d
+	and e
+	inc a
+	jr nz, .sweeping
+	farcall DemoNearestTargets
+	jr c, .done
+	ld d, h
+	ld e, l
+	call DemoSetSweepAllMap
+.sweeping
+	call DemoSweepAllTimeUp
+	jr c, .leave
+	push de
+	farcall DemoKeyMap
+	call DemoSweepMap
+	pop de
+	jr nc, .walking
+.leave
+	call DemoSkipMapTargets
+	ld de, -1
+	call DemoSetSweepAllMap
 .walking
 	pop hl
 	and a
+	ret
+
+.done
+	pop hl
+	inc hl
+	jp DemoNextCommand
+
+DemoGetSweepAllMap:
+; Return in de the map dsweepall is seeing to (-1: none yet).
+	ld a, BANK(wDemoSweepAllMap)
+	ldh [rWBK], a
+	ld a, [wDemoSweepAllMap]
+	ld e, a
+	ld a, [wDemoSweepAllMap + 1]
+	ld d, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+DemoSetSweepAllMap:
+; de: the map dsweepall is to see to now (-1: none); the time it sets off for it.
+	push de
+	call DemoPlayMinutes
+	pop de
+	ld a, BANK(wDemoSweepAllMap)
+	ldh [rWBK], a
+	ld a, e
+	ld [wDemoSweepAllMap], a
+	ld a, d
+	ld [wDemoSweepAllMap + 1], a
+	ld a, l
+	ld [wDemoSweepAllTimer], a
+	ld a, h
+	ld [wDemoSweepAllTimer + 1], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+DemoSweepAllTimeUp:
+; Return carry if it set off for the map dsweepall is seeing to
+; DEMO_SWEEP_MAP_MINUTES of play time ago (de kept).
+	push de
+	call DemoPlayMinutes
+	ld a, BANK(wDemoSweepAllTimer)
+	ldh [rWBK], a
+	ld a, [wDemoSweepAllTimer]
+	ld e, a
+	ld a, [wDemoSweepAllTimer + 1]
+	ld d, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, l
+	sub e
+	ld l, a
+	ld a, h
+	sbc d
+	ld h, a
+	pop de
+	ld a, l
+	sub DEMO_SWEEP_MAP_MINUTES
+	ld a, h
+	sbc 0
+	ccf
+	ret
+
+DemoSkipMapTargets:
+; de: a map key. Leave everything on it for now (till dretry).
+	farcall DemoMapTargets
+	ld a, c
+	and a
+	ret z
+.loop
+	push bc
+	push de
+	call DemoSkipTarget
+	pop de
+	pop bc
+	inc de
+	dec c
+	jr nz, .loop
+	ret
+
+DemoMapOpenTargets::
+; de: a map key. Return carry if it has something still to do, as far as can be
+; told from elsewhere: a target whose event flag isn't set, that it isn't
+; leaving for now. (WRAM bank kept.)
+	ldh a, [rWBK]
+	push af
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	farcall DemoMapTargets
+	ld a, c
+	and a
+	jr z, .none
+.loop
+	push bc
+	push de
+	call DemoTargetSkipped
+	pop de
+	push de
+	jr c, .next
+	farcall DemoGetTarget
+	call DemoCheckEvent
+	jr z, .found
+.next
+	pop de
+	pop bc
+	inc de
+	dec c
+	jr nz, .loop
+.none
+	pop af
+	ldh [rWBK], a
+	and a
+	ret
+
+.found
+	pop de
+	pop bc
+	pop af
+	ldh [rWBK], a
+	scf
 	ret
 
 DemoPlan_Retry:
@@ -2191,9 +2352,11 @@ DemoSweepLeft:
 	ret
 
 DemoPlanMapTargets:
-; The targets of the map of the plan's command (dsweep): the first in de and how
-; many in c; carry if none.
+; The targets of the map of the plan's command (dsweep, dsweepall): the first in
+; de and how many in c; carry if none.
 	call DemoPlanCommand
+	cp DPLAN_SWEEP_ALL
+	jr z, .sweep_all
 	ld a, [hli]
 	ld b, a
 	ld c, [hl]
@@ -2201,6 +2364,16 @@ DemoPlanMapTargets:
 	ret c
 	ld d, h
 	ld e, l
+	jr .got_key
+
+.sweep_all
+	call DemoGetSweepAllMap
+	ld a, d
+	and e
+	inc a
+	scf
+	ret z
+.got_key
 	farcall DemoMapTargets
 	ld a, c
 	and a
@@ -2767,6 +2940,12 @@ InitDemo::
 	ldh [rWBK], a
 	xor a
 	ld [wDemoHealing], a
+	ld [wDemoAnswerCount], a
+	ld [wDemoTutorFor], a ; (worked out again)
+	ld [wDemoTutorFor + 1], a
+	dec a
+	ld [wDemoSweepAllMap], a
+	ld [wDemoSweepAllMap + 1], a
 	ld a, BANK(wXCoord)
 	ldh [rWBK], a
 	; fallthrough

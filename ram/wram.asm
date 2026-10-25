@@ -3729,6 +3729,8 @@ wDemoTutorCount:: db ; how many times it's been to them for this command
 wDemoTutorDone:: db ; a bit for each POKéMON with nothing more to learn (for this command)
 wDemoAnswerCount:: db ; YES/NO answers the plan has given (danswers) still to come,
 wDemoAnswerBits:: db ; the first in bit 0 (1: NO)
+wDemoSweepAllMap:: dw ; the map dsweepall is seeing to (its key; -1: none yet)
+wDemoSweepAllTimer:: dw ; the play time (minutes) it set off for it at
 
 
 SECTION "Battle Tower RAM", WRAMX

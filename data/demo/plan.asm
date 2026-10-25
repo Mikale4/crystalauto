@@ -116,6 +116,10 @@ MACRO dtalkat ; x, y: talk to what's at that cell (a big sprite's other half, a 
 	db DPLAN_TALK_AT, \1, \2
 ENDM
 
+MACRO dsweepall ; see to everything there is to do on every map it can get to (nearest first)
+	db DPLAN_SWEEP_ALL
+ENDM
+
 MACRO dskipifmap ; MAP, label: on to the label if the player is on that map
 	db DPLAN_SKIP_IF_MAP
 	map_id \1
@@ -926,6 +930,13 @@ DemoPlan:
 	dskipif EVENT_BEAT_RED, .BeatRed
 	djump .Red
 .BeatRed:
+; everything else: every map's items, hidden items and trainers (twice: what it
+; couldn't get to the first time may be in reach the second)
+	dstatus DSTATUS_EXPLORING
+	dretry
+	dsweepall
+	dretry
+	dsweepall
 	dstatus DSTATUS_DONE
 	dend
 

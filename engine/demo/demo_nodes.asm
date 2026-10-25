@@ -148,6 +148,29 @@ DemoNearestCenter::
 	and a
 	ret
 
+DemoNearestTargets::
+; Return in hl the key of the nearest map with something still to do there
+; (DemoMapOpenTargets); carry if there's none it can get to.
+	ld a, BANK(wDemoSearchFor)
+	ldh [rWBK], a
+	ld a, DEMOSEARCH_TARGETS
+	ld [wDemoSearchFor], a
+	call DemoNodeSearch
+	jr c, .none
+	call DemoNodeKey
+	ld h, d
+	ld l, e
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	and a
+	ret
+
+.none
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	scf
+	ret
+
 DemoCenterNurse:
 ; de: a map key. Return in a the nurse of its POKéMON CENTER and in b its MOVE
 ; REMINDER, if it's one (nz), else z.
@@ -474,6 +497,8 @@ DemoWanted:
 	ld a, [wDemoSearchFor]
 	cp DEMOSEARCH_CENTER
 	jr z, .center
+	cp DEMOSEARCH_TARGETS
+	jr z, .targets
 	ld a, [wDemoRouteTo]
 	cp e
 	jr nz, .no
@@ -488,6 +513,14 @@ DemoWanted:
 	call DemoCenterNurse
 	pop hl
 	jr z, .no
+	and a
+	ret
+
+.targets
+	push hl
+	farcall DemoMapOpenTargets
+	pop hl
+	jr nc, .no
 	and a
 	ret
 

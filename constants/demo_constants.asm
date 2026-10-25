@@ -64,6 +64,7 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_FLUTE     ; 19
 	const DPLAN_TALK_AT   ; 1a
 	const DPLAN_SKIP_IF_MAP ; 1b
+	const DPLAN_SWEEP_ALL ; 1c
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -105,6 +106,7 @@ DEF DEMO_EDGE_LENGTH EQU 5
 	const_def
 	const DEMOSEARCH_MAP    ; 0: a map (wDemoRouteTo)
 	const DEMOSEARCH_CENTER ; 1: a POKéMON CENTER
+	const DEMOSEARCH_TARGETS ; 2: a map with something still to do (DemoMapOpenTargets)
 DEF NUM_DEMO_TARGETS EQU 592
 
 ; DemoTargets kinds
@@ -121,6 +123,7 @@ DEF DEMOFIELD_WHIRLPOOL_F  EQU 2 ; whirlpools
 DEF DEMOFIELD_WATERFALL_F  EQU 3 ; waterfalls (up them)
 DEF DEMOFIELD_ROCK_SMASH_F EQU 4 ; rocks
 DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
+DEF DEMO_SWEEP_MAP_MINUTES EQU 5 ; (of play time: dsweepall leaves a map it can't get to in this long)
 DEF DEMO_ENGINE_FLAG EQU $8000 ; (in a plan's flag: an engine flag, see DemoCheckEvent)
 DEF DEMO_POKE_FLUTE_KNOB EQU 78 ; the radio's tuning for the POKé FLUTE channel (see RadioChannels)
 DEF DEMO_MAX_TUTORING EQU 24 ; visits to the MOVE REMINDER and TUTOR for a dtutor (see DemoPlan_Tutor)
