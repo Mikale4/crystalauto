@@ -520,7 +520,14 @@ GetFollowerKind:
 
 HideFollower:
 ; Hide follower a (object struct bc) on the player's tile.
-; The CHANSEY hides with the lead Pokémon it follows.
+; The CHANSEY hides with the lead Pokémon it follows. Preserves bc (an object's
+; step calls this: DoStepsForAllObjects goes on from bc).
+	push bc
+	call .Hide
+	pop bc
+	ret
+
+.Hide:
 	push af
 	call ClearFollowerQueue
 	ld hl, OBJECT_FLAGS1
@@ -541,7 +548,7 @@ HideFollower:
 	call FindFollowerStruct
 	ret nc
 	ld a, FOLLOWER_CHANSEY
-	jr HideFollower
+	jr .Hide
 
 SetFollowerCoords:
 ; Put object struct bc on tile (d, e).
