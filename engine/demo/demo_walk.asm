@@ -1045,7 +1045,9 @@ DemoSeedGoals:
 	jp DemoSeedGoal
 
 .edge
-; the cells along that edge with a way off it
+; the cells along that edge with a way off it, in the stretch of them around
+; where the way crosses (wDemoGoalY; past the edge may be another region
+; elsewhere along it)
 	ld a, [wDemoGoalX]
 	cp DOWN
 	jr z, .south
@@ -1057,60 +1059,87 @@ DemoSeedGoals:
 	ld a, [wDemoGridW]
 	dec a
 	ld d, a
-	ld e, 0
 	ld bc, 1 << 8 | 0 ; (outside: x + 1)
-	jr .down_the_edge
+	jr .vertical
 
 .west
 	ld d, 0
-	ld e, 0
-	ld bc, -1 << 8 | 0
-.down_the_edge
-	ld a, [wDemoGridH]
-	ld l, a
-.down_loop
-	push hl
-	push bc
-	push de
-	call .EdgeCell
-	pop de
-	pop bc
-	pop hl
-	inc e
-	dec l
-	jr nz, .down_loop
-	ret
+	ld bc, LOW(-1) << 8 | 0
+.vertical
+	ld a, [wDemoGoalY]
+	ld e, a
+	ld hl, 0 << 8 | 1 ; (along: y + 1)
+	jr .stretch
 
 .north
-	ld d, 0
 	ld e, 0
 	ld bc, 0 << 8 | LOW(-1) ; (outside: y - 1)
-	jr .along_the_edge
+	jr .horizontal
 
 .south
-	ld d, 0
 	ld a, [wDemoGridH]
 	dec a
 	ld e, a
 	ld bc, 0 << 8 | 1
-.along_the_edge
-	ld a, [wDemoGridW]
-	ld l, a
-.along_loop
-	push hl
-	push bc
+.horizontal
+	ld a, [wDemoGoalY]
+	ld d, a
+	ld hl, 1 << 8 | 0 ; (along: x + 1)
+.stretch
+; on along the edge from there, then back the other way
 	push de
+.forward
 	call .EdgeCell
+	jr c, .forward_done
+	call .Along
+	jr .forward
+
+.forward_done
 	pop de
-	pop bc
-	pop hl
-	inc d
-	dec l
-	jr nz, .along_loop
+	ld a, h
+	cpl
+	inc a
+	ld h, a
+	ld a, l
+	cpl
+	inc a
+	ld l, a
+.back
+	call .Along
+	call .EdgeCell
+	jr nc, .back
+	ret
+
+.Along:
+	ld a, d
+	add h
+	ld d, a
+	ld a, e
+	add l
+	ld e, a
 	ret
 
 .EdgeCell:
-; (d, e) on the edge, (d + b, e + c) off it: a goal if one can walk off there.
+; (d, e) on the edge, (d + b, e + c) off it: a goal if one can walk off there;
+; else carry (bc, de, hl kept).
+	ld a, [wDemoGridW]
+	dec a
+	cp d
+	ret c
+	ld a, [wDemoGridH]
+	dec a
+	cp e
+	ret c
+	push hl
+	push bc
+	push de
+	call DemoCellIndex
+	call DemoCollAtIndex
+	pop de
+	pop bc
+	cp COLL_WALL
+	jr z, .no_way_off
+	push bc
 	push de
 	ld a, BANK(wXCoord)
 	ldh [rWBK], a
@@ -1124,14 +1153,27 @@ DemoSeedGoals:
 	ld e, a
 	call GetCoordTileCollision
 	call DemoStandable
-	pop de
-	ld b, a
+	ld h, a
 	ld a, BANK(wDemoQueue)
 	ldh [rWBK], a
-	ld a, b
+	pop de
+	pop bc
+	ld a, h
 	cp COLL_WALL
-	ret z
-	jp DemoSeedGoal
+	jr z, .no_way_off
+	push bc
+	push de
+	call DemoSeedGoal
+	pop de
+	pop bc
+	pop hl
+	and a
+	ret
+
+.no_way_off
+	pop hl
+	scf
+	ret
 
 .sweep
 ; next to each of the map's targets still to do (see DemoTargetOpen)
@@ -1597,9 +1639,14 @@ DemoTravelStep:
 	jr .goal
 
 .edge
-; off the edge (the direction in wDemoGoalX)
+; off the edge (the direction in wDemoGoalX), where the way crosses it (wDemoGoalY)
+	ld a, BANK(wDemoRouteCross)
+	ldh [rWBK], a
+	ld a, [wDemoRouteCross]
+	ld e, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
 	ld d, c
-	ld e, 0
 	ld a, DGOAL_EDGE
 	jr .goal
 

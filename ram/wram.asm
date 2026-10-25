@@ -3706,6 +3706,7 @@ wDemoRouteFrom:: dw ; the way it worked out last: from (map key), to (map key),
 wDemoRouteTo:: dw   ; and its first step (see DemoRouteTo)
 wDemoRouteKind:: db ; (DEDGE_*; -1: no way)
 wDemoRouteArg:: db
+wDemoRouteCross:: db ; (off the map's edge: where along it)
 wDemoRouteNode:: dw ; (the node it leads to)
 wDemoRouteStart:: dw ; (the node it leads from)
 wDemoFloodFrom:: db ; (see DemoFreeStep)

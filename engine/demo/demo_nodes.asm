@@ -495,6 +495,7 @@ DemoReach:
 DemoEdgeUsable:
 ; hl: an edge of node [wDemoWorldCur]. Return nc and the node it leads to in de if
 ; the team has its field moves and it isn't blocked; else carry.
+	ld c, [hl] ; (its kind)
 	inc hl
 	inc hl
 	ld e, [hl]
@@ -502,6 +503,11 @@ DemoEdgeUsable:
 	ld d, [hl]
 	inc hl
 	ld b, [hl] ; (the field moves it needs)
+	ld a, c
+	cp DEDGE_EDGE
+	jr nz, .moves
+	ld b, 0 ; (off the map's edge: where it crosses)
+.moves
 	ld a, BANK(wDemoFieldMoves)
 	ldh [rWBK], a
 	ld a, [wDemoFieldMoves]
@@ -639,8 +645,12 @@ DemoFirstStep:
 	jr nz, .next
 	ld a, [hli]
 	ld [wDemoRouteKind], a
-	ld a, [hl]
+	ld a, [hli]
 	ld [wDemoRouteArg], a
+	inc hl
+	inc hl
+	ld a, [hl]
+	ld [wDemoRouteCross], a
 	and a
 	ret
 

@@ -97,7 +97,8 @@ DEF DEMO_MAX_START_NODES EQU 24
 DEF DEMO_MAX_HOP_NODES EQU 12 ; (a map has 9 at most)
 
 ; DemoNodeEdges kinds: each edge is its kind, the warp (from 1) or direction, the
-; node it leads to (dw), the field moves it needs (DEMOFIELD_* bits)
+; node it leads to (dw), the field moves it needs (DEMOFIELD_* bits; off the map's
+; edge, where along the edge it crosses: none are needed)
 	const_def
 	const DEDGE_WARP ; 0: through a warp of the map
 	const DEDGE_EDGE ; 1: off the map's edge (UP, DOWN, LEFT, RIGHT)

@@ -272,9 +272,15 @@ def main():
                 if other_const not in info:
                     continue
                 other = info[other_const]
+                # (each region over the edge it crosses into, and where: the middle of
+                # where it can; the Demo walks to the stretch of edge around it)
+                across = {}
                 for here, there in crossings(m, side, offset, other[0]):
                     if comp.get(here) == r and (other_const, other[1].get(there)) in node_ids:
-                        edges.append((DEDGE_EDGE, DIRS[side], node_ids[(other_const, other[1][there])], 0))
+                        along = here[0] if side in ("north", "south") else here[1]
+                        across.setdefault(node_ids[(other_const, other[1][there])], []).append(along)
+                for dest, alongs in across.items():
+                    edges.append((DEDGE_EDGE, DIRS[side], dest, alongs[len(alongs) // 2]))
             for dr, masks in sorted(walk_masks(between, r, ports).items()):
                 for mask in masks:
                     edges.append((DEDGE_WALK, 0, node_ids[(c, dr)], mask))
@@ -321,12 +327,14 @@ def main():
     print("\tassert_table_length NUM_DEMO_NODES")
     print()
     print("; each edge: its kind (DEDGE_*), the warp (from 1) or direction, the node it")
-    print("; leads to, the field moves it needs (DEMOFIELD_* bits); -1 ends")
+    print("; leads to, the field moves it needs (DEMOFIELD_* bits; off the map's edge,")
+    print("; where along the edge it crosses); -1 ends")
     names = ["DEDGE_WARP", "DEDGE_EDGE", "DEDGE_WALK"]
     for n, edges in node_edges.items():
         print(f".Node{n}:")
         for kind, arg, dest, mask in edges:
-            print(f"\tdb {names[kind]}, {arg}\n\tdw {dest}\n\tdb %{mask:05b}")
+            last = str(mask) if kind == DEDGE_EDGE else f"%{mask:05b}"
+            print(f"\tdb {names[kind]}, {arg}\n\tdw {dest}\n\tdb {last}")
         print("\tdb -1")
     print()
     print("DemoWorldCenters:")
