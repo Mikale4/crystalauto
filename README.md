@@ -565,8 +565,8 @@ As in PalletToPewter:
 
 ## The MOVE REMINDER and the MOVE TUTOR
 
-Every POKéMON CENTER has two more people behind the counter, to the left of NURSE
-JOY (at the INDIGO PLATEAU, behind the mart's counter). Both are free:
+Every POKéMON CENTER has two more people, by the left wall of the lobby (at the
+INDIGO PLATEAU, by the right wall). Both are free:
 
 - The **MOVE REMINDER** (the old woman) teaches a Pokémon any move it learns by
   leveling up, up to its level, that it doesn't know.
@@ -574,8 +574,9 @@ JOY (at the INDIGO PLATEAU, behind the mart's counter). Both are free:
   form), and whichever of the moves GOLDENROD's tutor teaches it can learn
   (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
 
-Pick a Pokémon, then the move from the list (each with its type). A Pokémon that
-already knows four moves forgets one to learn it.
+Pick a Pokémon, then the move from the list (each with its type; the box below it
+shows the move's category, PP, power and accuracy). A Pokémon that already knows
+four moves forgets one to learn it.
 
 
 ## Going to a rematch
@@ -597,7 +598,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 5f876a4a76287cd553e6be7b38b6327ef38d3e2a`.
+The patched ROM has `sha1: 72c811e0e0e3d5719df4b9f73e0d6e63e8b07a9f`.
 
 
 ## Building it

@@ -139,6 +139,7 @@ TeachFromMoveList:
 	text "There's no move I"
 	line "can help @"
 	text_ram wStringBuffer1
+	text_start
 	cont "learn right now."
 	done
 
@@ -179,21 +180,23 @@ ChooseRelearnerMove:
 	ret
 
 .MenuHeader:
+; the inside of the list's box (InitScrollingMenu puts its border just outside), so
+; the box fills the screen above the text box: none of the map shows behind it
 	db MENU_BACKUP_TILES ; flags
-	menu_coords 4, 1, SCREEN_WIDTH - 1, 10
+	menu_coords 1, 1, SCREEN_WIDTH - 2, TEXTBOX_Y - 2
 	dw .MenuData
 	db 1 ; default option
 
 	db 0 ; unused
 
 .MenuData:
-	db SCROLLINGMENU_DISPLAY_ARROWS ; flags
+	db SCROLLINGMENU_DISPLAY_ARROWS | SCROLLINGMENU_ENABLE_FUNCTION3 ; flags
 	db 4, 0 ; rows, columns
 	db SCROLLINGMENU_ITEMS_NORMAL ; item format
 	dbw 0, wMoveRelearnerCount
 	dba .Move
 	dba NULL
-	dba NULL
+	dba .Details
 
 .Move:
 ; its name, and its type below
@@ -211,6 +214,97 @@ ChooseRelearnerMove:
 	ld b, a
 	predef PrintMoveType
 	ret
+
+.Details:
+; the text box below the list: the highlighted move's category and PP, then its
+; power and accuracy
+	hlcoord TEXTBOX_X, TEXTBOX_Y
+	lb bc, TEXTBOX_INNERH, TEXTBOX_INNERW
+	call Textbox
+	ld a, [wMenuSelection]
+	cp -1
+	ret z ; (CANCEL)
+	ld b, a
+	farcall GetMoveCategoryName
+	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY
+	ld de, wStringBuffer1
+	call PlaceString
+	hlcoord 14, TEXTBOX_INNERY
+	ld de, .PPText
+	call PlaceString
+	ld a, MOVE_PP
+	call .MoveAttribute
+	hlcoord 17, TEXTBOX_INNERY
+	lb bc, 1, 2
+	call .PrintNum
+	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY + 2
+	ld de, .PowerText
+	call PlaceString
+	ld a, MOVE_POWER
+	call .MoveAttribute
+	hlcoord 7, TEXTBOX_INNERY + 2
+	cp 2
+	jr nc, .power
+	ld de, .NoPowerText ; (none, or one that varies)
+	call PlaceString
+	jr .accuracy
+
+.power
+	lb bc, 1, 3
+	call .PrintNum
+.accuracy
+	hlcoord 12, TEXTBOX_INNERY + 2
+	ld de, .AccuracyText
+	call PlaceString
+	ld a, MOVE_ACC
+	call .MoveAttribute
+; back from its 0-255 (see the percent macro) to a percentage, rounded up
+	ld hl, 255 - 1
+	ld d, 0
+	ld e, a
+	ld c, 100
+.times_100
+	add hl, de
+	dec c
+	jr nz, .times_100
+	ld de, -255
+	ld c, -1
+.over_255
+	inc c
+	add hl, de
+	jr c, .over_255
+	ld a, c
+	hlcoord 16, TEXTBOX_INNERY + 2
+	lb bc, 1, 3
+	; fallthrough
+
+.PrintNum:
+; print a at hl, as PrintNum bc
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
+	jp PrintNum
+
+.MoveAttribute:
+; a: attribute a (MOVE_*) of the highlighted move
+	ld hl, Moves
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ld a, [wMenuSelection]
+	dec a
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	jp GetFarByte
+
+.PPText:
+	db "PP/@"
+.PowerText:
+	db "POWER/@"
+.NoPowerText:
+	db "---@"
+.AccuracyText:
+	db "ACC/@"
 
 BuildReminderList::
 ; The moves wCurPartyMon learns by level up, up to its level, that it doesn't know.
