@@ -3682,34 +3682,34 @@ SECTION "Demo RAM", WRAMX
 
 ; the Demo's working space (see engine/demo/demo.asm); the flow field is in
 ; w4_d000 and the map's collisions in w3_d000 (banks only mobile features and
-; the BATTLE TOWER use, which the Demo never does)
-UNION
+; the BATTLE TOWER use, which the Demo never does); the search over the world's
+; nodes uses w3_d000 too (see engine/demo/demo_nodes.asm)
 wDemoQueue:: ds 4 * DEMO_QUEUE_SIZE ; cells still to look at (a ring of x, y, index)
 wDemoQueueEnd::
-NEXTU
-; the search from map to map (see DemoWorldSearch), which never runs while a
-; map's cells are being looked at
-wDemoWorldPrev:: ds 2 * NUM_DEMO_WORLD_MAPS ; how it got to each map (map keys)
-wDemoWorldQueue:: ds 2 * NUM_DEMO_WORLD_MAPS ; the maps in order of how far they are
-ENDU
 wDemoQueueHead:: dw
 wDemoQueueTail:: dw
 wDemoCellX:: db ; the cell being looked at
 wDemoCellY:: db
 wDemoCellIndex:: dw
 wDemoCellDir:: db
-wDemoWorldHead:: dw
+wDemoWorldHead:: dw ; the search over the nodes (see DemoNodeSearch)
 wDemoWorldTail:: dw
-wDemoWorldStart:: dw
 wDemoWorldCur:: dw
-wDemoBlocked:: ds 4 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to keys)
+wDemoSearchFor:: db ; DEMOSEARCH_*
+wDemoStartCount:: db ; the nodes it can get to from where it stands
+wDemoStartNodes:: ds 2 * DEMO_MAX_START_NODES
+wDemoBlocked:: ds 4 * DEMO_MAX_BLOCKED ; edges it found no way along (from, to nodes)
 wDemoBlockedNext:: db
 wDemoBlockedCount:: db
-wDemoTravelFrom:: dw ; the link travel is taking (map keys)
-wDemoTravelTo:: dw
-wDemoRouteFrom:: dw ; the way it worked out last: from, to, the map next (see DemoNextMapTo)
-wDemoRouteTo:: dw
-wDemoRouteNext:: dw
+wDemoTravelling:: db ; walking a step of the way around (see DemoTravel)
+wDemoRouteFrom:: dw ; the way it worked out last: from (map key), to (map key),
+wDemoRouteTo:: dw   ; and its first step (see DemoRouteTo)
+wDemoRouteKind:: db ; (DEDGE_*; -1: no way)
+wDemoRouteArg:: db
+wDemoRouteNode:: dw ; (the node it leads to)
+wDemoRouteStart:: dw ; (the node it leads from)
+wDemoFloodFrom:: db ; (see DemoFreeStep)
+wDemoFloodTo:: db
 wDemoCenterFrom:: dw ; the nearest POKéMON CENTER it worked out last (see DemoNearestCenter)
 wDemoCenterKey:: dw
 wDemoCenterNurse:: db

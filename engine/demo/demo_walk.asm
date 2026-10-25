@@ -896,62 +896,12 @@ DemoSeedGoals:
 	jp DemoSeedGoal
 
 .warps
-; every warp of this map to map (wDemoGoalX, wDemoGoalY)
-	ld a, BANK(wCurMapWarpEventCount)
-	ldh [rWBK], a
-	ld a, [wCurMapWarpEventCount]
-	and a
-	ret z
-	ld c, a
-	ld hl, wCurMapWarpEventsPointer
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-.warp_loop
-	push bc
-	push hl
-	ld a, BANK(wMapScriptsBank)
-	ldh [rWBK], a
-	ld a, [wMapScriptsBank]
-	ld b, a
-	inc hl
-	inc hl
-	inc hl ; (the warp number)
-	ld a, b
-	call GetFarByte ; its map group
-	ld c, a
+; the warp at (wDemoGoalX, wDemoGoalY)
 	ld a, [wDemoGoalX]
-	cp c
-	jr nz, .next_warp
-	inc hl
-	ld a, b
-	call GetFarByte ; its map number
-	ld c, a
-	ld a, [wDemoGoalY]
-	cp c
-	jr nz, .next_warp
-	pop hl
-	push hl
-	ld a, b
-	call GetFarByte ; y
-	ld e, a
-	inc hl
-	ld a, b
-	call GetFarByte ; x
 	ld d, a
-	ld a, BANK(wDemoQueue)
-	ldh [rWBK], a
-	call DemoSeedGoal
-.next_warp
-	pop hl
-	ld bc, WARP_EVENT_SIZE
-	add hl, bc
-	pop bc
-	dec c
-	jr nz, .warp_loop
-	ld a, BANK(wDemoQueue)
-	ldh [rWBK], a
-	ret
+	ld a, [wDemoGoalY]
+	ld e, a
+	jp DemoSeedGoal
 
 .edge
 ; the cells along that edge with a way off it
@@ -1484,43 +1434,54 @@ DemoTravel:
 	jr c, .lost
 	ld d, h
 	ld e, l
-	farcall DemoNextMapTo
+	farcall DemoRouteTo
 	jr c, .lost
-; (the link it takes, should there be no way through)
-	push hl
-	farcall DemoCurMapKey
-	ld a, BANK(wDemoTravelFrom)
-	ldh [rWBK], a
-	ld a, l
-	ld [wDemoTravelFrom], a
-	ld a, h
-	ld [wDemoTravelFrom + 1], a
-	pop de
-	ld a, e
-	ld [wDemoTravelTo], a
-	ld a, d
-	ld [wDemoTravelTo + 1], a
-	ld a, BANK(wXCoord)
-	ldh [rWBK], a
-	farcall DemoKeyMap
-; a map it connects to: off that edge; else through its warps
-	call DemoConnectionDir
-	jr c, .edge
 	ld a, b
-	ld [wDemoGoalX], a
+	cp DEDGE_EDGE
+	jr z, .edge
+	cp DEDGE_WALK
+	jr z, .walk_on
+; through a warp: its cell
 	ld a, c
-	ld [wDemoGoalY], a
+	call DemoWarpCell
 	ld a, DGOAL_WARP
-	jr .walk
+	jr .goal
 
 .edge
-	ld [wDemoGoalX], a
-	xor a
-	ld [wDemoGoalY], a
+; off the edge (the direction in wDemoGoalX)
+	ld d, c
+	ld e, 0
 	ld a, DGOAL_EDGE
-.walk
+	jr .goal
+
+.walk_on
+; to another region of the map (the next node's cell)
+	farcall DemoNodeCell
+	ld a, DGOAL_CELL
+.goal
 	ld [wDemoGoal], a
+	ld a, d
+	ld [wDemoGoalX], a
+	ld a, e
+	ld [wDemoGoalY], a
+	ld a, BANK(wDemoTravelling)
+	ldh [rWBK], a
+	ld a, TRUE
+	ld [wDemoTravelling], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
 	call DemoWalk
+	push af
+	ld a, BANK(wDemoTravelling)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoTravelling], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop af
+	ret nc
+; (only a walk to another region of the map ends here: on from there)
+	farcall DemoForgetRoutes
 	and a
 	ret
 
@@ -1538,16 +1499,35 @@ DemoTravel:
 	and a
 	ret
 
+DemoWarpCell:
+; a: a warp of this map (from 1). Return its cell in d, e.
+	dec a
+	ld c, a
+	ld b, 0
+	ld hl, wCurMapWarpEventsPointer
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, WARP_EVENT_SIZE
+	call AddNTimes
+	ld a, [wMapScriptsBank]
+	ld b, a
+	call GetFarByte
+	ld e, a ; y
+	inc hl
+	ld a, b
+	call GetFarByte
+	ld d, a ; x
+	ret
+
 DemoBlockLink:
-; There's no way along the link travel is taking (wDemoTravelFrom, To): remember it.
-	ld a, [wDemoGoal]
-	cp DGOAL_WARP
-	jr z, .travel
-	cp DGOAL_EDGE
-	ret nz
-.travel
-	ld a, BANK(wDemoBlocked)
+; There's no way along the step of the way around it's taking (wDemoRouteStart to
+; wDemoRouteNode, see DemoTravel): remember it.
+	ld a, BANK(wDemoTravelling)
 	ldh [rWBK], a
+	ld a, [wDemoTravelling]
+	and a
+	ret z
 	ld a, [wDemoBlockedCount]
 	cp DEMO_MAX_BLOCKED
 	jr nc, .full
@@ -1568,52 +1548,310 @@ DemoBlockLink:
 	add hl, de
 	add hl, de
 	add hl, de
-	ld a, [wDemoTravelFrom]
+	ld a, [wDemoRouteStart]
 	ld [hli], a
-	ld a, [wDemoTravelFrom + 1]
+	ld a, [wDemoRouteStart + 1]
 	ld [hli], a
-	ld a, [wDemoTravelTo]
+	ld a, [wDemoRouteNode]
 	ld [hli], a
-	ld a, [wDemoTravelTo + 1]
+	ld a, [wDemoRouteNode + 1]
 	ld [hl], a
 	farcall DemoForgetRoutes
 	xor a
 	ld [wDemoFlowKey], a ; (and so the way again)
 	ret
 
-DemoConnectionDir:
-; Return carry and the direction (UP, DOWN, LEFT, RIGHT) if this map connects
-; to map b, c.
-	ld hl, .Connections
-.loop
-	ld a, [hli]
-	cp -1
-	ret z ; (nc)
-	ld e, a
-	ld a, [hli]
+DemoFlood::
+; w4_d000: DFLOW_GOAL on each cell the player can get to from where it stands
+; with nothing but walking (down ledges, sliding on ice, and on the water if it's
+; on it already), DFLOW_UNREACHED elsewhere: which of the map's nodes it can get
+; to (see DemoStartNodes). The same ways as tools/demo_regions.py's free moves.
+; (The flow field is gone: it's worked out again.)
+	xor a
+	ld [wDemoFlowKey], a
+	call DemoFieldMoves
+	ld a, [wMapWidth]
+	add a
+	ld [wDemoGridW], a
+	ld a, [wMapHeight]
+	add a
+	ld [wDemoGridH], a
+	call DemoMapCollisions
+	call DemoMarkRocks
+	ld a, BANK(w4_d000)
+	ldh [rWBK], a
+	ld hl, w4_d000
+	ld bc, $1000
+	ld a, DFLOW_UNREACHED
+	call ByteFill
+	ld a, BANK(wDemoQueue)
+	ldh [rWBK], a
+	ld hl, wDemoQueue
+	ld a, l
+	ld [wDemoQueueHead], a
+	ld [wDemoQueueTail], a
+	ld a, h
+	ld [wDemoQueueHead + 1], a
+	ld [wDemoQueueTail + 1], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, [wXCoord]
 	ld d, a
-	ld a, [de]
-	cp b
-	jr nz, .next
-	inc de
-	ld a, [de]
-	cp c
-	jr nz, .next
-	ld a, [hl]
+	ld a, [wYCoord]
+	ld e, a
+	ld a, [wDemoGridW]
+	dec a
+	cp d
+	jr c, .done
+	ld a, [wDemoGridH]
+	dec a
+	cp e
+	jr c, .done
+	push de
+	call DemoCellIndex
+	pop de
+	ld a, BANK(wDemoQueue)
+	ldh [rWBK], a
+	ld a, DFLOW_GOAL
+	call DemoMark
+.loop
+	ld hl, wDemoQueueHead
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [wDemoQueueTail]
+	cp l
+	jr nz, .pop
+	ld a, [wDemoQueueTail + 1]
+	cp h
+	jr z, .done
+.pop
+	ld a, [hli]
+	ld [wDemoCellX], a
+	ld a, [hli]
+	ld [wDemoCellY], a
+	ld a, [hli]
+	ld [wDemoCellIndex], a
+	ld a, [hli]
+	ld [wDemoCellIndex + 1], a
+	ld a, l
+	cp LOW(wDemoQueueEnd)
+	jr nz, .no_wrap
+	ld a, h
+	cp HIGH(wDemoQueueEnd)
+	jr nz, .no_wrap
+	ld hl, wDemoQueue
+.no_wrap
+	ld a, l
+	ld [wDemoQueueHead], a
+	ld a, h
+	ld [wDemoQueueHead + 1], a
+	xor a ; DOWN
+.dir
+	ld [wDemoCellDir], a
+	call DemoSearch.Cell
+	call DemoFreeStep
+	jr c, .next_dir
+	call DemoFlowAtIndex
+	cp DFLOW_UNREACHED
+	jr nz, .next_dir
+	ld a, DFLOW_GOAL
+	call DemoMark
+.next_dir
+	ld a, [wDemoCellDir]
+	inc a
+	cp NUM_DIRECTIONS
+	jr c, .dir
+	jr .loop
+
+.done
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+DemoFloodReached::
+; (d, e): a cell. Return carry if DemoFlood got there.
+	call DemoFlowAt
+	cp DFLOW_GOAL
+	scf
+	ret z
+	and a
+	ret
+
+DemoFreeStep:
+; Cell (d, e), index hl: can the player go [wDemoCellDir] from it with nothing but
+; walking? Return nc and where it ends up in d, e and hl (a step, a jump down a
+; ledge, or a slide on ice), else carry. (WRAM bank 2.)
+	call DemoCollAtIndex
+	ld [wDemoFloodFrom], a
+	cp COLL_WALL
+	jp z, .no
+	cp COLL_WATERFALL
+	jr nz, .not_waterfall
+	ld a, [wDemoCellDir]
+	cp LEFT
+	jp nc, .no ; (only up or down a waterfall)
+.not_waterfall
+	ld a, [wDemoFloodFrom]
+	push hl
+	ld hl, DemoSideWallExits
+	call DemoCanStep.Walls
+	pop hl
+	jp nz, .no
+	push de
+	push hl
+	call DemoStepToward
+	jp c, .blocked
+	push de
+	call DemoCellIndex
+	pop de
+	call DemoCollAtIndex
+	ld [wDemoFloodTo], a
+	cp COLL_WALL
+	jr z, .ledge
+	push hl
+	ld hl, DemoSideWallEntries
+	call DemoCanStep.Walls
+	pop hl
+	jp nz, .blocked
+	ld a, [wDemoFloodTo]
+	cp COLL_CUT_TREE
+	jp z, .blocked
+	cp COLL_CUT_TREE_1A
+	jp z, .blocked
+	cp COLL_WHIRLPOOL
+	jr z, .blocked
+	cp COLL_WHIRLPOOL_2C
+	jr z, .blocked
+	cp COLL_WATERFALL
+	jr nz, .not_down_waterfall
+	ld a, [wDemoCellDir]
+	and a ; DOWN
+	jr nz, .blocked
+	jr .afloat_only
+.not_down_waterfall
+	push hl
+	push de
+	call GetTilePermission
+	pop de
+	pop hl
+	and $f
+	cp WATER_TILE
+	jr nz, .stepped
+.afloat_only
+; the water, from the water only (getting on it takes SURF)
+	push hl
+	push de
+	ld a, [wDemoFloodFrom]
+	call GetTilePermission
+	pop de
+	pop hl
+	and $f
+	cp WATER_TILE
+	jr nz, .blocked
+.stepped
+	add sp, 4 ; (where it was)
+.slide
+; on ice: on till off it, or till the way's blocked
+	call DemoCollAtIndex
+	call DemoIsIce
+	jr nz, .there
+	push de
+	push hl
+	call DemoStepToward
+	jr c, .stop
+	push de
+	call DemoCellIndex
+	pop de
+	call DemoCollAtIndex
+	cp COLL_WALL
+	jr z, .stop
+	add sp, 4
+	jr .slide
+
+.stop
+	pop hl
+	pop de
+.there
+	and a
+	ret
+
+.ledge
+; a jump down a ledge that way, over the cell no one can stand on
+	ld a, [wDemoFloodFrom]
+	ld b, a
+	and $f0
+	cp HI_NYBBLE_LEDGES
+	jr nz, .blocked
+	ld a, b
+	and 7
+	push hl
+	ld hl, DemoLedgeDirs
+	call DemoDirInMask
+	pop hl
+	jr z, .blocked
+	call DemoStepToward
+	jr c, .blocked
+	push de
+	call DemoCellIndex
+	pop de
+	call DemoCollAtIndex
+	cp COLL_WALL
+	jr z, .blocked
+	jr .stepped
+
+.blocked
+	pop hl
+	pop de
+.no
 	scf
 	ret
 
+DemoMarkRocks:
+; Rocks and boulders stand in the way: COLL_WALL in w3_d000 (as DemoMarkPeople).
+	ld hl, wObjectStructs + OBJECT_LENGTH ; (not the player)
+	ld c, NUM_OBJECT_STRUCTS - 1
+.loop
+	push hl
+	push bc
+	ld a, BANK(wObjectStructs)
+	ldh [rWBK], a
+	ld a, [hl] ; OBJECT_SPRITE
+	cp SPRITE_ROCK
+	jr z, .mark
+	cp SPRITE_BOULDER
+	jr nz, .next
+.mark
+	ld bc, OBJECT_MAP_X
+	add hl, bc
+	ld a, [hli]
+	sub 4
+	ld d, a
+	ld a, [hl]
+	sub 4
+	ld e, a
+	ld a, [wDemoGridW]
+	dec a
+	cp d
+	jr c, .next
+	ld a, [wDemoGridH]
+	dec a
+	cp e
+	jr c, .next
+	call DemoCellIndex
+	ld a, h
+	add HIGH(w3_d000)
+	ld h, a
+	ld a, BANK(w3_d000)
+	ldh [rWBK], a
+	ld [hl], COLL_WALL
 .next
-	inc hl
-	jr .loop
-
-.Connections:
-	dw wNorthConnectedMapGroup
-	db UP
-	dw wSouthConnectedMapGroup
-	db DOWN
-	dw wWestConnectedMapGroup
-	db LEFT
-	dw wEastConnectedMapGroup
-	db RIGHT
-	db -1
+	pop bc
+	pop hl
+	ld de, OBJECT_LENGTH
+	add hl, de
+	dec c
+	jr nz, .loop
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret

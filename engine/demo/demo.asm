@@ -205,6 +205,10 @@ DemoStatusTexts:
 	dw .Done
 	dw .Giving
 	dw .Exploring
+	dw .SproutTower
+	dw .SlowpokeWell
+	dw .Bugsy
+	dw .Farfetchd
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -221,6 +225,10 @@ DemoStatusTexts:
 .Done:      db "That's all for now@"
 .Giving:    db "Giving out items@"
 .Exploring: db "Looking around@"
+.SproutTower: db "SPROUT TOWER@"
+.SlowpokeWell: db "SLOWPOKE WELL@"
+.Bugsy:     db "BUGSY's GYM@"
+.Farfetchd: db "Finding FARFETCH'D@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -919,6 +927,8 @@ DemoRunCommand:
 	dw DemoPlan_Sweep
 	dw DemoPlan_Retry
 	dw DemoPlan_Push
+	dw DemoPlan_TalkFrom
+	dw DemoPlan_Farfetchd
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1029,7 +1039,10 @@ DemoTalkAt:
 	ld [wDemoGoal], a
 	call DemoWalk
 	ret nc
-; facing it
+	; fallthrough
+
+DemoPressToTalk:
+; Facing it: press A (as DemoTalkTo).
 	ld a, [wDemoWait]
 	and a
 	jr z, .press
@@ -1129,6 +1142,91 @@ DemoPlan_Jump:
 	ld h, [hl]
 	ld l, a
 	jp DemoNextCommand
+
+DemoPlan_TalkFrom:
+; dtalkfrom n, DIR: talk to map object n facing that way (from its other side).
+	pop hl
+	push hl
+	inc hl
+	ld a, [hli]
+	ld b, [hl]
+	call DemoTalkFrom
+	pop hl
+	ret nc
+	inc hl
+	inc hl
+	inc hl
+	jp DemoNextCommand
+
+DemoPlan_Farfetchd:
+; dfarfetchd: talk to ILEX FOREST's FARFETCH'D (object 1) from the side that
+; sends it on toward the CHARCOAL KILN (see IlexForestFarfetchdScript).
+	pop hl
+	push hl
+	ld a, [wFarfetchdPosition]
+	ld e, a
+	ld d, 0
+	ld hl, .Sides - 1
+	add hl, de
+	ld b, [hl]
+	ld a, 1 ; ILEXFOREST_FARFETCHD
+	call DemoTalkFrom
+	pop hl
+	ret nc
+	inc hl
+	jp DemoNextCommand
+
+.Sides:
+; the way to face it at positions 1 to 10 (where walls allow)
+	db UP, UP, DOWN, RIGHT, DOWN, LEFT, UP, DOWN, LEFT, UP
+
+DemoTalkFrom:
+; a: a map object; b: a direction. Walk to its other side, face it that way and
+; press A. Return carry once that has started something (as DemoTalkTo), or if
+; it isn't here.
+	push bc
+	call DemoGetObjectCell
+	pop bc
+	ret c
+	ld a, b
+	and a ; DOWN: from above
+	jr nz, .not_down
+	dec e
+	jr .got_cell
+.not_down
+	dec a ; UP: from below
+	jr nz, .not_up
+	inc e
+	jr .got_cell
+.not_up
+	dec a ; LEFT: from the right
+	jr nz, .right
+	inc d
+	jr .got_cell
+.right
+	dec d
+.got_cell
+	push bc
+	ld a, d
+	ld [wDemoGoalX], a
+	ld a, e
+	ld [wDemoGoalY], a
+	ld a, DGOAL_CELL
+	ld [wDemoGoal], a
+	call DemoWalk
+	pop bc
+	ret nc
+	ld a, [wPlayerDirection]
+	rrca
+	rrca
+	and %11
+	cp b
+	jp z, DemoPressToTalk
+	ld a, b
+	call DemoDirPad
+	call DemoHold
+	and a
+	ret
 
 DemoPlan_Push:
 ; dpush n, DIR: push map object n (a boulder) one cell that way: from the cell

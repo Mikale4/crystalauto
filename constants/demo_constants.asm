@@ -56,6 +56,8 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_SWEEP     ; 12
 	const DPLAN_RETRY     ; 13
 	const DPLAN_PUSH      ; 14
+	const DPLAN_TALK_FROM ; 15
+	const DPLAN_FARFETCHD ; 16
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -82,6 +84,21 @@ DEF DFLOW_GOAL      EQU $fe
 
 DEF DEMO_QUEUE_SIZE EQU $200 ; cells
 DEF NUM_DEMO_WORLD_MAPS EQU 388 ; (every map: see data/demo/world.asm)
+DEF NUM_DEMO_NODES EQU 623 ; (see data/demo/world_nodes.asm)
+DEF DEMO_MAX_START_NODES EQU 24
+
+; DemoNodeEdges kinds: each edge is its kind, the warp (from 1) or direction, the
+; node it leads to (dw), the field moves it needs (DEMOFIELD_* bits)
+	const_def
+	const DEDGE_WARP ; 0: through a warp of the map
+	const DEDGE_EDGE ; 1: off the map's edge (UP, DOWN, LEFT, RIGHT)
+	const DEDGE_WALK ; 2: to another region of the map
+DEF DEMO_EDGE_LENGTH EQU 5
+
+; wDemoSearchFor: what DemoNodeSearch is looking for
+	const_def
+	const DEMOSEARCH_MAP    ; 0: a map (wDemoRouteTo)
+	const DEMOSEARCH_CENTER ; 1: a POKéMON CENTER
 DEF NUM_DEMO_TARGETS EQU 592
 
 ; DemoTargets kinds
@@ -115,4 +132,8 @@ DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 	const DSTATUS_DONE        ; 11
 	const DSTATUS_GIVING      ; 12
 	const DSTATUS_EXPLORING   ; 13
+	const DSTATUS_SPROUT_TOWER ; 14
+	const DSTATUS_SLOWPOKE_WELL ; 15
+	const DSTATUS_BUGSY       ; 16
+	const DSTATUS_FARFETCHD   ; 17
 DEF NUM_DSTATUSES EQU const_value

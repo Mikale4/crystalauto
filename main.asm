@@ -762,3 +762,8 @@ INCLUDE "engine/demo/demo.asm"
 SECTION "Demo World", ROMX
 
 INCLUDE "engine/demo/demo_world.asm"
+
+
+SECTION "Demo Nodes", ROMX
+
+INCLUDE "engine/demo/demo_nodes.asm"

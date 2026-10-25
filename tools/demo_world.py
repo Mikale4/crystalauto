@@ -9,11 +9,22 @@ Every map has a key: its place in map_constants.asm, counting from 0 (see
 DemoMapKey). Maps that can't be reached from the player's room (or that the Demo
 leaves alone: link and mobile rooms, the BATTLE TOWER) have no links or targets.
 
-Usage: python3 tools/demo_world.py > data/demo/world.asm
+The way around is a search over nodes: a map's regions (tools/demo_regions.py)
+that hold a warp or a way across to another map. Each node's edges are its
+warps, its ways across, and the ways to the map's other nodes (some needing
+field moves).
+
+Usage: python3 tools/demo_world.py
+(writes data/demo/world.asm and data/demo/world_nodes.asm)
 """
 import re
+import sys
 from collections import deque
+from itertools import combinations
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import demo_regions as R  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -44,18 +55,87 @@ def map_constants():
 
 
 def attributes():
-    """const -> (file label, [connected consts])"""
+    """const -> (file label, [connected consts], [(direction, const, offset)])"""
     out, cur = {}, None
     for line in open(ROOT / "data/maps/attributes.asm"):
         m = re.match(r"\s*map_attributes (\w+), (\w+),", line)
         if m:
             cur = m.group(2)
-            out[cur] = (m.group(1), [])
+            out[cur] = (m.group(1), [], [])
             continue
-        m = re.match(r"\s*connection (\w+), (\w+), (\w+),", line)
+        m = re.match(r"\s*connection (\w+), (\w+), (\w+), (-?\d+)", line)
         if m and cur:
             out[cur][1].append(m.group(3))
+            out[cur][2].append((m.group(1), m.group(3), int(m.group(4))))
     return out
+
+
+# edge kinds (DEDGE_* in constants/demo_constants.asm)
+DEDGE_WARP, DEDGE_EDGE, DEDGE_WALK = 0, 1, 2
+DIRS = {"north": R.UP, "south": R.DOWN, "west": R.LEFT, "east": R.RIGHT}
+
+
+def crossings(m, side, offset, other):
+    """[(cell here, cell there)] for a connection: the cells on this map's edge, and
+    where walking off it lands on the other map (see the connection macro)."""
+    out = []
+    if side in ("north", "south"):
+        y = 0 if side == "north" else m.h - 1
+        ty = other.h - 1 if side == "north" else 0
+        for x in range(m.w):
+            out.append(((x, y), (x - 2 * offset, ty)))
+    else:
+        x = 0 if side == "west" else m.w - 1
+        tx = other.w - 1 if side == "west" else 0
+        for y in range(m.h):
+            out.append(((x, y), (tx, y - 2 * offset)))
+    return out
+
+
+def map_nodes(label, const, attrs, seen):
+    """The regions of a map that are nodes ({region: port cell}), with its regions
+    and the masks between them."""
+    m, comp, between = R.regions(label)
+    ports = {}
+    for i, (x, y, dest, _) in enumerate(R.warp_events(label)):
+        if (x, y) in comp and dest in seen:
+            ports.setdefault(comp[(x, y)], (x, y))
+    for side, other_const, offset in attrs[const][2]:
+        if other_const not in seen:
+            continue
+        other = R.Map(attrs[other_const][0])
+        for here, there in crossings(m, side, offset, other):
+            if here in comp and other.kind(there) is not None:
+                ports.setdefault(comp[here], here)
+    return m, comp, between, ports
+
+
+def walk_masks(between, start, nodes):
+    """{node region: [masks]}: the least field moves to get from region start to
+    each other node region of the map."""
+    moves = 0
+    for masks in between.values():
+        for mask in masks:
+            moves |= mask
+    bits = [b for b in range(5) if moves >> b & 1]
+    succ = {}
+    for (a, b), masks in between.items():
+        succ.setdefault(a, []).append((b, masks))
+    found = {}
+    for n in range(len(bits) + 1):
+        for chosen in combinations(bits, n):
+            mask = sum(1 << b for b in chosen)
+            reach, todo = {start}, [start]
+            while todo:
+                a = todo.pop()
+                for b, masks in succ.get(a, []):
+                    if b not in reach and any(m & mask == m for m in masks):
+                        reach.add(b)
+                        todo.append(b)
+            for r in reach:
+                if r != start and r in nodes and not any(m & mask == m for m in found.get(r, [])):
+                    found.setdefault(r, []).append(mask)
+    return found
 
 
 def args(line, macro):
@@ -110,7 +190,7 @@ def main():
     for _, _, _, c in consts:
         if c not in attrs or SKIP.search(c):
             continue
-        label, conns = attrs[c]
+        label, conns, _ = attrs[c]
         warps, t, _ = map_events(label)
         dests = []
         for d in conns + warps:
@@ -147,9 +227,49 @@ def main():
     for g in sorted(groups):
         print(f"\tdw {groups[g]}")
     print()
+    # the nodes: each map's regions with a way out
+    info, node_ids = {}, {}
+    for _, _, _, c in consts:
+        if c not in seen:
+            continue
+        info[c] = map_nodes(attrs[c][0], c, attrs, seen)
+        for r in sorted(info[c][3]):
+            node_ids[(c, r)] = len(node_ids)
+    node_edges = {}
+    for c, (m, comp, between, ports) in info.items():
+        label = attrs[c][0]
+        for r in sorted(ports):
+            edges = []
+            for i, (x, y, dest, num) in enumerate(R.warp_events(label)):
+                if comp.get((x, y)) != r or dest not in info:
+                    continue
+                dwarps = R.warp_events(attrs[dest][0])
+                if num - 1 >= len(dwarps):
+                    continue
+                cell = dwarps[num - 1][:2]
+                dr = info[dest][1].get(cell)
+                if (dest, dr) in node_ids:
+                    edges.append((DEDGE_WARP, i + 1, node_ids[(dest, dr)], 0))
+            for side, other_const, offset in attrs[c][2]:
+                if other_const not in info:
+                    continue
+                other = info[other_const]
+                for here, there in crossings(m, side, offset, other[0]):
+                    if comp.get(here) == r and (other_const, other[1].get(there)) in node_ids:
+                        edges.append((DEDGE_EDGE, DIRS[side], node_ids[(other_const, other[1][there])], 0))
+            for dr, masks in sorted(walk_masks(between, r, ports).items()):
+                for mask in masks:
+                    edges.append((DEDGE_WALK, 0, node_ids[(c, dr)], mask))
+            unique = []
+            for e in edges:
+                if not any(u[0] == e[0] and u[2] == e[2] and u[3] == e[3] for u in unique):
+                    unique.append(e)
+            node_edges[node_ids[(c, r)]] = unique
+    print(f"\tassert NUM_DEMO_NODES == {len(node_ids)}, \"NUM_DEMO_NODES (constants/demo_constants.asm) should be {len(node_ids)}\"")
+    print()
     print("DemoWorldMaps:")
-    print("; for each map key: its map, its first target (DemoTargets) and how many, the")
-    print("; maps it leads to (keys; -1 ends)")
+    print("; for each map key: its map, its first target (DemoTargets) and how many, its")
+    print("; first node (DemoWorldNodes) and how many")
     print("\ttable_width 2")
     for _, _, _, c in consts:
         print(f"\tdw .{c.title().replace('_', '')}")
@@ -158,14 +278,47 @@ def main():
     all_targets = []
     for k, _, _, c in consts:
         t = targets.get(c, []) if c in seen else []
-        l = links.get(c, []) if c in seen else []
+        nodes = [node_ids[(c, r)] for r in sorted(info[c][3])] if c in info else []
         print(f".{c.title().replace('_', '')}:")
         print(f"\tmap_id {c}")
         print(f"\tdw {first}")
         print(f"\tdb {len(t)}")
-        print("\tdw " + ", ".join([str(key[d]) for d in l if d in seen] + ["-1"]))
+        print(f"\tdw {nodes[0] if nodes else 0}")
+        print(f"\tdb {len(nodes)}")
         first += len(t)
         all_targets += [(c,) + x for x in t]
+    nodes_out = open(ROOT / "data/demo/world_nodes.asm", "w")
+    stdout = sys.stdout
+    sys.stdout = nodes_out
+    print("; The Demo's nodes: the regions of each map with a way out, and the ways from")
+    print("; them (see engine/demo/demo_nodes.asm). Made by tools/demo_world.py.")
+    print()
+    print("DemoWorldNodes:")
+    print("; for each node: its map key, its cell (the Demo checks it can get there), its")
+    print("; edges (DemoNodeEdges)")
+    print("\ttable_width 6")
+    for (c, r), n in node_ids.items():
+        x, y = info[c][3][r]
+        print(f"\tdw {key[c]}\n\tdb {x}, {y}\n\tdw .Node{n} ; {c}")
+    print("\tassert_table_length NUM_DEMO_NODES")
+    print()
+    print("; each edge: its kind (DEDGE_*), the warp (from 1) or direction, the node it")
+    print("; leads to, the field moves it needs (DEMOFIELD_* bits); -1 ends")
+    names = ["DEDGE_WARP", "DEDGE_EDGE", "DEDGE_WALK"]
+    for n, edges in node_edges.items():
+        print(f".Node{n}:")
+        for kind, arg, dest, mask in edges:
+            print(f"\tdb {names[kind]}, {arg}\n\tdw {dest}\n\tdb %{mask:05b}")
+        print("\tdb -1")
+    print()
+    print("DemoWorldCenters:")
+    print("; the POKéMON CENTERs: map key, its nurse (object, from 1); -1 ends")
+    for c in sorted(nurses, key=lambda c: key[c]):
+        if c in seen:
+            print(f"\tdw {key[c]}\n\tdb {nurses[c]}")
+    print("\tdw -1")
+    sys.stdout = stdout
+    nodes_out.close()
     print()
     print(f"\tassert NUM_DEMO_TARGETS == {len(all_targets)}, \"NUM_DEMO_TARGETS (constants/demo_constants.asm) should be {len(all_targets)}\"")
     print()
@@ -176,14 +329,8 @@ def main():
     for c, kind, a, b, flag, what in all_targets:
         print(f"\tdb {names[kind]}, {a}, {b}\n\tdw {flag} ; {c}: {what}")
     print("\tassert_table_length NUM_DEMO_TARGETS")
-    print()
-    print("DemoWorldCenters:")
-    print("; the POKéMON CENTERs: map key, its nurse (object, from 1); -1 ends")
-    for c in sorted(nurses, key=lambda c: key[c]):
-        if c in seen:
-            print(f"\tdw {key[c]}\n\tdb {nurses[c]}")
-    print("\tdw -1")
 
 
 if __name__ == "__main__":
+    sys.stdout = open(ROOT / "data/demo/world.asm", "w")
     main()

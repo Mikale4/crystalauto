@@ -91,6 +91,14 @@ MACRO dpush ; n, DIR: push map object n (a boulder) one cell that way, with STRE
 	db DPLAN_PUSH, \1, \2
 ENDM
 
+MACRO dtalkfrom ; n, DIR: talk to map object n facing that way
+	db DPLAN_TALK_FROM, \1, \2
+ENDM
+
+MACRO dfarfetchd ; ILEX FOREST's FARFETCH'D: one step on toward the CHARCOAL KILN
+	db DPLAN_FARFETCHD
+ENDM
+
 MACRO dend
 	db DPLAN_END
 ENDM
@@ -174,8 +182,80 @@ DemoPlan:
 .BeatAbe:
 	dtalk 1 ; FALKNER
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
+; (lost: a full team for the next try, if it isn't one yet)
+	dstatus DSTATUS_CATCHING
+	dteam PARTY_LENGTH, ROUTE_31
+	dteam PARTY_LENGTH, ROUTE_29
 	djump .Falkner
 .BeatFalkner:
+; SPROUT TOWER: its SAGES, and FLASH from its ELDER
+	dskipif EVENT_GOT_HM05_FLASH, .GotFlash
+	dstatus DSTATUS_SPROUT_TOWER
+	dheal
+	dsweep SPROUT_TOWER_1F
+	dsweep SPROUT_TOWER_2F
+	dsweep SPROUT_TOWER_3F
+.Flash:
+	dheal
+	dtravel SPROUT_TOWER_3F
+	dtalk 3 ; SAGE LI (a battle, then FLASH)
+	duntil EVENT_GOT_HM05_FLASH, .Flash
+.GotFlash:
+; on to AZALEA TOWN
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_32
+	dsweep UNION_CAVE_1F
+	dsweep ROUTE_33
+; KURT, and the SLOWPOKE WELL (beating its ROCKETS sends the player to KURT's)
+	dskipif EVENT_CLEARED_SLOWPOKE_WELL, .ClearedWell
+	dstatus DSTATUS_SLOWPOKE_WELL
+.Kurt:
+	dskipif EVENT_AZALEA_TOWN_SLOWPOKETAIL_ROCKET, .WellOpen
+	dtravel KURTS_HOUSE
+	dtalk 1 ; KURT (he hurries off to the WELL)
+	duntil EVENT_AZALEA_TOWN_SLOWPOKETAIL_ROCKET, .Kurt
+.WellOpen:
+	dheal
+	dsweep SLOWPOKE_WELL_B1F
+	duntil EVENT_CLEARED_SLOWPOKE_WELL, .WellOpen
+.ClearedWell:
+	dskipif EVENT_KURT_GAVE_YOU_LURE_BALL, .GotLureBall
+.LureBall:
+	dtravel KURTS_HOUSE
+	dtalk 1 ; KURT
+	duntil EVENT_KURT_GAVE_YOU_LURE_BALL, .LureBall
+.GotLureBall:
+; BUGSY, with the team at the level cap
+	dskipif EVENT_BEAT_BUGSY, .BeatBugsy
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_33
+.Bugsy:
+	dstatus DSTATUS_BUGSY
+	dheal
+	dtravel AZALEA_GYM
+	dsweep AZALEA_GYM
+	dheal
+	dtravel AZALEA_GYM
+	dtalk 1 ; BUGSY
+	dskipif EVENT_BEAT_BUGSY, .BeatBugsy
+	djump .Bugsy
+.BeatBugsy:
+; the CHARCOAL KILN's FARFETCH'D, and HM01 CUT for finding it
+	dskipif EVENT_GOT_HM01_CUT, .GotCut
+	dstatus DSTATUS_FARFETCHD
+.Herd:
+	dskipif EVENT_HERDED_FARFETCHD, .Herded
+	dtravel ILEX_FOREST
+	dfarfetchd
+	djump .Herd
+.Herded:
+	dtravel ILEX_FOREST
+	dtalk 3 ; the CHARCOAL KILN's master
+	duntil EVENT_GOT_HM01_CUT, .Herded
+.GotCut:
+	dstatus DSTATUS_EXPLORING
+	dsweep ILEX_FOREST
+	dsweep ROUTE_34
 	dstatus DSTATUS_DONE
 	dend
 
