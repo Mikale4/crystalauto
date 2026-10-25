@@ -126,6 +126,11 @@ MACRO dskipifmap ; MAP, label: on to the label if the player is on that map
 	dw \2
 ENDM
 
+MACRO dskipifparty ; N, label: on to the label if the team has N POKéMON or more
+	db DPLAN_SKIP_IF_PARTY, \1, 0
+	dw \2
+ENDM
+
 MACRO dgym ; EVENT_BEAT_*, DSTATUS_*, MAP, n: a GYM: its trainers, then its leader
 ; (object n), with the team healed and at its best; again after a loss
 .Gym\@:
@@ -197,10 +202,18 @@ DemoPlan:
 	dcatch GEODUDE, ROUTE_46
 ; a team of five (room for the EGG ELM's AIDE brings after FALKNER), from
 ; wherever there's something it hasn't caught (for a while on each map: which
-; POKéMON are out depends on the time of day)
+; POKéMON are out depends on the time of day), with more BALLS if it's running
+; out (each catch can take several)
+	dskipifparty PARTY_LENGTH - 1, .TeamOfFive
+	dbuy POKE_BALL, 3, CHERRYGROVE_MART
 	dteam PARTY_LENGTH - 1, ROUTE_46
+	dskipifparty PARTY_LENGTH - 1, .TeamOfFive
+	dbuy POKE_BALL, 3, CHERRYGROVE_MART
 	dteam PARTY_LENGTH - 1, ROUTE_29
+	dskipifparty PARTY_LENGTH - 1, .TeamOfFive
+	dbuy POKE_BALL, 3, VIOLET_MART
 	dteam PARTY_LENGTH - 1, ROUTE_31
+.TeamOfFive:
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_31
 .Falkner:
@@ -232,8 +245,12 @@ DemoPlan:
 	dtalk 1 ; FALKNER
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
 ; (lost: a team of five for the next try, if it isn't one yet)
+	dskipifparty PARTY_LENGTH - 1, .Falkner
 	dstatus DSTATUS_CATCHING
+	dbuy POKE_BALL, 3, VIOLET_MART
 	dteam PARTY_LENGTH - 1, ROUTE_31
+	dskipifparty PARTY_LENGTH - 1, .Falkner
+	dbuy POKE_BALL, 3, CHERRYGROVE_MART
 	dteam PARTY_LENGTH - 1, ROUTE_29
 	djump .Falkner
 .BeatFalkner:
@@ -412,6 +429,12 @@ DemoPlan:
 	duntil EVENT_RELEASED_THE_BEASTS, .FellThrough
 .ReleasedBeasts:
 	dstatus DSTATUS_EXPLORING
+; (EUSINE stands in the way out: talked to, he goes)
+	dskipif EVENT_EUSINE_IN_BURNED_TOWER, .EusineGone
+	dtravel BURNED_TOWER_B1F
+	dtalk 9 ; EUSINE
+	djump .ReleasedBeasts
+.EusineGone:
 	dsweep BURNED_TOWER_B1F
 	dsweep BURNED_TOWER_1F
 ; MORTY, with the team at the level cap

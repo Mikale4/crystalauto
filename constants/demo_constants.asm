@@ -65,6 +65,7 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_TALK_AT   ; 1a
 	const DPLAN_SKIP_IF_MAP ; 1b
 	const DPLAN_SWEEP_ALL ; 1c
+	const DPLAN_SKIP_IF_PARTY ; 1d
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to

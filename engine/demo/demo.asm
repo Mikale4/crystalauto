@@ -1176,6 +1176,7 @@ DemoRunCommand:
 	dw DemoPlan_TalkAt
 	dw DemoPlan_SkipIfMap
 	dw DemoPlan_SweepAll
+	dw DemoPlan_SkipIfParty
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1488,6 +1489,17 @@ DemoPlan_SkipIfMap:
 	ld de, 5
 	add hl, de
 	jp DemoNextCommand
+
+DemoPlan_SkipIfParty:
+; dskipifparty N, label: to the label if the team has N POKéMON or more.
+	pop hl
+	push hl
+	inc hl
+	ld a, [wPartyCount]
+	cp [hl]
+	pop hl
+	jr nc, DemoPlan_SkipIf_Jump
+	jr DemoPlan_SkipIfNot.next
 
 DemoPlan_Jump:
 ; djump label
