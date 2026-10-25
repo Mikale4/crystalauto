@@ -492,8 +492,9 @@ DemoPlan:
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_39
 ; across the sea to CIANWOOD CITY, and CHUCK: his half of the GYM is behind
-; boulders (the middle one, pushed up twice, opens it; they're back each time
-; the player comes in)
+; boulders (they're back each time the player comes in): the left and right ones
+; pushed up and the middle one left opens it, with BLACKBELT LUNG in the way or
+; not
 	dstatus DSTATUS_EXPLORING
 	dsweep ROUTE_40
 	dsweep ROUTE_41
@@ -503,13 +504,15 @@ DemoPlan:
 	dstatus DSTATUS_CHUCK
 	dheal
 	dtravel CIANWOOD_GYM
-	dpush 8, UP
-	dpush 8, UP
+	dpush 7, UP
+	dpush 9, UP
+	dpush 8, LEFT
 	dsweep CIANWOOD_GYM
 	dheal
 	dtravel CIANWOOD_GYM
-	dpush 8, UP
-	dpush 8, UP
+	dpush 7, UP
+	dpush 9, UP
+	dpush 8, LEFT
 	dtalk 1 ; CHUCK
 	dskipif EVENT_BEAT_CHUCK, .BeatChuck
 	djump .Chuck
