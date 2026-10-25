@@ -14,7 +14,11 @@ DEF DEMO_ON_TITLE EQU 0 ; (not on the title menu until it's finished)
 	const DEMOCTX_OVERWORLD ; 1: the player can walk: the plan
 	const DEMOCTX_MENU      ; 2: a menu (Menu_WasButtonPressed)
 	const DEMOCTX_NAMING    ; 3: the naming screen
+	const DEMOCTX_PARTY     ; 4: the party menu (PartyMenuSelect)
 DEF NUM_DEMOCTXS EQU const_value
+; a context with this bit stays until what set it is done (not just one read)
+DEF DEMOCTX_HELD_F EQU 7
+DEF DEMOCTX_HELD EQU 1 << DEMOCTX_HELD_F
 
 ; wDemoSpeed
 	const_def
@@ -43,6 +47,8 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_GRIND     ; 0d
 	const DPLAN_CATCH     ; 0e
 	const DPLAN_BUY       ; 0f
+	const DPLAN_GIVE      ; 10
+	const DPLAN_TEAM      ; 11
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -69,6 +75,7 @@ DEF DFLOW_GOAL      EQU $fe
 DEF DEMO_QUEUE_SIZE EQU $200 ; cells
 DEF DEMO_MAX_WORLD_MAPS EQU 128
 DEF DEMO_MAX_BLOCKED EQU 8
+DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 
 ; wDemoStatus: what the Demo says it's doing (DemoStatusTexts)
 	const_def
@@ -84,4 +91,5 @@ DEF DEMO_MAX_BLOCKED EQU 8
 	const DSTATUS_CATCHING    ; 9
 	const DSTATUS_SHOPPING    ; 10
 	const DSTATUS_DONE        ; 11
+	const DSTATUS_GIVING      ; 12
 DEF NUM_DSTATUSES EQU const_value

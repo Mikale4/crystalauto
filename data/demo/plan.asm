@@ -64,9 +64,18 @@ MACRO dcatch ; SPECIES, MAP: battle in the map's grass until one is caught
 	map_id \2
 ENDM
 
-MACRO dbuy ; N, MAP: buy POKé BALLS at its mart, up to N
-	db DPLAN_BUY, \1
+MACRO dbuy ; ITEM, N, MAP: buy the item at its mart till it has N (0: one each)
+	db DPLAN_BUY, \1, \2
+	map_id \3
+ENDM
+
+MACRO dteam ; N, MAP: battle in the map's grass until the team has N POKéMON
+	db DPLAN_TEAM, \1
 	map_id \2
+ENDM
+
+MACRO dgive ; ITEM: give it to each POKéMON in the team that doesn't hold one
+	db DPLAN_GIVE, \1
 ENDM
 
 MACRO dend
@@ -111,14 +120,25 @@ DemoPlan:
 ; team is at the level cap
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
 	dstatus DSTATUS_SHOPPING
-	dbuy 10, CHERRYGROVE_MART
+	dbuy POKE_BALL, 7, CHERRYGROVE_MART ; (one for each it catches, and a couple over)
 	dstatus DSTATUS_CATCHING
 	dcatch GEODUDE, ROUTE_46
+; a full team, from wherever there's something it hasn't caught (for a while
+; on each map: which POKéMON are out depends on the time of day)
+	dteam PARTY_LENGTH, ROUTE_46
+	dteam PARTY_LENGTH, ROUTE_29
+	dteam PARTY_LENGTH, ROUTE_31
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_31
 .Falkner:
 	dstatus DSTATUS_TO_VIOLET
 	dheal
+; an X ATTACK for each of the team to hold (FALKNER's birds are two levels up;
+; it's used up as each comes in, and back after the battle)
+	dstatus DSTATUS_SHOPPING
+	dbuy X_ATTACK, 0, VIOLET_MART
+	dstatus DSTATUS_GIVING
+	dgive X_ATTACK
 	dstatus DSTATUS_FALKNER
 	dtravel VIOLET_GYM
 ; the GYM's trainers first, then (healed again) FALKNER
@@ -139,12 +159,13 @@ DemoPlan:
 
 DemoWantedMons:
 ; what the Demo throws its BALLS at (once each): a GEODUDE, and a team of POKéMON
-; that can fight (not the cocoons)
+; that can fight (not the cocoons, nor HOPPIP: no attack till level 10)
 	db GEODUDE
 	db SPEAROW
 	db PIDGEY
 	db SENTRET
 	db HOOTHOOT
-	db HOPPIP
 	db BELLSPROUT
+	db LEDYBA
+	db SPINARAK
 	db -1

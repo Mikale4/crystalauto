@@ -668,7 +668,11 @@ PartyMenu2DMenuData:
 
 PartyMenuSelect:
 ; sets carry if exitted menu.
+	ld a, DEMOCTX_PARTY | DEMOCTX_HELD ; (for the Demo: the party menu)
+	ld [wDemoCtx], a
 	call StaticMenuJoypad
+	xor a ; DEMOCTX_TEXT
+	ld [wDemoCtx], a
 	call PlaceHollowCursor
 	ld a, [wPartyCount]
 	inc a

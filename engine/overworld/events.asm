@@ -196,8 +196,12 @@ HandleMapTimeAndJoypad:
 	ret z
 
 	call UpdateTime
-	ld a, DEMOCTX_OVERWORLD ; (for the Demo: the player can walk)
+	ld a, [wScriptRunning] ; (for the Demo: the player can walk, unless a script runs)
+	and a
+	jr nz, .demo_busy
+	ld a, DEMOCTX_OVERWORLD
 	ld [wDemoCtx], a
+.demo_busy
 	call GetJoypad
 	call TimeOfDayPals
 	ret

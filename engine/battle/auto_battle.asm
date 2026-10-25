@@ -1942,8 +1942,8 @@ AutoBattle_RateSupportMove:
 	ret
 
 .stat_down
-; when it pays for the turn it takes (see AutoBattleStatDownEffects), the stat
-; no more than one stage down
+; when it pays for the turn it takes (see AutoBattleStatDownEffects), or for the
+; teammates that follow (see .ForTheTeam); the stat no more than one stage down
 	inc hl
 	ld a, [hli] ; the stat
 	ld c, a
@@ -1952,6 +1952,30 @@ AutoBattle_RateSupportMove:
 	and 1 << SUBSTATUS_SUBSTITUTE | 1 << SUBSTATUS_MIST
 	jp nz, .no
 	push bc
+	push de
+	call .ForTheTeam
+	pop de
+	jr nc, .not_for_team
+	ld a, d
+	and a
+	jr z, .lower_now ; (its accuracy: every teammate gains)
+	dec a
+	jr z, .team_defense
+; its ATTACK: against physical attacks
+	ld a, [wABThemCategory]
+	cp PHYSICAL
+	jr z, .lower_now
+	jr .not_for_team
+
+.team_defense
+; its DEFENSE: for physical attacks (or when this one has none to use)
+	ld a, [wABUs]
+	cp AB_MAX_TURNS
+	jr z, .lower_now
+	ld a, [wABBestCategory]
+	cp PHYSICAL
+	jr z, .lower_now
+.not_for_team
 	ld a, d
 	and a
 	jr z, .accuracy
@@ -1980,6 +2004,11 @@ AutoBattle_RateSupportMove:
 .lower
 	pop bc
 	jp nc, .no
+	jr .lower_stat
+
+.lower_now
+	pop bc
+.lower_stat
 	ld b, 0
 	ld hl, wEnemyStatLevels
 	add hl, bc
@@ -2049,6 +2078,40 @@ AutoBattle_RateSupportMove:
 
 .no_flip
 	and a
+	ret
+
+.ForTheTeam:
+; Return carry if this one clearly loses its race to a knockout (it needs two
+; turns more than the foe, or more: the estimates are cautious ones), in a long
+; fight (four or more of its attacks to knock the foe out), and a teammate can
+; fight on after it: then a stat lowered helps the teammates that follow (it
+; stays while the foe does).
+	ld a, [wABUs]
+	cp 4
+	jr c, .no_flip
+	ld b, a
+	ld a, [wABThem]
+	add 2
+	ld c, a
+	ld a, b
+	cp c
+	jr c, .no_flip ; (it could win)
+	ld a, [wCurBattleMon]
+	ld b, a
+	ld a, [wPartyCount]
+	ld c, a
+.teammate
+	dec c
+	ld a, c
+	cp -1
+	jr z, .no_flip
+	cp b
+	jr z, .teammate
+	push bc
+	call AutoBattle_CanSendOut
+	pop bc
+	jr nc, .teammate
+	scf
 	ret
 
 .SavesTurn:

@@ -949,6 +949,10 @@ wDemoTravel:: dw ; the map it's travelling to
 wDemoGridW:: db ; the map's width and height in steps (while working out paths)
 wDemoGridH:: db
 
+SECTION "Demo RAM 1", WRAM0
+
+wDemoAway:: db ; set when anything but walking about asks for buttons (see DemoTalkTo)
+
 SECTION UNION "Overworld Map", WRAM0
 
 ; GB Printer data
@@ -3681,7 +3685,7 @@ wDemoCellIndex:: dw
 wDemoCellDir:: db
 wDemoBlocked:: ds 2 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to)
 wDemoBlockedNext:: db
-wDemoWantBalls:: db ; the POKé BALLS it's buying up to
+wDemoTimer:: dw ; the play time (minutes) the command started at (see DemoTimeUp)
 wDemoWorldPrev:: ds DEMO_MAX_WORLD_MAPS ; the map graph search: how it got to each map
 wDemoWorldQueue:: ds DEMO_MAX_WORLD_MAPS
 

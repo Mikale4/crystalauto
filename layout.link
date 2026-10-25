@@ -347,6 +347,7 @@ WRAM0
 	"Video"
 	"Followers RAM"
 	"PalletToPewter RAM"
+	"Demo RAM 1"
 WRAMX 1
 	"WRAM 1"
 	"Miscellaneous WRAM 1"

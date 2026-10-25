@@ -167,7 +167,7 @@ StartMenu::
 	dw .MenuData
 	db 1 ; default selection
 
-.MenuData:
+.MenuData:: ; (the Demo knows the menu by it)
 	db STATICMENU_CURSOR | STATICMENU_WRAP | STATICMENU_ENABLE_START ; flags
 	dn 0, 0 ; rows, columns
 	dw wMenuItemsList

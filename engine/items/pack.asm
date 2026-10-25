@@ -1450,7 +1450,7 @@ ItemsPocketMenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo knows the pocket by it)
 	db STATICMENU_ENABLE_SELECT | STATICMENU_ENABLE_LEFT_RIGHT | STATICMENU_ENABLE_START | STATICMENU_WRAP | STATICMENU_CURSOR ; flags
 	db 5, 8 ; rows, columns
 	db SCROLLINGMENU_ITEMS_QUANTITY ; item format
@@ -1480,7 +1480,7 @@ KeyItemsPocketMenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo knows the pocket by it)
 	db STATICMENU_ENABLE_SELECT | STATICMENU_ENABLE_LEFT_RIGHT | STATICMENU_ENABLE_START | STATICMENU_WRAP | STATICMENU_CURSOR ; flags
 	db 5, 8 ; rows, columns
 	db SCROLLINGMENU_ITEMS_NORMAL ; item format
@@ -1510,7 +1510,7 @@ BallsPocketMenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo knows the pocket by it)
 	db STATICMENU_ENABLE_SELECT | STATICMENU_ENABLE_LEFT_RIGHT | STATICMENU_ENABLE_START | STATICMENU_WRAP | STATICMENU_CURSOR ; flags
 	db 5, 8 ; rows, columns
 	db SCROLLINGMENU_ITEMS_QUANTITY ; item format
