@@ -252,17 +252,14 @@ MoveDescriptions::
 	dw RockSmashDescription
 	dw WhirlpoolDescription
 	dw BeatUpDescription
+	dw DrainingKissDescription
+	dw PlayRoughDescription
+	dw MoonblastDescription
 	assert_table_length NUM_ATTACKS
-	dw MoveFCDescription
-	dw MoveFDDescription
-	dw MoveFEDescription
 	dw MoveFFDescription
 	dw Move00Description
 	assert_table_length $100
 
-MoveFCDescription:
-MoveFDDescription:
-MoveFEDescription:
 MoveFFDescription:
 Move00Description:
 	db "?@"
@@ -1270,3 +1267,15 @@ WhirlpoolDescription:
 BeatUpDescription:
 	db   "Party #MON join"
 	next "in the attack.@"
+
+DrainingKissDescription:
+	db   "Steals 3/4 of the"
+	next "damage inflicted.@"
+
+PlayRoughDescription:
+	db   "An attack that may"
+	next "lower ATTACK.@"
+
+MoonblastDescription:
+	db   "An attack that may"
+	next "lower SPCL.ATK.@"

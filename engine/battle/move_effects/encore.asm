@@ -37,11 +37,7 @@ BattleCommand_Encore:
 	bit SUBSTATUS_ENCORED, [hl]
 	jp nz, .failed
 	set SUBSTATUS_ENCORED, [hl]
-	call BattleRandom
-	and $3
-	inc a
-	inc a
-	inc a
+	ld a, 3 + 1 ; 3 turns (as in the latest games)
 	ld [de], a
 	call CheckOpponentWentFirst
 	jr nz, .finish_move

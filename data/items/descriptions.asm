@@ -25,7 +25,7 @@ ItemDescriptions:
 	dw FireStoneDesc
 	dw ThunderStoneDesc
 	dw WaterStoneDesc
-	dw TeruSama2Desc
+	dw LinkingCordDesc
 	dw HPUpDesc
 	dw ProteinDesc
 	dw IronDesc
@@ -354,8 +354,9 @@ WaterStoneDesc:
 	db   "Evolves certain"
 	next "kinds of #MON.@"
 
-TeruSama2Desc:
-	db   "?@"
+LinkingCordDesc:
+	db   "Evolves trade-"
+	next "evolution #MON.@"
 
 HPUpDesc:
 	db   "Raises the HP of"
@@ -386,8 +387,8 @@ RareCandyDesc:
 	next "#MON by one.@"
 
 XAccuracyDesc:
-	db   "Raises accuracy."
-	next "(1 BTL)@"
+	db   "Raises ACCURACY by"
+	next "2 on entry. (HOLD)@"
 
 LeafStoneDesc:
 	db   "Evolves certain"
@@ -418,8 +419,8 @@ MaxReviveDesc:
 	next "fainted #MON.@"
 
 GuardSpecDesc:
-	db   "Prevents stats"
-	next "reduction. (1 BTL)@"
+	db   "Shrouds it in MIST"
+	next "on entry. (HOLD)@"
 
 SuperRepelDesc:
 	db   "Repels weak #-"
@@ -430,8 +431,8 @@ MaxRepelDesc:
 	next "MON for 250 steps.@"
 
 DireHitDesc:
-	db   "Ups critical hit"
-	next "ratio. (1 BTL)@"
+	db   "Ups critical hits"
+	next "on entry. (HOLD)@"
 
 TeruSama3Desc:
 	db   "?@"
@@ -449,23 +450,23 @@ LemonadeDesc:
 	next "HP by 80.@"
 
 XAttackDesc:
-	db   "Raises ATTACK."
-	next "(1 BTL)@"
+	db   "Raises ATTACK by"
+	next "2 on entry. (HOLD)@"
 
 TeruSama4Desc:
 	db   "?@"
 
 XDefendDesc:
-	db   "Raises DEFENSE."
-	next "(1 BTL)@"
+	db   "Raises DEFENSE by"
+	next "2 on entry. (HOLD)@"
 
 XSpeedDesc:
-	db   "Raises SPEED."
-	next "(1 BTL)@"
+	db   "Raises SPEED by"
+	next "2 on entry. (HOLD)@"
 
 XSpecialDesc:
-	db   "Raises SPECIAL"
-	next "ATTACK. (1 BTL)@"
+	db   "Raises SPCL.ATK by"
+	next "2 on entry. (HOLD)@"
 
 CoinCaseDesc:
 	db   "Holds up to 9,999"
@@ -910,7 +911,7 @@ SunStoneDesc:
 	next "kinds of #MON.@"
 
 PolkadotBowDesc:
-	db   "Powers up normal-"
+	db   "Powers up fairy-"
 	next "type moves. (HOLD)@"
 
 TeruSama22Desc:

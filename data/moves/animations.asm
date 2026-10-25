@@ -253,10 +253,10 @@ BattleAnimations::
 	dw BattleAnim_RockSmash
 	dw BattleAnim_Whirlpool
 	dw BattleAnim_BeatUp
+	dw BattleAnim_SweetKiss ; DRAINING_KISS
+	dw BattleAnim_DizzyPunch ; PLAY_ROUGH
+	dw BattleAnim_Moonblast
 	assert_table_length NUM_ATTACKS + 1
-	dw BattleAnim_Dummy
-	dw BattleAnim_Dummy
-	dw BattleAnim_Dummy
 	dw BattleAnim_SweetScent2
 	assert_table_length $100
 ; $100
@@ -4314,6 +4314,27 @@ BattleAnim_Moonlight:
 
 .three
 	anim_call BattleAnimSub_Glimmer2
+	anim_ret
+
+BattleAnim_Moonblast:
+; the moon's light, then a burst of it at the foe
+	anim_2gfx BATTLE_ANIM_GFX_SHINE, BATTLE_ANIM_GFX_OBJECTS
+	anim_bgp $1b
+	anim_obj BATTLE_ANIM_OBJ_MOONLIGHT, 0, 40, $0
+	anim_obj BATTLE_ANIM_OBJ_MOONLIGHT, 16, 56, $0
+	anim_obj BATTLE_ANIM_OBJ_MOONLIGHT, 32, 72, $0
+	anim_obj BATTLE_ANIM_OBJ_MOONLIGHT, 48, 88, $0
+	anim_obj BATTLE_ANIM_OBJ_MOONLIGHT, 64, 104, $0
+	anim_wait 1
+	anim_sound 0, 0, SFX_MOONLIGHT
+	anim_wait 47
+	anim_sound 6, 2, SFX_METRONOME
+	anim_obj BATTLE_ANIM_OBJ_SWIFT, 64, 88, $4
+	anim_wait 4
+	anim_obj BATTLE_ANIM_OBJ_SWIFT, 64, 72, $4
+	anim_wait 4
+	anim_obj BATTLE_ANIM_OBJ_SWIFT, 64, 76, $4
+	anim_wait 64
 	anim_ret
 
 BattleAnim_HiddenPower:

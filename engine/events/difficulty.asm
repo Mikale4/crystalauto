@@ -168,11 +168,10 @@ DifficultyExtremeItIsText:
 	prompt
 
 CheckItemsAllowedInBattle::
-; HARD and EXTREME: no items in battle (but BALLs in the BUG-CATCHING
-; CONTEST, and the DUDE's lesson). Return carry, and say so, if not allowed.
-	call GetDifficulty
-	and a ; DIFFICULTY_NORMAL
-	ret z
+; No items in battle, on any difficulty (but BALLs in the BUG-CATCHING
+; CONTEST, and the DUDE's lesson; and BALLs at a beaten wild Pokémon have
+; their own menu: see CaptureRule_ChooseBall). Return carry, and say so, if
+; not allowed.
 	ld a, [wBattleType]
 	cp BATTLETYPE_CONTEST
 	jr z, .allowed
@@ -180,12 +179,7 @@ CheckItemsAllowedInBattle::
 	jr z, .allowed
 	cp BATTLETYPE_DEBUG
 	jr z, .allowed
-	call GetDifficulty
-	ld hl, NoItemsOnHardText
-	cp DIFFICULTY_HARD
-	jr z, .print
-	ld hl, NoItemsOnExtremeText
-.print
+	ld hl, NoItemsInBattleText
 	call BattleTextbox
 	scf
 	ret
@@ -194,14 +188,9 @@ CheckItemsAllowedInBattle::
 	and a
 	ret
 
-NoItemsOnHardText:
-	text "No items in battle"
-	line "on HARD!"
-	prompt
-
-NoItemsOnExtremeText:
-	text "No items in battle"
-	line "on EXTREME!"
+NoItemsInBattleText:
+	text "No items can be"
+	line "used in battle!"
 	prompt
 
 TrainerCard_PrintLevelCapAndDifficulty::

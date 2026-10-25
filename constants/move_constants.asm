@@ -257,6 +257,10 @@
 	const ROCK_SMASH   ; f9
 	const WHIRLPOOL    ; fa
 	const BEAT_UP      ; fb
+; new moves
+	const DRAINING_KISS ; fc
+	const PLAY_ROUGH    ; fd
+	const MOONBLAST     ; fe
 DEF NUM_ATTACKS EQU const_value - 1
 
 DEF CANNOT_MOVE EQU $ff

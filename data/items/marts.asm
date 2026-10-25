@@ -114,7 +114,7 @@ MartGoldenrod2F2:
 	db -1 ; end
 
 MartGoldenrod3F:
-	db 7 ; # items
+	db 11 ; # items
 	db X_SPEED
 	db X_SPECIAL
 	db X_DEFEND
@@ -122,15 +122,26 @@ MartGoldenrod3F:
 	db DIRE_HIT
 	db GUARD_SPEC
 	db X_ACCURACY
+	db METAL_COAT   ; (they evolve POKéMON that evolved by trading while holding them)
+	db DRAGON_SCALE
+	db KINGS_ROCK
+	db UP_GRADE
 	db -1 ; end
 
 MartGoldenrod4F:
-	db 5 ; # items
+	db 12 ; # items
 	db PROTEIN
 	db IRON
 	db CARBOS
 	db CALCIUM
 	db HP_UP
+	db LINKING_CORD
+	db FIRE_STONE
+	db WATER_STONE
+	db THUNDERSTONE
+	db LEAF_STONE
+	db MOON_STONE
+	db SUN_STONE
 	db -1 ; end
 
 MartGoldenrod5F1:

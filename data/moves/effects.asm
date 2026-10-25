@@ -1696,6 +1696,27 @@ SacredFire:
 	burntarget
 	endmove
 
+LowKick:
+	checkobedience
+	usedmovetext
+	doturn
+	critical
+	damagestats
+	lowkick
+	damagecalc
+	stab
+	damagevariation
+	checkhit
+	moveanim
+	failuretext
+	applydamage
+	criticaltext
+	supereffectivetext
+	checkfaint
+	buildopponentrage
+	kingsrock
+	endmove
+
 Magnitude:
 	checkobedience
 	usedmovetext
@@ -1764,6 +1785,8 @@ RapidSpin:
 	clearhazards
 	checkfaint
 	buildopponentrage
+	speedup
+	statupmessage
 	kingsrock
 	endmove
 

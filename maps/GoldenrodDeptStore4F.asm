@@ -73,6 +73,7 @@ GoldenrodDeptStore4FDirectoryText:
 	line "Your #MON!"
 
 	para "4F MEDICINE BOX"
+	line "   & EVOLUTION"
 	done
 
 GoldenrodDeptStore4F_MapEvents:

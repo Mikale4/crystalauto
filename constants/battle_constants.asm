@@ -15,7 +15,7 @@ DEF REST_SLEEP_TURNS EQU 2
 DEF TREEMON_SLEEP_TURNS EQU 7
 
 ; default move priority
-DEF BASE_PRIORITY EQU 1
+DEF BASE_PRIORITY EQU 8 ; (priorities go from -6 to +4)
 
 ; type effectiveness factors, scaled by 10
 DEF SUPER_EFFECTIVE    EQU 20

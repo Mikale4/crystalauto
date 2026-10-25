@@ -1,9 +1,16 @@
 # Pokémon Crystal: Auto Battle
 
 Pokémon Crystal with an **auto battle** button. Turn it on in any battle and the
-game picks your Pokémon's moves for you, turn after turn, until you turn it off.
-Pokémon also **evolve as soon as they reach their evolution level** in battle,
-instead of waiting for the battle to end.
+game battles for you, turn after turn, until you turn it off: it picks the moves,
+switches to a better matchup, sends in the right Pokémon after one faints, and
+decides which moves to learn. Pokémon also **evolve as soon as they reach their
+evolution level** in battle, instead of waiting for the battle to end.
+
+Battles work the way they do in the latest games: the **physical/special split**,
+the **FAIRY type** and today's **type chart**, and **moves** with their modern power,
+accuracy, PP and effects. **Evolutions are simpler** (no trading or friendship
+needed), and, as in PalletToPewter, **no items are used in battle**: the X items
+are held instead, and give their boost when the Pokémon comes in.
 
 Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
@@ -28,11 +35,11 @@ carry over.
 3. Press **SELECT** at any time to stop. The normal menu comes back at the start
    of the next turn.
 
-Auto battle only picks moves. Choices that matter still go to you: switching
-after a Pokémon faints, catching, evolving (B still stops an evolution), and
-learning new moves. When a Pokémon with four moves wants to learn another, the game
-waits for you to choose which move to forget, or not to learn it, even with auto
-battle on.
+While it's on, auto battle makes every choice in the battle: the moves, switching
+Pokémon, which one to send in after one faints, and which move to forget when a
+Pokémon learns a fifth (see [How it battles](#how-it-battles)). Catching is still
+up to you, and B still stops an evolution. With auto battle off, the battle is
+yours as usual.
 
 It works in wild and trainer battles and in the Bug-Catching Contest (whose menu
 has no room for the hint, but SELECT works the same). It is also enabled in link
@@ -53,10 +60,10 @@ its second page (choose **NEXT** at the bottom of the first page):
   pressing anything: "Wild … appeared!", "… wants to battle!", fainting, EXP and
   level-up stats, evolutions, the trainer's defeat line and the prize money. Each
   text box stays up for two-thirds of a second, and A or B still skips ahead.
-  Choices still wait for you: whether to learn a move (and which one to forget),
-  "Use next POKéMON?", and which Pokémon to send out. After pressing SELECT, text
-  waits for A or B again. Text outside of battle, like what a trainer says before
-  and after, is unchanged.
+  Learning moves, "Use next POKéMON?" and sending in the next Pokémon are decided
+  for you too. After pressing SELECT, text waits for A or B again, and the choices
+  are yours. Text outside of battle, like what a trainer says before and after, is
+  unchanged.
 
 The catching demonstration on Route 29 is never automatic. When auto battle beats a
 wild Pokémon you've already caught, the battle just ends; one you haven't caught yet
@@ -64,7 +71,46 @@ still stops and asks whether to throw a BALL (see [Catching](#catching)). The se
 is saved with your game.
 
 
-## How it picks a move
+## How it battles
+
+Every turn it weighs up the **matchup**: how many turns your Pokémon needs to knock
+the foe out with its best attack, how many the foe needs with its own, and which of
+the two moves first. Damage comes from the game's own formula (see
+[Moves](#moves) below), with the foe's real moves.
+
+### Switching
+
+When the Pokémon out is losing its matchup, auto battle looks for a party Pokémon
+that would do better, and only switches to a **sound** one:
+
+- it isn't weak to any of the foe's attacks. A single super-effective move rules it
+  out: HITMONCHAN's THUNDERPUNCH doesn't make it an answer to a STARMIE that knows
+  PSYCHIC, and a STARMIE with ICE BEAM and THUNDERBOLT leaves few answers at all.
+- it can take the hit it switches in on, and two more of the foe's best attack.
+- it wins the matchup, or does clearly better than the Pokémon out (by two turns or
+  more). Speed isn't everything: a bulky SLOWKING that resists STARMIE's attacks is
+  worth switching in even though STARMIE moves first.
+
+If the Pokémon out can't hurt the foe at all, any sound Pokémon that can is worth
+switching to. It never switches twice in a row, or when the Pokémon can't get away
+(MEAN LOOK, SPIDER WEB, a trapping move). Switching uses up the turn, as usual.
+
+### After a faint
+
+"Use next POKéMON?" is a yes, and it sends in the party Pokémon with the best
+matchup against the foe. If the trainer's Pokémon fainted too, so its next one isn't
+known yet, it picks the one whose worst matchup against the trainer's remaining
+Pokémon is best. The party screen shows for half a second, so you can see who's
+coming.
+
+### Learning moves
+
+When a Pokémon with four moves learns another, auto battle keeps the best four of
+the five, picked the way EXTREME's trainers get their movesets (power, the attack
+stat the move uses, its own type, accuracy, and attacks of different types), and
+never forgets an HM move. If the new move doesn't make the cut, it isn't learned.
+
+### Moves
 
 Each turn it rates every move that can be selected (it skips moves with no PP left
 and Disabled moves) and uses the best one:
@@ -80,12 +126,21 @@ and Disabled moves) and uses the best one:
   - Multi-hit moves count every hit. Two-turn moves (Solar Beam outside of
     sunlight, Fly, Dig, Sky Attack, Skull Bash, Razor Wind) and Hyper Beam count half.
   - Fixed-damage moves (Seismic Toss, Night Shade, Dragon Rage, Sonic Boom,
-    Super Fang, Psywave), Hidden Power, Return, Frustration, Flail and Reversal
-    use their real damage. Magnitude and Present use typical values.
+    Super Fang, Psywave), Hidden Power, Return, Frustration, Flail, Reversal and
+    Low Kick use their real damage. Magnitude and Present use typical values.
   - One-hit KO moves count the foe's whole HP times their accuracy, and are skipped
     against a higher-level foe.
-- **Status moves** (and Counter, Mirror Coat, Bide and Future Sight, whose damage
-  can't be predicted) are only used when no damaging move can hurt the foe.
+- **Healing moves** (RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS,
+  MOONLIGHT) come first when the Pokémon is under half its HP (a third for REST) and
+  the foe can't take that back in a turn, unless an attack knocks the foe out now.
+- **Status and stat-raising moves**, against trainers only (wild battles are quicker
+  without them), when the matchup calls for one: sleep when the fight will take three
+  turns or more, paralysis against a faster foe, TOXIC in a long fight (not on POISON
+  or STEEL Pokémon), and a stat boost that suits its best attack when the foe can
+  barely hurt it. A status move is never used on a foe that already has a status, a
+  SUBSTITUTE or SAFEGUARD, or a type it can't affect.
+- **Other status moves** (and Counter, Mirror Coat, Bide and Future Sight, whose
+  damage can't be predicted) are only used when no damaging move can hurt the foe.
 - **Self-Destruct and Explosion** are a last resort.
 - **Moves that would fail** come last: moves the foe is immune to, Dream Eater on
   an awake foe, Snore and Sleep Talk while awake, and False Swipe on a foe with 1 HP.
@@ -105,10 +160,112 @@ right after its level-up, before the next foe is sent out:
   stats and name, and any stat changes from the battle are kept.
 - Pressing B still stops the evolution, and an Everstone still prevents it. Like
   after a battle, a stopped evolution is tried again at the next level-up.
-- This covers every evolution that happens on level-up: by level, by friendship
-  (Golbat, Chansey, Eevee and the baby Pokémon) and Tyrogue's. Pokémon that level up
-  from an Exp. Share evolve too.
+- This covers every evolution that happens on level-up: by level (including the ones
+  that used to need friendship: see [Simpler evolutions](#simpler-evolutions)) and
+  Tyrogue's. Pokémon that level up from an Exp. Share evolve too.
 - Moves learned on evolving (like Gyarados's Bite) can be used right away.
+
+
+## Modern battles
+
+### Physical, special and status
+
+Whether an attack is physical or special depends on the move, as it does since
+DIAMOND and PEARL, not on its type: FIRE PUNCH, CRUNCH and WATERFALL are physical,
+SHADOW BALL, GUST and HIDDEN POWER special. The battle's move menu and the MOVES
+screen of the party menu show each move's category: **PHYSICAL**, **SPECIAL** or
+**STATUS**.
+
+### The FAIRY type
+
+The FAIRY type joins, with its matchups from the latest games: strong against
+FIGHTING, DRAGON and DARK; weak to POISON and STEEL; DRAGON moves don't affect it.
+The FAIRY Pokémon are the latest games' ones:
+
+- FAIRY: CLEFFA, CLEFAIRY, CLEFABLE, TOGEPI, SNUBBULL, GRANBULL
+- NORMAL/FAIRY: IGGLYBUFF, JIGGLYPUFF, WIGGLYTUFF
+- FAIRY/FLYING: TOGETIC; WATER/FAIRY: MARILL, AZUMARILL; PSYCHIC/FAIRY: MR. MIME
+
+CHARM, SWEET KISS and MOONLIGHT are FAIRY moves now, and there are three new ones:
+DRAINING KISS (heals 3/4 of the damage it does), PLAY ROUGH and MOONBLAST, which
+the FAIRY Pokémon learn by leveling up. The POLKADOT BOW (MARY gives it in the RADIO
+TOWER) boosts FAIRY moves.
+
+The rest of the type chart is today's too: GHOST and DARK moves hit STEEL Pokémon
+normally. CURSE is a GHOST move, and STRUGGLE has no type.
+
+### Moves
+
+Every move has its power, accuracy and PP from the latest games (TACKLE is 40 power,
+THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
+
+- **Priority**: PROTECT, DETECT and ENDURE (+4), EXTREMESPEED (+2), QUICK ATTACK,
+  MACH PUNCH and BIDE (+1); VITAL THROW (−1), COUNTER and MIRROR COAT (−5),
+  WHIRLWIND, ROAR and TELEPORT (−6).
+- **Recoil**: DOUBLE-EDGE costs 1/3 of the damage it does, other recoil moves 1/4,
+  STRUGGLE 1/4 of the user's max HP. A missed JUMP KICK or HI JUMP KICK costs half
+  of the user's max HP.
+- **Draining moves** heal half the damage they do; MORNING SUN, SYNTHESIS and
+  MOONLIGHT heal 1/2 of the max HP, 2/3 in sunshine and 1/4 in rain or a sandstorm.
+- SELF-DESTRUCT and EXPLOSION no longer halve the foe's Defense. LOW KICK is
+  stronger the heavier the foe (20 to 120 power). PSYWAVE does 50–150% of the user's
+  level. FURY CUTTER stops growing at 160 power. SKY ATTACK is likely to land a
+  critical hit. RAPID SPIN raises the user's Speed.
+- New added effects: ACID lowers Special Defense, CRUNCH lowers Defense, and
+  WATERFALL can make the foe flinch.
+- **Status**: a burn takes 1/16 of the max HP a turn, paralysis halves Speed, a
+  frozen Pokémon thaws out 20% of the time, sleep lasts one to three turns, and a
+  confused Pokémon hurts itself a third of the time.
+- WRAP, BIND, FIRE SPIN, CLAMP and WHIRLPOOL last four or five turns and take 1/8 of
+  the max HP a turn. DISABLE lasts four turns, ENCORE three, SPITE takes 4 PP, and
+  PROTECT, DETECT and ENDURE are a third as likely to work each time in a row.
+- HIDDEN POWER is a special move with 60 power.
+
+### No items in battle
+
+As in PalletToPewter, nobody uses items in battle, on any difficulty: the PACK says
+"No items can be used in battle!", and trainers don't use theirs either. (BALLS
+still have their own menu once a wild Pokémon is beaten, see
+[Catching](#catching), and the BUG-CATCHING CONTEST's PARK BALLS work as usual.)
+
+Instead, the **X items are held**, like BOOSTER ENERGY in the latest games. Give one
+to a Pokémon, and it's used up when that Pokémon comes into battle:
+
+| Item | When the holder comes in |
+|---|---|
+| X ATTACK | Attack +2 |
+| X DEFEND | Defense +2 |
+| X SPEED | Speed +2 |
+| X SPECIAL | Special Attack +2 |
+| X ACCURACY | accuracy +2 |
+| DIRE HIT | it's getting pumped (FOCUS ENERGY) |
+| GUARD SPEC. | it's shrouded in MIST |
+
+They're sold on the 3rd floor of the GOLDENROD DEPT. STORE, and trainers' Pokémon
+hold them too (see [Difficulty](#difficulty)).
+
+### No SHIFT
+
+The SHIFT battle style is gone: when a trainer is about to send out its next
+Pokémon, you're never asked whether to switch. BATTLE STYLE in the OPTION menu is
+always SET.
+
+
+## Simpler evolutions
+
+As in PalletToPewter, no Pokémon needs trading or friendship to evolve:
+
+- **Trade evolutions** use an item instead, from the PACK like an evolution stone:
+  the **LINKING CORD** evolves KADABRA, MACHOKE, GRAVELER and HAUNTER; the items they
+  used to hold while traded do the rest (KING'S ROCK for POLIWHIRL and SLOWPOKE,
+  METAL COAT for ONIX and SCYTHER, DRAGON SCALE for SEADRA, UP-GRADE for PORYGON).
+- **Friendship evolutions** go by level: PICHU, CLEFFA and IGGLYBUFF at Lv 12,
+  TOGEPI at Lv 20, GOLBAT at Lv 35 and CHANSEY at Lv 40.
+- **EEVEE** evolves into ESPEON with a SUN STONE, and into UMBREON with a MOON STONE.
+
+The GOLDENROD DEPT. STORE sells them all: KING'S ROCK, METAL COAT, DRAGON SCALE and
+UP-GRADE on the 3rd floor, and the LINKING CORD and six evolution stones (FIRE,
+WATER, THUNDER, LEAF, MOON and SUN) on the 4th.
 
 
 ## Catching
@@ -206,12 +363,13 @@ before there were difficulties is asked once, when you CONTINUE. Your TRAINER CA
 shows it.
 
 - **NORMAL**: the journey as it was meant to be, except that a GYM LEADER's whole team
-  stands at its strongest Pokémon's level (so do the ELITE FOUR's, LANCE's and RED's).
+  stands at its strongest Pokémon's level (so do the ELITE FOUR's, LANCE's and RED's),
+  and its strongest Pokémon holds an item.
 - **HARD**: every trainer's Pokémon are at least at the level cap, and the leaders'
   whole teams at least two levels above it. They're as evolved as their level allows:
-  level evolutions at their level, stone evolutions from Lv 20, trade evolutions from
-  Lv 34 and friendship ones from Lv 30, each trainer going its own way where a line
-  branches. Items can't be used in battle (BALLS still can, once a Pokémon is beaten).
+  level evolutions at their level, stone evolutions from Lv 20, and the ones that were
+  trade evolutions from Lv 34, each trainer going its own way where a line branches.
+  Every leader's Pokémon holds an item, and every other trainer's strongest one does.
 - **EXTREME**: as HARD, and you get the **ENDLESSCANDY**, a RARE CANDY that never
   runs out, right up to the level cap. But every trainer brings **six Pokémon**
   (except your rival in CHERRYGROVE CITY, who has just his starter). Their own are
@@ -228,12 +386,17 @@ shows it.
     type, accuracy, and moves that hit more than once or need a turn to charge), then
     its best support move (sleep, paralysis, a stat boost, recovery, TOXIC, …).
   - **perfect DVs**.
-  - **a held item**: the one that boosts its best attack's type, else LEFTOVERS, QUICK
-    CLAW, KING'S ROCK, SCOPE LENS, BRIGHTPOWDER or a berry, no two the same on a team.
+  - **a held item** (see below).
   - **smarter battling**: the AI uses every one of its tricks.
 
-  Boss Pokémon and their allies get their best movesets and perfect DVs too (the red
-  GYARADOS stays red).
+  Boss Pokémon and their allies get their best movesets, perfect DVs and held items
+  too (the red GYARADOS stays red).
+
+A trainer's Pokémon that holds an item gets the one that suits it best, and no two
+on a team are the same: the X ATTACK or X SPECIAL for its best attack (so it comes
+in with +2), else the item that boosts that attack's type (CHARCOAL, MYSTIC WATER,
+…), else LEFTOVERS, X SPEED, X DEFEND, DIRE HIT, QUICK CLAW, KING'S ROCK, SCOPE LENS,
+BRIGHTPOWDER, a berry, FOCUS BAND, X ACCURACY or GUARD SPEC.
 
 
 ## Your Pokémon follows you
@@ -301,7 +464,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 80164713238de322134b648bd8e0a6f8b503f5aa`.
+The patched ROM has `sha1: fffbda354caa1adb28909eab2270ce0929d79990`.
 
 
 ## Building it
@@ -406,6 +569,37 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it
   came from.
+- Auto battle's matchups are `AutoBattle_ScoreMatchup` (both sides' turns to a
+  knockout, from `AutoBattle_BestDamage`'s damage estimate). Each turn
+  `AutoBattle_ShouldSwitch` may pick a switch (`AutoBattle_BestSwitch`,
+  `AutoBattle_SoundSwitchIn`), which `BattleMenuPKMN_Loop` carries out through the
+  game's own `TryPlayerSwitch`; `PickPartyMonInBattle` and `AskUseNextPokemon` ask
+  `AutoBattle_ChooseSendOut` after a faint; and `ForgetMove` in
+  [`engine/pokemon/learn.asm`](engine/pokemon/learn.asm) asks
+  `AutoLearn_ForgetChoice` (in `extreme_trainers.asm`, with EXTREME's move picking).
+  Its working bytes (`wAB*`) are in battle RAM.
+- A move's category is kept in the top two bits of its type byte (`PHYSICAL`,
+  `SPECIAL`, `STATUS`; `TYPE_MASK` keeps the type), so
+  [`data/moves/moves.asm`](data/moves/moves.asm) keeps its layout; the `move` macro
+  takes the category after the type. The damage code chooses the stats by it, and
+  [`engine/pokemon/categories.asm`](engine/pokemon/categories.asm) names it for the
+  menus. `FAIRY` is a new type after `DARK`.
+- The moves' data and [`data/types/type_matchups.asm`](data/types/type_matchups.asm)
+  follow the latest games; DRAINING KISS, PLAY ROUGH and MOONBLAST take the three
+  move IDs after BEAT UP. [`data/moves/priorities.asm`](data/moves/priorities.asm)
+  lists each move's priority. The new effects are in
+  [`engine/battle/effect_commands.asm`](engine/battle/effect_commands.asm), the
+  [`engine/battle/move_effects`](engine/battle/move_effects) files and, where they
+  needed more room, [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm)
+  (recoil, LOW KICK, draining and weather healing).
+- Held X items have the new held effect `HELD_ENTRY_BOOST` (with an `ENTRY_*`
+  parameter) in [`data/items/attributes.asm`](data/items/attributes.asm);
+  `HandleHeldEntryItems` (in `modern_moves.asm`) uses them up at the start of the
+  turn, after `HandleBerserkGene`. `GiveTrainerHeldItem` gives trainers' Pokémon
+  theirs, and `CheckWhetherToAskSwitch` no longer offers SHIFT.
+- The new evolutions are in
+  [`data/pokemon/evos_attacks.asm`](data/pokemon/evos_attacks.asm) (`EVOLVE_ITEM`
+  and `EVOLVE_LEVEL`), and the LINKING CORD is item `$19`, formerly unused.
 
 
 ## Other changes

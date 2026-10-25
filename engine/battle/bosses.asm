@@ -190,13 +190,15 @@ LoadBossParty::
 	ret
 
 BossTrainerAttributes::
-; A boss uses no items, and there's no prize money.
+; No trainer uses items in battle (no one can: see CheckItemsAllowedInBattle),
+; and a boss gives no prize money.
+	xor a
+	ld [wEnemyTrainerItem1], a
+	ld [wEnemyTrainerItem2], a
 	ld a, [wBossBattle]
 	and a
 	ret z
 	xor a
-	ld [wEnemyTrainerItem1], a
-	ld [wEnemyTrainerItem2], a
 	ld [wEnemyTrainerBaseReward], a
 	ret
 

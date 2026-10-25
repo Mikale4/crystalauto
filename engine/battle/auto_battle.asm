@@ -91,7 +91,13 @@ AutoBattleTurn:
 	dec c
 	jr nz, .wait
 
+; Switch out of a matchup it's losing, if a party Pokémon would win it (see
+; AutoBattle_ShouldSwitch); otherwise, FIGHT.
+	call AutoBattle_ShouldSwitch
+	ld a, 2 ; PKMN
+	jr c, .got_choice
 	ld a, 1 ; FIGHT
+.got_choice
 	ld [wBattleMenuCursorPosition], a
 	scf
 	ret
@@ -135,6 +141,13 @@ AutoBattle_ChooseMove:
 	call SetPlayerTurn
 	xor a
 	ld [wCriticalHit], a
+
+; how the matchup stands (for healing, status and stat-raising moves)
+	call AutoBattle_FoeIsEnemyMon
+	ld a, [wCurBattleMon]
+	ld b, FALSE
+	call AutoBattle_ScoreMatchup
+	ld [wABCurScore], a
 
 	lb bc, 0, -1 ; b = move slot, c = best slot
 	ld de, 0 ; best rating
@@ -232,6 +245,8 @@ AutoBattle_RateMove:
 	ret
 
 .GetRating:
+	call AutoBattle_RateSupportMove
+	ret c
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
 	cp EFFECT_SELFDESTRUCT
 	jp z, .last_resort
@@ -368,6 +383,8 @@ AutoBattle_EstimateDamage:
 	jr z, .return
 	cp EFFECT_FRUSTRATION
 	jr z, .frustration
+	cp EFFECT_LOW_KICK
+	jr z, .low_kick
 ; Magnitude and Present have random power; use a typical value.
 	cp EFFECT_MAGNITUDE
 	jr z, .magnitude
@@ -378,6 +395,10 @@ AutoBattle_EstimateDamage:
 
 .magnitude
 	ld d, 70
+	jr .damage_calc
+
+.low_kick
+	callfar BattleCommand_LowKick
 	jr .damage_calc
 
 .return
@@ -422,7 +443,7 @@ AutoBattle_EstimateDamage:
 	jr .got_damage
 
 .psywave
-; Psywave deals 1 to 1.5x the user's level at random; use the level.
+; Psywave deals 0.5 to 1.5x the user's level at random; use the level.
 	ld a, [wBattleMonLevel]
 	ld l, a
 	ld h, 0
@@ -565,4 +586,1247 @@ AutoBattleTwoTurnEffects:
 	db EFFECT_SOLARBEAM
 	db EFFECT_FLY
 	db EFFECT_HYPER_BEAM ; must recharge
+	db -1
+
+; ---------- Judging matchups: who to send out, when to switch ----------
+; A party Pokémon's matchup against the foe is judged by how many turns each
+; needs to knock the other out (each using its strongest move against the
+; other's types, stats and HP; the foe's moves at full damage, ours at the
+; lowest roll), and who moves first. Switching in also means taking a free hit.
+
+; battle struct offsets (see battle_struct)
+DEF AB_MOVES  EQU 2
+DEF AB_PP     EQU 8
+DEF AB_LEVEL  EQU 13
+DEF AB_STATUS EQU 14
+DEF AB_HP     EQU 16
+DEF AB_ATK    EQU 20
+DEF AB_DEF    EQU 22
+DEF AB_SPD    EQU 24
+DEF AB_SAT    EQU 26
+DEF AB_SDF    EQU 28
+DEF AB_TYPE1  EQU 30
+DEF AB_TYPE2  EQU 31
+	assert wBattleMonMoves - wBattleMon == AB_MOVES && wBattleMonPP - wBattleMon == AB_PP
+	assert wBattleMonLevel - wBattleMon == AB_LEVEL && wBattleMonStatus - wBattleMon == AB_STATUS
+	assert wBattleMonHP - wBattleMon == AB_HP && wBattleMonAttack - wBattleMon == AB_ATK
+	assert wBattleMonDefense - wBattleMon == AB_DEF && wBattleMonSpeed - wBattleMon == AB_SPD
+	assert wBattleMonSpclAtk - wBattleMon == AB_SAT && wBattleMonSpclDef - wBattleMon == AB_SDF
+	assert wBattleMonType1 - wBattleMon == AB_TYPE1 && wBattleMonType2 - wBattleMon == AB_TYPE2
+	assert wEnemyMonType2 - wEnemyMon == AB_TYPE2
+
+DEF AB_WIN EQU 129 ; a score this high wins the matchup
+DEF AB_MAX_TURNS EQU 60
+
+DEF AB_OUR_ROLL   EQU 85 percent ; count on the lowest roll for our attacks
+DEF AB_THEIR_ROLL EQU 100 percent ; and the highest for the foe's
+
+AutoBattle_ChooseSendOut::
+; wCurPartyMon: the party Pokémon (not the one out) that does best against the
+; foe, for when one fainted (or BATON PASS). Return carry if there's none.
+; If the foe is down too (the trainer's next is chosen after), each is judged by
+; its worst matchup against the trainer's Pokémon still to come.
+	call AutoBattle_FoeIsEnemyMon
+	xor a
+	ld [wABAgainstAll], a
+	ld a, [wBattleMode]
+	dec a
+	jr z, .judge
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	jr nz, .judge
+	ld a, TRUE
+	ld [wABAgainstAll], a
+.judge
+	ld a, -1
+	ld [wABBestSlot], a
+	xor a
+	ld [wABBestScore], a
+	ld c, 0
+.loop
+	push bc
+	ld a, [wCurBattleMon]
+	cp c
+	jr z, .next
+	ld a, c
+	call AutoBattle_CanSendOut
+	jr nc, .next
+	pop bc
+	push bc
+	ld a, c
+	ld b, FALSE ; (no free hit: the foe moves next turn like it does)
+	call AutoBattle_ScoreSendOut
+	call AutoBattle_KeepIfBetter
+.next
+	pop bc
+	inc c
+	ld a, [wPartyCount]
+	cp c
+	jr nz, .loop
+	ld a, [wABBestSlot]
+	cp -1
+	scf
+	ret z
+	ld [wCurPartyMon], a
+	and a
+	ret
+
+AutoBattle_ShouldSwitch::
+; Before choosing a move: return carry and wCurPartyMon to switch to a party
+; Pokémon that wins the matchup the one out is losing.
+	call AutoBattle_FoeIsEnemyMon
+	ld a, [wAutoBattleSwitched]
+	and a
+	jr nz, .stay
+	call AutoBattle_CanSwitchOut
+	jr nc, .stay
+	ld a, [wCurBattleMon]
+	ld b, FALSE
+	call AutoBattle_ScoreMatchup
+	ld [wABCurScore], a
+	ld a, [wABUs]
+	ld [wABCurUs], a
+	ld a, [wABCurScore]
+	cp AB_WIN
+	jr nc, .stay ; (it's winning)
+	ld b, TRUE ; (switching in takes a hit)
+	call AutoBattle_BestSwitch
+	jr c, .switch
+.stay
+	xor a
+	ld [wAutoBattleSwitched], a
+	and a
+	ret
+
+.switch
+	ld a, TRUE
+	ld [wAutoBattleSwitched], a
+	scf
+	ret
+
+AutoBattle_BestSwitch:
+; b: whether switching in takes a hit. Return carry and wCurPartyMon if a party
+; Pokémon (not the one out) is a sound switch: it isn't weak to any of the foe's
+; attacks, it takes the foe's best attack well (two more after any it takes
+; coming in), and it wins the matchup, or at least does clearly better in it
+; than the one out (even if it's slower: a bulky one that resists the foe's
+; attacks can take a hit). Or, if the one out can't hurt the foe at all, one
+; that can.
+	ld a, b
+	ld [wABSwitchHit], a
+	ld a, -1
+	ld [wABBestSlot], a
+	xor a
+	ld [wABBestScore], a
+	ld c, 0
+.loop
+	push bc
+	ld a, [wCurBattleMon]
+	cp c
+	jr z, .next
+	ld a, c
+	call AutoBattle_CanSendOut
+	jr nc, .next
+	pop bc
+	push bc
+	ld a, [wABSwitchHit]
+	ld b, a
+	ld a, c
+	call AutoBattle_ScoreMatchup
+	call AutoBattle_SoundSwitchIn
+	jr nc, .next
+	call AutoBattle_KeepIfBetter
+.next
+	pop bc
+	inc c
+	ld a, [wPartyCount]
+	cp c
+	jr nz, .loop
+	ld a, [wABBestSlot]
+	cp -1
+	jr z, .none
+	ld b, a
+; a winner, or clearly better (by 2 turns or more) than the one out, or one that
+; can at least hurt the foe when the one out can't
+	ld a, [wABBestScore]
+	cp AB_WIN
+	jr nc, .go
+	ld c, a
+	ld a, [wABCurScore]
+	add 2 * 2
+	jr c, .not_better
+	cp c
+	jr c, .go
+	jr z, .go
+.not_better
+	ld a, [wABCurUs]
+	cp AB_MAX_TURNS
+	jr c, .none
+	ld a, [wABBestUs]
+	cp AB_MAX_TURNS
+	jr nc, .none
+.go
+	ld a, b
+	ld [wCurPartyMon], a
+	scf
+	ret
+
+.none
+	and a
+	ret
+
+AutoBattle_ScoreSendOut:
+; AutoBattle_ScoreMatchup for party Pokémon a, or with wABAgainstAll, its worst
+; score against the trainer's Pokémon still able to battle.
+	ld [wABCandSlot], a
+	ld a, [wABAgainstAll]
+	and a
+	ld a, [wABCandSlot]
+	jp z, AutoBattle_ScoreMatchup
+	push bc
+	ld a, 255
+	ld [wABMinScore], a
+	xor a
+	ld [wABMinUs], a
+	ld a, LOW(wABFoe)
+	ld [wABFoePtr], a
+	ld a, HIGH(wABFoe)
+	ld [wABFoePtr + 1], a
+	ld c, 0
+.loop
+	push bc
+	ld a, c
+	ld hl, wOTPartyMon1HP
+	call GetPartyLocation
+	ld a, [hli]
+	or [hl]
+	jr z, .next
+	pop bc
+	push bc
+	ld a, c
+	ld hl, wOTPartyMon1
+	ld de, wABFoe
+	call AutoBattle_LoadPartyStruct
+	ld a, [wABCandSlot]
+	ld b, FALSE
+	call AutoBattle_ScoreMatchup
+	ld b, a
+	ld a, [wABMinScore]
+	cp b
+	jr c, .next
+	ld a, b
+	ld [wABMinScore], a
+	ld a, [wABUs]
+	ld [wABMinUs], a
+.next
+	pop bc
+	inc c
+	ld a, [wOTPartyCount]
+	cp c
+	jr nz, .loop
+	ld a, [wABMinUs]
+	ld [wABUs], a
+	call AutoBattle_FoeIsEnemyMon
+	ld a, [wABMinScore]
+	pop bc
+	ret
+
+AutoBattle_SoundSwitchIn:
+; After AutoBattle_ScoreMatchup: return carry if the Pokémon could come in on
+; the foe: none of the foe's damaging moves is super effective on it, and it
+; can take at least two more of the foe's best attacks after coming in.
+	push af
+	ld a, [wABThemEffectiveness]
+	cp 4 + 1 ; (neutral is 4)
+	jr nc, .unsound
+	ld a, [wABThem]
+	cp 2
+	jr c, .unsound
+	pop af
+	scf
+	ret
+
+.unsound
+	pop af
+	and a
+	ret
+
+AutoBattle_KeepIfBetter:
+; a: the score of party Pokémon c (wABUs: its turns to knock the foe out).
+; Keep it if it's the best so far (ties go to the quicker knockout).
+	ld b, a
+	ld a, [wABBestSlot]
+	cp -1
+	jr z, .better
+	ld a, [wABBestScore]
+	cp b
+	jr c, .better
+	ret nz
+	ld a, [wABUs]
+	ld e, a
+	ld a, [wABBestUs]
+	cp e
+	ret c
+	ret z
+.better
+	ld a, b
+	ld [wABBestScore], a
+	ld a, [wABUs]
+	ld [wABBestUs], a
+	ld a, c
+	ld [wABBestSlot], a
+	ret
+
+AutoBattle_CanSendOut:
+; Return carry if party Pokémon a can battle (not an EGG, not fainted).
+	ld e, a
+	ld d, 0
+	ld hl, wPartySpecies
+	add hl, de
+	ld a, [hl]
+	cp EGG
+	jr z, .no
+	ld a, e
+	ld hl, wPartyMon1HP
+	call GetPartyLocation
+	ld a, [hli]
+	or [hl]
+	jr z, .no
+	scf
+	ret
+
+.no
+	and a
+	ret
+
+AutoBattle_CanSwitchOut:
+; Return carry if the player's Pokémon can be switched out on its own.
+	ld a, [wBattleType]
+	cp BATTLETYPE_TUTORIAL
+	jr z, .no
+	cp BATTLETYPE_CONTEST
+	jr z, .no
+	cp BATTLETYPE_DEBUG
+	jr z, .no
+	ld a, [wPlayerWrapCount]
+	and a
+	jr nz, .no
+	ld a, [wEnemySubStatus5]
+	bit SUBSTATUS_CANT_RUN, a
+	jr nz, .no
+	scf
+	ret
+
+.no
+	and a
+	ret
+
+AutoBattle_ScoreMatchup:
+; Party Pokémon a against the foe (wABFoePtr; b: TRUE if it must first take a
+; free hit).
+; Return its score in a: 128 + 2 x (the foe's turns to knock it out - its turns
+; to knock the foe out), + 1 if it's faster; AB_WIN and up wins.
+; Also wABUs, wABThem, and the foe's best type effectiveness against it in
+; wABThemEffectiveness (in quarters: 4 is neutral).
+	push bc
+	call AutoBattle_LoadCandidate
+; the foe's best attack on it
+	call AutoBattle_GetFoe
+	ld de, wABCandidate
+	ld a, AB_THEIR_ROLL
+	call AutoBattle_BestDamage
+	push hl ; the foe's damage
+	ld a, [wABBestEffectiveness]
+	push af
+; its best attack on the foe
+	call AutoBattle_GetFoe
+	ld d, h
+	ld e, l
+	ld hl, wABCandidate
+	ld a, AB_OUR_ROLL
+	call AutoBattle_BestDamage
+	ld b, h
+	ld c, l
+	call AutoBattle_GetFoe
+	ld de, AB_HP
+	add hl, de
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	call AutoBattle_TurnsToKO
+	ld [wABUs], a
+	pop af
+	ld [wABThemEffectiveness], a
+	pop bc ; the foe's damage
+	ld a, b
+	ld [wABThemDamage], a
+	ld a, c
+	ld [wABThemDamage + 1], a
+	ld hl, wABCandidate + AB_HP
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	pop de ; d: whether it takes a hit first
+	push de
+	ld a, d
+	and a
+	jr z, .no_free_hit
+; it takes one hit coming in
+	ld a, l
+	sub c
+	ld l, a
+	ld a, h
+	sbc b
+	ld h, a
+	jr c, .fainted
+	or l
+	jr z, .fainted
+.no_free_hit
+	call AutoBattle_TurnsToKO
+	ld [wABThem], a
+; 128 + 2 x (them - us)
+	ld b, a
+	ld a, [wABUs]
+	ld c, a
+	ld a, b
+	sub c
+	jr c, .losing
+	cp 63
+	jr c, .got_margin
+	ld a, 63
+.got_margin
+	add a
+	add 128
+	jr .speed
+
+.losing
+	cpl
+	inc a ; us - them
+	cp 64
+	jr c, .got_loss
+	ld a, 64
+.got_loss
+	add a
+	ld b, a
+	ld a, 128
+	sub b
+.speed
+	ld b, a
+; + 1 if it's faster
+	call AutoBattle_GetFoe
+	ld de, AB_SPD
+	add hl, de
+	push hl
+	ld hl, wABCandidate + AB_SPD
+	ld a, [hli]
+	ld e, [hl]
+	ld d, a
+	pop hl
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	ld a, l
+	sub e
+	ld a, h
+	sbc d
+	ld a, b
+	jr nc, .done ; (not faster)
+	inc a
+.done
+	pop bc
+	ret
+
+.fainted
+	xor a
+	ld [wABThem], a
+	pop bc
+	ret
+
+AutoBattle_TurnsToKO:
+; a = how many hits of bc damage it takes to knock out hl HP (at most AB_MAX_TURNS).
+	ld a, b
+	or c
+	ld a, AB_MAX_TURNS
+	ret z
+	ld e, 0
+.loop
+	inc e
+	ld a, e
+	cp AB_MAX_TURNS
+	ret nc
+	ld a, l
+	sub c
+	ld l, a
+	ld a, h
+	sbc b
+	ld h, a
+	jr c, .done
+	or l
+	jr nz, .loop
+.done
+	ld a, e
+	ret
+
+AutoBattle_GetFoe:
+; hl: the foe's battle struct.
+	ld hl, wABFoePtr
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ret
+
+AutoBattle_FoeIsEnemyMon:
+	ld a, LOW(wEnemyMon)
+	ld [wABFoePtr], a
+	ld a, HIGH(wEnemyMon)
+	ld [wABFoePtr + 1], a
+	ret
+
+AutoBattle_LoadCandidate:
+; wABCandidate: party Pokémon a as a battle struct (the one out: wBattleMon).
+	ld hl, wCurBattleMon
+	cp [hl]
+	jr nz, .party
+	ld hl, wBattleMon
+	ld de, wABCandidate
+	ld bc, wBattleMonStructEnd - wBattleMon
+	jp CopyBytes
+
+.party
+	ld hl, wPartyMon1
+	ld de, wABCandidate
+	; fallthrough
+
+AutoBattle_LoadPartyStruct:
+; Battle struct de: Pokémon a of the party at hl (wPartyMon1 or wOTPartyMon1).
+	push de
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	pop de
+	push de ; (the battle struct)
+	push hl ; (the party struct)
+	ld bc, MON_OT_ID ; species, item, moves
+	call CopyBytes
+	pop hl
+	push hl
+	ld bc, MON_DVS
+	add hl, bc
+	ld bc, MON_HAPPINESS + 1 - MON_DVS ; DVs, PP, happiness
+	call CopyBytes
+	pop hl
+	push hl
+	ld bc, MON_LEVEL
+	add hl, bc
+	ld a, [hli] ; level
+	ld [de], a
+	inc de
+	ld a, [hli] ; status
+	ld [de], a
+	inc de
+	xor a
+	ld [de], a
+	inc de
+	inc hl
+	ld bc, MON_STATS + NUM_BATTLE_STATS * 2 - MON_HP ; HP, max HP, stats
+	call CopyBytes
+	pop hl
+; its types
+	ld a, [hl]
+	dec a
+	ld hl, BaseData + BASE_TYPES
+	ld bc, BASE_DATA_SIZE
+	call AddNTimes
+	ld a, BANK(BaseData)
+	call GetFarByte
+	ld b, a
+	inc hl
+	ld a, BANK(BaseData)
+	call GetFarByte
+	ld c, a
+	pop hl
+	push hl
+	ld de, AB_TYPE1
+	add hl, de
+	ld a, b
+	ld [hli], a
+	ld [hl], c
+; paralysis halves its speed
+	pop hl
+	ld de, AB_STATUS
+	add hl, de
+	bit PAR, [hl]
+	ret z
+	ld de, AB_SPD - AB_STATUS
+	add hl, de
+	srl [hl]
+	inc hl
+	rr [hl]
+	ret
+
+AutoBattle_BestDamage:
+; hl = the most damage battle struct hl's moves can do to battle struct de
+; (a: the damage roll to count on, /256), taking accuracy into account; also
+; wABBestEffectiveness: the best type effectiveness of its damaging moves.
+	ld [wABRoll], a
+	ld a, l
+	ld [wABAttacker], a
+	ld a, h
+	ld [wABAttacker + 1], a
+	ld a, e
+	ld [wABDefender], a
+	ld a, d
+	ld [wABDefender + 1], a
+	xor a
+	ld [wABDamage], a
+	ld [wABDamage + 1], a
+	ld [wABBestEffectiveness], a
+	ld c, 0
+.loop
+	push bc
+	call AutoBattle_AttackerField
+	db AB_PP
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	and PP_MASK
+	jr z, .next
+	call AutoBattle_AttackerField
+	db AB_MOVES
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	and a
+	jr z, .next
+	call AutoBattle_MoveDamage
+; keep the most (and its category)
+	ld a, [wABDamage + 1]
+	sub l
+	ld a, [wABDamage]
+	sbc h
+	jr nc, .next
+	ld a, h
+	ld [wABDamage], a
+	ld a, l
+	ld [wABDamage + 1], a
+	ld a, [wABMove + MOVE_TYPE]
+	and ~TYPE_MASK
+	ld [wABBestCategory], a
+.next
+	pop bc
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .loop
+	ld hl, wABDamage
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	ret
+
+AutoBattle_AttackerField:
+; hl: the attacker's field (the byte after the call: its offset).
+	ld hl, wABAttacker
+	jr AutoBattle_StructField
+
+AutoBattle_DefenderField:
+; hl: the defender's field (the byte after the call: its offset).
+	ld hl, wABDefender
+AutoBattle_StructField:
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	pop de ; the return address: the offset's address
+	ld a, [de]
+	inc de
+	push de
+	add l
+	ld l, a
+	ret nc
+	inc h
+	ret
+
+AutoBattle_MoveDamage:
+; hl = the damage move a does from the attacker to the defender (0 if none):
+; the damage formula, the attacker's type, the defender's types, accuracy, and
+; whether it hits more than once or takes two turns.
+	dec a
+	ld hl, Moves
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld de, wABMove
+	ld bc, MOVE_LENGTH
+	ld a, BANK(Moves)
+	call FarCopyBytes
+	ld a, [wABMove + MOVE_POWER]
+	and a
+	jp z, .none
+; type effectiveness (and immunities)
+	ld a, [wABMove + MOVE_TYPE]
+	and TYPE_MASK
+	call AutoBattle_TypeEffectiveness
+	and a
+	jp z, .none
+	ld [wABEffectiveness], a
+
+	ld a, [wABMove + MOVE_EFFECT]
+	ld hl, AutoBattleNeverDamagingEffects
+	ld de, 1
+	call IsInArray
+	jp c, .none
+	ld a, [wABMove + MOVE_EFFECT]
+	cp EFFECT_LEVEL_DAMAGE
+	jp z, .level
+	cp EFFECT_PSYWAVE
+	jp z, .level
+	cp EFFECT_STATIC_DAMAGE
+	jp z, .static
+	cp EFFECT_SUPER_FANG
+	jp z, .super_fang
+
+; (how effective its best attack can be)
+	ld a, [wABEffectiveness]
+	ld b, a
+	ld a, [wABBestEffectiveness]
+	cp b
+	jr nc, .effectiveness_ok
+	ld a, b
+	ld [wABBestEffectiveness], a
+.effectiveness_ok
+; the power (some vary: count on a typical one)
+	ld a, [wABMove + MOVE_EFFECT]
+	ld hl, AutoBattleTypicalPowers
+	ld de, 2
+	call IsInArray
+	ld a, [wABMove + MOVE_POWER]
+	jr nc, .got_power
+	inc hl
+	ld a, [hl]
+.got_power
+	ld [wABMove + MOVE_POWER], a
+
+; attack and defense stats, by the move's category
+	ld a, [wABMove + MOVE_TYPE]
+	cp SPECIAL
+	jr nc, .special
+	call AutoBattle_AttackerField
+	db AB_ATK
+	push hl
+	call AutoBattle_DefenderField
+	db AB_DEF
+	jr .got_stats
+
+.special
+	call AutoBattle_AttackerField
+	db AB_SAT
+	push hl
+	call AutoBattle_DefenderField
+	db AB_SDF
+.got_stats
+	ld a, [hli]
+	ld c, [hl]
+	ld b, a ; bc: defense
+	pop hl
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a ; hl: attack
+; both under 256, as the game does it
+.scale
+	ld a, h
+	or b
+	jr z, .scaled
+	srl h
+	rr l
+	srl h
+	rr l
+	srl b
+	rr c
+	srl b
+	rr c
+	jr .scale
+
+.scaled
+	ld a, c
+	and a
+	jr nz, .def_ok
+	inc c
+.def_ok
+	ld a, l
+	and a
+	jr nz, .atk_ok
+	inc l
+.atk_ok
+	push bc ; (c: defense)
+	push hl ; (l: attack)
+; (level x 2 / 5 + 2) x power x attack / defense / 50 + 2
+	call AutoBattle_AttackerField
+	db AB_LEVEL
+	ld a, [hl]
+	add a
+	ld c, 5
+	call SimpleDivide ; b = a / 5
+	ld a, b
+	add 2
+	ldh [hMultiplicand + 2], a
+	xor a
+	ldh [hMultiplicand + 0], a
+	ldh [hMultiplicand + 1], a
+	ld a, [wABMove + MOVE_POWER]
+	ldh [hMultiplier], a
+	call Multiply
+	pop hl
+	ld a, l
+	ldh [hMultiplier], a
+	call Multiply
+	pop bc
+	ld a, c
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+	ld a, 50
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+	ldh a, [hQuotient + 2]
+	ld h, a
+	ldh a, [hQuotient + 3]
+	ld l, a
+; (more than anything has HP for is all the same)
+	ld a, h
+	cp HIGH(1024)
+	jr c, .not_capped
+	ld hl, 1023
+.not_capped
+	inc hl
+	inc hl
+; its own type: x 1.5
+	ld a, [wABMove + MOVE_TYPE]
+	and TYPE_MASK
+	ld b, a
+	push hl
+	call AutoBattle_AttackerField
+	db AB_TYPE1
+	ld a, [hli]
+	cp b
+	jr z, .stab
+	ld a, [hl]
+	cp b
+	jr nz, .no_stab
+.stab
+	pop hl
+	ld d, h
+	ld e, l
+	srl d
+	rr e
+	add hl, de
+	push hl
+.no_stab
+	pop hl
+; type effectiveness (in quarters)
+	ld a, [wABEffectiveness]
+.effectiveness
+	cp 4
+	jr z, .got_effectiveness
+	jr c, .resisted
+	add hl, hl
+	srl a
+	jr .effectiveness
+
+.resisted
+	srl h
+	rr l
+	sla a
+	jr .effectiveness
+
+.got_effectiveness
+; hits more than once, or takes two turns
+	ld a, [wABMove + MOVE_EFFECT]
+	cp EFFECT_MULTI_HIT
+	ld b, 3 ; (2-5 hits)
+	jr z, .times
+	cp EFFECT_TRIPLE_KICK
+	ld b, 5 ; (up to 1x + 2x + 3x)
+	jr z, .times
+	cp EFFECT_DOUBLE_HIT
+	ld b, 2
+	jr z, .times
+	cp EFFECT_POISON_MULTI_HIT
+	jr z, .times
+	push hl
+	ld hl, AutoBattleTwoTurnEffects
+	ld de, 1
+	call IsInArray
+	pop hl
+	jr nc, .roll
+	srl h
+	rr l
+	jr .roll
+
+.times
+	ld d, h
+	ld e, l
+	dec b
+.times_loop
+	add hl, de
+	dec b
+	jr nz, .times_loop
+.roll
+; the roll to count on, then accuracy
+	ld a, [wABRoll]
+	call AutoBattle_MultiplyHL
+	ld a, [wABMove + MOVE_ACC]
+	jp AutoBattle_MultiplyHL
+
+.level
+	call AutoBattle_AttackerField
+	db AB_LEVEL
+	ld l, [hl]
+	ld h, 0
+	ret
+
+.static
+	ld a, [wABMove + MOVE_POWER]
+	ld l, a
+	ld h, 0
+	ret
+
+.super_fang
+	call AutoBattle_DefenderField
+	db AB_HP
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	srl h
+	rr l
+	ret
+
+.none
+	ld hl, 0
+	ret
+
+AutoBattle_TypeEffectiveness:
+; a = how effective attack type a is against the defender's types, in quarters
+; (0, 1, 2, 4, 8 or 16; 4 is neutral). GHOST's immunities stand (no FORESIGHT).
+	ld b, a
+	push bc
+	call AutoBattle_DefenderField
+	db AB_TYPE1
+	pop bc
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	ld c, 4
+	ld hl, TypeMatchups
+.loop
+	ld a, BANK(TypeMatchups)
+	call GetFarByte
+	inc hl
+	cp -1
+	jr z, .done
+	cp -2
+	jr z, .loop
+	cp b
+	jr nz, .skip
+	ld a, BANK(TypeMatchups)
+	call GetFarByte
+	inc hl
+	cp d
+	jr z, .match
+	cp e
+	jr nz, .skip_mult
+.match
+	ld a, BANK(TypeMatchups)
+	call GetFarByte
+	inc hl
+	and a ; NO_EFFECT
+	jr z, .immune
+	cp EFFECTIVE
+	jr c, .half
+	sla c
+	jr .loop
+
+.half
+	srl c
+	jr .loop
+
+.immune
+	ld c, 0
+	jr .loop
+
+.skip
+	inc hl
+.skip_mult
+	inc hl
+	jr .loop
+
+.done
+	ld a, c
+	ret
+
+AutoBattleNeverDamagingEffects:
+; no damage to count on from these
+	db EFFECT_SELFDESTRUCT
+	db EFFECT_DREAM_EATER
+	db EFFECT_SNORE
+	db EFFECT_OHKO
+	db EFFECT_COUNTER
+	db EFFECT_MIRROR_COAT
+	db EFFECT_BIDE
+	db EFFECT_FUTURE_SIGHT
+	db -1
+
+AutoBattleTypicalPowers:
+; moves whose power varies, and a typical power
+	db EFFECT_RETURN,      70
+	db EFFECT_FRUSTRATION, 70
+	db EFFECT_REVERSAL,    40
+	db EFFECT_PRESENT,     40
+	db EFFECT_MAGNITUDE,   70
+	db EFFECT_LOW_KICK,    60
+	db EFFECT_BEAT_UP,     30
+	db -1
+
+; ---------- Healing, status and stat-raising moves, when they're worth it ----------
+
+AutoBattle_RateSupportMove:
+; Return carry and its rating in hl if the move in wPlayerMoveStruct is a
+; healing, status or stat-raising move worth using now (by how the matchup
+; stands: see AutoBattle_ChooseMove). Such a move comes before any attack,
+; except one that knocks the foe out.
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld hl, AutoBattleHealEffects
+	ld de, 1
+	call IsInArray
+	jr c, .heal
+; status and stat-raising moves only against trainers (wild battles go quicker)
+	ld a, [wBattleMode]
+	dec a
+	jp z, .no
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_SLEEP
+	jp z, .sleep
+	cp EFFECT_PARALYZE
+	jp z, .paralyze
+	cp EFFECT_TOXIC
+	jp z, .toxic
+	ld hl, AutoBattleStatUpEffects
+	ld de, 3
+	call IsInArray
+	jp c, .stat_up
+.no
+	and a
+	ret
+
+.heal
+; not when an attack knocks the foe out this turn
+	ld a, [wABUs]
+	cp 2
+	jp c, .no
+; only under half its HP (a third for REST)
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	ld d, h
+	ld e, l
+	add hl, hl
+	ld a, [wPlayerMoveStruct + MOVE_ANIM]
+	cp REST
+	jr nz, .got_hp
+	add hl, de
+.got_hp
+	ld a, [wBattleMonMaxHP]
+	ld d, a
+	ld a, [wBattleMonMaxHP + 1]
+	ld e, a
+	ld a, l
+	sub e
+	ld a, h
+	sbc d
+	jp nc, .no
+; and only if the foe can't take that back each turn (under half its max HP; a
+; quarter for REST, which sleeps two turns)
+	ld hl, wABThemDamage
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	add hl, hl
+	ld a, [wPlayerMoveStruct + MOVE_ANIM]
+	cp REST
+	jr nz, .got_damage
+	add hl, hl
+.got_damage
+	ld a, l
+	sub e
+	ld a, h
+	sbc d
+	jp nc, .no
+	ld b, 1
+	jp .rating
+
+.sleep
+; when knocking the foe out takes three turns or more, and it can't knock this
+; one out first
+	call .CanAffectFoe
+	jp nc, .no
+	ld a, [wABUs]
+	cp 3
+	jp c, .no
+	ld a, [wABThem]
+	cp 2
+	jp c, .no
+	ld b, 2
+	jp .rating
+
+.paralyze
+; when knocking the foe out takes two turns or more, and it's faster or takes
+; three; and it can't knock this one out first
+	call .CanAffectFoe
+	jp nc, .no
+	ld a, [wABThem]
+	cp 2
+	jp c, .no
+	ld a, [wABUs]
+	cp 2
+	jp c, .no
+	cp 3
+	jr nc, .paralyze_ok
+	ld a, [wABCurScore]
+	bit 0, a
+	jp nz, .no ; (this one is faster)
+.paralyze_ok
+	ld b, 3
+	jp .rating
+
+.toxic
+; in a long fight (four turns or more), against a foe that isn't POISON or STEEL
+	call .CanAffectFoe
+	jp nc, .no
+	ld a, [wEnemyMonType1]
+	call .PoisonProof
+	jp z, .no
+	ld a, [wEnemyMonType2]
+	call .PoisonProof
+	jp z, .no
+	ld a, [wABUs]
+	cp 4
+	jp c, .no
+	ld a, [wABThem]
+	cp 3
+	jp c, .no
+	ld b, 3
+	jp .rating
+
+.stat_up
+; when the foe can barely hurt it (four turns or more to knock it out), it takes
+; two turns or more to knock the foe out, the stat is no more than one stage up,
+; and the stat suits its best attack
+	inc hl
+	ld a, [hli] ; the stat
+	ld c, a
+	ld a, [hl] ; the category it suits (0: any)
+	ld d, a
+	ld a, [wABThem]
+	cp 4
+	jp c, .no
+	ld a, [wABUs]
+	cp 2
+	jp c, .no
+	ld a, d
+	and a
+	jr z, .any_category
+	ld a, [wABBestCategory]
+	cp d
+	jp nz, .no
+.any_category
+	ld b, 0
+	ld hl, wPlayerStatLevels
+	add hl, bc
+	ld a, [hl]
+	cp BASE_STAT_LEVEL + 2
+	jp nc, .no
+; AGILITY only when it's slower; CURSE only for a POKéMON that isn't a GHOST
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_SPEED_UP_2
+	jr nz, .not_speed
+	ld a, [wABCurScore]
+	bit 0, a
+	jp nz, .no
+	jr .stat_up_ok
+
+.not_speed
+	cp EFFECT_CURSE
+	jr nz, .stat_up_ok
+	ld a, [wBattleMonType1]
+	cp GHOST
+	jp z, .no
+	ld a, [wBattleMonType2]
+	cp GHOST
+	jp z, .no
+.stat_up_ok
+	ld b, 4
+
+.rating
+; hl = AUTO_BATTLE_DAMAGE + the foe's HP - b: above any attack that doesn't knock
+; it out, and the lower b, the higher
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	ld de, AUTO_BATTLE_DAMAGE
+	add hl, de
+	ld a, l
+	sub b
+	ld l, a
+	jr nc, .rated
+	dec h
+.rated
+	scf
+	ret
+
+.CanAffectFoe:
+; Return carry if the foe has no status, substitute or SAFEGUARD, and the move's
+; type can affect it.
+	ld a, [wEnemyMonStatus]
+	and a
+	ret nz ; (nc)
+	ld a, [wEnemySubStatus4]
+	bit SUBSTATUS_SUBSTITUTE, a
+	jr nz, .cant
+	ld a, [wEnemyScreens]
+	bit SCREENS_SAFEGUARD, a
+	jr nz, .cant
+	callfar BattleCheckTypeMatchup
+	ld a, [wTypeMatchup]
+	and a
+	jr z, .cant
+	scf
+	ret
+
+.cant
+	and a
+	ret
+
+.PoisonProof:
+; Return z if type a can't be poisoned.
+	cp POISON
+	ret z
+	cp STEEL
+	ret
+
+AutoBattleHealEffects:
+	db EFFECT_HEAL ; RECOVER, SOFTBOILED, MILK DRINK, REST
+	db EFFECT_MORNING_SUN
+	db EFFECT_SYNTHESIS
+	db EFFECT_MOONLIGHT
+	db -1
+
+AutoBattleStatUpEffects:
+; effect, the stat it raises (wPlayerStatLevels index), the category it suits
+	db EFFECT_ATTACK_UP_2,  ATTACK,  PHYSICAL ; SWORDS DANCE
+	db EFFECT_ATTACK_UP,    ATTACK,  PHYSICAL ; MEDITATE, SHARPEN
+	db EFFECT_CURSE,        ATTACK,  PHYSICAL ; (not a GHOST's)
+	db EFFECT_SP_ATK_UP_2,  SP_ATTACK, SPECIAL
+	db EFFECT_SP_ATK_UP,    SP_ATTACK, SPECIAL ; GROWTH
+	db EFFECT_SPEED_UP_2,   SPEED,   0 ; AGILITY (when slower)
 	db -1

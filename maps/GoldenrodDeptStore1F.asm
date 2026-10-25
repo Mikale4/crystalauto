@@ -68,6 +68,7 @@ GoldenrodDeptStore1FDirectoryText:
 	line "   COLLECTION"
 
 	para "4F MEDICINE BOX"
+	line "   & EVOLUTION"
 
 	para "5F TM CORNER"
 

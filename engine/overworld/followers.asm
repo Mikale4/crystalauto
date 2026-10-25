@@ -443,6 +443,7 @@ endr
 	db PAL_OW_BLUE  ; ICE
 	db PAL_OW_BLUE  ; DRAGON
 	db PAL_OW_BROWN ; DARK
+	db PAL_OW_PINK  ; FAIRY
 	assert_table_length TYPES_END
 
 SetFollowerPalette:

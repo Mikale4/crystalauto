@@ -97,8 +97,36 @@ DifficultyAdjustTrainerParty::
 	jr nz, .loop
 	call GetDifficulty
 	cp DIFFICULTY_EXTREME
-	ret nz
-	jp ExtremeTrainerParty
+	jp z, ExtremeTrainerParty
+; held items (no one can use items in battle): on NORMAL, a leader's ace holds
+; one; on HARD, every leader's Pokémon and every other trainer's ace
+	ld b, a
+	ld a, [wDifficultyLeader]
+	and a
+	jr z, .not_leader_items
+	ld a, b
+	and a ; DIFFICULTY_NORMAL
+	jr z, .ace_item
+	ld c, 0
+.item_loop
+	push bc
+	ld a, c
+	call GiveTrainerHeldItem ; (the same bank: a is the slot)
+	pop bc
+	inc c
+	ld a, [wOTPartyCount]
+	cp c
+	jr nz, .item_loop
+	ret
+
+.not_leader_items
+	ld a, b
+	and a ; DIFFICULTY_NORMAL
+	ret z
+.ace_item
+	call GetTrainerPartyAceSlot
+	call GiveTrainerHeldItem ; (the same bank: a is the slot)
+	ret
 
 GetOTPartyMonParam:
 ; hl: the param in wOTPartyMon1; a: which mon
@@ -135,6 +163,30 @@ GetTrainerPartyAce:
 	dec c
 	jr nz, .loop
 	ld a, b
+	ret
+
+GetTrainerPartyAceSlot:
+; a: the slot of the trainer's highest-level Pokémon (the last, on a tie).
+	ld hl, wOTPartyMon1Level
+	lb bc, 0, 0 ; b: the best level, c: its slot
+	ld a, [wOTPartyCount]
+	ld e, a ; (count down)
+	ld d, 0 ; (the slot)
+.loop
+	ld a, [hl]
+	cp b
+	jr c, .next
+	ld b, a
+	ld c, d
+.next
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	inc d
+	dec e
+	jr nz, .loop
+	ld a, c
 	ret
 
 GetTrainerMonSeed:
@@ -226,13 +278,28 @@ FitEvolutionStages::
 	jr z, .got_level
 	ld a, b
 	cp EVOLVE_ITEM
-	ld a, STONE_EVO_LV
-	jr z, .got_level
+	jr z, .item
 	ld a, b
 	cp EVOLVE_TRADE
 	ld a, TRADE_EVO_LV
 	jr z, .got_level
 	ld a, FRIENDSHIP_EVO_LV
+	jr .got_level
+
+.item
+; the items that took a trade (the LINKING CORD and the old trade items): from
+; TRADE_EVO_LV, the stones from STONE_EVO_LV
+	push hl
+	ld a, c
+	ld hl, TradeEvolutionItems
+	push de
+	ld de, 1
+	call IsInArray
+	pop de
+	pop hl
+	ld a, TRADE_EVO_LV
+	jr c, .got_level
+	ld a, STONE_EVO_LV
 .got_level
 	ld b, a
 	ld a, [wCurPartyLevel]
@@ -243,7 +310,7 @@ FitEvolutionStages::
 	pop de
 	srl e ; (another way at the next branch)
 	dec d
-	jr nz, .next_stage
+	jp nz, .next_stage
 	jr .done
 
 .too_low
@@ -263,6 +330,10 @@ FitEvolutionStages::
 .SkipByte:
 	inc hl
 	ret
+
+TradeEvolutionItems:
+	db LINKING_CORD, METAL_COAT, DRAGON_SCALE, KINGS_ROCK, UP_GRADE
+	db -1
 
 GetEvosPointer:
 ; hl: species a's evolutions and moves

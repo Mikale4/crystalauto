@@ -6,4 +6,5 @@ CriticalHitMoves:
 	db SLASH
 	db AEROBLAST
 	db CROSS_CHOP
+	db SKY_ATTACK ; (as in the latest games)
 	db -1

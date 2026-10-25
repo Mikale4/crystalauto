@@ -173,6 +173,7 @@ BattleTurn:
 	ld [wCurDamage + 1], a
 
 	call HandleBerserkGene
+	farcall HandleHeldEntryItems
 	call UpdateBattleMonInParty
 	farcall AIChooseMove
 
@@ -838,33 +839,24 @@ CompareMovePriority:
 	ret
 
 GetMovePriority:
-; Return the priority (0-3) of move a.
-
+; Return the priority of move a (as in the latest games, + BASE_PRIORITY).
 	ld b, a
-
-	; Vital Throw goes last.
-	cp VITAL_THROW
-	ld a, 0
-	ret z
-
-	call GetMoveEffect
-	ld hl, MoveEffectPriorities
+	ld hl, MovePriorities
 .loop
 	ld a, [hli]
-	cp b
-	jr z, .done
-	inc hl
 	cp -1
+	jr z, .none
+	cp b
+	ld a, [hli]
 	jr nz, .loop
+	add BASE_PRIORITY
+	ret
 
+.none
 	ld a, BASE_PRIORITY
 	ret
 
-.done
-	ld a, [hl]
-	ret
-
-INCLUDE "data/moves/effects_priorities.asm"
+INCLUDE "data/moves/priorities.asm"
 
 GetMoveEffect:
 	ld a, b
@@ -1042,6 +1034,10 @@ ResidualDamage:
 	ld [wBattleAfterAnim], a
 	call Call_PlayBattleAnim_OnlyIfVisible
 	call GetEighthMaxHP
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and 1 << BRN
+	call nz, GetSixteenthMaxHP ; (a burn: 1/16, as in the latest games)
 	ld de, wPlayerToxicCount
 	ldh a, [hBattleTurn]
 	and a
@@ -1270,7 +1266,7 @@ HandleWrap:
 	call SwitchTurnCore
 
 .skip_anim
-	call GetSixteenthMaxHP
+	call GetEighthMaxHP ; (1/8, as in the latest games)
 	call SubtractHPFromUser
 	ld hl, BattleText_UsersHurtByStringBuffer1
 	jr .print_text
@@ -1551,7 +1547,7 @@ HandleDefrost:
 	ret nz
 
 	call BattleRandom
-	cp 10 percent
+	cp 20 percent ; (as in the latest games)
 	ret nc
 	xor a
 	ld [wBattleMonStatus], a
@@ -1572,7 +1568,7 @@ HandleDefrost:
 	and a
 	ret nz
 	call BattleRandom
-	cp 10 percent
+	cp 20 percent ; (as in the latest games)
 	ret nc
 	xor a
 	ld [wEnemyMonStatus], a
@@ -2720,6 +2716,10 @@ AskUseNextPokemon:
 	and a
 	dec a
 	ret nz
+; Auto battle carries on (YES).
+	ld a, [wAutoBattle]
+	and a
+	ret nz
 
 	ld hl, BattleText_UseNextMon
 	call StdBattleTextbox
@@ -2869,6 +2869,21 @@ SelectBattleMon:
 	ret
 
 PickPartyMonInBattle:
+; Auto battle sends out the best matchup for the foe (but if there's none,
+; the player chooses).
+	ld a, [wAutoBattle]
+	and a
+	jr z, .loop
+	farcall AutoBattle_ChooseSendOut
+	jr c, .loop
+	ld a, PARTYMENUACTION_SWITCH
+	ld [wPartyMenuActionText], a
+	call JumpToPartyMenuAndPrintText
+	ld c, 30
+	call DelayFrames
+	xor a
+	ret
+
 .loop
 	ld a, PARTYMENUACTION_SWITCH ; Which PKMN?
 	ld [wPartyMenuActionText], a
@@ -3482,35 +3497,13 @@ LoadEnemyMonToSwitchTo:
 	ret
 
 CheckWhetherToAskSwitch:
-	ld a, [wBattleHasJustStarted]
-	dec a
-	jp z, .return_nc
-	ld a, [wPartyCount]
-	dec a
-	jp z, .return_nc
-	ld a, [wLinkMode]
-	and a
-	jp nz, .return_nc
-	ld a, [wOptions]
-	bit BATTLE_SHIFT, a
-	jr nz, .return_nc
-	ld a, [wCurPartyMon]
-	push af
-	ld a, [wCurBattleMon]
-	ld [wCurPartyMon], a
-	farcall CheckCurPartyMonFainted
-	pop bc
-	ld a, b
-	ld [wCurPartyMon], a
-	jr c, .return_nc
-	scf
-	ret
-
-.return_nc
+; Return carry to offer the player a switch when the foe is about to send out
+; its next Pokémon (the SHIFT battle style). There's no SHIFT style here: never.
 	and a
 	ret
 
 OfferSwitch:
+; (unused: see CheckWhetherToAskSwitch)
 	ld a, [wCurPartyMon]
 	push af
 	callfar Battle_GetTrainerName
@@ -5102,6 +5095,17 @@ BattleMenuPKMN_Loop:
 	xor a
 	ld [wPartyMenuActionText], a
 	call JumpToPartyMenuAndPrintText
+; Auto battle chose wCurPartyMon (see AutoBattle_ShouldSwitch).
+	ld hl, wAutoBattleSwitched
+	ld a, [hl]
+	cp TRUE
+	jr nz, .choose ; (or it didn't work: the player chooses)
+	inc [hl]
+	ld c, 30
+	call DelayFrames
+	jp TryPlayerSwitch
+
+.choose
 	call SelectBattleMon
 	jr c, .Cancel
 .loop
@@ -5729,14 +5733,19 @@ MoveInfoBox:
 	ld [wStringBuffer1], a
 	call .PrintPP
 
-	hlcoord 1, 9
-	ld de, .Type
-	call PlaceString
-
 	hlcoord 7, 11
 	ld [hl], '/'
 
 	callfar UpdateMoveData
+	ld a, [wPlayerMoveStruct + MOVE_ANIM]
+	ld b, a
+	farcall GetMoveCategoryName
+	hlcoord 1, 9
+	ld de, wStringBuffer1
+	call PlaceString
+	ld h, b
+	ld l, c
+	ld [hl], '/'
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
 	hlcoord 2, 10
@@ -5747,8 +5756,6 @@ MoveInfoBox:
 
 .Disabled:
 	db "Disabled!@"
-.Type:
-	db "TYPE/@"
 
 .PrintPP:
 	hlcoord 5, 11
@@ -6627,9 +6634,7 @@ ApplyPrzEffectOnSpeed:
 	ld a, [hld]
 	ld b, a
 	ld a, [hl]
-	srl a
-	rr b
-	srl a
+	srl a ; (halved, as in the latest games)
 	rr b
 	ld [hli], a
 	or b
@@ -6648,9 +6653,7 @@ ApplyPrzEffectOnSpeed:
 	ld a, [hld]
 	ld b, a
 	ld a, [hl]
-	srl a
-	rr b
-	srl a
+	srl a ; (halved, as in the latest games)
 	rr b
 	ld [hli], a
 	or b

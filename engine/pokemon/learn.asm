@@ -102,10 +102,14 @@ LearnMove:
 	jp .learned
 
 .cancel
+	farcall AutoLearn_Active
+	jr c, .not_learned ; (auto battle chose not to learn it)
 	ld hl, StopLearningMoveText
 	call PrintText
 	call YesNoBox
 	jp c, .loop
+
+.not_learned
 
 	ld hl, DidNotLearnMoveText
 	call PrintText
@@ -120,6 +124,29 @@ LearnMove:
 
 ForgetMove:
 	push hl
+; with auto battle on, it decides (see AutoLearn_ForgetChoice)
+	farcall AutoLearn_ForgetChoice
+	ld a, c
+	and a
+	jr z, .ask
+	pop hl
+	cp NUM_MOVES + 1
+	jr nc, .auto_dont_learn
+	ld bc, -NUM_MOVES
+	add hl, bc
+	dec a
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	and a
+	ret
+
+.auto_dont_learn
+	scf
+	ret
+
+.ask
 	ld hl, AskForgetMoveText
 	call PrintText
 	call YesNoBox

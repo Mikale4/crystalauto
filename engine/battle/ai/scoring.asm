@@ -193,6 +193,7 @@ AI_Types:
 	push de
 	push bc
 	ld a, [wEnemyMoveStruct + MOVE_TYPE]
+	and TYPE_MASK
 	ld d, a
 	ld hl, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
@@ -207,6 +208,7 @@ AI_Types:
 
 	call AIGetEnemyMove
 	ld a, [wEnemyMoveStruct + MOVE_TYPE]
+	and TYPE_MASK
 	cp d
 	jr z, .checkmove2
 	ld a, [wEnemyMoveStruct + MOVE_POWER]
@@ -1115,15 +1117,29 @@ AI_Smart_SpDefenseUp2:
 	jr nc, .discourage
 
 ; 80% chance to greatly encourage this move if
-; enemy's Special Defense level is lower than +2, and the player is of a special type.
+; enemy's Special Defense level is lower than +2,
+; and the player's Pokémon is Special-oriented.
 	cp BASE_STAT_LEVEL + 2
 	ret nc
 
-	ld a, [wBattleMonType1]
-	cp SPECIAL
-	jr nc, .encourage
-	ld a, [wBattleMonType2]
-	cp SPECIAL
+	push hl
+; the player's Pokémon's base Attack
+	ld a, [wBattleMonSpecies]
+	dec a
+	ld hl, BaseData + BASE_ATK
+	ld bc, BASE_DATA_SIZE
+	call AddNTimes
+	ld a, BANK(BaseData)
+	call GetFarByte
+	ld d, a
+; and base Special Attack
+	ld bc, BASE_SAT - BASE_ATK
+	add hl, bc
+	ld a, BANK(BaseData)
+	call GetFarByte
+	pop hl
+; not if its Attack is the greater
+	cp d
 	ret c
 
 .encourage
@@ -1842,11 +1858,6 @@ AI_Smart_Curse:
 	ld a, [wBattleMonType1]
 	cp GHOST
 	jr z, .greatly_discourage
-	cp SPECIAL
-	ret nc
-	ld a, [wBattleMonType2]
-	cp SPECIAL
-	ret nc
 	call AI_80_20
 	ret c
 	dec [hl]

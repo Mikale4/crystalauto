@@ -34,12 +34,8 @@ BattleCommand_Spite:
 	jr z, .failed
 	push bc
 	call GetMoveName
-	; lose 2-5 PP
-	call BattleRandom
-	and %11
-	inc a
-	inc a
-	ld b, a
+	; lose 4 PP (as in the latest games)
+	ld b, 4
 	ld a, [hl]
 	and PP_MASK
 	cp b

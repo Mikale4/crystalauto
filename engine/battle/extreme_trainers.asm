@@ -28,6 +28,8 @@ DEF wXPoolMon EQUS "(wBattleScriptBuffer + 17)"
 DEF wXMoveType EQUS "(wBattleScriptBuffer + 18)"
 DEF wXMove EQUS "(wBattleScriptBuffer + 19)"
 DEF wXLap EQUS "(wBattleScriptBuffer + 20)"
+DEF wXExplicit EQUS "(wBattleScriptBuffer + 21)" ; choosing from wXCandidates only
+DEF wXCandidates EQUS "(wBattleScriptBuffer + 22)" ; NUM_MOVES + 1 moves
 
 	const_def
 	const XPASS_NEW_TYPE ; an attack of a type not picked yet
@@ -62,8 +64,8 @@ ExtremeTrainerParty::
 	ret
 
 ExtremeBossParty::
-; A boss and its allies on EXTREME: best movesets and perfect DVs (but the red
-; GYARADOS stays red).
+; A boss and its allies on EXTREME: best movesets, perfect DVs (but the red
+; GYARADOS stays red) and held items.
 	call CountBadgesForTMs
 	xor a
 	ld [wXSlot], a
@@ -83,6 +85,8 @@ ExtremeBossParty::
 .keep_dvs
 	ld a, [wXSlot]
 	call ExtremeMonMoves
+	ld a, [wXSlot]
+	call GiveExtremeHeldItem
 	ld hl, wXSlot
 	inc [hl]
 	ld a, [wOTPartyCount]
@@ -368,11 +372,15 @@ PickBestMoves:
 ; wXChosen: the best moves for wCurPartySpecies (base data loaded) at
 ; wCurPartyLevel.
 	xor a
+	ld [wXExplicit], a
 	ld hl, wXChosen
 rept NUM_MOVES
 	ld [hli], a
 endr
 	ld [wXNumChosen], a
+PickBestMovesFrom:
+; (the same, after the wXNumChosen moves already in wXChosen; with wXExplicit,
+; from the moves in wXCandidates)
 ; up to three attacks of different types
 	ld a, XPASS_NEW_TYPE
 	ld [wXPass], a
@@ -435,7 +443,25 @@ PickBestMove:
 
 ForEachCandidateMove:
 ; ConsiderMove each move the Pokémon learns by its level, and each TM, HM and
-; tutor move it can learn that a player with wXBadges could have.
+; tutor move it can learn that a player with wXBadges could have (or with
+; wXExplicit, each move in wXCandidates).
+	ld a, [wXExplicit]
+	and a
+	jr z, .learnable
+	ld hl, wXCandidates
+	ld c, NUM_MOVES + 1
+.explicit
+	ld a, [hli]
+	push hl
+	push bc
+	call ConsiderMove
+	pop bc
+	pop hl
+	dec c
+	jr nz, .explicit
+	ret
+
+.learnable
 	ld a, [wCurPartySpecies]
 	call GetEvosPointer
 .skip_evos
@@ -540,6 +566,7 @@ ConsiderMove:
 	ld a, [wXMove]
 	ld c, MOVE_TYPE
 	call GetXMoveAttr
+	and TYPE_MASK
 	ld b, a
 	ld hl, wXChosen
 	ld c, NUM_MOVES
@@ -551,6 +578,7 @@ ConsiderMove:
 	push hl
 	ld c, MOVE_TYPE
 	call GetXMoveAttr
+	and TYPE_MASK
 	pop hl
 	pop bc
 	cp b
@@ -627,11 +655,14 @@ AttackScore:
 	jr z, .none
 .got_effect
 	push bc
-; the attack stat it uses
+; the attack stat its category uses
 	ld a, [wXMove]
 	ld c, MOVE_TYPE
 	call GetXMoveAttr
+	ld b, a
+	and TYPE_MASK
 	ld [wXMoveType], a
+	ld a, b
 	cp SPECIAL
 	ld a, [wBaseAttack]
 	jr c, .got_stat
@@ -816,6 +847,10 @@ ExtremeSupportMoves:
 	db LIGHT_SCREEN,  0
 	db BARRIER,       0
 	db SUBSTITUTE,    0
+	db SCARY_FACE,    0 ; (the foe's stats, two stages down)
+	db CHARM,         0
+	db SCREECH,       0
+	db COTTON_SPORE,  0
 	db -1
 
 TMHMBadgesNeeded:
@@ -884,11 +919,146 @@ TMHMBadgesNeeded:
 	db 9 ; ICE BEAM
 	assert_table_length NUM_TM_HM_TUTOR
 
+; Auto battle's choice when a Pokémon learns a fifth move
+
+AutoLearn_Active::
+; Return carry if auto battle is deciding, in a battle.
+	ld a, [wBattleMode]
+	and a
+	ret z
+	ld a, [wAutoBattle]
+	and a
+	ret z
+	scf
+	ret
+
+AutoLearn_ForgetChoice::
+; ForgetMove: c = 0 to ask the player; with auto battle on in a battle, 1-4 to
+; forget that move for wPutativeTMHMMove, or NUM_MOVES + 1 not to learn it: the
+; best set of four from the Pokémon's moves and the new one (as EXTREME's
+; trainers pick theirs), keeping any HM move.
+	ld c, 0
+	call AutoLearn_Active
+	ret nc
+	ld a, [wCurSpecies]
+	push af
+	ld a, [wCurPartySpecies]
+	push af
+; the Pokémon (wCurPartyMon)
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1Species
+	call GetPartyLocation
+	ld a, [hl]
+	ld [wCurPartySpecies], a
+	ld [wCurSpecies], a
+	call GetBaseData
+; the candidates: its moves and the new one
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1Moves
+	call GetPartyLocation
+	ld de, wXCandidates
+	ld bc, NUM_MOVES
+	call CopyBytes
+	ld a, [wPutativeTMHMMove]
+	ld [de], a
+; its HM moves stay
+	xor a
+	ld [wXNumChosen], a
+	ld hl, wXChosen
+rept NUM_MOVES
+	ld [hli], a
+endr
+	ld hl, wXCandidates
+	ld c, NUM_MOVES
+.hm_loop
+	ld a, [hli]
+	push hl
+	push bc
+	ld b, a
+	ld [wXMove], a
+	push bc
+	call IsHMMove
+	pop bc
+	jr nc, .not_hm
+	ld hl, wXChosen
+	ld a, [wXNumChosen]
+	ld e, a
+	ld d, 0
+	add hl, de
+	ld [hl], b
+	inc a
+	ld [wXNumChosen], a
+.not_hm
+	pop bc
+	pop hl
+	dec c
+	jr nz, .hm_loop
+; the best set
+	ld a, TRUE
+	ld [wXExplicit], a
+	call PickBestMovesFrom
+	xor a
+	ld [wXExplicit], a
+; is the new move in it?
+	ld a, [wPutativeTMHMMove]
+	call .IsChosen
+	ld c, NUM_MOVES + 1
+	jr nc, .done
+; then forget the first of its moves that isn't
+	ld hl, wXCandidates
+	ld c, 0
+.forget_loop
+	ld a, [hli]
+	push hl
+	push bc
+	call .IsChosen
+	pop bc
+	pop hl
+	jr nc, .forget
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .forget_loop
+	ld c, NUM_MOVES + 1 ; (can't happen)
+	jr .done
+
+.forget
+	inc c
+.done
+	pop af
+	ld [wCurPartySpecies], a
+	pop af
+	ld [wCurSpecies], a
+	push bc
+	call GetBaseData
+	pop bc
+	ret
+
+.IsChosen:
+; Return carry if move a is in wXChosen.
+	ld hl, wXChosen
+	ld b, NUM_MOVES
+.loop
+	cp [hl]
+	jr z, .yes
+	inc hl
+	dec b
+	jr nz, .loop
+	and a
+	ret
+
+.yes
+	scf
+	ret
+
 ; Held items
 
+GiveTrainerHeldItem::
 GiveExtremeHeldItem:
 ; The trainer's Pokémon in slot a gets an item that suits it, if it has none,
-; and nobody else on the team has that item.
+; and nobody else on the team has that item: the X item for its best attack's
+; category (X ATTACK or X SPECIAL: used up for +2 when it comes in), else its
+; type's booster, else one of ExtremeOtherItems.
 	ld [wXSlot], a
 	ld hl, wOTPartyMon1Item
 	ld bc, PARTYMON_STRUCT_LENGTH
@@ -897,16 +1067,26 @@ GiveExtremeHeldItem:
 	and a
 	ret nz
 	push hl
-; the type of its best attack (its first move)
-	ld a, [wXSlot]
-	ld hl, wOTPartyMon1Moves
-	ld bc, PARTYMON_STRUCT_LENGTH
-	call AddNTimes
-	ld a, [hl]
+	call .BestAttack
+	ld a, [wXBestMove]
 	and a
 	jr z, .others
+; the X item for its category
 	ld c, MOVE_TYPE
 	call GetXMoveAttr
+	and ~TYPE_MASK
+	cp SPECIAL
+	ld a, X_SPECIAL
+	jr z, .got_x_item
+	ld a, X_ATTACK
+.got_x_item
+	call .TryItem
+	jr c, .got_item
+; its type's booster
+	ld a, [wXBestMove]
+	ld c, MOVE_TYPE
+	call GetXMoveAttr
+	and TYPE_MASK
 	ld hl, TypeBoostingItems
 	ld de, 2
 	call IsInArray
@@ -932,6 +1112,55 @@ GiveExtremeHeldItem:
 
 .no_item
 	pop hl
+	ret
+
+.BestAttack:
+; wXBestMove: its best attack (by AttackScore; 0 if it has none).
+	ld a, [wXSlot]
+	ld e, a
+	ld d, 0
+	ld hl, wOTPartySpecies
+	add hl, de
+	ld a, [hl]
+	ld [wCurSpecies], a
+	call GetBaseData
+	xor a
+	ld [wXBestMove], a
+	ld [wXBestScore], a
+	ld [wXBestScore + 1], a
+	ld a, [wXSlot]
+	ld hl, wOTPartyMon1Moves
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld c, NUM_MOVES
+.best_loop
+	ld a, [hli]
+	and a
+	jr z, .best_next
+	push hl
+	push bc
+	ld [wXMove], a
+	call AttackScore
+	ld a, [wXBestScore]
+	cp d
+	jr c, .best_better
+	jr nz, .best_done
+	ld a, [wXBestScore + 1]
+	cp e
+	jr nc, .best_done
+.best_better
+	ld a, d
+	ld [wXBestScore], a
+	ld a, e
+	ld [wXBestScore + 1], a
+	ld a, [wXMove]
+	ld [wXBestMove], a
+.best_done
+	pop bc
+	pop hl
+.best_next
+	dec c
+	jr nz, .best_loop
 	ret
 
 .TryItem:
@@ -974,17 +1203,23 @@ TypeBoostingItems:
 	db ICE,          NEVERMELTICE
 	db DRAGON,       DRAGON_SCALE ; (DRAGON_FANG does nothing in this game)
 	db DARK,         BLACKGLASSES
+	db FAIRY,        POLKADOT_BOW
 	db -1
 
 ExtremeOtherItems:
 	db LEFTOVERS
+	db X_SPEED ; (used up for +2 when it comes in)
+	db X_DEFEND
+	db DIRE_HIT
 	db QUICK_CLAW
 	db KINGS_ROCK
 	db SCOPE_LENS
 	db BRIGHTPOWDER
-	db MIRACLEBERRY
 	db GOLD_BERRY
+	db MIRACLEBERRY
 	db FOCUS_BAND
+	db X_ACCURACY
+	db GUARD_SPEC
 	db MINT_BERRY
 	db -1
 

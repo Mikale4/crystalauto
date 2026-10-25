@@ -315,6 +315,8 @@ ROMX $79
 	"Difficulty"
 	"Bosses"
 	"Extreme Trainers"
+ROMX $7a
+	"Modern Moves"
 ROMX $7b
 	"Battle Tower Text"
 ROMX $7c

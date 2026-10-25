@@ -260,9 +260,9 @@ BattleCommand_CheckTurn:
 	ld de, ANIM_CONFUSED
 	call FarPlayBattleAnimation
 
-	; 50% chance of hitting itself
+	; 1/3 chance of hitting itself (as in the latest games)
 	call BattleRandom
-	cp 50 percent + 1
+	cp 33 percent + 1
 	jr nc, .not_confused
 
 	; clear confusion-dependent substatus
@@ -489,9 +489,9 @@ CheckEnemyTurn:
 	ld de, ANIM_CONFUSED
 	call FarPlayBattleAnimation
 
-	; 50% chance of hitting itself
+	; 1/3 chance of hitting itself (as in the latest games)
 	call BattleRandom
-	cp 50 percent + 1
+	cp 33 percent + 1
 	jr nc, .not_confused
 
 	; clear confusion-dependent substatus
@@ -1243,6 +1243,7 @@ BattleCommand_Stab:
 .go
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVarAddr
+	and TYPE_MASK
 	ld [wCurType], a
 
 	push hl
@@ -1290,6 +1291,7 @@ BattleCommand_Stab:
 .SkipStab:
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
+	and TYPE_MASK
 	ld b, a
 	ld hl, TypeMatchups
 
@@ -1409,6 +1411,7 @@ CheckTypeMatchup:
 	push bc
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
+	and TYPE_MASK
 	ld d, a
 	ld b, [hl]
 	inc hl
@@ -2222,20 +2225,20 @@ GetFailureResultText:
 	cp EFFECT_JUMP_KICK
 	ret nz
 
-	ld a, [wTypeModifier]
-	and EFFECTIVENESS_MASK
-	ret z
-
-	ld hl, wCurDamage
+; the user crashes for half its max HP (even into a GHOST), as in the latest games
+	ld hl, wBattleMonMaxHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_max_hp
+	ld hl, wEnemyMonMaxHP
+.got_max_hp
 	ld a, [hli]
 	ld b, [hl]
-rept 3
 	srl a
 	rr b
-endr
-	ld [hl], b
-	dec hl
+	ld hl, wCurDamage
 	ld [hli], a
+	ld [hl], b
 	or b
 	jr nz, .do_at_least_1_damage
 	inc a
@@ -2904,15 +2907,7 @@ BattleCommand_DamageCalc:
 	ld a, BATTLE_VARS_MOVE_EFFECT
 	call GetBattleVar
 
-; Selfdestruct and Explosion halve defense.
-	cp EFFECT_SELFDESTRUCT
-	jr nz, .dont_selfdestruct
-
-	srl c
-	jr nz, .dont_selfdestruct
-	inc c
-
-.dont_selfdestruct
+; (Selfdestruct and Explosion no longer halve defense, as in the latest games.)
 
 ; Variable-hit moves and Conversion can have a power of 0.
 	cp EFFECT_MULTI_HIT
@@ -3003,6 +2998,7 @@ BattleCommand_DamageCalc:
 	ld b, a
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
+	and TYPE_MASK
 	cp b
 	jr nz, .DoneItem
 
@@ -3163,14 +3159,20 @@ BattleCommand_ConstantDamage:
 	jr .got_power
 
 .psywave
+; 50% to 150% of the user's level (as in the latest games)
 	ld a, b
 	srl a
+	jr nz, .psywave_min_ok
+	inc a
+.psywave_min_ok
+	ld c, a
 	add b
 	ld b, a
+	inc b
 .psywave_loop
 	call BattleRandom
-	and a
-	jr z, .psywave_loop
+	cp c
+	jr c, .psywave_loop
 	cp b
 	jr nc, .psywave_loop
 	ld b, a
@@ -3606,17 +3608,10 @@ BattleCommand_SleepTarget:
 	jr nz, .fail
 
 	call AnimateCurrentMove
-	ld b, SLP_MASK
-	ld a, [wInBattleTowerBattle]
-	and a
-	jr z, .random_loop
-	ld b, %011
-
+; 1-3 turns, as in the latest games (and as the BATTLE TOWER always had it)
 .random_loop
 	call BattleRandom
-	and b
-	jr z, .random_loop
-	cp SLP_MASK
+	and %011
 	jr z, .random_loop
 	inc a
 	ld [de], a
@@ -3835,20 +3830,8 @@ BattleCommand_EatDream:
 	jp StdBattleTextbox
 
 SapHealth:
-	; Divide damage by 2, store it in hDividend
-	ld hl, wCurDamage
-	ld a, [hli]
-	srl a
-	ldh [hDividend], a
-	ld b, a
-	ld a, [hl]
-	rr a
-	ldh [hDividend + 1], a
-	or b
-	jr nz, .at_least_one
-	ld a, 1
-	ldh [hDividend + 1], a
-.at_least_one
+	; how much it heals, in hDividend
+	farcall GetDrainAmount
 
 	ld hl, wBattleMonHP
 	ld de, wBattleMonMaxHP
@@ -5630,11 +5613,9 @@ BattleCommand_TrapTarget:
 	bit SUBSTATUS_SUBSTITUTE, a
 	ret nz
 	call BattleRandom
-	; trapped for 2-5 turns
-	and %11
-	inc a
-	inc a
-	inc a
+	; trapped for 4-5 turns (as in the latest games)
+	and %1
+	add 5
 	ld [hl], a
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
@@ -5668,29 +5649,7 @@ INCLUDE "engine/battle/move_effects/mist.asm"
 INCLUDE "engine/battle/move_effects/focus_energy.asm"
 
 BattleCommand_Recoil:
-	ld hl, wBattleMonMaxHP
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .got_hp
-	ld hl, wEnemyMonMaxHP
-.got_hp
-	ld a, BATTLE_VARS_MOVE_ANIM
-	call GetBattleVar
-	ld d, a
-; get 1/4 damage or 1 HP, whichever is higher
-	ld a, [wCurDamage]
-	ld b, a
-	ld a, [wCurDamage + 1]
-	ld c, a
-	srl b
-	rr c
-	srl b
-	rr c
-	ld a, b
-	or c
-	jr nz, .min_damage
-	inc c
-.min_damage
+	farcall GetRecoilDamage ; bc: the recoil, hl: the user's max HP
 	ld a, [hli]
 	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
@@ -5922,6 +5881,7 @@ CheckMoveTypeMatchesTarget:
 
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
+	and TYPE_MASK
 	cp NORMAL
 	jr z, .normal
 
@@ -6400,6 +6360,8 @@ BattleCommand_CheckSafeguard:
 
 INCLUDE "engine/battle/move_effects/magnitude.asm"
 
+INCLUDE "engine/battle/move_effects/low_kick.asm"
+
 INCLUDE "engine/battle/move_effects/baton_pass.asm"
 
 INCLUDE "engine/battle/move_effects/pursuit.asm"
@@ -6407,19 +6369,11 @@ INCLUDE "engine/battle/move_effects/pursuit.asm"
 INCLUDE "engine/battle/move_effects/rapid_spin.asm"
 
 BattleCommand_HealMorn:
-	ld b, MORN_F
-	jr BattleCommand_TimeBasedHealContinue
-
 BattleCommand_HealDay:
-	ld b, DAY_F
-	jr BattleCommand_TimeBasedHealContinue
-
 BattleCommand_HealNite:
-	ld b, NITE_F
-	; fallthrough
-
 BattleCommand_TimeBasedHealContinue:
-; Time- and weather-sensitive heal.
+; MOONLIGHT, MORNING SUN and SYNTHESIS: a weather-sensitive heal (no longer by
+; the time of day, as in the latest games; see GetWeatherHealAmount).
 
 	ld hl, wBattleMonMaxHP
 	ld de, wBattleMonHP
@@ -6430,50 +6384,11 @@ BattleCommand_TimeBasedHealContinue:
 	ld de, wEnemyMonHP
 
 .start
-; Index for .Multipliers
-; Default restores half max HP.
-	ld c, 2
-
 ; Don't bother healing if HP is already full.
-	push bc
 	call CompareBytes
-	pop bc
 	jr z, .Full
 
-; Don't factor in time of day in link battles.
-	ld a, [wLinkMode]
-	and a
-	jr nz, .Weather
-
-	ld a, [wTimeOfDay]
-	cp b
-	jr z, .Weather
-	dec c ; double
-
-.Weather:
-	ld a, [wBattleWeather]
-	and a
-	jr z, .Heal
-
-; x2 in sun
-; /2 in rain/sandstorm
-	inc c
-	cp WEATHER_SUN
-	jr z, .Heal
-	dec c
-	dec c
-
-.Heal:
-	ld b, 0
-	ld hl, .Multipliers
-	add hl, bc
-	add hl, bc
-
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld a, BANK(GetMaxHP)
-	rst FarCall
+	farcall GetWeatherHealAmount
 
 	call AnimateCurrentMove
 	call BattleCommand_SwitchTurn
@@ -6493,12 +6408,6 @@ BattleCommand_TimeBasedHealContinue:
 ; 'hp is full!'
 	ld hl, HPIsFullText
 	jp StdBattleTextbox
-
-.Multipliers:
-	dw GetEighthMaxHP
-	dw GetQuarterMaxHP
-	dw GetHalfMaxHP
-	dw GetMaxHP
 
 INCLUDE "engine/battle/move_effects/hidden_power.asm"
 

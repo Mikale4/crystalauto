@@ -304,41 +304,15 @@ Options_BattleScene:
 .Off: db "OFF@"
 
 Options_BattleStyle:
+; Always SET: there's no SHIFT style here (see CheckWhetherToAskSwitch).
 	ld hl, wOptions
-	ldh a, [hJoyPressed]
-	bit B_PAD_LEFT, a
-	jr nz, .LeftPressed
-	bit B_PAD_RIGHT, a
-	jr z, .NonePressed
-	bit BATTLE_SHIFT, [hl]
-	jr nz, .ToggleShift
-	jr .ToggleSet
-
-.LeftPressed:
-	bit BATTLE_SHIFT, [hl]
-	jr z, .ToggleSet
-	jr .ToggleShift
-
-.NonePressed:
-	bit BATTLE_SHIFT, [hl]
-	jr nz, .ToggleSet
-
-.ToggleShift:
-	res BATTLE_SHIFT, [hl]
-	ld de, .Shift
-	jr .Display
-
-.ToggleSet:
 	set BATTLE_SHIFT, [hl]
 	ld de, .Set
-
-.Display:
 	hlcoord 11, 7
 	call PlaceString
 	and a
 	ret
 
-.Shift: db "SHIFT@"
 .Set:   db "SET  @"
 
 Options_Sound:

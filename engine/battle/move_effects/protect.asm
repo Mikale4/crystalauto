@@ -29,7 +29,8 @@ ProtectChance:
 	bit SUBSTATUS_SUBSTITUTE, a
 	jr nz, .failed
 
-; Halve the chance of a successful Protect for each consecutive use.
+; A third of the chance of a successful Protect for each consecutive use (as in
+; the latest games).
 
 	ld b, $ff
 	ld a, [de]
@@ -40,7 +41,12 @@ ProtectChance:
 	jr z, .done
 	dec c
 
-	srl b
+	ld a, b
+	ld b, -1
+.third
+	inc b
+	sub 3
+	jr nc, .third
 	ld a, b
 	and a
 	jr nz, .loop

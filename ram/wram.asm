@@ -619,6 +619,35 @@ wSomeoneIsRampaging:: db
 
 wPlayerJustGotFrozen:: db
 wEnemyJustGotFrozen:: db
+
+; auto battle's judgment of matchups (see engine/battle/auto_battle.asm)
+wAutoBattleSwitched:: db ; it switched this turn (so the next, it fights)
+wABAttacker:: dw ; battle structs
+wABDefender:: dw
+wABRoll:: db ; the damage roll to count on, /256
+wABMove:: ds MOVE_LENGTH
+wABDamage:: dw ; the attacker's best
+wABEffectiveness:: db ; (in quarters: 4 is neutral)
+wABBestEffectiveness:: db
+wABThemEffectiveness:: db ; the foe's best on the party Pokémon judged
+wABSwitchHit:: db ; whether switching in takes a hit
+wABBestCategory:: db ; the category of the attacker's best move
+wABThemDamage:: dw ; the foe's best damage on the party Pokémon judged
+wABFoePtr:: dw ; the foe it's judged against (wEnemyMon, or wABFoe)
+wABAgainstAll:: db ; judging against all the trainer's Pokémon still to come
+wABCandSlot:: db
+wABMinScore:: db
+wABMinUs:: db
+wABFoe:: battle_struct wABFoe
+wEntryBoost:: db ; see HandleHeldEntryItems
+wABUs:: db ; turns to knock the foe out
+wABThem:: db ; turns for the foe to knock it out
+wABBestScore:: db
+wABBestUs:: db
+wABBestSlot:: db
+wABCurScore:: db
+wABCurUs:: db
+wABCandidate:: battle_struct wABCandidate
 wBattleEnd::
 
 

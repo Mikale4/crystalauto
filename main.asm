@@ -254,6 +254,7 @@ INCLUDE "engine/events/basement_key.asm"
 INCLUDE "engine/events/sacred_ash.asm"
 INCLUDE "engine/pokemon/tempmon.asm"
 INCLUDE "engine/pokemon/types.asm"
+INCLUDE "engine/pokemon/categories.asm"
 INCLUDE "engine/battle/getgen1trainerclassname.asm"
 INCLUDE "engine/pokemon/mon_stats.asm"
 INCLUDE "engine/link/init_list.asm"
@@ -734,3 +735,8 @@ INCLUDE "engine/battle/bosses.asm"
 SECTION "Extreme Trainers", ROMX
 
 INCLUDE "engine/battle/extreme_trainers.asm"
+
+
+SECTION "Modern Moves", ROMX
+
+INCLUDE "engine/battle/modern_moves.asm"

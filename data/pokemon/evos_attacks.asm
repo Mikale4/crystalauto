@@ -6,6 +6,9 @@ SECTION "Evolutions and Attacks", ROMX
 ;    * db EVOLVE_ITEM, used item, species
 ;    * db EVOLVE_TRADE, held item (or -1 for none), species
 ;    * db EVOLVE_HAPPINESS, TR_* constant (ANYTIME, MORNDAY, NITE), species
+; (Here, as in PalletToPewter, none evolve by trading or friendship any more:
+; the LINKING CORD and the old trade items evolve them like stones do, ESPEON
+; and UMBREON come from the SUN STONE and the MOON STONE, and the rest by level.)
 ;    * db EVOLVE_STAT, level, ATK_*_DEF constant (LT, GT, EQ), species
 ; - db 0 ; no more evolutions
 ; - Learnset (in increasing level order):
@@ -470,9 +473,11 @@ ClefairyEvosAttacks:
 	db 4, ENCORE
 	db 8, SING
 	db 13, DOUBLESLAP
+	db 16, DRAINING_KISS
 	db 19, MINIMIZE
 	db 26, DEFENSE_CURL
 	db 34, METRONOME
+	db 38, MOONBLAST
 	db 43, MOONLIGHT
 	db 53, LIGHT_SCREEN
 	db 0 ; no more level-up moves
@@ -483,6 +488,7 @@ ClefableEvosAttacks:
 	db 1, DOUBLESLAP
 	db 1, METRONOME
 	db 1, MOONLIGHT
+	db 30, MOONBLAST
 	db 0 ; no more level-up moves
 
 VulpixEvosAttacks:
@@ -514,11 +520,13 @@ JigglypuffEvosAttacks:
 	db 4, DEFENSE_CURL
 	db 9, POUND
 	db 14, DISABLE
+	db 17, DRAINING_KISS
 	db 19, ROLLOUT
 	db 24, DOUBLESLAP
 	db 29, REST
 	db 34, BODY_SLAM
 	db 39, DOUBLE_EDGE
+	db 44, PLAY_ROUGH
 	db 0 ; no more level-up moves
 
 WigglytuffEvosAttacks:
@@ -527,6 +535,7 @@ WigglytuffEvosAttacks:
 	db 1, DISABLE
 	db 1, DEFENSE_CURL
 	db 1, DOUBLESLAP
+	db 30, PLAY_ROUGH
 	db 0 ; no more level-up moves
 
 ZubatEvosAttacks:
@@ -542,7 +551,7 @@ ZubatEvosAttacks:
 	db 0 ; no more level-up moves
 
 GolbatEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, CROBAT
+	db EVOLVE_LEVEL, 35, CROBAT
 	db 0 ; no more evolutions
 	db 1, SCREECH
 	db 1, LEECH_LIFE
@@ -803,7 +812,7 @@ PoliwagEvosAttacks:
 
 PoliwhirlEvosAttacks:
 	db EVOLVE_ITEM, WATER_STONE, POLIWRATH
-	db EVOLVE_TRADE, KINGS_ROCK, POLITOED
+	db EVOLVE_ITEM, KINGS_ROCK, POLITOED
 	db 0 ; no more evolutions
 	db 1, BUBBLE
 	db 1, HYPNOSIS
@@ -834,7 +843,7 @@ AbraEvosAttacks:
 	db 0 ; no more level-up moves
 
 KadabraEvosAttacks:
-	db EVOLVE_TRADE, -1, ALAKAZAM
+	db EVOLVE_ITEM, LINKING_CORD, ALAKAZAM
 	db 0 ; no more evolutions
 	db 1, TELEPORT
 	db 1, KINESIS
@@ -878,7 +887,7 @@ MachopEvosAttacks:
 	db 0 ; no more level-up moves
 
 MachokeEvosAttacks:
-	db EVOLVE_TRADE, -1, MACHAMP
+	db EVOLVE_ITEM, LINKING_CORD, MACHAMP
 	db 0 ; no more evolutions
 	db 1, LOW_KICK
 	db 1, LEER
@@ -992,7 +1001,7 @@ GeodudeEvosAttacks:
 	db 0 ; no more level-up moves
 
 GravelerEvosAttacks:
-	db EVOLVE_TRADE, -1, GOLEM
+	db EVOLVE_ITEM, LINKING_CORD, GOLEM
 	db 0 ; no more evolutions
 	db 1, TACKLE
 	db 1, DEFENSE_CURL
@@ -1056,7 +1065,7 @@ RapidashEvosAttacks:
 
 SlowpokeEvosAttacks:
 	db EVOLVE_LEVEL, 37, SLOWBRO
-	db EVOLVE_TRADE, KINGS_ROCK, SLOWKING
+	db EVOLVE_ITEM, KINGS_ROCK, SLOWKING
 	db 0 ; no more evolutions
 	db 1, CURSE
 	db 1, TACKLE
@@ -1246,7 +1255,7 @@ GastlyEvosAttacks:
 	db 0 ; no more level-up moves
 
 HaunterEvosAttacks:
-	db EVOLVE_TRADE, -1, GENGAR
+	db EVOLVE_ITEM, LINKING_CORD, GENGAR
 	db 0 ; no more evolutions
 	db 1, HYPNOSIS
 	db 1, LICK
@@ -1275,7 +1284,7 @@ GengarEvosAttacks:
 	db 0 ; no more level-up moves
 
 OnixEvosAttacks:
-	db EVOLVE_TRADE, METAL_COAT, STEELIX
+	db EVOLVE_ITEM, METAL_COAT, STEELIX
 	db 0 ; no more evolutions
 	db 1, TACKLE
 	db 1, SCREECH
@@ -1530,7 +1539,7 @@ RhydonEvosAttacks:
 	db 0 ; no more level-up moves
 
 ChanseyEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, BLISSEY
+	db EVOLVE_LEVEL, 40, BLISSEY
 	db 0 ; no more evolutions
 	db 1, POUND
 	db 5, GROWL
@@ -1585,7 +1594,7 @@ HorseaEvosAttacks:
 	db 0 ; no more level-up moves
 
 SeadraEvosAttacks:
-	db EVOLVE_TRADE, DRAGON_SCALE, KINGDRA
+	db EVOLVE_ITEM, DRAGON_SCALE, KINGDRA
 	db 0 ; no more evolutions
 	db 1, BUBBLE
 	db 1, SMOKESCREEN
@@ -1658,16 +1667,18 @@ MrMimeEvosAttacks:
 	db 11, SUBSTITUTE
 	db 16, MEDITATE
 	db 21, DOUBLESLAP
+	db 24, DRAINING_KISS
 	db 26, LIGHT_SCREEN
 	db 26, REFLECT
 	db 31, ENCORE
 	db 36, PSYBEAM
 	db 41, BATON_PASS
+	db 44, MOONBLAST
 	db 46, SAFEGUARD
 	db 0 ; no more level-up moves
 
 ScytherEvosAttacks:
-	db EVOLVE_TRADE, METAL_COAT, SCIZOR
+	db EVOLVE_ITEM, METAL_COAT, SCIZOR
 	db 0 ; no more evolutions
 	db 1, QUICK_ATTACK
 	db 1, LEER
@@ -1795,8 +1806,8 @@ EeveeEvosAttacks:
 	db EVOLVE_ITEM, THUNDERSTONE, JOLTEON
 	db EVOLVE_ITEM, WATER_STONE, VAPOREON
 	db EVOLVE_ITEM, FIRE_STONE, FLAREON
-	db EVOLVE_HAPPINESS, TR_MORNDAY, ESPEON
-	db EVOLVE_HAPPINESS, TR_NITE, UMBREON
+	db EVOLVE_ITEM, SUN_STONE, ESPEON
+	db EVOLVE_ITEM, MOON_STONE, UMBREON
 	db 0 ; no more evolutions
 	db 1, TACKLE
 	db 1, TAIL_WHIP
@@ -1851,7 +1862,7 @@ FlareonEvosAttacks:
 	db 0 ; no more level-up moves
 
 PorygonEvosAttacks:
-	db EVOLVE_TRADE, UP_GRADE, PORYGON2
+	db EVOLVE_ITEM, UP_GRADE, PORYGON2
 	db 0 ; no more evolutions
 	db 1, CONVERSION2
 	db 1, TACKLE
@@ -2345,7 +2356,7 @@ LanturnEvosAttacks:
 	db 0 ; no more level-up moves
 
 PichuEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, PIKACHU
+	db EVOLVE_LEVEL, 12, PIKACHU
 	db 0 ; no more evolutions
 	db 1, THUNDERSHOCK
 	db 1, CHARM
@@ -2355,31 +2366,34 @@ PichuEvosAttacks:
 	db 0 ; no more level-up moves
 
 CleffaEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, CLEFAIRY
+	db EVOLVE_LEVEL, 12, CLEFAIRY
 	db 0 ; no more evolutions
 	db 1, POUND
 	db 1, CHARM
 	db 4, ENCORE
 	db 8, SING
+	db 10, DRAINING_KISS
 	db 13, SWEET_KISS
 	db 0 ; no more level-up moves
 
 IgglybuffEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, JIGGLYPUFF
+	db EVOLVE_LEVEL, 12, JIGGLYPUFF
 	db 0 ; no more evolutions
 	db 1, SING
 	db 1, CHARM
 	db 4, DEFENSE_CURL
 	db 9, POUND
+	db 11, DRAINING_KISS
 	db 14, SWEET_KISS
 	db 0 ; no more level-up moves
 
 TogepiEvosAttacks:
-	db EVOLVE_HAPPINESS, TR_ANYTIME, TOGETIC
+	db EVOLVE_LEVEL, 20, TOGETIC
 	db 0 ; no more evolutions
 	db 1, GROWL
 	db 1, CHARM
 	db 7, METRONOME
+	db 12, DRAINING_KISS
 	db 18, SWEET_KISS
 	db 25, ENCORE
 	db 31, SAFEGUARD
@@ -2391,9 +2405,11 @@ TogeticEvosAttacks:
 	db 1, GROWL
 	db 1, CHARM
 	db 7, METRONOME
+	db 12, DRAINING_KISS
 	db 18, SWEET_KISS
 	db 25, ENCORE
 	db 31, SAFEGUARD
+	db 34, MOONBLAST
 	db 38, DOUBLE_EDGE
 	db 0 ; no more level-up moves
 
@@ -2478,6 +2494,7 @@ MarillEvosAttacks:
 	db 10, WATER_GUN
 	db 15, ROLLOUT
 	db 21, BUBBLEBEAM
+	db 25, PLAY_ROUGH
 	db 28, DOUBLE_EDGE
 	db 36, RAIN_DANCE
 	db 0 ; no more level-up moves
@@ -2493,6 +2510,7 @@ AzumarillEvosAttacks:
 	db 10, WATER_GUN
 	db 15, ROLLOUT
 	db 25, BUBBLEBEAM
+	db 30, PLAY_ROUGH
 	db 36, DOUBLE_EDGE
 	db 48, RAIN_DANCE
 	db 0 ; no more level-up moves
@@ -2803,6 +2821,7 @@ SnubbullEvosAttacks:
 	db 8, CHARM
 	db 13, BITE
 	db 19, LICK
+	db 23, PLAY_ROUGH
 	db 26, ROAR
 	db 34, RAGE
 	db 43, TAKE_DOWN
@@ -2816,6 +2835,7 @@ GranbullEvosAttacks:
 	db 8, CHARM
 	db 13, BITE
 	db 19, LICK
+	db 23, PLAY_ROUGH
 	db 28, ROAR
 	db 38, RAGE
 	db 51, TAKE_DOWN
