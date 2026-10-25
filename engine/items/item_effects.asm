@@ -2374,10 +2374,6 @@ RestorePPEffect:
 	ld a, [hl]
 	cp SKETCH
 	jr z, .CantUsePPUpOnSketch
-	cp COUNTER
-	jr z, .CantUsePPUpOnSketch ; (no PP)
-	cp MIRROR_COAT
-	jr z, .CantUsePPUpOnSketch
 
 	ld bc, MON_PP - MON_MOVES
 	add hl, bc

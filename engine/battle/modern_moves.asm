@@ -817,9 +817,9 @@ HandleAutoCounter:
 ; COUNTER and MIRROR COAT work by themselves: right after an attack hit (the
 ; POKéMON, not its SUBSTITUTE: wHitDamage), its target hits back for twice the
 ; damage, if it knows the one for the attack's category (COUNTER for a physical
-; one, MIRROR COAT for a special one). They have no PP: each one hits back once
-; while the POKéMON is out. Not if it fainted, is asleep or frozen, or the
-; attacker is immune or fainted.
+; one, MIRROR COAT for a special one) with PP left: each one once while the
+; POKéMON is out. Not if it fainted, is asleep or frozen, or the attacker is
+; immune or fainted.
 	ld a, [wHitDamage]
 	ld b, a
 	ld a, [wHitDamage + 1]

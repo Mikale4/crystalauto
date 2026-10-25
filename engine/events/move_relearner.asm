@@ -238,11 +238,8 @@ ChooseRelearnerMove:
 	ld a, MOVE_PP
 	call .MoveAttribute
 	hlcoord 17, TEXTBOX_INNERY
-	and a
-	jr z, .no_pp ; (COUNTER, MIRROR COAT)
 	lb bc, 1, 2
 	call .PrintNum
-.got_pp
 	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY + 2
 	ld de, .PowerText
 	call PlaceString
@@ -254,12 +251,6 @@ ChooseRelearnerMove:
 	ld de, .NoPowerText ; (none, or one that varies)
 	call PlaceString
 	jr .accuracy
-
-.no_pp
-	ld a, '-'
-	ld [hli], a
-	ld [hl], a
-	jr .got_pp
 
 .power
 	lb bc, 1, 3

@@ -290,9 +290,6 @@ ListMovePP:
 	ld h, d
 	ld l, e
 	push hl
-	ld a, [wTempPP]
-	and a
-	jr z, .no_pp ; (COUNTER, MIRROR COAT)
 	ld de, wStringBuffer1 + 4
 	lb bc, 1, 2
 	call PrintNum
@@ -301,7 +298,6 @@ ListMovePP:
 	ld de, wTempPP
 	lb bc, 1, 2
 	call PrintNum
-.got_pp
 	pop hl
 	ld a, [wListMovesLineSpacing]
 	ld e, a
@@ -318,17 +314,6 @@ ListMovePP:
 
 .done
 	ret
-
-.no_pp
-	ld a, '-'
-	ld [hli], a
-	ld [hli], a
-	ld a, '/'
-	ld [hli], a
-	ld a, '-'
-	ld [hli], a
-	ld [hl], a
-	jr .got_pp
 
 .load_loop
 	ld [hli], a

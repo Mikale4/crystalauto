@@ -1372,13 +1372,7 @@ HandleMysteryberry:
 	jr z, .quit
 	ld a, [de]
 	and PP_MASK
-	jr nz, .next
-	ld a, [hl]
-	cp COUNTER
-	jr z, .next ; (no PP)
-	cp MIRROR_COAT
-	jr nz, .restore
-.next
+	jr z, .restore
 	inc hl
 	inc de
 	inc c
@@ -5523,7 +5517,7 @@ MoveSelectionScreen:
 	add hl, bc
 	ld a, [hl]
 	cp COUNTER
-	jr z, .works_by_itself ; (and has no PP)
+	jr z, .works_by_itself
 	cp MIRROR_COAT
 	jr z, .works_by_itself
 	ld hl, wBattleMonPP
@@ -5756,9 +5750,11 @@ MoveInfoBox:
 
 .PrintPP:
 	hlcoord 5, 11
-	ld a, [wNamedObjectIndex]
-	and a
-	jr z, .no_pp ; (COUNTER, MIRROR COAT)
+	ld a, [wLinkMode] ; What's the point of this check?
+	cp LINK_MOBILE
+	jr c, .ok
+	hlcoord 5, 11
+.ok
 	push hl
 	ld de, wStringBuffer1
 	lb bc, 1, 2
@@ -5771,15 +5767,6 @@ MoveInfoBox:
 	ld de, wNamedObjectIndex
 	lb bc, 1, 2
 	call PrintNum
-	ret
-
-.no_pp
-	ld a, '-'
-	ld [hli], a
-	ld [hli], a
-	inc hl
-	ld [hli], a
-	ld [hl], a
 	ret
 
 CheckPlayerHasUsableMoves:
