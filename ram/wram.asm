@@ -632,6 +632,7 @@ wABBestEffectiveness:: db
 wABThemEffectiveness:: db ; the foe's best on the party Pokémon judged
 wABSwitchHit:: db ; whether switching in takes a hit
 wABBestCategory:: db ; the category of the attacker's best move
+wABThemCategory:: db ; the category of the foe's best move on the party Pokémon judged
 wABThemDamage:: dw ; the foe's best damage on the party Pokémon judged
 wABFoePtr:: dw ; the foe it's judged against (wEnemyMon, or wABFoe)
 wABAgainstAll:: db ; judging against all the trainer's Pokémon still to come
@@ -648,6 +649,7 @@ wABBestSlot:: db
 wABCurScore:: db
 wABCurUs:: db
 wABCandidateOut:: db ; whether wABCandidate is the one out (its accuracy and evasion count)
+wBattleHeldItems:: ds PARTY_LENGTH ; what the party held going in (see SaveBattleHeldItems)
 wABCandidate:: battle_struct wABCandidate
 wBattleEnd::
 
@@ -3679,6 +3681,7 @@ wDemoCellIndex:: dw
 wDemoCellDir:: db
 wDemoBlocked:: ds 2 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to)
 wDemoBlockedNext:: db
+wDemoWantBalls:: db ; the POKé BALLS it's buying up to
 wDemoWorldPrev:: ds DEMO_MAX_WORLD_MAPS ; the map graph search: how it got to each map
 wDemoWorldQueue:: ds DEMO_MAX_WORLD_MAPS
 

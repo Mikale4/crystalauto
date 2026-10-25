@@ -599,7 +599,7 @@ MenuHeader_Buy:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData
+.MenuData:: ; (the Demo knows the menu by it)
 	db SCROLLINGMENU_DISPLAY_ARROWS | SCROLLINGMENU_ENABLE_FUNCTION3 ; flags
 	db 4, 8 ; rows, columns
 	db SCROLLINGMENU_ITEMS_NORMAL ; item format

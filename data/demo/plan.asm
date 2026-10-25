@@ -59,6 +59,16 @@ MACRO dgrind ; MAP: battle in its grass until the team is at the level cap
 	map_id \1
 ENDM
 
+MACRO dcatch ; SPECIES, MAP: battle in the map's grass until one is caught
+	db DPLAN_CATCH, \1
+	map_id \2
+ENDM
+
+MACRO dbuy ; N, MAP: buy POKé BALLS at its mart, up to N
+	db DPLAN_BUY, \1
+	map_id \2
+ENDM
+
 MACRO dend
 	db DPLAN_END
 ENDM
@@ -97,8 +107,13 @@ DemoPlan:
 	dgoto 53, 8
 	duntil EVENT_LEARNED_TO_CATCH_POKEMON, .Lesson
 .Learned:
-; VIOLET CITY's GYM, once the team is at the level cap
+; VIOLET CITY's GYM, with a GEODUDE (it shrugs off the birds' attacks), once the
+; team is at the level cap
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
+	dstatus DSTATUS_SHOPPING
+	dbuy 10, CHERRYGROVE_MART
+	dstatus DSTATUS_CATCHING
+	dcatch GEODUDE, ROUTE_46
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_31
 .Falkner:
@@ -106,9 +121,30 @@ DemoPlan:
 	dheal
 	dstatus DSTATUS_FALKNER
 	dtravel VIOLET_GYM
+; the GYM's trainers first, then (healed again) FALKNER
+	dskipif EVENT_BEAT_BIRD_KEEPER_ROD, .BeatRod
+	dtalk 2 ; ROD
+	djump .Falkner
+.BeatRod:
+	dskipif EVENT_BEAT_BIRD_KEEPER_ABE, .BeatAbe
+	dtalk 3 ; ABE
+	djump .Falkner
+.BeatAbe:
 	dtalk 1 ; FALKNER
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
 	djump .Falkner
 .BeatFalkner:
 	dstatus DSTATUS_DONE
 	dend
+
+DemoWantedMons:
+; what the Demo throws its BALLS at (once each): a GEODUDE, and a team of POKéMON
+; that can fight (not the cocoons)
+	db GEODUDE
+	db SPEAROW
+	db PIDGEY
+	db SENTRET
+	db HOOTHOOT
+	db HOPPIP
+	db BELLSPROUT
+	db -1

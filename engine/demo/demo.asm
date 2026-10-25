@@ -132,6 +132,22 @@ DemoNaming:
 
 DemoMenu:
 ; Go to the item the menu wants (see DemoMenuChoice), and choose it.
+	ld hl, wMenuDataPointer
+	ld a, [hli]
+	cp LOW(CaptureBallMenuHeader.MenuData)
+	jr nz, .not_balls
+	ld a, [hl]
+	cp HIGH(CaptureBallMenuHeader.MenuData)
+	jp z, DemoBallMenu
+.not_balls
+	ld hl, wMenuDataPointer
+	ld a, [hli]
+	cp LOW(MenuHeader_Buy.MenuData)
+	jr nz, .not_buying
+	ld a, [hl]
+	cp HIGH(MenuHeader_Buy.MenuData)
+	jp z, DemoBuyMenu
+.not_buying
 	call DemoMenuChoice
 	ld b, a
 	ld a, [wMenuCursorY]
@@ -149,6 +165,105 @@ DemoMenu:
 	xor a ; (an answer the game asked for counts once)
 	ld [wDemoAnswer], a
 	ret
+
+DemoBuyMenu:
+; A mart's list: POKé BALLS (its first item) while it's short of them, else out.
+	call DemoWantsBalls
+	ld a, PAD_B
+	jp nc, DemoTap
+	ld a, [wMenuScrollPosition]
+	ld b, a
+	ld a, [wMenuCursorY]
+	add b
+	dec a
+	ld a, PAD_A
+	jp z, DemoTap
+	ld a, PAD_UP
+	jp DemoTap
+
+DemoWantsBalls:
+; Return carry if it has fewer POKé BALLS than it's buying up to, and the money
+; for one.
+	ld a, [wMoney]
+	and a
+	jr nz, .money
+	ld a, [wMoney + 1]
+	and a
+	jr nz, .money
+	ld a, [wMoney + 2]
+	cp 200 ; (a POKé BALL's price)
+	jr nc, .money
+	and a
+	ret
+
+.money
+	call DemoCountPokeBalls
+	ld b, a
+	ld a, BANK(wDemoWantBalls)
+	ldh [rWBK], a
+	ld a, [wDemoWantBalls]
+	ld c, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	cp c
+	ret
+
+DemoCountPokeBalls:
+; Return how many POKé BALLS it has in a.
+	ld hl, wNumBalls
+	ld a, [hli]
+	and a
+	ret z
+	ld b, a
+.loop
+	ld a, [hli]
+	cp POKE_BALL
+	jr z, .found
+	inc hl
+	dec b
+	jr nz, .loop
+	xor a
+	ret
+
+.found
+	ld a, [hl]
+	ret
+
+DemoBallMenu:
+; A beaten wild POKéMON: a BALL at it if the plan wants it (and, till the
+; first POKéMON the plan wants is caught, only that one), else LEAVE it be.
+	ld a, [DemoWantedMons]
+	dec a
+	call CheckCaughtMon
+	ld a, [DemoWantedMons]
+	ld hl, wEnemyMonSpecies
+	jr nz, .any_wanted
+	cp [hl]
+	ld a, PAD_B
+	jp nz, DemoTap
+	jr .throw
+
+.any_wanted
+	ld a, [hl]
+	ld hl, DemoWantedMons
+	ld de, 1
+	call IsInArray
+	ld a, PAD_B
+	jp nc, DemoTap
+.throw
+; (the BALL the cursor is on; up from LEAVE)
+	ld a, [wMenuScrollPosition]
+	ld b, a
+	ld a, [wMenuCursorY]
+	add b
+	ld b, a
+	ld a, [wNumBalls]
+	cp b
+	ld a, PAD_A
+	jp nc, DemoTap
+	ld a, PAD_UP
+	jp DemoTap
 
 DemoMenuChoice:
 ; Return the item (1-based) to choose in the menu that's up.
@@ -171,12 +286,24 @@ DemoMenuChoice:
 	call DemoMenuIs
 	ld a, 1
 	ret z
+; a mart: BUY while it's short of POKé BALLS, else QUIT
+	ld de, .Buy
+	call DemoMenuIs
+	jr nz, .first
+	call DemoWantsBalls
+	ld a, 1
+	ret c
+	ld a, 3
+	ret
+
+.first
 ; anything else: the first item
 	ld a, 1
 	ret
 
 .NewName: db "NEW NAME@"
 .Normal:  db "NORMAL@"
+.Buy:     db "BUY@"
 
 DemoMenuIs:
 ; Return z if the menu's first item is the string at de.
@@ -260,6 +387,8 @@ DemoRunCommand:
 	dw DemoPlan_Heal
 	dw DemoPlan_SkipIfNot
 	dw DemoPlan_Grind
+	dw DemoPlan_Catch
+	dw DemoPlan_Buy
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -572,6 +701,96 @@ DemoPlan_Grind:
 	inc hl
 	inc hl
 	inc hl
+	jp DemoNextCommand
+
+DemoPlan_Catch:
+; dcatch SPECIES, MAP: battle in that map's grass until one is caught (the
+; BALL menu throws at what DemoWantedMons lists).
+	pop hl
+	push hl
+	inc hl
+	ld a, [hl]
+	dec a
+	call CheckCaughtMon
+	jr nz, .done
+	call DemoTeamLow
+	jr nc, .fit
+	call DemoHealUp
+	jr .walking
+
+.fit
+	pop hl
+	push hl
+	inc hl
+	inc hl
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	call DemoTravel
+	jr nc, .walking
+	ld a, DGOAL_GRASS
+	ld [wDemoGoal], a
+	xor a
+	ld [wDemoGoalX], a
+	ld [wDemoGoalY], a
+	call DemoWalk
+.walking
+	pop hl
+	and a
+	ret
+
+.done
+	pop hl
+	ld de, 4
+	add hl, de
+	jp DemoNextCommand
+
+DemoPlan_Buy:
+; dbuy N, MAP: buy POKé BALLS at that map's mart, up to N (as the money goes).
+	pop hl
+	push hl
+	inc hl
+	ld b, [hl]
+	ld a, BANK(wDemoWantBalls)
+	ldh [rWBK], a
+	ld a, b
+	ld [wDemoWantBalls], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, [wDemoWait]
+	and a
+	jr nz, .done ; (it's been to the clerk)
+	call DemoWantsBalls
+	jr nc, .done
+	pop hl
+	push hl
+	inc hl
+	inc hl
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	call DemoTravel
+	jr nc, .walking
+	ld a, 1 ; (the clerk)
+	call DemoTalkTo
+	jr nc, .walking
+	ld a, 1
+	ld [wDemoWait], a
+.walking
+	pop hl
+	and a
+	ret
+
+.done
+	ld a, BANK(wDemoWantBalls)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoWantBalls], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop hl
+	ld de, 4
+	add hl, de
 	jp DemoNextCommand
 
 DemoHealUp:

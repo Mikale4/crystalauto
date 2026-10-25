@@ -1057,6 +1057,8 @@ AutoBattle_ScoreMatchup:
 	ld a, AB_THEIR_ROLL
 	call AutoBattle_BestDamage
 	push hl ; the foe's damage
+	ld a, [wABBestCategory]
+	ld [wABThemCategory], a
 	ld a, [wABBestEffectiveness]
 	push af
 ; its best attack on the foe
@@ -1735,7 +1737,7 @@ AutoBattleTypicalPowers:
 
 AutoBattle_RateSupportMove:
 ; Return carry and its rating in hl if the move in wPlayerMoveStruct is a
-; healing, status or stat-raising move worth using now (by how the matchup
+; healing, status, stat-raising or stat-lowering move worth using now (by how the matchup
 ; stands: see AutoBattle_ChooseMove). Such a move comes before any attack,
 ; except one that knocks the foe out.
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
@@ -1758,6 +1760,16 @@ AutoBattle_RateSupportMove:
 	ld de, 3
 	call IsInArray
 	jp c, .stat_up
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld hl, AutoBattleStatDownEffects
+	ld de, 3
+	call IsInArray
+	jp c, .stat_down
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld hl, AutoBattleGuardEffects
+	ld de, 3
+	call IsInArray
+	jp c, .guard
 .no
 	and a
 	ret
@@ -1929,6 +1941,160 @@ AutoBattle_RateSupportMove:
 	scf
 	ret
 
+.stat_down
+; when it pays for the turn it takes (see AutoBattleStatDownEffects), the stat
+; no more than one stage down
+	inc hl
+	ld a, [hli] ; the stat
+	ld c, a
+	ld d, [hl] ; when it pays
+	ld a, [wEnemySubStatus4]
+	and 1 << SUBSTATUS_SUBSTITUTE | 1 << SUBSTATUS_MIST
+	jp nz, .no
+	push bc
+	ld a, d
+	and a
+	jr z, .accuracy
+	dec a
+	jr z, .defense
+; its ATTACK: against physical attacks, when that wins this one the race
+	ld a, [wABThemCategory]
+	cp PHYSICAL
+	jr nz, .pop_no
+	lb bc, 3, 2 ; (it takes half again as many turns to knock this one out)
+	call .FlipsRace
+	jr .lower
+
+.defense
+; its DEFENSE: for this one's physical attacks, when that saves a turn
+	ld a, [wABBestCategory]
+	cp PHYSICAL
+	jr nz, .pop_no
+	call .SavesTurn
+	jr .lower
+
+.accuracy
+; its accuracy: when that wins this one the race
+	lb bc, 4, 3 ; (a quarter of its attacks missing)
+	call .FlipsRace
+.lower
+	pop bc
+	jp nc, .no
+	ld b, 0
+	ld hl, wEnemyStatLevels
+	add hl, bc
+	ld a, [hl]
+	cp BASE_STAT_LEVEL - 1
+	jp c, .no
+	ld b, 5
+	jp .rating
+
+.pop_no
+	pop bc
+	jp .no
+
+.guard
+; a defensive stat that suits the foe's attacks, no more than one stage up,
+; when that wins this one the race
+	inc hl
+	ld a, [hli] ; the stat
+	ld c, a
+	ld d, [hl] ; the category of the foe's attacks it's against (0: any)
+	ld a, d
+	and a
+	jr z, .guard_any
+	ld a, [wABThemCategory]
+	cp d
+	jp nz, .no
+.guard_any
+	push bc
+	ld a, c
+	cp EVASION
+	lb bc, 3, 2 ; (DEFENSE, SP.DEF: half again as many turns)
+	jr nz, .guard_factor
+	lb bc, 4, 3 ; (evasion: a quarter of its attacks missing)
+.guard_factor
+	call .FlipsRace
+	pop bc
+	jp nc, .no
+	ld b, 0
+	ld hl, wPlayerStatLevels
+	add hl, bc
+	ld a, [hl]
+	cp BASE_STAT_LEVEL + 2
+	jp nc, .no
+	ld b, 5
+	jp .rating
+
+.FlipsRace:
+; b, c: n, m. Return carry if this one is losing the race to a knockout (the foe
+; needs no more turns than it does), but would win it if the foe needed n/m as
+; many, after the turn this takes.
+	ld a, [wABThem]
+	ld d, a
+	ld a, [wABUs]
+	cp d
+	jr c, .no_flip ; (it's winning anyway)
+	ld a, d
+	call .Times
+	ld d, a
+	ld a, [wABUs]
+	inc a
+	cp d
+	jr z, .flip
+	jr nc, .no_flip
+.flip
+	scf
+	ret
+
+.no_flip
+	and a
+	ret
+
+.SavesTurn:
+; Return carry if, with the foe's DEFENSE a stage down (2/3 the turns), knocking
+; it out would take fewer turns, this one included, and still win the race.
+	ld a, [wABUs]
+	lb bc, 2, 3
+	call .Times
+	inc a
+	ld d, a
+	ld a, [wABUs]
+	cp d
+	jr c, .no_flip
+	jr z, .no_flip
+	ld a, [wABThem]
+	cp d
+	jr c, .no_flip
+	scf
+	ret
+
+.Times:
+; Return a (turns, at most 60) x b / c, rounded up.
+	cp 60
+	jr c, .capped
+	ld a, 60
+.capped
+	ld e, a
+	xor a
+.times
+	add e
+	dec b
+	jr nz, .times
+	add c
+	dec a
+	ld b, 0
+.divide
+	cp c
+	jr c, .divided
+	sub c
+	inc b
+	jr .divide
+
+.divided
+	ld a, b
+	ret
+
 .CanAffectFoe:
 ; Return carry if the foe has no status, substitute or SAFEGUARD, and the move's
 ; type can affect it.
@@ -1964,6 +2130,26 @@ AutoBattleHealEffects:
 	db EFFECT_MORNING_SUN
 	db EFFECT_SYNTHESIS
 	db EFFECT_MOONLIGHT
+	db -1
+
+AutoBattleStatDownEffects:
+; effect, the foe's stat it lowers (wEnemyStatLevels index), when it pays (0:
+; its accuracy, 1: its DEFENSE, 2: its ATTACK; see .stat_down)
+	db EFFECT_ACCURACY_DOWN,   ACCURACY, 0 ; SAND-ATTACK, SMOKESCREEN, FLASH
+	db EFFECT_ACCURACY_DOWN_2, ACCURACY, 0
+	db EFFECT_DEFENSE_DOWN,    DEFENSE,  1 ; LEER, TAIL WHIP
+	db EFFECT_DEFENSE_DOWN_2,  DEFENSE,  1 ; SCREECH
+	db EFFECT_ATTACK_DOWN,     ATTACK,   2 ; GROWL
+	db EFFECT_ATTACK_DOWN_2,   ATTACK,   2 ; CHARM
+	db -1
+
+AutoBattleGuardEffects:
+; effect, the stat it raises (wPlayerStatLevels index), the category of the foe's
+; attacks it's against (0: any)
+	db EFFECT_DEFENSE_UP,   DEFENSE,    PHYSICAL ; HARDEN, WITHDRAW, DEFENSE CURL
+	db EFFECT_DEFENSE_UP_2, DEFENSE,    PHYSICAL ; BARRIER, ACID ARMOR
+	db EFFECT_SP_DEF_UP_2,  SP_DEFENSE, SPECIAL  ; AMNESIA
+	db EFFECT_EVASION_UP,   EVASION,    0        ; DOUBLE TEAM, MINIMIZE
 	db -1
 
 AutoBattleStatUpEffects:

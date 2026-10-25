@@ -1,5 +1,7 @@
 ; The Demo (see engine/demo/demo.asm)
 
+DEF DEMO_ON_TITLE EQU 0 ; (not on the title menu until it's finished)
+
 ; wDemoState
 	const_def
 	const DEMO_OFF     ; 0
@@ -39,6 +41,8 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_HEAL      ; 0b
 	const DPLAN_SKIP_IFNOT ; 0c
 	const DPLAN_GRIND     ; 0d
+	const DPLAN_CATCH     ; 0e
+	const DPLAN_BUY       ; 0f
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -77,5 +81,7 @@ DEF DEMO_MAX_BLOCKED EQU 8
 	const DSTATUS_HEALING     ; 6
 	const DSTATUS_FALKNER     ; 7
 	const DSTATUS_TRAINING    ; 8
-	const DSTATUS_DONE        ; 9
+	const DSTATUS_CATCHING    ; 9
+	const DSTATUS_SHOPPING    ; 10
+	const DSTATUS_DONE        ; 11
 DEF NUM_DSTATUSES EQU const_value

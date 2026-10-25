@@ -8113,6 +8113,7 @@ BattleIntro:
 	call DisableSpriteUpdates
 	farcall ClearBattleRAM
 	farcall InitAutoBattle
+	farcall SaveBattleHeldItems
 	farcall BeginBossBattle
 	call InitEnemy
 	call BackUpBGMap2
@@ -8322,6 +8323,7 @@ FillEnemyMovesFromMoveIndicesBuffer: ; unreferenced
 	ret
 
 ExitBattle:
+	farcall RestoreBattleHeldItems
 	call .HandleEndOfBattle
 	call CleanUpBattleRAM
 	ret

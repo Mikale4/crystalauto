@@ -320,7 +320,7 @@ CaptureBallMenuHeader:
 	dw .MenuData
 	db 1 ; default option
 
-.MenuData:
+.MenuData:: ; (the Demo knows the menu by it)
 	db SCROLLINGMENU_CALL_FUNCTION1_CANCEL | SCROLLINGMENU_DISPLAY_ARROWS ; flags
 	db 4, 8 ; rows, columns
 	db SCROLLINGMENU_ITEMS_QUANTITY ; item format

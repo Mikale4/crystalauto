@@ -303,3 +303,53 @@ HandleHeldEntryItems::
 	dw BattleCommand_SpecialAttackUp2
 	dw BattleCommand_SpecialDefenseUp2
 	dw BattleCommand_AccuracyUp2
+
+SaveBattleHeldItems:
+; Remember what each POKéMON in the party holds as the battle starts, so that
+; what's used up in it (a berry, an X item) comes back afterwards.
+	ld a, [wPartyCount]
+	ld b, a
+	ld c, 0
+	ld hl, wPartyMon1Item
+	ld de, wBattleHeldItems
+.loop
+	ld a, c
+	cp b
+	ld a, 0 ; (no POKéMON there: nothing to give back)
+	jr nc, .got_item
+	ld a, [hl]
+.got_item
+	ld [de], a
+	inc de
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	inc c
+	ld a, c
+	cp PARTY_LENGTH
+	jr nz, .loop
+	ret
+
+RestoreBattleHeldItems:
+; After a battle, a POKéMON that went in holding an item and holds nothing now
+; gets it back: used up (a berry, an X item) or taken by a foe's THIEF. What it
+; took with THIEF itself, it keeps.
+	ld hl, wPartyMon1Item
+	ld de, wBattleHeldItems
+	ld c, PARTY_LENGTH
+.loop
+	ld a, [hl]
+	and a
+	jr nz, .next
+	ld a, [de]
+	ld [hl], a
+.next
+	inc de
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	dec c
+	jr nz, .loop
+	ret

@@ -143,6 +143,13 @@ and Disabled moves) and uses the best one:
   or STEEL Pokémon), and a stat boost that suits its best attack when the foe can
   barely hurt it. A status move is never used on a foe that already has a status, a
   SUBSTITUTE or SAFEGUARD, or a type it can't affect.
+- **Moves that lower the foe's stats or raise its own guard**, against trainers only,
+  when they're worth the turn they take: lowering the foe's accuracy (SAND-ATTACK,
+  SMOKESCREEN) or ATTACK (GROWL, against physical attacks), or raising its own
+  DEFENSE (DEFENSE CURL, HARDEN, against physical attacks), SP.DEF (AMNESIA, against
+  special ones) or evasion (DOUBLE TEAM), when the Pokémon is losing the race to a
+  knockout and that would turn it around; lowering the foe's DEFENSE (LEER, TAIL
+  WHIP) when that saves a turn and still wins it. Never more than two stages.
 - **Other status moves** (and Counter, Mirror Coat, Bide and Future Sight, whose
   damage can't be predicted) are only used when no damaging move can hurt the foe.
 - **Self-Destruct and Explosion** are a last resort.
@@ -233,7 +240,8 @@ still have their own menu once a wild Pokémon is beaten, see
 [Catching](#catching), and the BUG-CATCHING CONTEST's PARK BALLS work as usual.)
 
 Instead, the **X items are held**, like BOOSTER ENERGY in the latest games. Give one
-to a Pokémon, and it's used up when that Pokémon comes into battle:
+to a Pokémon, and it's used up when that Pokémon comes into battle (for that battle:
+see below):
 
 | Item | When the holder comes in |
 |---|---|
@@ -247,6 +255,12 @@ to a Pokémon, and it's used up when that Pokémon comes into battle:
 
 They're sold on the 3rd floor of the GOLDENROD DEPT. STORE, and trainers' Pokémon
 hold them too (see [Difficulty](#difficulty)).
+
+### Held items come back
+
+A held item used up in battle is back once the battle is over: a berry, an X item,
+DIRE HIT, GUARD SPEC. So is one a foe's THIEF took. An item your own Pokémon took
+with THIEF, it keeps.
 
 ### No SHIFT
 
@@ -485,7 +499,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 5bd2dc9c1bbe641daba0ab6208c9cbbf4ae91c07`.
+The patched ROM has `sha1: 7ea56656adaf6b8f2befdab9953887db5e5d20da`.
 
 
 ## Building it
@@ -618,6 +632,9 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `HandleHeldEntryItems` (in `modern_moves.asm`) uses them up at the start of the
   turn, after `HandleBerserkGene`. `GiveTrainerHeldItem` gives trainers' Pokémon
   theirs, and `CheckWhetherToAskSwitch` no longer offers SHIFT.
+  `SaveBattleHeldItems` remembers what the party holds as a battle starts
+  (`wBattleHeldItems`, in battle RAM), and `RestoreBattleHeldItems`, at the start
+  of `ExitBattle`, gives back what's gone.
 - [`engine/pokemon/natures.asm`](engine/pokemon/natures.asm) has `GetNature` (the
   DVs as a 16-bit number, + 15, mod 25), `ApplyNature`, which `CalcMonStatC` calls
   for every stat it works out, and `ApplyNaturesToOldSave`, run once on CONTINUE
