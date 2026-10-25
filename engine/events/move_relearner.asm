@@ -113,7 +113,12 @@ TeachFromMoveList:
 	ld [wNamedObjectIndex], a
 	call GetMoveName
 	call CopyName1
+; (over the list, not the map: the box of moves to forget is drawn in the text
+; box's colors, in front of the map's sprites)
 	predef LearnMove
+	push bc
+	call Call_ExitMenu
+	pop bc
 	ld a, b
 	and a
 	jr z, .declined
@@ -149,7 +154,8 @@ TeachFromMoveList:
 	done
 
 ChooseRelearnerMove:
-; a: the move chosen from wMoveRelearnerMoves (carry if none)
+; a: the move chosen from wMoveRelearnerMoves, with the list still up (carry if
+; none, the list gone)
 	call LoadStandardMenuHeader
 	xor a
 	ld [wMenuScrollPosition], a
@@ -168,9 +174,6 @@ ChooseRelearnerMove:
 	ld a, [wMenuSelection]
 	cp -1
 	jr z, .cancel
-	push af
-	call Call_ExitMenu
-	pop af
 	and a
 	ret
 
