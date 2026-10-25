@@ -13,7 +13,8 @@ page of the stats screen. **Evolutions are simpler** (no trading or friendship
 needed), and, as in PalletToPewter, **no items are used in battle**: the X items
 are held instead, and give their boost when the Pokémon comes in. Several **held
 items** work in new ways (QUICK CLAW, KING'S ROCK, FOCUS BAND, …), a team holds only
-one of some of them, and **critical hits** work as they do today.
+one of some of them, **critical hits** work as they do today, and **every Pokémon
+obeys you**, traded ones too.
 
 Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
@@ -320,6 +321,13 @@ The SHIFT battle style is gone: when a trainer is about to send out its next
 Pokémon, you're never asked whether to switch. BATTLE STYLE in the OPTION menu is
 always SET.
 
+### Every Pokémon obeys
+
+Pokémon never disobey: a traded Pokémon does what you (or auto battle) tell it,
+whatever its level and whatever badges you have. In the original game, one above
+the level your badges allow could loaf around, nap, hurt itself or use another of
+its moves instead.
+
 
 ## Natures
 
@@ -589,7 +597,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: fcc302b964f6f0220e05dc6aaf294a685304a86b`.
+The patched ROM has `sha1: 5f876a4a76287cd553e6be7b38b6327ef38d3e2a`.
 
 
 ## Building it
@@ -739,6 +747,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   ([`data/battle/critical_hit_chances.asm`](data/battle/critical_hit_chances.asm)),
   `ModernCriticalStats` picks the stats a critical hit uses, and
   `.CriticalMultiplier` makes it 1.5×.
+- `BattleCommand_CheckObedience` does nothing, so every Pokémon obeys (and
+  `wAlreadyDisobeyed` stays 0).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM
