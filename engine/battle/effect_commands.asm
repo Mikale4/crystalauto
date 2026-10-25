@@ -3249,7 +3249,8 @@ DoSubstituteDamage:
 
 AutoMove_Setup::
 ; Get the user (hBattleTurn) ready to use its move b by itself, outside of its
-; turn (see AutoMove_Run). Return carry if it doesn't know it with PP left.
+; turn (see AutoMove_Run). Return carry if it doesn't know it with PP left
+; (COUNTER and MIRROR COAT have none, see HandleAutoCounter).
 	ld hl, wBattleMonMoves
 	ld de, wBattleMonPP
 	ldh a, [hBattleTurn]
@@ -3263,6 +3264,10 @@ AutoMove_Setup::
 	ld a, [hli]
 	cp b
 	jr nz, .next
+	cp COUNTER
+	jr z, .found
+	cp MIRROR_COAT
+	jr z, .found
 	ld a, [de]
 	and PP_MASK
 	jr nz, .found

@@ -533,18 +533,19 @@ HeldKingsRock::
 
 ResetEntryHeldFlags::
 ; A POKéMON coming in by BATON PASS (the user's side): no moves or attacks since,
-; for its QUICK CLAW and KING'S ROCK, and its entry moves to come.
+; for its QUICK CLAW and KING'S ROCK, its entry moves to come, and its COUNTER
+; and MIRROR COAT.
 	call UserHeldFlags
 	ld a, [hl]
 	and HELDFLAGS_ON_ENTRY
 	ld [hl], a
 	ld hl, wPlayerTurnsTaken
-	ld de, wPlayerEntryDone
+	ld de, wPlayerFieldFlags
 	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_turns
 	ld hl, wEnemyTurnsTaken
-	ld de, wEnemyEntryDone
+	ld de, wEnemyFieldFlags
 .got_turns
 	xor a
 	ld [hl], a
@@ -641,18 +642,17 @@ HandleEntryMoves:
 .player
 	xor a
 	ldh [hBattleTurn], a
-	ld hl, wPlayerEntryDone
+	ld hl, wPlayerFieldFlags
 	jr .go
 
 .enemy
 	ld a, 1
 	ldh [hBattleTurn], a
-	ld hl, wEnemyEntryDone
+	ld hl, wEnemyFieldFlags
 .go
-	ld a, [hl]
-	and a
+	bit FIELD_ENTRY_DONE_F, [hl]
 	ret nz
-	ld [hl], TRUE
+	set FIELD_ENTRY_DONE_F, [hl]
 	ld hl, wBattleMonHP
 	ld a, [hli]
 	or [hl]
@@ -817,8 +817,9 @@ HandleAutoCounter:
 ; COUNTER and MIRROR COAT work by themselves: right after an attack hit (the
 ; POKéMON, not its SUBSTITUTE: wHitDamage), its target hits back for twice the
 ; damage, if it knows the one for the attack's category (COUNTER for a physical
-; one, MIRROR COAT for a special one) with PP left. Not if it fainted, is asleep or
-; frozen, or the attacker is immune or fainted.
+; one, MIRROR COAT for a special one). They have no PP: each one hits back once
+; while the POKéMON is out. Not if it fainted, is asleep or frozen, or the
+; attacker is immune or fainted.
 	ld a, [wHitDamage]
 	ld b, a
 	ld a, [wHitDamage + 1]
@@ -863,12 +864,21 @@ HandleAutoCounter:
 	ret
 
 .Counter:
+	call .Used
+	and [hl]
+	ret nz ; (it has, since it came in)
 	farcall AutoMove_Setup
 	ret c
 	farcall BattleCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	and a
 	jr z, .immune
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	ld b, a
+	call .Used
+	or [hl]
+	ld [hl], a
 ; twice the damage
 	ld hl, wHitDamage + 1
 	ld a, [hld]
@@ -888,6 +898,21 @@ HandleAutoCounter:
 
 .immune
 	farcall AutoMove_Restore
+	ret
+
+.Used:
+; hl: the user's wPlayerFieldFlags or wEnemyFieldFlags; a: the flag for move b
+	ld hl, wPlayerFieldFlags
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_flags
+	ld hl, wEnemyFieldFlags
+.got_flags
+	ld a, b
+	cp COUNTER
+	ld a, 1 << FIELD_COUNTER_F
+	ret z
+	ld a, 1 << FIELD_MIRROR_COAT_F
 	ret
 
 ClearHitDamage:
@@ -925,80 +950,4 @@ AutoPursuit::
 .none
 	pop af
 	and a
-	ret
-
-DEF MOVEKIND_STATUS  EQU 0
-DEF MOVEKIND_ATTACK  EQU 1
-DEF MOVEKIND_COUNTER EQU 2 ; COUNTER and MIRROR COAT
-
-CheckMovesetConflict::
-; Return carry if move b can't be in a moveset with the moves at de (all
-; NUM_MOVES of them but the one in slot c: NUM_MOVES for none), and then b is the
-; move it can't be with. COUNTER and MIRROR COAT can't be in a moveset together,
-; nor with any attack.
-	ld a, b
-	push bc
-	call MoveKind
-	pop bc
-	and a
-	ret z
-	ld h, a ; (the move's kind)
-	ld l, 0 ; (the slot)
-.loop
-	ld a, l
-	cp c
-	jr z, .next
-	ld a, [de]
-	and a
-	jr z, .next
-	cp b
-	jr z, .next
-	push bc
-	push hl
-	call MoveKind
-	pop hl
-	pop bc
-	and a
-	jr z, .next
-	cp MOVEKIND_COUNTER
-	jr z, .conflict
-	ld a, h
-	cp MOVEKIND_COUNTER
-	jr z, .conflict
-.next
-	inc de
-	inc l
-	ld a, l
-	cp NUM_MOVES
-	jr c, .loop
-	and a
-	ret
-
-.conflict
-	ld a, [de]
-	ld b, a
-	scf
-	ret
-
-MoveKind:
-; a: MOVEKIND_* of move a
-	cp COUNTER
-	jr z, .counter
-	cp MIRROR_COAT
-	jr z, .counter
-	dec a
-	ld hl, Moves + MOVE_TYPE
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
-	and ~TYPE_MASK
-	cp STATUS
-	ld a, MOVEKIND_STATUS
-	ret z
-	ld a, MOVEKIND_ATTACK
-	ret
-
-.counter
-	ld a, MOVEKIND_COUNTER
 	ret

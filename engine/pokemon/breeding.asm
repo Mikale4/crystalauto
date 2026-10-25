@@ -410,8 +410,6 @@ InitEggMoves:
 	jr nz, .next
 	call GetEggMove
 	jr nc, .skip
-	call EggMoveConflicts
-	jr c, .skip
 	call LoadEggMove
 
 .skip
@@ -514,25 +512,6 @@ GetEggMove:
 .done
 	pop bc
 	and a
-	ret
-
-EggMoveConflicts:
-; Return carry if egg move [de] can't be with the egg's moves (see
-; CheckMovesetConflict).
-	push de
-	push bc
-	ld a, [de]
-	ld b, a
-	ld a, [wEggMonMoves + NUM_MOVES - 1]
-	and a
-	ld c, NUM_MOVES
-	jr z, .check
-	ld c, 0 ; (the oldest move would go)
-.check
-	ld de, wEggMonMoves
-	farcall CheckMovesetConflict
-	pop bc
-	pop de
 	ret
 
 LoadEggMove:

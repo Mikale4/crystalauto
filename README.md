@@ -260,7 +260,7 @@ Some moves work in new ways of their own:
 | GUILLOTINE, HORN DRILL, FISSURE | as RUINATION: they halve the foe's HP, 90% accurate |
 | PSYWAVE | its power varies as MAGNITUDE's does |
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
-| COUNTER, MIRROR COAT | work by themselves (see below) |
+| COUNTER, MIRROR COAT | no PP; work by themselves, once each time the Pokémon is out (see below) |
 | WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
@@ -275,14 +275,13 @@ on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it 
 does what it chose (if it chose PURSUIT, that was it).
 
 **COUNTER and MIRROR COAT.** Right after a physical attack hits a Pokémon that knows
-COUNTER (a special one, MIRROR COAT), it hits back by itself for twice the damage
-(1 PP), unless it fainted, is asleep or frozen, or the attacker is immune. They
-can't be chosen ("COUNTER works by itself!"); a Pokémon with nothing else left to
-choose STRUGGLEs. A Pokémon can't know both, nor either one with an attack: one
-that would is told it "can't learn COUNTER with TACKLE!" (with four moves, you can
-pick another one to forget), SKETCH and MIMIC fail to copy one, and wild and
-trainers' Pokémon go without those moves. A Pokémon that learned one with an attack
-in an older version keeps both, until it learns a move in place of one of them.
+COUNTER (a special one, MIRROR COAT), it hits back by itself for twice the damage,
+unless it fainted, is asleep or frozen, or the attacker is immune. They have no PP
+(shown as "--", and PP UP, ETHER and MYSTERYBERRY don't work on them): instead, each
+one hits back once while the Pokémon is out, and again only after it has gone back
+and come out again (or another one has come in by BATON PASS). They can't be chosen
+("COUNTER works by itself!"); a Pokémon with nothing else left to choose STRUGGLEs.
+A Pokémon can know both, and attacks too.
 
 ### Critical hits
 
@@ -640,7 +639,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 7a236f4c8af48015bc199957189ad5f25f56a82a`.
+The patched ROM has `sha1: fa50e901b2120bee30aaa6eb944e6fc55b5ff2f5`.
 
 
 ## Building it
@@ -797,18 +796,19 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   itself, outside its user's turn: its effect script (`DoMoveScript` runs another),
   its PP (`BattleCommand_DoTurn` with `wAutoMove`), but not as its turn. They serve
   `HandleEntryMoves` (from `HandleEntryTransform`, once per Pokémon out:
-  `wPlayerEntryDone`, `wEnemyEntryDone`), `AutoPursuit` (from `PursuitSwitch`) and
+  `FIELD_ENTRY_DONE_F` in `wPlayerFieldFlags`, `wEnemyFieldFlags`), `AutoPursuit`
+  (from `PursuitSwitch`) and
   `HandleAutoCounter` (after each move, from `DoPlayerTurnAndCounter` and
   `DoEnemyTurnAndCounter`, with the damage `CountHitTaken` keeps in `wHitDamage` from
-  `BattleCommand_ApplyDamage`). `CountHitTaken` also counts each Pokémon's hits
-  (`wPlayerTimesHit`, `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower`
-  command). FALSE SWIPE's miss is the `swipeagain` command (`FalseSwipeAgain`).
-  `CheckMovesetConflict` keeps COUNTER and MIRROR COAT out of movesets they can't be
-  in (`LearnMove`, `FillMoves`, `InitEggMoves`, `BattleCommand_Sketch`,
-  `BattleCommand_Mimic`), and `CheckPlayerHasUsableMoves`,
-  the move menu, `ParseEnemyAction` and `AIChooseMove` don't choose them; all of
-  these are in [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm) but
-  the last ones.
+  `BattleCommand_ApplyDamage`; once each per Pokémon out: `FIELD_COUNTER_F` and
+  `FIELD_MIRROR_COAT_F`, and no PP: the `AutoCounter` script has no `doturn`).
+  `CountHitTaken` also counts each Pokémon's hits (`wPlayerTimesHit`,
+  `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower` command). FALSE SWIPE's
+  miss is the `swipeagain` command (`FalseSwipeAgain`). All of these are in
+  [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm).
+  `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
+  don't choose COUNTER or MIRROR COAT; `ListMovePP`, `MoveInfoBox` and the MOVE
+  REMINDER's list show their PP (0) as "--".
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

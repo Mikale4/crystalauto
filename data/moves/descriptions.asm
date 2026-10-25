@@ -533,8 +533,8 @@ LowKickDescription:
 	next "cause flinching.@"
 
 CounterDescription:
-	db   "By itself, returns"
-	next "physical hits x2.@"
+	db   "Returns 1 physical"
+	next "hit x2 by itself.@"
 
 SeismicTossDescription:
 	db   "The user's level"
@@ -1233,8 +1233,8 @@ CrunchDescription:
 	next "lower SPCL.DEF.@"
 
 MirrorCoatDescription:
-	db   "By itself, returns"
-	next "special hits x2.@"
+	db   "Returns 1 special"
+	next "hit x2 by itself.@"
 
 PsychUpDescription:
 	db   "Copies the foe's"

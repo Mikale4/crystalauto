@@ -1372,7 +1372,13 @@ HandleMysteryberry:
 	jr z, .quit
 	ld a, [de]
 	and PP_MASK
-	jr z, .restore
+	jr nz, .next
+	ld a, [hl]
+	cp COUNTER
+	jr z, .next ; (no PP)
+	cp MIRROR_COAT
+	jr nz, .restore
+.next
 	inc hl
 	inc de
 	inc c
@@ -3619,7 +3625,7 @@ endr
 	ld [wPlayerWrapCount], a
 	ld [wEnemyWrapCount], a
 	ld [wEnemyTurnsTaken], a
-	ld [wEnemyEntryDone], a
+	ld [wEnemyFieldFlags], a
 	ld hl, wPlayerSubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wEnemyHeldFlags]
@@ -4111,7 +4117,7 @@ endr
 	ld [wEnemyWrapCount], a
 	ld [wPlayerWrapCount], a
 	ld [wPlayerTurnsTaken], a
-	ld [wPlayerEntryDone], a
+	ld [wPlayerFieldFlags], a
 	ld hl, wEnemySubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wPlayerHeldFlags]
@@ -5510,10 +5516,17 @@ MoveSelectionScreen:
 	pop af
 	ret nz
 
-	ld hl, wBattleMonPP
 	ld a, [wMenuCursorY]
 	ld c, a
 	ld b, 0
+	ld hl, wBattleMonMoves
+	add hl, bc
+	ld a, [hl]
+	cp COUNTER
+	jr z, .works_by_itself ; (and has no PP)
+	cp MIRROR_COAT
+	jr z, .works_by_itself
+	ld hl, wBattleMonPP
 	add hl, bc
 	ld a, [hl]
 	and PP_MASK
@@ -5527,16 +5540,9 @@ MoveSelectionScreen:
 	ld a, [wUnusedPlayerLockedMove]
 	and a
 	jr nz, .skip2
-	ld a, [wMenuCursorY]
 	ld hl, wBattleMonMoves
-	ld c, a
-	ld b, 0
 	add hl, bc
 	ld a, [hl]
-	cp COUNTER
-	jr z, .works_by_itself
-	cp MIRROR_COAT
-	jr z, .works_by_itself
 
 .skip2
 	ld [wCurPlayerMove], a
@@ -5750,11 +5756,9 @@ MoveInfoBox:
 
 .PrintPP:
 	hlcoord 5, 11
-	ld a, [wLinkMode] ; What's the point of this check?
-	cp LINK_MOBILE
-	jr c, .ok
-	hlcoord 5, 11
-.ok
+	ld a, [wNamedObjectIndex]
+	and a
+	jr z, .no_pp ; (COUNTER, MIRROR COAT)
 	push hl
 	ld de, wStringBuffer1
 	lb bc, 1, 2
@@ -5767,6 +5771,15 @@ MoveInfoBox:
 	ld de, wNamedObjectIndex
 	lb bc, 1, 2
 	call PrintNum
+	ret
+
+.no_pp
+	ld a, '-'
+	ld [hli], a
+	ld [hli], a
+	inc hl
+	ld [hli], a
+	ld [hl], a
 	ret
 
 CheckPlayerHasUsableMoves:

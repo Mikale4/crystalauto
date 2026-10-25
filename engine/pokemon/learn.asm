@@ -23,7 +23,7 @@ LearnMove:
 .next
 	ld a, [hl]
 	and a
-	jr z, .empty
+	jr z, .learn
 	inc hl
 	dec b
 	jr nz, .next
@@ -37,21 +37,7 @@ LearnMove:
 	push hl
 	push de
 	ld [wNamedObjectIndex], a
-; (with that move gone, may it learn this one? see CheckMovesetConflict)
-	ld a, l
-	sub e
-	ld c, a
-	ld a, [wPutativeTMHMMove]
-	ld b, a
-	farcall CheckMovesetConflict
-	jr nc, .forget
-	pop de
-	pop hl
-	call .CantLearnWith
-	jp .cancel
 
-.forget
-	ld a, [wNamedObjectIndex]
 	ld b, a
 	ld a, [wBattleMode]
 	and a
@@ -69,21 +55,6 @@ LearnMove:
 	call PrintText
 	pop de
 	pop hl
-	jr .learn
-
-.empty
-; (may it learn this one with the moves it knows? see CheckMovesetConflict)
-	push hl
-	push de
-	ld a, [wPutativeTMHMMove]
-	ld b, a
-	ld c, NUM_MOVES
-	farcall CheckMovesetConflict
-	pop de
-	pop hl
-	jr nc, .learn
-	call .CantLearnWith
-	jr .not_learned
 
 .learn
 	ld a, [wPutativeTMHMMove]
@@ -150,14 +121,6 @@ LearnMove:
 	call PrintText
 	ld b, 1
 	ret
-
-.CantLearnWith:
-; b: the move it can't learn the move with
-	ld a, b
-	ld [wNamedObjectIndex], a
-	call GetMoveName
-	ld hl, CantLearnWithText
-	jp PrintText
 
 ForgetMove:
 	push hl
@@ -254,18 +217,6 @@ ForgetMove:
 LearnedMoveText:
 	text_far _LearnedMoveText
 	text_end
-
-CantLearnWithText:
-; COUNTER and MIRROR COAT can't be in a moveset together, nor with any attack
-	text_ram wMonOrItemNameBuffer
-	text " can't"
-	line "learn @"
-	text_ram wStringBuffer2
-	text_start
-	cont "with @"
-	text_ram wStringBuffer1
-	text "!"
-	prompt
 
 MoveAskForgetText:
 	text_far _MoveAskForgetText

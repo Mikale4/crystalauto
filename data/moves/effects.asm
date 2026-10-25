@@ -854,9 +854,8 @@ ForceSwitch:
 
 AutoCounter::
 ; COUNTER and MIRROR COAT, hitting back by themselves (see HandleAutoCounter, which
-; sets the damage)
+; sets the damage): no PP
 	usedmovetext
-	doturn
 	moveanim
 	applydamage
 	checkfaint

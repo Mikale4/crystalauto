@@ -528,22 +528,6 @@ FillMoves:
 	jr nz, .CheckRepeat
 	pop de
 	push de
-; (COUNTER and MIRROR COAT: not with the moves it would have, see CheckMovesetConflict)
-	push hl
-	push de
-	ld b, [hl]
-	ld hl, NUM_MOVES - 1
-	add hl, de
-	ld a, [hl]
-	and a
-	ld c, NUM_MOVES
-	jr z, .CheckConflict
-	ld c, 0 ; (the oldest move would go)
-.CheckConflict:
-	farcall CheckMovesetConflict
-	pop de
-	pop hl
-	jr c, .NextMove
 	ld c, NUM_MOVES
 .CheckSlot:
 	ld a, [de]
@@ -592,7 +576,7 @@ FillMoves:
 	pop hl
 	ld [hl], a
 	pop hl
-	jp .NextMove
+	jr .NextMove
 
 .done
 	pop bc

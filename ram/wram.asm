@@ -654,8 +654,8 @@ wPlayerHeldFlags:: db ; HELDFLAG_* (see MarkFirstAttack and BattleCommand_ApplyD
 wEnemyHeldFlags:: db
 wAutoMove:: db ; a move used by itself (see AutoMove): its PP, but not a turn
 wAutoMoveBackup:: ds 2 + MOVE_LENGTH ; the move the user chose (its number, the move, its struct)
-wPlayerEntryDone:: db ; the POKéMON out has used its entry moves (see HandleEntryMoves)
-wEnemyEntryDone:: db
+wPlayerFieldFlags:: db ; FIELD_*_F: since the POKéMON out came in
+wEnemyFieldFlags:: db
 wHitDamage:: dw ; what the last attack did to its target (not to a SUBSTITUTE): see HandleAutoCounter
 wPlayerTimesHit:: ds PARTY_LENGTH ; how many times each POKéMON was hit this battle (RAGE)
 wEnemyTimesHit:: ds PARTY_LENGTH
