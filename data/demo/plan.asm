@@ -87,6 +87,10 @@ MACRO dgive ; ITEM: give it to each POKéMON in the team that doesn't hold one
 	db DPLAN_GIVE, \1
 ENDM
 
+MACRO dpush ; n, DIR: push map object n (a boulder) one cell that way, with STRENGTH
+	db DPLAN_PUSH, \1, \2
+ENDM
+
 MACRO dend
 	db DPLAN_END
 ENDM

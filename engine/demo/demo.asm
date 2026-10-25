@@ -918,6 +918,7 @@ DemoRunCommand:
 	dw DemoPlan_Team
 	dw DemoPlan_Sweep
 	dw DemoPlan_Retry
+	dw DemoPlan_Push
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1127,6 +1128,106 @@ DemoPlan_Jump:
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+	jp DemoNextCommand
+
+DemoPlan_Push:
+; dpush n, DIR: push map object n (a boulder) one cell that way: from the cell
+; behind it, with STRENGTH (A on it first, if it isn't on yet: the game asks).
+	pop hl
+	push hl
+	inc hl
+	ld a, [hli]
+	ld c, [hl]
+	push bc
+	call DemoGetObjectCell
+	pop bc
+	jr c, .done ; (gone: down a hole)
+	ld a, BANK(wDemoPushX)
+	ldh [rWBK], a
+	ld a, [wDemoWait]
+	and a
+	jr nz, .started
+	inc a
+	ld [wDemoWait], a
+	ld a, d
+	ld [wDemoPushX], a
+	ld a, e
+	ld [wDemoPushY], a
+.started
+	ld a, [wDemoPushX]
+	cp d
+	jr nz, .moved
+	ld a, [wDemoPushY]
+	cp e
+	jr nz, .moved
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+; the cell behind it
+	ld a, c
+	and a ; DOWN
+	jr nz, .not_down
+	dec e
+	jr .behind
+.not_down
+	dec a ; UP
+	jr nz, .not_up
+	inc e
+	jr .behind
+.not_up
+	dec a ; LEFT
+	jr nz, .right
+	inc d
+	jr .behind
+.right
+	dec d
+.behind
+	push bc
+	ld a, d
+	ld [wDemoGoalX], a
+	ld a, e
+	ld [wDemoGoalY], a
+	ld a, DGOAL_CELL
+	ld [wDemoGoal], a
+	call DemoWalk
+	pop bc
+	jr nc, .not_yet
+	ld a, [wPlayerDirection]
+	rrca
+	rrca
+	and %11
+	cp c
+	jr nz, .hold ; (face it)
+	ld a, [wBikeFlags]
+	bit BIKEFLAGS_STRENGTH_ACTIVE_F, a
+	jr nz, .hold ; (push)
+	ldh a, [hJoyDown]
+	and PAD_A
+	ld a, PAD_A
+	jr z, .pad
+	xor a ; (a fresh press)
+.pad
+	ld [wDemoPad], a
+	jr .not_yet
+
+.hold
+	ld a, c
+	call DemoDirPad
+	call DemoHold
+.not_yet
+	pop hl
+	and a
+	ret
+
+.moved
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+.done
+	xor a
+	ld [wDemoPad], a
+	pop hl
+	inc hl
+	inc hl
+	inc hl
 	jp DemoNextCommand
 
 DemoPlan_Face:

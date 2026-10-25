@@ -3718,6 +3718,8 @@ wDemoSweepMap:: dw ; the map a sweep is for (see DemoPlan_Sweep)
 wDemoHealing:: db ; on its way to be healed: the status to go back to, + 1 (0: it isn't)
 wDemoSkipped:: ds (NUM_DEMO_TARGETS + 7) / 8 ; targets it's leaving for now (see DemoSweep)
 wDemoFieldMoves:: db ; DEMOFIELD_* flags: what the team can get past (see DemoFieldMoves)
+wDemoPushX:: db ; where the boulder it pushes was (see DemoPlan_Push)
+wDemoPushY:: db
 
 
 SECTION "Battle Tower RAM", WRAMX

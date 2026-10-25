@@ -55,6 +55,7 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_TEAM      ; 11
 	const DPLAN_SWEEP     ; 12
 	const DPLAN_RETRY     ; 13
+	const DPLAN_PUSH      ; 14
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
