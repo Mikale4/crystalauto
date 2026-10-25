@@ -647,6 +647,7 @@ wABBestUs:: db
 wABBestSlot:: db
 wABCurScore:: db
 wABCurUs:: db
+wABCandidateOut:: db ; whether wABCandidate is the one out (its accuracy and evasion count)
 wABCandidate:: battle_struct wABCandidate
 wBattleEnd::
 

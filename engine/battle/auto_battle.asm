@@ -541,9 +541,117 @@ AutoBattle_EstimateDamage:
 	inc l
 	ret
 
+AutoBattle_StatLevel:
+; hl: wABAttacker or wABDefender; de: the player's stat level, bc: the enemy's.
+; Return in a that stat level of the Pokémon it points to if it's in battle (the
+; foe out, or the candidate when it's the one out), else BASE_STAT_LEVEL.
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	cp LOW(wEnemyMon)
+	jr nz, .not_enemy
+	ld a, h
+	cp HIGH(wEnemyMon)
+	jr nz, .not_enemy
+	ld a, [bc]
+	ret
+
+.not_enemy
+	ld a, l
+	cp LOW(wABCandidate)
+	jr nz, .base
+	ld a, h
+	cp HIGH(wABCandidate)
+	jr nz, .base
+	ld a, [wABCandidateOut]
+	and a
+	jr z, .base
+	ld a, [de]
+	ret
+
+.base
+	ld a, BASE_STAT_LEVEL
+	ret
+
+AutoBattle_ScaleAccuracy:
+; a: a move's accuracy; b: the attacker's accuracy level; c: the defender's
+; evasion level. Return its chance to hit in a, as BattleCommand_CheckHit works
+; it out (at least 1, at most 100%).
+	ld e, a
+	ld a, b
+	call .Scale
+	ld a, MAX_STAT_LEVEL + 1
+	sub c
+	call .Scale
+	ld a, e
+	ret
+
+.Scale:
+; e *= the multiplier for stat level a
+	push bc
+	dec a
+	add a
+	ld c, a
+	ld b, 0
+	ld hl, AutoBattleAccuracyMultipliers
+	add hl, bc
+	xor a
+	ldh [hMultiplicand + 0], a
+	ldh [hMultiplicand + 1], a
+	ld a, e
+	ldh [hMultiplicand + 2], a
+	ld a, [hli]
+	ldh [hMultiplier], a
+	call Multiply
+	ld a, [hl]
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+	ldh a, [hQuotient + 2]
+	and a
+	ld a, $ff
+	jr nz, .got
+	ldh a, [hQuotient + 3]
+	and a
+	jr nz, .got
+	inc a
+.got
+	ld e, a
+	pop bc
+	ret
+
+AutoBattleAccuracyMultipliers:
+; (as AccuracyLevelMultipliers)
+	db  33, 100 ; -6
+	db  36, 100 ; -5
+	db  43, 100 ; -4
+	db  50, 100 ; -3
+	db  60, 100 ; -2
+	db  75, 100 ; -1
+	db   1,   1 ;  0
+	db 133, 100 ; +1
+	db 166, 100 ; +2
+	db   2,   1 ; +3
+	db 233, 100 ; +4
+	db 133,  50 ; +5
+	db   3,   1 ; +6
+
 AutoBattle_ApplyAccuracy:
-; hl *= move accuracy
+; hl *= the move's chance to hit, with your Pokémon's accuracy and the foe's
+; evasion
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_ALWAYS_HIT
 	ld a, [wPlayerMoveStruct + MOVE_ACC]
+	jr z, AutoBattle_MultiplyHL
+	push hl
+	push af
+	ld a, [wPlayerAccLevel]
+	ld b, a
+	ld a, [wEnemyEvaLevel]
+	ld c, a
+	pop af
+	call AutoBattle_ScaleAccuracy
+	pop hl
 	; fallthrough
 
 AutoBattle_MultiplyHL:
@@ -1084,16 +1192,21 @@ AutoBattle_FoeIsEnemyMon:
 	ret
 
 AutoBattle_LoadCandidate:
-; wABCandidate: party Pokémon a as a battle struct (the one out: wBattleMon).
+; wABCandidate: party Pokémon a as a battle struct (the one out: wBattleMon,
+; with wABCandidateOut set).
 	ld hl, wCurBattleMon
 	cp [hl]
 	jr nz, .party
+	ld a, TRUE
+	ld [wABCandidateOut], a
 	ld hl, wBattleMon
 	ld de, wABCandidate
 	ld bc, wBattleMonStructEnd - wBattleMon
 	jp CopyBytes
 
 .party
+	ld hl, wABCandidateOut
+	ld [hl], FALSE
 	ld hl, wPartyMon1
 	ld de, wABCandidate
 	; fallthrough
@@ -1471,10 +1584,30 @@ AutoBattle_MoveDamage:
 	dec b
 	jr nz, .times_loop
 .roll
-; the roll to count on, then accuracy
+; the roll to count on, then the chance to hit (with the accuracy and evasion
+; of the Pokémon in battle)
 	ld a, [wABRoll]
 	call AutoBattle_MultiplyHL
+	ld a, [wABMove + MOVE_EFFECT]
+	cp EFFECT_ALWAYS_HIT
 	ld a, [wABMove + MOVE_ACC]
+	jp z, AutoBattle_MultiplyHL
+	push hl
+	ld hl, wABAttacker
+	ld de, wPlayerAccLevel
+	ld bc, wEnemyAccLevel
+	call AutoBattle_StatLevel
+	push af
+	ld hl, wABDefender
+	ld de, wPlayerEvaLevel
+	ld bc, wEnemyEvaLevel
+	call AutoBattle_StatLevel
+	ld c, a
+	pop af
+	ld b, a
+	ld a, [wABMove + MOVE_ACC]
+	call AutoBattle_ScaleAccuracy
+	pop hl
 	jp AutoBattle_MultiplyHL
 
 .level

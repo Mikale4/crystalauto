@@ -370,6 +370,7 @@ Continue:
 	ld c, 20
 	call DelayFrames
 	farcall AskDifficultyIfUnset
+	farcall ApplyNaturesToOldSave
 	farcall InitRoamMons
 	farcall JumpRoamMons
 	farcall CopyMysteryGiftReceivedDecorationsToPC

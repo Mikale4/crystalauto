@@ -2,9 +2,10 @@
 	const PINK_PAGE  ; 1
 	const GREEN_PAGE ; 2
 	const BLUE_PAGE  ; 3
+	const ORANGE_PAGE ; 4
 DEF NUM_STAT_PAGES EQU const_value - 1
 
-DEF STAT_PAGE_MASK EQU %00000011
+DEF STAT_PAGE_MASK EQU %00000111
 	const_def 4
 	const STATS_SCREEN_PLACE_FRONTPIC ; 4
 	const STATS_SCREEN_ANIMATE_MON    ; 5
@@ -321,7 +322,7 @@ StatsScreen_GetJoypad:
 StatsScreen_JoypadAction:
 	push af
 	ld a, [wStatsScreenFlags]
-	maskbits NUM_STAT_PAGES
+	and STAT_PAGE_MASK
 	ld c, a
 	pop af
 	bit B_PAD_B, a
@@ -379,11 +380,11 @@ StatsScreen_JoypadAction:
 
 .a_button
 	ld a, c
-	cp BLUE_PAGE ; last page
+	cp ORANGE_PAGE ; last page
 	jr z, .b_button
 .d_right
 	inc c
-	ld a, BLUE_PAGE ; last page
+	ld a, ORANGE_PAGE ; last page
 	cp c
 	jr nc, .set_page
 	ld c, PINK_PAGE ; first page
@@ -392,7 +393,7 @@ StatsScreen_JoypadAction:
 .d_left
 	dec c
 	jr nz, .set_page
-	ld c, BLUE_PAGE ; last page
+	ld c, ORANGE_PAGE ; last page
 	jr .set_page
 
 .done
@@ -513,7 +514,7 @@ StatsScreen_PlaceHorizontalDivider:
 	ret
 
 StatsScreen_PlacePageSwitchArrows:
-	hlcoord 12, 6
+	hlcoord 10, 6
 	ld [hl], '◀'
 	hlcoord 19, 6
 	ld [hl], '▶'
@@ -548,7 +549,7 @@ StatsScreen_LoadGFX:
 
 .ClearBox:
 	ld a, [wStatsScreenFlags]
-	maskbits NUM_STAT_PAGES
+	and STAT_PAGE_MASK
 	ld c, a
 	call StatsScreen_LoadPageIndicators
 	hlcoord 0, 8
@@ -558,7 +559,7 @@ StatsScreen_LoadGFX:
 
 .LoadPals:
 	ld a, [wStatsScreenFlags]
-	maskbits NUM_STAT_PAGES
+	and STAT_PAGE_MASK
 	ld c, a
 	farcall LoadStatsScreenPals
 	call DelayFrame
@@ -568,7 +569,7 @@ StatsScreen_LoadGFX:
 
 .PageTilemap:
 	ld a, [wStatsScreenFlags]
-	maskbits NUM_STAT_PAGES
+	and STAT_PAGE_MASK
 	dec a
 	ld hl, .Jumptable
 	rst JumpTable
@@ -580,6 +581,7 @@ StatsScreen_LoadGFX:
 	dw LoadPinkPage
 	dw LoadGreenPage
 	dw LoadBluePage
+	dw LoadOrangePage
 	assert_table_length NUM_STAT_PAGES
 
 LoadPinkPage:
@@ -822,6 +824,173 @@ LoadBluePage:
 	dw wOTPartyMonOTs
 	dw sBoxMonOTs
 	dw wBufferMonOT
+
+LoadOrangePage:
+; its nature (see engine/pokemon/natures.asm) and its DVs
+	ld de, .NatureString
+	hlcoord 0, 8
+	call PlaceString
+	ld de, wTempMonDVs
+	farcall GetDVsNature ; c: the nature; d, e: the stats it raises and lowers
+	push de
+	ld a, c
+	ld hl, NatureNames
+	call GetNthString
+	ld d, h
+	ld e, l
+	hlcoord 8, 8
+	call PlaceString
+	pop de
+	ld a, d
+	cp e
+	jr nz, .changes
+	ld de, .NoChangeString
+	hlcoord 1, 9
+	call PlaceString
+	jr .dvs
+
+.changes
+	push de
+	ld de, .UpString
+	hlcoord 3, 9
+	call PlaceString
+	ld de, .DownString
+	hlcoord 1, 10
+	call PlaceString
+	pop de
+	push de
+	ld a, d
+	hlcoord 7, 9
+	call .PlaceStatName
+	pop de
+	ld a, e
+	hlcoord 7, 10
+	call .PlaceStatName
+
+.dvs
+	ld de, .DVsString
+	hlcoord 0, 12
+	call PlaceString
+	xor a
+.dv_loop
+	push af
+	ld hl, .DVNames
+	call GetNthString
+	ld d, h
+	ld e, l
+	pop af
+	push af
+	ld bc, SCREEN_WIDTH
+	hlcoord 1, 13
+	call AddNTimes
+	call PlaceString
+	pop af
+	push af
+	call .GetDV
+	ld [wTextDecimalByte], a
+	pop af
+	push af
+	ld bc, SCREEN_WIDTH
+	hlcoord 9, 13
+	call AddNTimes
+	lb bc, 1, 2
+	ld de, wTextDecimalByte
+	call PrintNum
+	pop af
+	inc a
+	cp 5 ; HP, ATTACK, DEFENSE, SPEED, SPECIAL
+	jr nz, .dv_loop
+	ret
+
+.PlaceStatName:
+; a: the stat (0-4), at hl
+	push hl
+	ld hl, .StatNames
+	call GetNthString
+	ld d, h
+	ld e, l
+	pop hl
+	jp PlaceString
+
+.GetDV:
+; a: 0 HP, 1 ATTACK, 2 DEFENSE, 3 SPEED, 4 SPECIAL. Return its DV in a.
+	ld hl, wTempMonDVs
+	and a
+	jr z, .hp
+	dec a
+	jr z, .high
+	dec a
+	jr z, .low
+	inc hl
+	dec a
+	jr z, .high
+.low
+	ld a, [hl]
+	and $f
+	ret
+
+.high
+	ld a, [hl]
+	swap a
+	and $f
+	ret
+
+.hp
+; (the lowest bit of each other DV: ATTACK, DEFENSE, SPEED, SPECIAL)
+	ld a, [hli]
+	ld b, a
+	swap a
+	and 1
+	add a
+	ld c, a
+	ld a, b
+	and 1
+	or c
+	add a
+	add a
+	ld c, a
+	ld a, [hl]
+	ld b, a
+	swap a
+	and 1
+	add a
+	or c
+	ld c, a
+	ld a, b
+	and 1
+	or c
+	ret
+
+.NatureString:
+	db "NATURE/@"
+
+.NoChangeString:
+	db "No stat changes@"
+
+.UpString:
+	db "Up:@"
+
+.DownString:
+	db "Down:@"
+
+.DVsString:
+	db "DVs/@"
+
+.StatNames:
+	db "ATTACK@"
+	db "DEFENSE@"
+	db "SPEED@"
+	db "SPCL.ATK@"
+	db "SPCL.DEF@"
+
+.DVNames:
+	db "HP@"
+	db "ATTACK@"
+	db "DEFENSE@"
+	db "SPEED@"
+	db "SPECIAL@"
+
+INCLUDE "data/pokemon/nature_names.asm"
 
 IDNoString:
 	db "<ID>№.@"
@@ -1112,8 +1281,11 @@ StatsScreen_AnimateEgg:
 	ret
 
 StatsScreen_LoadPageIndicators:
-	hlcoord 13, 5
+	hlcoord 11, 5
 	ld a, $36 ; first of 4 small square tiles
+	call .load_square
+	hlcoord 13, 5
+	ld a, $36 ; " " " "
 	call .load_square
 	hlcoord 15, 5
 	ld a, $36 ; " " " "
@@ -1121,14 +1293,16 @@ StatsScreen_LoadPageIndicators:
 	hlcoord 17, 5
 	ld a, $36 ; " " " "
 	call .load_square
+; the large square for page c (1-4): at 11 + 2 x (c - 1)
 	ld a, c
-	cp GREEN_PAGE
+	dec a
+	add a
+	add 11
+	ld e, a
+	ld d, 0
+	hlcoord 0, 5
+	add hl, de
 	ld a, $3a ; first of 4 large square tiles
-	hlcoord 13, 5 ; PINK_PAGE (< GREEN_PAGE)
-	jr c, .load_square
-	hlcoord 15, 5 ; GREEN_PAGE (= GREEN_PAGE)
-	jr z, .load_square
-	hlcoord 17, 5 ; BLUE_PAGE (> GREEN_PAGE)
 .load_square
 	push bc
 	ld [hli], a

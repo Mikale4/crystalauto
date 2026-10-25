@@ -1614,6 +1614,16 @@ CalcMonStatC:
 	pop bc
 	pop de
 	pop hl
+; and its nature (see engine/pokemon/natures.asm)
+	push hl
+	push de
+	push bc
+	ld de, MON_DVS - MON_HP_EXP + 1
+	add hl, de
+	call ApplyNature
+	pop bc
+	pop de
+	pop hl
 	ret
 
 GivePoke::

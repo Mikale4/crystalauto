@@ -8,7 +8,8 @@ evolution level** in battle, instead of waiting for the battle to end.
 
 Battles work the way they do in the latest games: the **physical/special split**,
 the **FAIRY type** and today's **type chart**, and **moves** with their modern power,
-accuracy, PP and effects. **Evolutions are simpler** (no trading or friendship
+accuracy, PP and effects. Pokémon have **natures**, shown with their DVs on a new
+page of the stats screen. **Evolutions are simpler** (no trading or friendship
 needed), and, as in PalletToPewter, **no items are used in battle**: the X items
 are held instead, and give their boost when the Pokémon comes in.
 
@@ -76,7 +77,9 @@ is saved with your game.
 Every turn it weighs up the **matchup**: how many turns your Pokémon needs to knock
 the foe out with its best attack, how many the foe needs with its own, and which of
 the two moves first. Damage comes from the game's own formula (see
-[Moves](#moves) below), with the foe's real moves.
+[Moves](#moves) below), with the foe's real moves, and counts each side's
+chance to hit: a Pokémon whose accuracy SAND-ATTACK has ruined, or that faces a
+foe that used DOUBLE TEAM, knows it's losing.
 
 ### Switching
 
@@ -119,8 +122,9 @@ and Disabled moves) and uses the best one:
   the game's own damage formula: your stats and stat changes, the foe's
   Defense, STAB, type matchups, held items, weather, badges, Reflect and Light Screen.
   - It counts on the lowest of the game's random damage rolls, and damage beyond
-    the foe's remaining HP counts for nothing. The result is then scaled by
-    accuracy, so a sure knockout beats a stronger move that might miss.
+    the foe's remaining HP counts for nothing. The result is then scaled by the
+    chance to hit (the move's accuracy, your Pokémon's accuracy and the foe's
+    evasion), so a sure knockout beats a stronger move that might miss.
   - If more than one move would knock the foe out, it prefers a priority move
     such as Quick Attack, so the foe doesn't get to attack first.
   - Multi-hit moves count every hit. Two-turn moves (Solar Beam outside of
@@ -249,6 +253,23 @@ hold them too (see [Difficulty](#difficulty)).
 The SHIFT battle style is gone: when a trainer is about to send out its next
 Pokémon, you're never asked whether to switch. BATTLE STYLE in the OPTION menu is
 always SET.
+
+
+## Natures
+
+Every Pokémon has a **nature**, as in the latest games: it raises one stat by 10%
+and lowers another by 10% (HARDY, DOCILE, SERIOUS, BASHFUL and QUIRKY change
+nothing). The nature comes from the Pokémon's DVs, so every Pokémon already has
+one, those in your old saves too, and keeps it for good. Perfect DVs make a HARDY
+Pokémon, so EXTREME's trainers and the bosses aren't held back by theirs.
+
+The stats screen has a fourth page, in orange: the Pokémon's nature, the stats it
+raises and lowers, and its DVs (HP, ATTACK, DEFENSE, SPEED and SPECIAL, 0 to 15;
+the HP DV comes from the other four).
+
+A game saved before there were natures gets its party's stats updated the first
+time you CONTINUE. Pokémon in the PC or the DAY-CARE get theirs when you take them
+out, as they always have.
 
 
 ## Simpler evolutions
@@ -464,7 +485,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: fffbda354caa1adb28909eab2270ce0929d79990`.
+The patched ROM has `sha1: 5bd2dc9c1bbe641daba0ab6208c9cbbf4ae91c07`.
 
 
 ## Building it
@@ -597,6 +618,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `HandleHeldEntryItems` (in `modern_moves.asm`) uses them up at the start of the
   turn, after `HandleBerserkGene`. `GiveTrainerHeldItem` gives trainers' Pokémon
   theirs, and `CheckWhetherToAskSwitch` no longer offers SHIFT.
+- [`engine/pokemon/natures.asm`](engine/pokemon/natures.asm) has `GetNature` (the
+  DVs as a 16-bit number, + 15, mod 25), `ApplyNature`, which `CalcMonStatC` calls
+  for every stat it works out, and `ApplyNaturesToOldSave`, run once on CONTINUE
+  (`EVENT_NATURES_IN_STATS`, a formerly unused event flag). The stats screen's new
+  page is `LoadOrangePage` in
+  [`engine/pokemon/stats_screen.asm`](engine/pokemon/stats_screen.asm)
+  (`ORANGE_PAGE`; the page number now takes three bits of `wStatsScreenFlags`).
 - The new evolutions are in
   [`data/pokemon/evos_attacks.asm`](data/pokemon/evos_attacks.asm) (`EVOLVE_ITEM`
   and `EVOLVE_LEVEL`), and the LINKING CORD is item `$19`, formerly unused.
