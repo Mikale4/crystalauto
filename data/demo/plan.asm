@@ -99,6 +99,44 @@ MACRO dfarfetchd ; ILEX FOREST's FARFETCH'D: one step on toward the CHARCOAL KIL
 	db DPLAN_FARFETCHD
 ENDM
 
+MACRO dskipifflag ; ENGINE_*, label: on to the label if the engine flag is set
+	db DPLAN_SKIP_IF
+	dw (\1) | DEMO_ENGINE_FLAG, \2
+ENDM
+
+MACRO danswers ; N, BITS: the next N YES/NO questions' answers, the first in bit 0 (1: NO)
+	db DPLAN_ANSWERS, \1, \2
+ENDM
+
+MACRO dflute ; the radio on the POKé FLUTE channel (the POKéGEAR's radio; KANTO, the EXPN CARD)
+	db DPLAN_FLUTE
+ENDM
+
+MACRO dtalkat ; x, y: talk to what's at that cell (a big sprite's other half, a sign)
+	db DPLAN_TALK_AT, \1, \2
+ENDM
+
+MACRO dskipifmap ; MAP, label: on to the label if the player is on that map
+	db DPLAN_SKIP_IF_MAP
+	map_id \1
+	dw \2
+ENDM
+
+MACRO dgym ; EVENT_BEAT_*, DSTATUS_*, MAP, n: a GYM: its trainers, then its leader
+; (object n), with the team healed and at its best; again after a loss
+.Gym\@:
+	dskipif \1, .Beat\@
+	dtutor
+	dstatus \2
+	dheal
+	dsweep \3
+	dheal
+	dtravel \3
+	dtalk \4
+	djump .Gym\@
+.Beat\@:
+ENDM
+
 MACRO dtutor ; teach the team the best moves a POKéMON CENTER's MOVE REMINDER and TUTOR have
 	db DPLAN_TUTOR
 ENDM
@@ -308,6 +346,15 @@ DemoPlan:
 	dtalk 1 ; WHITNEY
 	duntil EVENT_GOT_TM45_ATTRACT, .BeatWhitney
 .GotPlainBadge:
+; the POKéGEAR's RADIO CARD: the RADIO TOWER's quiz (YES to take it; then YES,
+; YES, NO, YES, NO)
+.RadioCard:
+	dskipifflag ENGINE_RADIO_CARD, .GotRadioCard
+	dtravel RADIO_TOWER_1F
+	danswers 6, %101000
+	dtalk 6 ; the quiz
+	djump .RadioCard
+.GotRadioCard:
 ; the SQUIRTBOTTLE: FLORIA by the odd tree on ROUTE 36, then at her sister's
 ; FLOWER SHOP, where her sister gives it
 	dskipif EVENT_GOT_SQUIRTBOTTLE, .GotSquirtbottle
@@ -720,6 +767,165 @@ DemoPlan:
 	dtalk 1 ; LANCE
 	duntil EVENT_BEAT_ELITE_FOUR, .EliteFour
 .BeatEliteFour:
+; KANTO: the S.S. TICKET from ELM, and the boat from OLIVINE; on its first trip
+; the captain's granddaughter is lost (she's in his cabin), and it docks in
+; VERMILION once she's found
+	dskipif EVENT_GOT_SS_TICKET_FROM_ELM, .GotSSTicket
+	dstatus DSTATUS_SS_AQUA
+.SSTicket:
+	dtravel ELMS_LAB
+	dtalk 1 ; ELM
+	duntil EVENT_GOT_SS_TICKET_FROM_ELM, .SSTicket
+.GotSSTicket:
+	dskipif EVENT_FAST_SHIP_FIRST_TIME, .InKanto
+.Boat:
+	dstatus DSTATUS_SS_AQUA
+	dskipif EVENT_FAST_SHIP_FOUND_GIRL, .FoundGirl
+	dskipifmap FAST_SHIP_1F, .Aboard
+	dskipifmap FAST_SHIP_B1F, .Aboard
+	dskipifmap FAST_SHIP_CABINS_NNW_NNE_NE, .Aboard
+	dskipifmap FAST_SHIP_CABINS_SW_SSW_NW, .Aboard
+	dskipifmap FAST_SHIP_CABINS_SE_SSE_CAPTAINS_CABIN, .Aboard
+	dheal
+	dtravel OLIVINE_PORT
+	dgoto 7, 15 ; (aboard: YES)
+	djump .Boat
+.Aboard:
+	dtravel FAST_SHIP_CABINS_SE_SSE_CAPTAINS_CABIN
+	dtalk 4 ; the granddaughter
+	djump .Boat
+.FoundGirl:
+	dtravel FAST_SHIP_1F
+	dtalk 1 ; the sailor at the door
+	duntil EVENT_FAST_SHIP_FIRST_TIME, .Boat
+.InKanto:
+	dstatus DSTATUS_EXPLORING
+	dsweep VERMILION_PORT
+	dsweep VERMILION_CITY
+; the KANTO GYMS (all at one level cap), the ones it can get to first
+	dskipif EVENT_BEAT_LTSURGE, .BeatSurge
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_6
+.BeatSurge:
+	dgym EVENT_BEAT_LTSURGE, DSTATUS_LTSURGE, VERMILION_GYM, 1
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_6
+	dsweep SAFFRON_CITY
+	dgym EVENT_BEAT_SABRINA, DSTATUS_SABRINA, SAFFRON_GYM, 1
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_7
+	dsweep CELADON_CITY
+	dgym EVENT_BEAT_ERIKA, DSTATUS_ERIKA, CELADON_GYM, 1
+; the POWER PLANT's stolen MACHINE PART: its manager, the ROCKET at CERULEAN's
+; GYM, MISTY's date on ROUTE 25 (she's back at her GYM after), the part (hidden
+; in her GYM's pool: from the side), back to the manager
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_8
+	dsweep LAVENDER_TOWN
+	dsweep ROUTE_10_SOUTH
+	dskipif EVENT_RETURNED_MACHINE_PART, .ReturnedPart
+	dstatus DSTATUS_POWER_PLANT
+.Manager:
+	dskipif EVENT_MET_MANAGER_AT_POWER_PLANT, .MetManager
+	dtravel POWER_PLANT
+	dtalk 6 ; the manager
+	djump .Manager
+.MetManager:
+	dskipif EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM, .MetGrunt
+	dtravel CERULEAN_GYM
+	djump .MetManager
+.MetGrunt:
+	dskipif EVENT_ROUTE_25_MISTY_BOYFRIEND, .MistyBack
+	dtravel ROUTE_25
+	dgoto 42, 6
+	djump .MetGrunt
+.MistyBack:
+	dskipif EVENT_FOUND_MACHINE_PART_IN_CERULEAN_GYM, .FoundPart
+	dtravel CERULEAN_GYM
+	dgoto 3, 7
+	dface DOWN
+	dpress PAD_A
+	djump .MistyBack
+.FoundPart:
+	dtravel POWER_PLANT
+	dtalk 6 ; the manager
+	duntil EVENT_RETURNED_MACHINE_PART, .FoundPart
+.ReturnedPart:
+	dgym EVENT_BEAT_MISTY, DSTATUS_MISTY, CERULEAN_GYM, 2
+; the EXPN CARD (the POKé FLUTE on the radio), at LAVENDER's RADIO TOWER
+.ExpnCard:
+	dskipifflag ENGINE_EXPN_CARD, .GotExpnCard
+	dtravel LAV_RADIO_TOWER_1F
+	dtalk 4 ; the gentleman
+	djump .ExpnCard
+.GotExpnCard:
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_12
+	dsweep ROUTE_13
+	dsweep ROUTE_14
+	dsweep ROUTE_15
+	dsweep FUCHSIA_CITY
+	dgym EVENT_BEAT_JANINE, DSTATUS_JANINE, FUCHSIA_GYM, 1
+; SNORLAX, asleep by DIGLETT'S CAVE: the POKé FLUTE on the radio wakes it
+	dskipif EVENT_FOUGHT_SNORLAX, .FoughtSnorlax
+	dstatus DSTATUS_SNORLAX
+.Snorlax:
+	dheal
+	dtravel VERMILION_CITY
+	dgoto 34, 10
+	dflute
+	dtalkat 34, 9
+	duntil EVENT_FOUGHT_SNORLAX, .Snorlax
+.FoughtSnorlax:
+	dstatus DSTATUS_EXPLORING
+	dsweep DIGLETTS_CAVE
+	dsweep ROUTE_2
+	dsweep PEWTER_CITY
+	dgym EVENT_BEAT_BROCK, DSTATUS_BROCK, PEWTER_GYM, 1
+; BLUE, on CINNABAR (he's off to his GYM after), and BLAINE (his GYM's in the
+; SEAFOAM ISLANDS now)
+	dstatus DSTATUS_EXPLORING
+	dsweep VIRIDIAN_CITY
+	dsweep ROUTE_1
+	dsweep PALLET_TOWN
+	dsweep ROUTE_21
+.BlueOnCinnabar:
+	dskipif EVENT_BLUE_IN_CINNABAR, .BlueLeft
+	dtravel CINNABAR_ISLAND
+	dtalk 1 ; BLUE
+	djump .BlueOnCinnabar
+.BlueLeft:
+	dsweep ROUTE_20
+	dgym EVENT_BEAT_BLAINE, DSTATUS_BLAINE, SEAFOAM_GYM, 1
+	dskipif EVENT_BEAT_BLUE, .BeatBlue
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_1
+.BeatBlue:
+	dgym EVENT_BEAT_BLUE, DSTATUS_BLUE, VIRIDIAN_GYM, 1
+; MT. SILVER: PROF.OAK lets the player go once it has all 16 badges; RED waits
+; at the top
+	dstatus DSTATUS_RED
+.MtSilver:
+	dskipif EVENT_OPENED_MT_SILVER, .Open
+	dtravel OAKS_LAB
+	dtalk 1 ; OAK
+	djump .MtSilver
+.Open:
+	dskipif EVENT_BEAT_RED, .BeatRed
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_28
+.Red:
+	dtutor
+	dstatus DSTATUS_RED
+	dheal
+	dsweep SILVER_CAVE_ROOM_1
+	dsweep SILVER_CAVE_ROOM_2
+	dheal
+	dtravel SILVER_CAVE_ROOM_3
+	dtalk 1 ; RED
+	dskipif EVENT_BEAT_RED, .BeatRed
+	djump .Red
+.BeatRed:
 	dstatus DSTATUS_DONE
 	dend
 

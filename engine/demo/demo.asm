@@ -55,6 +55,7 @@ DemoJoypad::
 	dw DemoMenu
 	dw DemoNaming
 	dw DemoPartyMenu
+	dw DemoPokegear
 	assert_table_length NUM_DEMOCTXS
 
 DemoRequests:
@@ -227,6 +228,18 @@ DemoStatusTexts:
 	dw .DragonsDen
 	dw .VictoryRoad
 	dw .EliteFour
+	dw .SSAqua
+	dw .LtSurge
+	dw .Sabrina
+	dw .Erika
+	dw .PowerPlant
+	dw .Misty
+	dw .Janine
+	dw .Snorlax
+	dw .Brock
+	dw .Blaine
+	dw .Blue
+	dw .Red
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -265,6 +278,18 @@ DemoStatusTexts:
 .DragonsDen: db "The DRAGON'S DEN@"
 .VictoryRoad: db "VICTORY ROAD@"
 .EliteFour: db "The ELITE FOUR@"
+.SSAqua:    db "The S.S.AQUA@"
+.LtSurge:   db "LT.SURGE's GYM@"
+.Sabrina:   db "SABRINA's GYM@"
+.Erika:     db "ERIKA's GYM@"
+.PowerPlant: db "The POWER PLANT@"
+.Misty:     db "MISTY's GYM@"
+.Janine:    db "JANINE's GYM@"
+.Snorlax:   db "SNORLAX@"
+.Brock:     db "BROCK's GYM@"
+.Blaine:    db "BLAINE's GYM@"
+.Blue:      db "BLUE's GYM@"
+.Red:       db "MT.SILVER@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -361,6 +386,7 @@ DemoMenu:
 	ld a, PAD_A
 	call DemoTap
 	ret nc
+	call DemoAnswered
 	xor a ; (an answer the game asked for counts once)
 	ld [wDemoAnswer], a
 	ret
@@ -451,17 +477,23 @@ DemoBuyMenu:
 	jp DemoTap
 
 DemoStartMenu:
-; The START menu: the PACK, for an item to give (see DemoPackJob); else out.
+; The START menu: the POKéGEAR, for the radio (dflute); the PACK, for an item to
+; give (see DemoPackJob); else out.
+	call DemoFluteJob
+	ld d, STARTMENUITEM_POKEGEAR
+	jr c, .item
 	call DemoPackJob
 	ld a, PAD_B
 	jp nc, DemoTap
+	ld d, STARTMENUITEM_PACK
+.item
 	ld hl, wMenuItemsList
 	ld a, [hli]
 	ld c, a
 	ld b, 1
 .find
 	ld a, [hli]
-	cp STARTMENUITEM_PACK
+	cp d
 	jr z, .found
 	inc b
 	dec c
@@ -473,6 +505,46 @@ DemoStartMenu:
 	ld a, [wMenuCursorY]
 	ld c, a
 	jp DemoMoveCursor
+
+DemoPokegear:
+; The POKéGEAR: for the radio (dflute), over to its card and the POKé FLUTE
+; channel, then out (it plays on); else out.
+	call DemoFluteJob
+	jr nc, .out
+	ld a, [wPokegearFlags]
+	bit POKEGEAR_RADIO_CARD_F, a
+	jr z, .out
+	ld a, [wPokegearCard]
+	cp POKEGEARCARD_RADIO
+	ld a, PAD_RIGHT
+	jp nz, DemoTap
+	ld a, [wRadioTuningKnob]
+	cp DEMO_POKE_FLUTE_KNOB
+	jr z, .out
+	ld a, PAD_UP
+	jp c, DemoTap
+	ld a, PAD_DOWN
+	jp DemoTap
+
+.out
+	ld a, PAD_B
+	jp DemoTap
+
+DemoFluteJob:
+; Return carry if the plan wants the POKé FLUTE channel on the radio (dflute),
+; and it isn't on.
+	call DemoPlanCommand
+	cp DPLAN_FLUTE
+	jr nz, .no
+	ld a, [wMapMusic]
+	cp MUSIC_POKE_FLUTE_CHANNEL
+	jr z, .no
+	scf
+	ret
+
+.no
+	and a
+	ret
 
 DemoPackMenu:
 ; A PACK pocket: over to the pocket with the item to give (see DemoPackJob), and
@@ -956,11 +1028,52 @@ DemoMenuIs:
 	jr .loop
 
 DemoYesOrNo:
-; YES (1) or NO (2): what wDemoAnswer says (it says NO to a nickname), else YES.
+; YES (1) or NO (2): what wDemoAnswer says (it says NO to a nickname), else the
+; next of the plan's answers (danswers), else YES.
 	ld a, [wDemoAnswer]
 	and a
 	ret nz
+	ldh a, [rWBK]
+	push af
+	ld a, BANK(wDemoAnswerCount)
+	ldh [rWBK], a
+	ld a, [wDemoAnswerCount]
+	and a
+	ld a, 1 ; YES
+	jr z, .got
+	ld a, [wDemoAnswerBits]
+	and 1
 	inc a
+.got
+	ld b, a
+	pop af
+	ldh [rWBK], a
+	ld a, b
+	ret
+
+DemoAnswered:
+; A YES/NO question was answered: on to the plan's next answer (danswers).
+	ld hl, wMenuDataPointer
+	ld a, [hli]
+	cp LOW(YesNoMenuHeader.MenuData)
+	ret nz
+	ld a, [hl]
+	cp HIGH(YesNoMenuHeader.MenuData)
+	ret nz
+	ldh a, [rWBK]
+	push af
+	ld a, BANK(wDemoAnswerCount)
+	ldh [rWBK], a
+	ld a, [wDemoAnswerCount]
+	and a
+	jr z, .done
+	dec a
+	ld [wDemoAnswerCount], a
+	ld hl, wDemoAnswerBits
+	srl [hl]
+.done
+	pop af
+	ldh [rWBK], a
 	ret
 
 DemoOverworld:
@@ -1023,6 +1136,10 @@ DemoRunCommand:
 	dw DemoPlan_TalkFrom
 	dw DemoPlan_Farfetchd
 	dw DemoPlan_Tutor
+	dw DemoPlan_Answers
+	dw DemoPlan_Flute
+	dw DemoPlan_TalkAt
+	dw DemoPlan_SkipIfMap
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1111,6 +1228,23 @@ DemoPlan_Talk:
 	call DemoTalkTo
 	pop hl
 	ret nc
+	inc hl
+	inc hl
+	jp DemoNextCommand
+
+DemoPlan_TalkAt:
+; dtalkat x, y: walk up to that cell, face it and press A (then whatever that
+; starts plays out).
+	pop hl
+	push hl
+	inc hl
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	call DemoTalkAt
+	pop hl
+	ret nc
+	inc hl
 	inc hl
 	inc hl
 	jp DemoNextCommand
@@ -1228,6 +1362,27 @@ DemoPlan_SkipIfNot:
 	add hl, de
 	jp DemoNextCommand
 
+DemoPlan_SkipIfMap:
+; dskipifmap MAP, label: to the label if the player is on that map.
+	pop hl
+	push hl
+	inc hl
+	ld a, [wMapGroup]
+	cp [hl]
+	inc hl
+	jr nz, .no
+	ld a, [wMapNumber]
+	cp [hl]
+	jr nz, .no
+	pop hl
+	jp DemoPlan_SkipIf_Jump
+
+.no
+	pop hl
+	ld de, 5
+	add hl, de
+	jp DemoNextCommand
+
 DemoPlan_Jump:
 ; djump label
 	pop hl
@@ -1277,6 +1432,51 @@ DemoPlan_Farfetchd:
 .Sides:
 ; the way to face it at positions 1 to 10 (where walls allow)
 	db UP, UP, DOWN, RIGHT, DOWN, LEFT, UP, DOWN, LEFT, UP
+
+DemoPlan_Answers:
+; danswers N, BITS: the next N YES/NO questions' answers (DemoYesOrNo).
+	pop hl
+	inc hl
+	ld a, BANK(wDemoAnswerCount)
+	ldh [rWBK], a
+	ld a, [hli]
+	ld [wDemoAnswerCount], a
+	ld a, [hli]
+	ld [wDemoAnswerBits], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	jp DemoNextCommand
+
+DemoPlan_Flute:
+; dflute: the radio on the POKé FLUTE channel: START, then the menus do it (see
+; DemoStartMenu, DemoPokegear). (Only in KANTO, with the EXPN CARD: it gives
+; up after a few tries.)
+	pop hl
+	ld a, [wMapMusic]
+	cp MUSIC_POKE_FLUTE_CHANNEL
+	jr z, .done
+	ld a, [wDemoWait] ; (how many times it's tried)
+	cp 4
+	jr nc, .done
+	ldh a, [hJoyDown]
+	and PAD_START
+	jr nz, .let_go
+	ld a, PAD_START
+	ld [wDemoPad], a
+	ld a, [wDemoWait]
+	inc a
+	ld [wDemoWait], a
+	and a
+	ret
+
+.let_go
+	xor a
+	ld [wDemoPad], a
+	ret ; (nc)
+
+.done
+	inc hl
+	jp DemoNextCommand
 
 DemoPlan_Tutor:
 ; dtutor: teach the team what the MOVE REMINDER and the MOVE TUTOR (in every
@@ -2482,9 +2682,20 @@ DemoTeamAtCap:
 	ret
 
 DemoCheckEvent:
-; de: an event flag. Return nz if it's set.
+; de: an event flag (or an engine flag, with DEMO_ENGINE_FLAG). Return nz if
+; it's set.
+	bit 7, d
+	jr nz, .engine
 	ld b, CHECK_FLAG
 	call EventFlagAction
+	ld a, c
+	and a
+	ret
+
+.engine
+	res 7, d
+	ld b, CHECK_FLAG
+	farcall EngineFlagAction
 	ld a, c
 	and a
 	ret

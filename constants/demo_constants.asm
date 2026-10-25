@@ -15,6 +15,7 @@ DEF DEMO_ON_TITLE EQU 0 ; (not on the title menu until it's finished)
 	const DEMOCTX_MENU      ; 2: a menu (Menu_WasButtonPressed)
 	const DEMOCTX_NAMING    ; 3: the naming screen
 	const DEMOCTX_PARTY     ; 4: the party menu (PartyMenuSelect)
+	const DEMOCTX_POKEGEAR  ; 5: the POKéGEAR
 DEF NUM_DEMOCTXS EQU const_value
 ; a context with this bit stays until what set it is done (not just one read)
 DEF DEMOCTX_HELD_F EQU 7
@@ -59,6 +60,10 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_TALK_FROM ; 15
 	const DPLAN_FARFETCHD ; 16
 	const DPLAN_TUTOR     ; 17
+	const DPLAN_ANSWERS   ; 18
+	const DPLAN_FLUTE     ; 19
+	const DPLAN_TALK_AT   ; 1a
+	const DPLAN_SKIP_IF_MAP ; 1b
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -116,6 +121,8 @@ DEF DEMOFIELD_WHIRLPOOL_F  EQU 2 ; whirlpools
 DEF DEMOFIELD_WATERFALL_F  EQU 3 ; waterfalls (up them)
 DEF DEMOFIELD_ROCK_SMASH_F EQU 4 ; rocks
 DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
+DEF DEMO_ENGINE_FLAG EQU $8000 ; (in a plan's flag: an engine flag, see DemoCheckEvent)
+DEF DEMO_POKE_FLUTE_KNOB EQU 78 ; the radio's tuning for the POKé FLUTE channel (see RadioChannels)
 DEF DEMO_MAX_TUTORING EQU 24 ; visits to the MOVE REMINDER and TUTOR for a dtutor (see DemoPlan_Tutor)
 
 ; wDemoStatus: what the Demo says it's doing (DemoStatusTexts)
@@ -156,4 +163,16 @@ DEF DEMO_MAX_TUTORING EQU 24 ; visits to the MOVE REMINDER and TUTOR for a dtuto
 	const DSTATUS_DRAGONS_DEN ; 33
 	const DSTATUS_VICTORY_ROAD ; 34
 	const DSTATUS_ELITE_FOUR  ; 35
+	const DSTATUS_SS_AQUA     ; 36
+	const DSTATUS_LTSURGE     ; 37
+	const DSTATUS_SABRINA     ; 38
+	const DSTATUS_ERIKA       ; 39
+	const DSTATUS_POWER_PLANT ; 40
+	const DSTATUS_MISTY       ; 41
+	const DSTATUS_JANINE      ; 42
+	const DSTATUS_SNORLAX     ; 43
+	const DSTATUS_BROCK       ; 44
+	const DSTATUS_BLAINE      ; 45
+	const DSTATUS_BLUE        ; 46
+	const DSTATUS_RED         ; 47
 DEF NUM_DSTATUSES EQU const_value

@@ -3727,6 +3727,8 @@ wDemoTutorMove:: db ; the move,
 wDemoTutorWho:: db ; and who teaches it (0: the MOVE REMINDER, 1: the MOVE TUTOR)
 wDemoTutorCount:: db ; how many times it's been to them for this command
 wDemoTutorDone:: db ; a bit for each POKéMON with nothing more to learn (for this command)
+wDemoAnswerCount:: db ; YES/NO answers the plan has given (danswers) still to come,
+wDemoAnswerBits:: db ; the first in bit 0 (1: NO)
 
 
 SECTION "Battle Tower RAM", WRAMX

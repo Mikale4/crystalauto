@@ -41,6 +41,8 @@ PokeGear:
 	call DelayFrame
 .loop
 	call UpdateTime
+	ld a, DEMOCTX_POKEGEAR ; (for the Demo: the POKéGEAR)
+	ld [wDemoCtx], a
 	call JoyTextDelay
 	ld a, [wJumptableIndex]
 	bit JUMPTABLE_EXIT_F, a
