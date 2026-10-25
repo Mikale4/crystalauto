@@ -947,7 +947,7 @@ wDemoFlowKey:: ds 5 ; the map group, number, goal, x and y the flow field is for
 wDemoWait:: db
 wDemoStatus:: db ; DSTATUS_*
 wDemoAnswer:: db ; the next YES/NO (0: whatever suits)
-wDemoTravel:: dw ; the map it's travelling to
+wDemoSweepTarget:: dw ; the target a sweep is seeing to ($ffff: none yet)
 wDemoGridW:: db ; the map's width and height in steps (while working out paths)
 wDemoGridH:: db
 
@@ -3678,19 +3678,40 @@ SECTION "Demo RAM", WRAMX
 ; the Demo's working space (see engine/demo/demo.asm); the flow field is in
 ; w4_d000 and the map's collisions in w3_d000 (banks only mobile features and
 ; the BATTLE TOWER use, which the Demo never does)
+UNION
 wDemoQueue:: ds 4 * DEMO_QUEUE_SIZE ; cells still to look at (a ring of x, y, index)
 wDemoQueueEnd::
+NEXTU
+; the search from map to map (see DemoWorldSearch), which never runs while a
+; map's cells are being looked at
+wDemoWorldPrev:: ds 2 * NUM_DEMO_WORLD_MAPS ; how it got to each map (map keys)
+wDemoWorldQueue:: ds 2 * NUM_DEMO_WORLD_MAPS ; the maps in order of how far they are
+ENDU
 wDemoQueueHead:: dw
 wDemoQueueTail:: dw
 wDemoCellX:: db ; the cell being looked at
 wDemoCellY:: db
 wDemoCellIndex:: dw
 wDemoCellDir:: db
-wDemoBlocked:: ds 2 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to)
+wDemoWorldHead:: dw
+wDemoWorldTail:: dw
+wDemoWorldStart:: dw
+wDemoWorldCur:: dw
+wDemoBlocked:: ds 4 * DEMO_MAX_BLOCKED ; links between maps it found no way through (from, to keys)
 wDemoBlockedNext:: db
+wDemoBlockedCount:: db
+wDemoTravelFrom:: dw ; the link travel is taking (map keys)
+wDemoTravelTo:: dw
+wDemoRouteFrom:: dw ; the way it worked out last: from, to, the map next (see DemoNextMapTo)
+wDemoRouteTo:: dw
+wDemoRouteNext:: dw
+wDemoCenterFrom:: dw ; the nearest POKéMON CENTER it worked out last (see DemoNearestCenter)
+wDemoCenterKey:: dw
+wDemoCenterNurse:: db
 wDemoTimer:: dw ; the play time (minutes) the command started at (see DemoTimeUp)
-wDemoWorldPrev:: ds DEMO_MAX_WORLD_MAPS ; the map graph search: how it got to each map
-wDemoWorldQueue:: ds DEMO_MAX_WORLD_MAPS
+wDemoSweepMap:: dw ; the map a sweep is for (see DemoPlan_Sweep)
+wDemoHealing:: db ; on its way to be healed: the status to go back to, + 1 (0: it isn't)
+wDemoSkipped:: ds (NUM_DEMO_TARGETS + 7) / 8 ; targets it's leaving for now (see DemoSweep)
 
 
 SECTION "Battle Tower RAM", WRAMX

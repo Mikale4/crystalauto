@@ -322,6 +322,7 @@ ROMX $7b
 	"Battle Tower Text"
 ROMX $7c
 	"Battle Tower Trainer Data"
+	"Demo World"
 ROMX $7d
 	"Mobile News Data"
 ROMX $7e

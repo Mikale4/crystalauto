@@ -1,6 +1,6 @@
 ; The Demo's walking: a flow field over the map to its goal, worked out from
 ; the goal back (so every cell knows its way, even after a detour or a battle),
-; and the way from map to map (DemoWorldMaps).
+; and the way from map to map (engine/demo/demo_world.asm).
 ;
 ; While it works, w3_d000 holds each cell's collision (COLL_WALL where it can't
 ; stand: walls, water, pits, people) and w4_d000 each cell's way to the goal
@@ -47,6 +47,8 @@ DemoWalk:
 	jr z, .grass
 	cp DGOAL_FACE
 	jr z, .face
+	cp DGOAL_SWEEP
+	jr z, .there
 	cp DGOAL_EDGE
 	jr z, .edge
 ; a warp: go through it
@@ -594,6 +596,8 @@ DemoSeedGoals:
 	jp z, .edge
 	cp DGOAL_FACE
 	jp z, .face
+	cp DGOAL_SWEEP
+	jp z, .sweep
 	cp DGOAL_GRASS
 	ret nz
 ; every grass cell (where wild POKéMON are)
@@ -776,6 +780,40 @@ DemoSeedGoals:
 	cp COLL_WALL
 	ret z
 	jp DemoSeedGoal
+
+.sweep
+; next to each of the map's targets still to do (see DemoTargetOpen)
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	call DemoCurMapTargets
+	jr c, .swept
+.sweep_loop
+	push bc
+	push de
+	call DemoTargetOpen
+	jr nc, .sweep_next
+	ld a, b
+	ld [wDemoGoalX], a
+	ld a, c
+	ld [wDemoGoalY], a
+	ld a, BANK(wDemoQueue)
+	ldh [rWBK], a
+	call .face
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+.sweep_next
+	pop de
+	pop bc
+	inc de
+	dec c
+	jr nz, .sweep_loop
+.swept
+	xor a
+	ld [wDemoGoalX], a
+	ld [wDemoGoalY], a
+	ld a, BANK(wDemoQueue)
+	ldh [rWBK], a
+	ret
 
 .face
 ; next to it (or across a counter from it)
@@ -1113,26 +1151,29 @@ DemoTravel:
 	ret
 
 .go
-	call DemoWorldIndex
-	cp -1
-	jr z, .lost
-	ld d, a
-	push de
-	ld a, [wMapGroup]
-	ld b, a
-	ld a, [wMapNumber]
-	ld c, a
-	call DemoWorldIndex
+	farcall DemoMapKey
+	jr c, .lost
+	ld d, h
+	ld e, l
+	farcall DemoNextMapTo
+	jr c, .lost
+; (the link it takes, should there be no way through)
+	push hl
+	farcall DemoCurMapKey
+	ld a, BANK(wDemoTravelFrom)
+	ldh [rWBK], a
+	ld a, l
+	ld [wDemoTravelFrom], a
+	ld a, h
+	ld [wDemoTravelFrom + 1], a
 	pop de
-	cp -1
-	jr z, .lost
-	ld e, a
-	ld [wDemoTravel], a ; (the link it takes, should there be no way through)
-	call DemoNextMap
-	cp -1
-	jr z, .lost
-	ld [wDemoTravel + 1], a
-	call DemoWorldMapID
+	ld a, e
+	ld [wDemoTravelTo], a
+	ld a, d
+	ld [wDemoTravelTo + 1], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	farcall DemoKeyMap
 ; a map it connects to: off that edge; else through its warps
 	call DemoConnectionDir
 	jr c, .edge
@@ -1164,19 +1205,12 @@ DemoTravel:
 	cp DEMO_STUCK_FRAMES
 	ret c
 	ld [hl], 0
-	ld a, BANK(wDemoBlocked)
-	ldh [rWBK], a
-	ld hl, wDemoBlocked
-	ld bc, 2 * DEMO_MAX_BLOCKED
-	ld a, -1
-	call ByteFill
-	ld a, BANK(wXCoord)
-	ldh [rWBK], a
+	call DemoForgetBlocked
 	and a
 	ret
 
 DemoBlockLink:
-; There's no way along the link travel is taking (wDemoTravel): remember it.
+; There's no way along the link travel is taking (wDemoTravelFrom, To): remember it.
 	ld a, [wDemoGoal]
 	cp DGOAL_WARP
 	jr z, .travel
@@ -1185,6 +1219,12 @@ DemoBlockLink:
 .travel
 	ld a, BANK(wDemoBlocked)
 	ldh [rWBK], a
+	ld a, [wDemoBlockedCount]
+	cp DEMO_MAX_BLOCKED
+	jr nc, .full
+	inc a
+	ld [wDemoBlockedCount], a
+.full
 	ld a, [wDemoBlockedNext]
 	cp DEMO_MAX_BLOCKED
 	jr c, .ok
@@ -1197,39 +1237,19 @@ DemoBlockLink:
 	ld hl, wDemoBlocked
 	add hl, de
 	add hl, de
-	ld a, [wDemoTravel]
+	add hl, de
+	add hl, de
+	ld a, [wDemoTravelFrom]
 	ld [hli], a
-	ld a, [wDemoTravel + 1]
+	ld a, [wDemoTravelFrom + 1]
+	ld [hli], a
+	ld a, [wDemoTravelTo]
+	ld [hli], a
+	ld a, [wDemoTravelTo + 1]
 	ld [hl], a
+	farcall DemoForgetRoutes
 	xor a
 	ld [wDemoFlowKey], a ; (and so the way again)
-	ret
-
-DemoLinkBlocked:
-; Return carry if the link from map [wDemoCellDir] to map e is blocked (WRAM
-; bank 2).
-	push hl
-	ld hl, wDemoBlocked
-	ld b, DEMO_MAX_BLOCKED
-.loop
-	ld a, [wDemoCellDir]
-	cp [hl]
-	inc hl
-	jr nz, .next
-	ld a, e
-	cp [hl]
-	jr z, .blocked
-.next
-	inc hl
-	dec b
-	jr nz, .loop
-	pop hl
-	and a
-	ret
-
-.blocked
-	pop hl
-	scf
 	ret
 
 DemoConnectionDir:
@@ -1268,202 +1288,3 @@ DemoConnectionDir:
 	dw wEastConnectedMapGroup
 	db RIGHT
 	db -1
-
-DemoWorldIndex:
-; Return the DemoWorldMaps index of map b, c in a (-1 if it isn't there).
-	ld hl, DemoWorldMaps
-	ld e, 0
-.loop
-	ld a, e
-	cp NUM_DEMO_WORLD_MAPS
-	jr z, .none
-	push hl
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld a, [hli]
-	cp b
-	jr nz, .next
-	ld a, [hl]
-	cp c
-	jr nz, .next
-	pop hl
-	ld a, e
-	ret
-
-.next
-	pop hl
-	inc hl
-	inc hl
-	inc e
-	jr .loop
-
-.none
-	ld a, -1
-	ret
-
-DemoWorldMapID:
-; a: a DemoWorldMaps index. Return its map's group and number in b, c.
-	ld e, a
-	ld d, 0
-	ld hl, DemoWorldMaps
-	add hl, de
-	add hl, de
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	ret
-
-DemoWorldLinks:
-; a: a DemoWorldMaps index. Return hl: the maps it leads to (-1 ends).
-	ld e, a
-	ld d, 0
-	ld hl, DemoWorldMaps
-	add hl, de
-	add hl, de
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	inc hl
-	inc hl
-	ret
-
-DemoWorldSearch:
-; Search the map graph from map e (a DemoWorldMaps index): wDemoWorldPrev, how
-; it got to each map (-1: it can't); wDemoWorldQueue, the maps in order of how
-; far they are (wDemoQueueTail of them). WRAM bank 2 after.
-	ld a, BANK(wDemoWorldPrev)
-	ldh [rWBK], a
-	ld a, e
-	ld [wDemoCellY], a ; (the start)
-	ld hl, wDemoWorldPrev
-	ld bc, NUM_DEMO_WORLD_MAPS
-	ld a, -1
-	call ByteFill
-	ld a, [wDemoCellY]
-	ld e, a
-	ld d, 0
-	ld hl, wDemoWorldPrev
-	add hl, de
-	ld [hl], a
-	ld [wDemoWorldQueue], a
-	xor a
-	ld [wDemoQueueHead], a
-	inc a
-	ld [wDemoQueueTail], a
-.search
-	ld a, [wDemoQueueHead]
-	ld b, a
-	ld a, [wDemoQueueTail]
-	cp b
-	ret z
-	ld e, b
-	ld d, 0
-	ld hl, wDemoWorldQueue
-	add hl, de
-	ld a, [hl]
-	ld [wDemoCellDir], a ; (the map it's looking from)
-	inc b
-	ld a, b
-	ld [wDemoQueueHead], a
-	ld a, [wDemoCellDir]
-	call DemoWorldLinks
-.links
-	ld a, [hli]
-	cp -1
-	jr z, .search
-	push hl
-	ld e, a
-	call DemoLinkBlocked
-	jr c, .next_link
-	ld d, 0
-	ld hl, wDemoWorldPrev
-	add hl, de
-	ld a, [hl]
-	cp -1
-	jr nz, .next_link
-	ld a, [wDemoCellDir]
-	ld [hl], a
-	ld a, [wDemoQueueTail]
-	ld c, a
-	inc a
-	ld [wDemoQueueTail], a
-	ld b, 0
-	ld hl, wDemoWorldQueue
-	add hl, bc
-	ld [hl], e
-.next_link
-	pop hl
-	jr .links
-
-DemoNextMap:
-; From map e to map d (DemoWorldMaps indexes): return the map to go to next on
-; the shortest way in a (-1 if there's none).
-	push de
-	call DemoWorldSearch
-	pop de
-	ld a, d
-.back
-	ld c, a
-	ld b, 0
-	ld hl, wDemoWorldPrev
-	add hl, bc
-	ld a, [hl]
-	cp -1
-	jr z, .done
-	ld b, a
-	ld a, [wDemoCellY]
-	cp b
-	ld a, c
-	jr z, .done
-	ld a, b
-	jr .back
-
-.done
-	ld b, a
-	ld a, BANK(wXCoord)
-	ldh [rWBK], a
-	ld a, b
-	ret
-
-DemoNearestCenter:
-; Return the nearest POKéMON CENTER (a DemoWorldMaps index) in a, or -1.
-	ld a, [wMapGroup]
-	ld b, a
-	ld a, [wMapNumber]
-	ld c, a
-	call DemoWorldIndex
-	cp -1
-	ret z
-	ld e, a
-	call DemoWorldSearch
-	ld hl, wDemoWorldQueue
-	ld a, [wDemoQueueTail]
-	ld c, a
-.loop
-	ld a, [hli]
-	ld b, a
-	push hl
-	ld hl, DemoWorldCenters
-.center
-	ld a, [hli]
-	cp -1
-	jr z, .not_center
-	cp b
-	jr nz, .center
-	pop hl
-	jr .done
-
-.not_center
-	pop hl
-	dec c
-	jr nz, .loop
-	ld b, -1
-.done
-	ld a, BANK(wXCoord)
-	ldh [rWBK], a
-	ld a, b
-	ret

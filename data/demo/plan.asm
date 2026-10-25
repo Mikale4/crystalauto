@@ -74,6 +74,15 @@ MACRO dteam ; N, MAP: battle in the map's grass until the team has N POKéMON
 	map_id \2
 ENDM
 
+MACRO dsweep ; MAP: go there and see to everything on it (items, trainers)
+	db DPLAN_SWEEP
+	map_id \1
+ENDM
+
+MACRO dretry ; whatever it left for now (out of reach, or too strong), try again
+	db DPLAN_RETRY
+ENDM
+
 MACRO dgive ; ITEM: give it to each POKéMON in the team that doesn't hold one
 	db DPLAN_GIVE, \1
 ENDM
@@ -116,6 +125,11 @@ DemoPlan:
 	dgoto 53, 8
 	duntil EVENT_LEARNED_TO_CATCH_POKEMON, .Lesson
 .Learned:
+; what there is on the way (items, trainers)
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_29
+	dsweep ROUTE_30
+	dsweep ROUTE_31
 ; VIOLET CITY's GYM, with a GEODUDE (it shrugs off the birds' attacks), once the
 ; team is at the level cap
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner

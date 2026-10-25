@@ -53,6 +53,8 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_BUY       ; 0f
 	const DPLAN_GIVE      ; 10
 	const DPLAN_TEAM      ; 11
+	const DPLAN_SWEEP     ; 12
+	const DPLAN_RETRY     ; 13
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -63,6 +65,7 @@ DEF NUM_DPLANS EQU const_value
 	const DGOAL_EDGE   ; 3: walk off the map's edge (direction in wDemoGoalArg)
 	const DGOAL_FACE   ; 4: stand next to (x, y) facing it
 	const DGOAL_GRASS  ; 5: walk about in the map's grass
+	const DGOAL_SWEEP  ; 6: next to the nearest of the map's targets still to do (DemoTargetOpen)
 
 ; world exits (see data/demo/world.asm)
 	const_def
@@ -77,8 +80,15 @@ DEF DFLOW_UNREACHED EQU $ff
 DEF DFLOW_GOAL      EQU $fe
 
 DEF DEMO_QUEUE_SIZE EQU $200 ; cells
-DEF DEMO_MAX_WORLD_MAPS EQU 128
-DEF DEMO_MAX_BLOCKED EQU 8
+DEF NUM_DEMO_WORLD_MAPS EQU 388 ; (every map: see data/demo/world.asm)
+DEF NUM_DEMO_TARGETS EQU 592
+
+; DemoTargets kinds
+	const_def
+	const DTARGET_ITEMBALL ; 0: an item ball (its object)
+	const DTARGET_HIDDEN   ; 1: a hidden item (its x, y)
+	const DTARGET_TRAINER  ; 2: a trainer (its object)
+DEF DEMO_MAX_BLOCKED EQU 32
 DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 
 ; wDemoStatus: what the Demo says it's doing (DemoStatusTexts)
@@ -96,4 +106,5 @@ DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 	const DSTATUS_SHOPPING    ; 10
 	const DSTATUS_DONE        ; 11
 	const DSTATUS_GIVING      ; 12
+	const DSTATUS_EXPLORING   ; 13
 DEF NUM_DSTATUSES EQU const_value

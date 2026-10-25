@@ -204,6 +204,7 @@ DemoStatusTexts:
 	dw .Shopping
 	dw .Done
 	dw .Giving
+	dw .Exploring
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -219,6 +220,7 @@ DemoStatusTexts:
 .Shopping:  db "Shopping@"
 .Done:      db "That's all for now@"
 .Giving:    db "Giving out items@"
+.Exploring: db "Looking around@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -914,6 +916,8 @@ DemoRunCommand:
 	dw DemoPlan_Buy
 	dw DemoPlan_Give
 	dw DemoPlan_Team
+	dw DemoPlan_Sweep
+	dw DemoPlan_Retry
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1012,6 +1016,10 @@ DemoTalkTo:
 ; presses again), or if it isn't here.
 	call DemoGetObjectCell
 	ret c
+	; fallthrough
+
+DemoTalkAt:
+; (d, e): a cell. Walk up to it, face it and press A (as DemoTalkTo).
 	ld a, d
 	ld [wDemoGoalX], a
 	ld a, e
@@ -1274,11 +1282,375 @@ DemoPlan_Team:
 	add hl, de
 	jp DemoNextCommand
 
-DemoBattleInGrass:
-; hl: a map. Have the team healed if it's worn down; else walk about in the
-; map's grass.
+DemoPlan_Sweep:
+; dsweep MAP: go to that map and see to everything on it there is to do (its
+; item balls, hidden items and trainers: DemoTargets) that it can get to now.
+	pop hl
 	push hl
-	call DemoTeamLow
+	inc hl
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	ld a, [wMapGroup]
+	cp b
+	jr nz, .away
+	ld a, [wMapNumber]
+	cp c
+	jr nz, .away
+	call DemoHealingNow
+	jr c, .heal
+	call DemoSweepStep
+	jr nc, .walking
+	pop hl
+	ld de, 3
+	add hl, de
+	jp DemoNextCommand
+
+.away
+	push bc
+	call DemoSweepLeft
+	call DemoHealingNow
+	pop bc
+	jr c, .heal
+	call DemoTravel
+	jr .walking
+
+.heal
+	call DemoHealUp
+.walking
+	pop hl
+	and a
+	ret
+
+DemoPlan_Retry:
+; dretry: try again what it left for now (DemoSkipTarget) and the links it found
+; no way through.
+	call DemoForgetBlocked
+	ld a, BANK(wDemoSkipped)
+	ldh [rWBK], a
+	ld hl, wDemoSkipped
+	ld bc, (NUM_DEMO_TARGETS + 7) / 8
+	xor a
+	call ByteFill
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop hl
+	inc hl
+	jp DemoNextCommand
+
+DemoSweepStep:
+; On the map it's sweeping: on to the nearest target still to do, and see to it.
+; Return carry once there's none it can get to.
+	ld a, [wDemoSweepTarget + 1]
+	inc a
+	jr nz, .act
+; seek: next to the nearest
+	ld a, DGOAL_SWEEP
+	ld [wDemoGoal], a
+	xor a
+	ld [wDemoGoalX], a
+	ld [wDemoGoalY], a
+	call DemoWalk
+	jr c, .arrived
+	ld a, [wXCoord]
+	ld d, a
+	ld a, [wYCoord]
+	ld e, a
+	call DemoFlowAt
+	cp DFLOW_UNREACHED
+	jr nz, .seeking
+; none it can get to (or people in the way: it looks twice)
+	ld a, [wDemoStuck]
+	cp DEMO_STUCK_FRAMES - 1
+	jr nz, .seeking
+	ld hl, wDemoWait
+	inc [hl]
+	ld a, [hl]
+	cp 2
+	jr c, .seeking
+	xor a
+	ld [hl], a
+	ld [wDemoPad], a
+	scf
+	ret
+
+.seeking
+	and a
+	ret
+
+.arrived
+; which is it next to?
+	xor a
+	ld [wDemoWait], a
+	call DemoSweepNextTo
+	jr c, .chose
+	xor a
+	ld [wDemoFlowKey], a ; (it's moved: look again)
+	and a
+	ret
+
+.chose
+	ld a, e
+	ld [wDemoSweepTarget], a
+	ld a, d
+	ld [wDemoSweepTarget + 1], a
+	and a
+	ret
+
+.act
+; see to it: face it and press A (items are picked up, trainers battled)
+	ld a, [wDemoSweepTarget]
+	ld e, a
+	ld a, [wDemoSweepTarget + 1]
+	ld d, a
+	push de
+	call DemoTargetOpen
+	pop de
+	jr nc, .seen_to
+	push de
+	ld d, b
+	ld e, c
+	call DemoTalkAt
+	pop de
+	ret nc
+; (it's been seen to; if it's still to do, it can't be now: leave it be)
+	push de
+	call DemoTargetOpen
+	pop de
+	call c, DemoSkipTarget
+.seen_to
+	ld a, -1
+	ld [wDemoSweepTarget], a
+	ld [wDemoSweepTarget + 1], a
+	xor a
+	ld [wDemoFlowKey], a
+	ld [wDemoWait], a
+	and a
+	ret
+
+DemoSweepLeft:
+; Off the map it's sweeping: the target it was seeing to, if still to do, it
+; leaves be for now; so does a trainer that's beaten its team (the battle lost,
+; wTempTrainerEventFlag).
+	ld a, [wDemoSweepTarget + 1]
+	inc a
+	jr z, .trainer
+	ld a, [wDemoSweepTarget]
+	ld e, a
+	ld a, [wDemoSweepTarget + 1]
+	ld d, a
+	push de
+	call DemoTargetOpen
+	pop de
+	call c, DemoSkipTarget
+	ld a, -1
+	ld [wDemoSweepTarget], a
+	ld [wDemoSweepTarget + 1], a
+.trainer
+	ld a, [wBattleResult]
+	and ~BATTLERESULT_BITMASK
+	cp LOSE
+	ret nz
+	call DemoPlanMapTargets ; (the sweep's map)
+	ret c
+.find
+	push bc
+	push de
+	call DemoTargetOpen
+	pop de
+	jr nc, .next
+	push de
+	farcall DemoGetTarget
+	ld a, h
+	cp DTARGET_TRAINER
+	jr nz, .not_it
+	ld a, [wTempTrainerEventFlag]
+	cp e
+	jr nz, .not_it
+	ld a, [wTempTrainerEventFlag + 1]
+	cp d
+	jr nz, .not_it
+	pop de
+	call DemoSkipTarget
+	pop bc
+	ret
+
+.not_it
+	pop de
+.next
+	pop bc
+	inc de
+	dec c
+	jr nz, .find
+	ret
+
+DemoPlanMapTargets:
+; The targets of the map of the plan's command (dsweep): the first in de and how
+; many in c; carry if none.
+	call DemoPlanCommand
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	farcall DemoMapKey
+	ret c
+	ld d, h
+	ld e, l
+	farcall DemoMapTargets
+	ld a, c
+	and a
+	ret nz
+	scf
+	ret
+
+DemoCurMapTargets:
+; The targets of the map the player is on: the first in de and how many in c;
+; carry if none.
+	farcall DemoCurMapKey
+	ret c
+	ld d, h
+	ld e, l
+	farcall DemoMapTargets
+	ld a, c
+	and a
+	ret nz
+	scf
+	ret
+
+DemoSweepNextTo:
+; Return carry and in de the target still to do the player is next to (or across
+; a counter from).
+	call DemoCurMapTargets
+	ccf
+	ret nc
+.loop
+	push bc
+	push de
+	call DemoTargetOpen
+	jr nc, .next
+	ld a, [wXCoord]
+	sub b
+	jr nc, .dx
+	cpl
+	inc a
+.dx
+	ld d, a
+	ld a, [wYCoord]
+	sub c
+	jr nc, .dy
+	cpl
+	inc a
+.dy
+	ld e, a
+	add d
+	cp 1
+	jr z, .next_to
+	cp 2
+	jr nz, .next
+	ld a, d
+	and a
+	jr z, .next_to ; (across a counter, maybe)
+	ld a, e
+	and a
+	jr z, .next_to
+.next
+	pop de
+	pop bc
+	inc de
+	dec c
+	jr nz, .loop
+	and a
+	ret
+
+.next_to
+	pop de
+	pop bc
+	scf
+	ret
+
+DemoTargetOpen::
+; de: a DemoTargets index. Return carry, and its cell in b, c, if it's still to
+; do (its event flag isn't set, it's there, and it isn't being left for now).
+	push de
+	call DemoTargetSkipped
+	pop de
+	jr c, .no
+	farcall DemoGetTarget
+	push bc
+	push hl
+	call DemoCheckEvent
+	pop hl
+	pop bc
+	jr nz, .no ; (done)
+	ld a, h
+	cp DTARGET_HIDDEN
+	jr z, .yes ; (b, c: x, y)
+	ld a, b
+	call DemoGetObjectCell
+	jr c, .no ; (not on the map now)
+	ld b, d
+	ld c, e
+.yes
+	scf
+	ret
+
+.no
+	and a
+	ret
+
+DemoTargetSkipped:
+; de: a DemoTargets index. Return carry if it's being left for now.
+	call DemoSkipBit
+	ld a, BANK(wDemoSkipped)
+	ldh [rWBK], a
+	ld a, [hl]
+	and b
+	ld b, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	ret z
+	scf
+	ret
+
+DemoSkipTarget:
+; de: a DemoTargets index. Leave it be for now (till dretry).
+	call DemoSkipBit
+	ld a, BANK(wDemoSkipped)
+	ldh [rWBK], a
+	ld a, [hl]
+	or b
+	ld [hl], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+DemoSkipBit:
+; de: a DemoTargets index. Return its wDemoSkipped byte in hl and bit in b.
+	ld a, e
+	and 7
+	ld b, 1
+	jr z, .got_bit
+.shift
+	sla b
+	dec a
+	jr nz, .shift
+.got_bit
+	srl d
+	rr e
+	srl d
+	rr e
+	srl d
+	rr e
+	ld hl, wDemoSkipped
+	add hl, de
+	ret
+
+DemoBattleInGrass:
+; hl: a map. Have the team healed if it's worn down (and once it's on its way, till
+; it is); else walk about in the map's grass.
+	push hl
+	call DemoHealingNow
 	pop hl
 	jp c, DemoHealUp
 	ld a, [hli]
@@ -1402,26 +1774,69 @@ DemoPlan_Give:
 	inc hl
 	jp DemoNextCommand
 
+DemoHealingNow:
+; Return carry if the team is worn down (DemoTeamLow), or on its way to be healed.
+	ld a, BANK(wDemoHealing)
+	ldh [rWBK], a
+	ld a, [wDemoHealing]
+	ld b, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	jp z, DemoTeamLow
+	scf
+	ret
+
 DemoHealUp:
 ; Have the team healed at the nearest POKéMON CENTER. Return carry once it's
-; healthy (or there's no POKéMON CENTER to go to).
+; healthy (or there's no POKéMON CENTER to go to); the status it had before
+; it set off is back then.
 	call DemoTeamHurt
-	ccf
-	ret c
+	jr nc, .healed
+	ld a, BANK(wDemoHealing)
+	ldh [rWBK], a
+	ld a, [wDemoHealing]
+	and a
+	jr nz, .on_its_way
+	ld a, [wDemoStatus]
+	inc a
+	ld [wDemoHealing], a
+.on_its_way
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
 	ld a, DSTATUS_HEALING
 	call DemoSetStatus
-	call DemoNearestCenter
-	cp -1
-	jr z, .none
-	call DemoWorldMapID
+	farcall DemoNearestCenter
+	jr c, .none
+	push bc ; (c: the nurse)
+	ld d, h
+	ld e, l
+	farcall DemoKeyMap
 	call DemoTravel
+	pop bc
 	ret nc
-	ld a, 1 ; (the nurse)
+	ld a, c
 	call DemoTalkTo
 	and a
 	ret
 
 .none
+.healed
+	ld a, BANK(wDemoHealing)
+	ldh [rWBK], a
+	ld a, [wDemoHealing]
+	ld b, a
+	xor a
+	ld [wDemoHealing], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	jr z, .done
+	dec a
+	call DemoSetStatus
+.done
 	scf
 	ret
 
@@ -1628,6 +2043,15 @@ InitDemo::
 	ld [wDemoPlan], a
 	ld a, HIGH(DemoPlan)
 	ld [wDemoPlan + 1], a
+	ld a, -1
+	ld [wDemoSweepTarget], a
+	ld [wDemoSweepTarget + 1], a
+	ld a, BANK(wDemoHealing)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoHealing], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
 	; fallthrough
 
 DemoForgetBlocked:
@@ -1637,15 +2061,16 @@ DemoForgetBlocked:
 	ld a, BANK(wDemoBlocked)
 	ldh [rWBK], a
 	ld hl, wDemoBlocked
-	ld bc, 2 * DEMO_MAX_BLOCKED
+	ld bc, 4 * DEMO_MAX_BLOCKED
 	ld a, -1
 	call ByteFill
 	xor a
 	ld [wDemoBlockedNext], a
+	ld [wDemoBlockedCount], a
+	farcall DemoForgetRoutes
 	pop af
 	ldh [rWBK], a
 	ret
 
 INCLUDE "engine/demo/demo_walk.asm"
-INCLUDE "data/demo/world.asm"
 INCLUDE "data/demo/plan.asm"
