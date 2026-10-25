@@ -14,6 +14,13 @@ DEF DEMO_NODE_QUEUE EQUS "(w3_d000 + 2 * NUM_DEMO_NODES)" ; the nodes in order o
 
 	assert 4 * NUM_DEMO_NODES <= $1000, "the Demo's nodes don't fit in a WRAM bank"
 
+DemoHopRoute::
+; The first step of the shortest way to one of the regions it's going round to
+; (wDemoHopNodes, see DemoStartHop), as DemoRouteTo; carry if there's no way, or
+; with b = DEMO_ROUTE_HERE if it's in one of them.
+	ld de, DEMO_HOP_KEY
+	; fallthrough
+
 DemoRouteTo::
 ; de: the key of the map it's going to. Return the first step of the shortest way
 ; there: the edge's kind (DEDGE_*) in b, its warp or direction in c, and the node
@@ -48,20 +55,33 @@ DemoRouteTo::
 	ld [wDemoRouteTo], a
 	ld a, d
 	ld [wDemoRouteTo + 1], a
-	ld a, DEMOSEARCH_MAP
+	ld b, DEMOSEARCH_MAP
+	ld a, d
+	cp HIGH(DEMO_HOP_KEY)
+	jr nz, .search_for
+	ld a, e
+	cp LOW(DEMO_HOP_KEY)
+	jr nz, .search_for
+	ld b, DEMOSEARCH_HOP
+.search_for
+	ld a, b
 	ld [wDemoSearchFor], a
 	call DemoNodeSearch
 	jr c, .no_way
 	call DemoFirstStep
 	jr nc, .got
+	ld a, DEMO_ROUTE_HERE
+	jr .kind
+
 .no_way
 	ld a, -1
+.kind
 	ld [wDemoRouteKind], a
 .got
 	ld a, [wDemoRouteKind]
-	cp -1
-	jr z, .none
 	ld b, a
+	cp DEMO_ROUTE_HERE
+	jr nc, .none
 	ld a, [wDemoRouteArg]
 	ld c, a
 	ld a, [wDemoRouteNode]
@@ -499,12 +519,41 @@ DemoWanted:
 	jr z, .center
 	cp DEMOSEARCH_TARGETS
 	jr z, .targets
+	cp DEMOSEARCH_HOP
+	jr z, .hop
 	ld a, [wDemoRouteTo]
 	cp e
 	jr nz, .no
 	ld a, [wDemoRouteTo + 1]
 	cp d
 	jr nz, .no
+	and a
+	ret
+
+.hop
+; one of wDemoHopNodes?
+	push hl
+	ld d, h
+	ld e, l
+	ld hl, wDemoHopNodes
+	ld a, [wDemoHopCount]
+	ld c, a
+.hop_loop
+	ld a, [hli]
+	cp e
+	ld a, [hli]
+	jr nz, .hop_next
+	cp d
+	jr z, .hop_found
+.hop_next
+	dec c
+	jr nz, .hop_loop
+	pop hl
+	scf
+	ret
+
+.hop_found
+	pop hl
 	and a
 	ret
 

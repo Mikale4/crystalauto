@@ -257,8 +257,8 @@ def main():
                     continue
                 need = m.entries[(x, y)][r][1]
                 dwarps = R.warp_events(attrs[dest][0])
-                if num - 1 >= len(dwarps):
-                    continue
+                if not 1 <= num <= len(dwarps):
+                    continue  # (-1: back to wherever it came from)
                 cell = dwarps[num - 1][:2]
                 dm, dcomp = info[dest][0], info[dest][1]
                 if dm.is_warp(cell):

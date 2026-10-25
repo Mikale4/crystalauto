@@ -758,8 +758,9 @@ DemoPlan:
 	duntil EVENT_BEAT_ELITE_FOUR, .EliteFour
 .BeatEliteFour:
 ; KANTO: the S.S. TICKET from ELM, and the boat from OLIVINE; on its first trip
-; the captain's granddaughter is lost (she's in his cabin), and it docks in
-; VERMILION once she's found
+; the captain's granddaughter is lost (she's in his cabin, down the stairs past
+; the sailor on duty, who's waiting on a lazy sailor), and it docks in VERMILION
+; once she's found
 	dskipif EVENT_GOT_SS_TICKET_FROM_ELM, .GotSSTicket
 	dstatus DSTATUS_SS_AQUA
 .SSTicket:
@@ -781,6 +782,17 @@ DemoPlan:
 	dgoto 7, 15 ; (aboard: YES)
 	djump .Boat
 .Aboard:
+	dskipif EVENT_FAST_SHIP_LAZY_SAILOR, .LazySailor
+	dskipif EVENT_FAST_SHIP_INFORMED_ABOUT_LAZY_SAILOR, .Informed
+	dtravel FAST_SHIP_B1F
+	dtalk 1 ; the sailor on duty (on one side or the other)
+	dtalk 2
+	djump .Boat
+.Informed:
+	dtravel FAST_SHIP_CABINS_NNW_NNE_NE
+	dtalk 5 ; the lazy sailor
+	djump .Boat
+.LazySailor:
 	dtravel FAST_SHIP_CABINS_SE_SSE_CAPTAINS_CABIN
 	dtalk 4 ; the granddaughter
 	djump .Boat

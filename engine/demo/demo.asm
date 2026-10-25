@@ -1078,15 +1078,50 @@ DemoAnswered:
 
 DemoOverworld:
 ; The player can walk: on with the plan (a few of its commands at most, if
-; they're done at once).
+; they're done at once), unless it's going round to another region of the map
+; first (DemoStartHop).
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	ld a, [wDemoHopCount]
+	ld b, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	jp nz, DemoHop
 	ld b, 8
 .loop
 	push bc
+	ld hl, wDemoPlan
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [hl]
+	push af
 	call DemoRunCommand
+	jr nc, .not_done
+	pop af
 	pop bc
-	ret nc
+; (a walk that's ended: the rest next time, as a script it starts there comes
+; first, a coord event's, say)
+	cp DPLAN_TRAVEL
+	ret z
+	cp DPLAN_GOTO
+	ret z
+	cp DPLAN_FACE
+	ret z
+	cp DPLAN_STEP
+	ret z
+	cp DPLAN_PUSH
+	ret z
 	dec b
 	jr nz, .loop
+	ret
+
+.not_done
+	pop af
+	pop bc
+	and a
 	ret
 
 DemoRunCommand:
@@ -1162,8 +1197,54 @@ DemoNextCommand:
 	ld [wDemoTimer], a
 	ld a, h
 	ld [wDemoTimer + 1], a
+	xor a
+	ld [wDemoNoWay], a
+	ld [wDemoHopCount], a
 	pop af
 	ldh [rWBK], a
+	call DemoSetCommandMap
+	scf
+	ret
+
+DemoSetCommandMap:
+; The command starts on this map (see DemoOffCommandMap).
+	ldh a, [rWBK]
+	push af
+	ld a, BANK(wMapGroup)
+	ldh [rWBK], a
+	ld a, [wMapGroup]
+	ld d, a
+	ld a, [wMapNumber]
+	ld e, a
+	ld a, BANK(wDemoCommandMap)
+	ldh [rWBK], a
+	ld a, d
+	ld [wDemoCommandMap], a
+	ld a, e
+	ld [wDemoCommandMap + 1], a
+	pop af
+	ldh [rWBK], a
+	ret
+
+DemoOffCommandMap:
+; Return carry if something (a script's warp) has taken the player off the map
+; the command started on: a command for a cell or a person of that map is done.
+; (hl kept)
+	ld a, BANK(wDemoCommandMap)
+	ldh [rWBK], a
+	ld a, [wDemoCommandMap]
+	ld d, a
+	ld a, [wDemoCommandMap + 1]
+	ld e, a
+	ld a, BANK(wMapGroup)
+	ldh [rWBK], a
+	ld a, [wMapGroup]
+	cp d
+	jr nz, .off
+	ld a, [wMapNumber]
+	cp e
+	ret z
+.off
 	scf
 	ret
 
@@ -1201,7 +1282,10 @@ DemoPlan_Travel:
 	jp DemoNextCommand
 
 DemoPlan_Goto:
-; dgoto x, y: walk to that cell of this map.
+; dgoto x, y: walk to that cell of this map (or till something takes it off the
+; map, see DemoOffCommandMap).
+	call DemoOffCommandMap
+	jr c, .done
 	pop hl
 	push hl
 	inc hl
@@ -1212,8 +1296,13 @@ DemoPlan_Goto:
 	ld a, DGOAL_CELL
 	ld [wDemoGoal], a
 	call DemoWalk
+	jr c, .done
 	pop hl
-	ret nc
+	and a
+	ret
+
+.done
+	pop hl
 	inc hl
 	inc hl
 	inc hl
@@ -1221,21 +1310,32 @@ DemoPlan_Goto:
 
 DemoPlan_Talk:
 ; dtalk n: walk up to map object n, face it and press A (then whatever that
-; starts plays out).
+; starts plays out; or till something takes it off the map, see
+; DemoOffCommandMap).
+	call DemoOffCommandMap
+	jr c, .done
 	pop hl
 	push hl
 	inc hl
 	ld a, [hl]
 	call DemoTalkTo
+	jr c, .done
 	pop hl
-	ret nc
+	and a
+	ret
+
+.done
+	pop hl
 	inc hl
 	inc hl
 	jp DemoNextCommand
 
 DemoPlan_TalkAt:
 ; dtalkat x, y: walk up to that cell, face it and press A (then whatever that
-; starts plays out).
+; starts plays out; or till something takes it off the map, see
+; DemoOffCommandMap).
+	call DemoOffCommandMap
+	jr c, .done
 	pop hl
 	push hl
 	inc hl
@@ -1243,8 +1343,13 @@ DemoPlan_TalkAt:
 	ld d, a
 	ld e, [hl]
 	call DemoTalkAt
+	jr c, .done
 	pop hl
-	ret nc
+	and a
+	ret
+
+.done
+	pop hl
 	inc hl
 	inc hl
 	inc hl
@@ -2238,6 +2343,8 @@ DemoSweepStep:
 	xor a
 	ld [hl], a
 	ld [wDemoPad], a
+	call DemoStartHop ; (round to where there's a way, if it can)
+	ret nc
 	scf
 	ret
 
@@ -2941,6 +3048,8 @@ InitDemo::
 	xor a
 	ld [wDemoHealing], a
 	ld [wDemoAnswerCount], a
+	ld [wDemoHopCount], a
+	ld [wDemoNoWay], a
 	ld [wDemoTutorFor], a ; (worked out again)
 	ld [wDemoTutorFor + 1], a
 	dec a
@@ -2948,6 +3057,7 @@ InitDemo::
 	ld [wDemoSweepAllMap + 1], a
 	ld a, BANK(wXCoord)
 	ldh [rWBK], a
+	call DemoSetCommandMap
 	; fallthrough
 
 DemoForgetBlocked:

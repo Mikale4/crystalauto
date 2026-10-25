@@ -1,5 +1,6 @@
 HandleNewMap:
 	call ClearUnusedMapBuffer
+	farcall DemoForgetRoutes ; (it works out its way from here again)
 	call ResetMapBufferEventFlags
 	call ResetFlashIfOutOfCave
 	call GetCurrentMapSceneID

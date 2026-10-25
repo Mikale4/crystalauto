@@ -3731,6 +3731,10 @@ wDemoAnswerCount:: db ; YES/NO answers the plan has given (danswers) still to co
 wDemoAnswerBits:: db ; the first in bit 0 (1: NO)
 wDemoSweepAllMap:: dw ; the map dsweepall is seeing to (its key; -1: none yet)
 wDemoSweepAllTimer:: dw ; the play time (minutes) it set off for it at
+wDemoHopCount:: db ; going round to another region of the map (see DemoStartHop): how
+wDemoHopNodes:: ds 2 * DEMO_MAX_HOP_NODES ; many regions it could go to (0: it isn't), and their nodes
+wDemoNoWay:: db ; the times in a row it's looked and found no way (see DemoWalk)
+wDemoCommandMap:: dw ; the map the command started on (group, number; see DemoOffCommandMap)
 
 
 SECTION "Battle Tower RAM", WRAMX

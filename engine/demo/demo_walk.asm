@@ -61,9 +61,35 @@ DemoWalk:
 	jp DemoCheckStuck
 
 .no_way
-; (people in the way, maybe: it looks again in a while)
+; (people in the way, maybe: it looks again in a while; if there's still no way
+; to a cell or something to face, it goes round to where there is one, if it
+; can: DemoStartHop)
 	xor a
 	ld [wDemoPad], a
+	ld a, [wDemoStuck]
+	cp DEMO_STUCK_FRAMES - 1
+	jp nz, DemoCheckStuck
+	ld a, [wDemoGoal]
+	cp DGOAL_CELL
+	jr z, .no_way_again
+	cp DGOAL_FACE
+	jp nz, DemoCheckStuck
+.no_way_again
+	ld a, BANK(wDemoNoWay)
+	ldh [rWBK], a
+	ld a, [wDemoTravelling]
+	ld b, a
+	ld hl, wDemoNoWay
+	inc [hl]
+	ld c, [hl]
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	jp nz, DemoCheckStuck ; (DemoBlockLink sees to that)
+	ld a, c
+	cp 2
+	call nc, DemoStartHop
 	jp DemoCheckStuck
 
 .at_goal
@@ -646,6 +672,9 @@ DemoMapCollisions:
 	add 4
 	ld e, a
 	call GetCoordTileCollision
+	pop de
+	push de
+	call DemoWarpTileHere
 	call DemoStandable
 	pop de
 	pop hl
@@ -669,6 +698,49 @@ DemoMapCollisions:
 	jr nz, .row
 	ld a, BANK(wXCoord)
 	ldh [rWBK], a
+	ret
+
+DemoWarpTileHere:
+; a: the collision at cell d, e. A warp's tile only warps where the map has a warp
+; (GetDestinationWarpNumber): anywhere else it's floor. Return the collision.
+	ld b, a
+	and $f0
+	cp HI_NYBBLE_WARPS
+	ld a, b
+	ret nz
+	ld a, [wCurMapWarpEventCount]
+	and a
+	jr z, .floor
+	ld c, a
+	ld hl, wCurMapWarpEventsPointer
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+.loop
+	ld a, [wMapScriptsBank]
+	call GetFarByte
+	cp e
+	jr nz, .next
+	inc hl
+	ld a, [wMapScriptsBank]
+	call GetFarByte
+	dec hl
+	cp d
+	jr nz, .next
+	ld a, b
+	ret
+
+.next
+	ld a, WARP_EVENT_SIZE
+	add l
+	ld l, a
+	jr nc, .no_carry
+	inc h
+.no_carry
+	dec c
+	jr nz, .loop
+.floor
+	ld a, COLL_FLOOR
 	ret
 
 DemoStandable:
@@ -1479,6 +1551,10 @@ DemoTravel:
 	ld e, l
 	farcall DemoRouteTo
 	jr c, .lost
+	; fallthrough
+
+DemoTravelStep:
+; Walk the first step of the way (DemoRouteTo: b, c, de). Return nc.
 	ld a, b
 	cp DEDGE_EDGE
 	jr z, .edge
@@ -1528,7 +1604,7 @@ DemoTravel:
 	and a
 	ret
 
-.lost
+DemoTravel.lost:
 ; (no way at all: try every link again in a while)
 	xor a
 	ld [wDemoPad], a
@@ -1536,10 +1612,112 @@ DemoTravel:
 	inc [hl]
 	ld a, [hl]
 	cp DEMO_STUCK_FRAMES
-	ret c
+	jr c, .wait
 	ld [hl], 0
 	call DemoForgetBlocked
+.wait
 	and a
+	ret
+
+DemoStartHop:
+; There's no way to the goal from where it stands (the flow field): if there's a
+; way round to a region of the map that has one (off the map and back, or
+; through its warps), it goes there first (wDemoHopNodes: see DemoHop). Return
+; carry if there isn't.
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoHopCount], a
+	ld [wDemoNoWay], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	farcall DemoCurMapKey
+	ret c
+	ld d, h
+	ld e, l
+	farcall DemoMapNodes
+	ld a, c
+	and a
+	jr z, .none
+.node
+; is there a way from it?
+	push bc
+	push de
+	farcall DemoNodeCell
+	call DemoFlowAt
+	pop de
+	pop bc
+	cp DFLOW_UNREACHED
+	call nz, .Add
+	inc de
+	dec c
+	jr nz, .node
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	ld a, [wDemoHopCount]
+	ld b, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	and a
+	jr z, .none
+	farcall DemoForgetRoutes
+	farcall DemoHopRoute
+	jr c, .none ; (no way round, or it's there already)
+	xor a
+	ld [wDemoFlowKey], a ; (the search had WRAM bank 3)
+	and a
+	ret
+
+.none
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoHopCount], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld [wDemoFlowKey], a
+	scf
+	ret
+
+.Add:
+; de: a node (bc, de kept)
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	ld a, [wDemoHopCount]
+	cp DEMO_MAX_HOP_NODES
+	jr nc, .full
+	inc a
+	ld [wDemoHopCount], a
+	dec a
+	add a
+	add LOW(wDemoHopNodes)
+	ld l, a
+	ld a, HIGH(wDemoHopNodes)
+	adc 0
+	ld h, a
+	ld [hl], e
+	inc hl
+	ld [hl], d
+.full
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ret
+
+DemoHop:
+; Going round to another region of the map (DemoStartHop): on its way there.
+; Once it's there (or if there's no way after all), it's done.
+	farcall DemoHopRoute
+	jp nc, DemoTravelStep
+	ld a, BANK(wDemoHopCount)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoHopCount], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld [wDemoFlowKey], a
+	ld [wDemoPad], a
+	farcall DemoForgetRoutes
 	ret
 
 DemoWarpCell:

@@ -149,7 +149,12 @@ class Map:
         self.grid, self.w, self.h = collision(label)
         c = collision_consts()
         self.c = c
-        self.rocks = {(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_ROCK"}
+        # a warp's tile only warps where the map has a warp: anywhere else it's floor
+        warps = {(x, y) for x, y, _, _ in warp_events(label)}
+        for cell, v in self.grid.items():
+            if v & 0xf0 == c["HI_NYBBLE_WARPS"] and cell not in warps:
+                self.grid[cell] = c["COLL_FLOOR"]
+        self.rocks ={(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_ROCK"}
         self.boulders = {(x, y) for x, y, spr, _, _ in object_events(label) if spr == "SPRITE_BOULDER"}
 
     def kind(self, cell):

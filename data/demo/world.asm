@@ -32,7 +32,7 @@ DemoGroupKeys:
 	dw 362
 	dw 377
 
-	assert NUM_DEMO_NODES == 693, "NUM_DEMO_NODES (constants/demo_constants.asm) should be 693"
+	assert NUM_DEMO_NODES == 676, "NUM_DEMO_NODES (constants/demo_constants.asm) should be 676"
 
 DemoWorldMaps:
 ; for each map key: its map, its first target (DemoTargets) and how many, its
@@ -1248,42 +1248,42 @@ DemoWorldMaps:
 	dw 333
 	db 3
 	dw 271
-	db 2
+	db 3
 .Route21:
 	map_id ROUTE_21
 	dw 336
 	db 3
-	dw 273
+	dw 274
 	db 2
 .CinnabarIsland:
 	map_id CINNABAR_ISLAND
 	dw 339
 	db 1
-	dw 275
+	dw 276
 	db 3
 .CeruleanGymBadgeSpeechHouse:
 	map_id CERULEAN_GYM_BADGE_SPEECH_HOUSE
 	dw 340
 	db 0
-	dw 278
+	dw 279
 	db 1
 .CeruleanPoliceStation:
 	map_id CERULEAN_POLICE_STATION
 	dw 340
 	db 0
-	dw 279
+	dw 280
 	db 1
 .CeruleanTradeSpeechHouse:
 	map_id CERULEAN_TRADE_SPEECH_HOUSE
 	dw 340
 	db 0
-	dw 280
+	dw 281
 	db 1
 .CeruleanPokecenter1F:
 	map_id CERULEAN_POKECENTER_1F
 	dw 340
 	db 0
-	dw 281
+	dw 282
 	db 1
 .CeruleanPokecenter2FBeta:
 	map_id CERULEAN_POKECENTER_2F_BETA
@@ -1295,19 +1295,19 @@ DemoWorldMaps:
 	map_id CERULEAN_GYM
 	dw 340
 	db 4
-	dw 282
+	dw 283
 	db 1
 .CeruleanMart:
 	map_id CERULEAN_MART
 	dw 344
 	db 0
-	dw 283
+	dw 284
 	db 1
 .Route10Pokecenter1F:
 	map_id ROUTE_10_POKECENTER_1F
 	dw 344
 	db 0
-	dw 284
+	dw 285
 	db 1
 .Route10Pokecenter2FBeta:
 	map_id ROUTE_10_POKECENTER_2F_BETA
@@ -1319,349 +1319,349 @@ DemoWorldMaps:
 	map_id POWER_PLANT
 	dw 344
 	db 0
-	dw 285
+	dw 286
 	db 1
 .BillsHouse:
 	map_id BILLS_HOUSE
 	dw 344
 	db 0
-	dw 286
+	dw 287
 	db 1
 .Route4:
 	map_id ROUTE_4
 	dw 344
 	db 5
-	dw 287
+	dw 288
 	db 5
 .Route9:
 	map_id ROUTE_9
 	dw 349
 	db 7
-	dw 292
+	dw 293
 	db 8
 .Route10North:
 	map_id ROUTE_10_NORTH
 	dw 356
 	db 0
-	dw 300
+	dw 301
 	db 4
 .Route24:
 	map_id ROUTE_24
 	dw 356
 	db 0
-	dw 304
-	db 10
+	dw 305
+	db 7
 .Route25:
 	map_id ROUTE_25
 	dw 356
 	db 9
-	dw 314
-	db 6
+	dw 312
+	db 4
 .CeruleanCity:
 	map_id CERULEAN_CITY
 	dw 365
 	db 1
-	dw 320
-	db 10
+	dw 316
+	db 8
 .AzaleaPokecenter1F:
 	map_id AZALEA_POKECENTER_1F
 	dw 366
 	db 0
-	dw 330
+	dw 324
 	db 1
 .CharcoalKiln:
 	map_id CHARCOAL_KILN
 	dw 366
 	db 0
-	dw 331
+	dw 325
 	db 1
 .AzaleaMart:
 	map_id AZALEA_MART
 	dw 366
 	db 0
-	dw 332
+	dw 326
 	db 1
 .KurtsHouse:
 	map_id KURTS_HOUSE
 	dw 366
 	db 0
-	dw 333
+	dw 327
 	db 1
 .AzaleaGym:
 	map_id AZALEA_GYM
 	dw 366
 	db 5
-	dw 334
+	dw 328
 	db 1
 .Route33:
 	map_id ROUTE_33
 	dw 371
 	db 1
-	dw 335
+	dw 329
 	db 2
 .AzaleaTown:
 	map_id AZALEA_TOWN
 	dw 372
 	db 1
-	dw 337
+	dw 331
 	db 2
 .LakeOfRageHiddenPowerHouse:
 	map_id LAKE_OF_RAGE_HIDDEN_POWER_HOUSE
 	dw 373
 	db 0
-	dw 339
+	dw 333
 	db 1
 .LakeOfRageMagikarpHouse:
 	map_id LAKE_OF_RAGE_MAGIKARP_HOUSE
 	dw 373
 	db 0
-	dw 340
+	dw 334
 	db 1
 .Route43MahoganyGate:
 	map_id ROUTE_43_MAHOGANY_GATE
 	dw 373
 	db 0
-	dw 341
+	dw 335
 	db 1
 .Route43Gate:
 	map_id ROUTE_43_GATE
 	dw 373
 	db 0
-	dw 342
+	dw 336
 	db 1
 .Route43:
 	map_id ROUTE_43
 	dw 373
 	db 7
-	dw 343
+	dw 337
 	db 3
 .LakeOfRage:
 	map_id LAKE_OF_RAGE
 	dw 380
 	db 9
-	dw 346
+	dw 340
 	db 3
 .Route32:
 	map_id ROUTE_32
 	dw 389
 	db 12
-	dw 349
+	dw 343
 	db 2
 .Route35:
 	map_id ROUTE_35
 	dw 401
 	db 9
-	dw 351
+	dw 345
 	db 4
 .Route36:
 	map_id ROUTE_36
 	dw 410
 	db 2
-	dw 355
+	dw 349
 	db 1
 .Route37:
 	map_id ROUTE_37
 	dw 412
 	db 4
-	dw 356
+	dw 350
 	db 1
 .VioletCity:
 	map_id VIOLET_CITY
 	dw 416
 	db 3
-	dw 357
+	dw 351
 	db 1
 .VioletMart:
 	map_id VIOLET_MART
 	dw 419
 	db 0
-	dw 358
+	dw 352
 	db 1
 .VioletGym:
 	map_id VIOLET_GYM
 	dw 419
 	db 2
-	dw 359
+	dw 353
 	db 1
 .EarlsPokemonAcademy:
 	map_id EARLS_POKEMON_ACADEMY
 	dw 421
 	db 0
-	dw 360
+	dw 354
 	db 1
 .VioletNicknameSpeechHouse:
 	map_id VIOLET_NICKNAME_SPEECH_HOUSE
 	dw 421
 	db 0
-	dw 361
+	dw 355
 	db 1
 .VioletPokecenter1F:
 	map_id VIOLET_POKECENTER_1F
 	dw 421
 	db 0
-	dw 362
+	dw 356
 	db 1
 .VioletKylesHouse:
 	map_id VIOLET_KYLES_HOUSE
 	dw 421
 	db 0
-	dw 363
+	dw 357
 	db 1
 .Route32RuinsOfAlphGate:
 	map_id ROUTE_32_RUINS_OF_ALPH_GATE
 	dw 421
 	db 0
-	dw 364
+	dw 358
 	db 1
 .Route32Pokecenter1F:
 	map_id ROUTE_32_POKECENTER_1F
 	dw 421
 	db 0
-	dw 365
+	dw 359
 	db 1
 .Route35GoldenrodGate:
 	map_id ROUTE_35_GOLDENROD_GATE
 	dw 421
 	db 0
-	dw 366
+	dw 360
 	db 1
 .Route35NationalParkGate:
 	map_id ROUTE_35_NATIONAL_PARK_GATE
 	dw 421
 	db 0
-	dw 367
+	dw 361
 	db 1
 .Route36RuinsOfAlphGate:
 	map_id ROUTE_36_RUINS_OF_ALPH_GATE
 	dw 421
 	db 0
-	dw 368
+	dw 362
 	db 1
 .Route36NationalParkGate:
 	map_id ROUTE_36_NATIONAL_PARK_GATE
 	dw 421
 	db 0
-	dw 369
+	dw 363
 	db 2
 .Route34:
 	map_id ROUTE_34
 	dw 421
 	db 11
-	dw 371
+	dw 365
 	db 5
 .GoldenrodCity:
 	map_id GOLDENROD_CITY
 	dw 432
 	db 0
-	dw 376
+	dw 370
 	db 5
 .GoldenrodGym:
 	map_id GOLDENROD_GYM
 	dw 432
 	db 4
-	dw 381
+	dw 375
 	db 1
 .GoldenrodBikeShop:
 	map_id GOLDENROD_BIKE_SHOP
 	dw 436
 	db 0
-	dw 382
+	dw 376
 	db 2
 .GoldenrodHappinessRater:
 	map_id GOLDENROD_HAPPINESS_RATER
 	dw 436
 	db 0
-	dw 384
+	dw 378
 	db 1
 .BillsFamilysHouse:
 	map_id BILLS_FAMILYS_HOUSE
 	dw 436
 	db 0
-	dw 385
+	dw 379
 	db 1
 .GoldenrodMagnetTrainStation:
 	map_id GOLDENROD_MAGNET_TRAIN_STATION
 	dw 436
 	db 0
-	dw 386
+	dw 380
 	db 1
 .GoldenrodFlowerShop:
 	map_id GOLDENROD_FLOWER_SHOP
 	dw 436
 	db 0
-	dw 387
+	dw 381
 	db 1
 .GoldenrodPpSpeechHouse:
 	map_id GOLDENROD_PP_SPEECH_HOUSE
 	dw 436
 	db 0
-	dw 388
+	dw 382
 	db 1
 .GoldenrodNameRater:
 	map_id GOLDENROD_NAME_RATER
 	dw 436
 	db 0
-	dw 389
+	dw 383
 	db 1
 .GoldenrodDeptStore1F:
 	map_id GOLDENROD_DEPT_STORE_1F
 	dw 436
 	db 0
-	dw 390
+	dw 384
 	db 1
 .GoldenrodDeptStore2F:
 	map_id GOLDENROD_DEPT_STORE_2F
 	dw 436
 	db 0
-	dw 391
+	dw 385
 	db 1
 .GoldenrodDeptStore3F:
 	map_id GOLDENROD_DEPT_STORE_3F
 	dw 436
 	db 0
-	dw 392
+	dw 386
 	db 1
 .GoldenrodDeptStore4F:
 	map_id GOLDENROD_DEPT_STORE_4F
 	dw 436
 	db 0
-	dw 393
+	dw 387
 	db 1
 .GoldenrodDeptStore5F:
 	map_id GOLDENROD_DEPT_STORE_5F
 	dw 436
 	db 0
-	dw 394
+	dw 388
 	db 1
 .GoldenrodDeptStore6F:
 	map_id GOLDENROD_DEPT_STORE_6F
 	dw 436
 	db 0
-	dw 395
+	dw 389
 	db 1
 .GoldenrodDeptStoreElevator:
 	map_id GOLDENROD_DEPT_STORE_ELEVATOR
 	dw 436
 	db 0
-	dw 396
+	dw 390
 	db 1
 .GoldenrodDeptStoreRoof:
 	map_id GOLDENROD_DEPT_STORE_ROOF
 	dw 436
 	db 0
-	dw 397
+	dw 391
 	db 1
 .GoldenrodGameCorner:
 	map_id GOLDENROD_GAME_CORNER
 	dw 436
 	db 0
-	dw 398
+	dw 392
 	db 1
 .GoldenrodPokecenter1F:
 	map_id GOLDENROD_POKECENTER_1F
 	dw 436
 	db 0
-	dw 399
+	dw 393
 	db 1
 .PokecomCenterAdminOfficeMobile:
 	map_id POKECOM_CENTER_ADMIN_OFFICE_MOBILE
@@ -1673,49 +1673,49 @@ DemoWorldMaps:
 	map_id ILEX_FOREST_AZALEA_GATE
 	dw 436
 	db 0
-	dw 400
+	dw 394
 	db 1
 .Route34IlexForestGate:
 	map_id ROUTE_34_ILEX_FOREST_GATE
 	dw 436
 	db 0
-	dw 401
+	dw 395
 	db 1
 .DayCare:
 	map_id DAY_CARE
 	dw 436
 	db 0
-	dw 402
+	dw 396
 	db 1
 .Route6:
 	map_id ROUTE_6
 	dw 436
 	db 2
-	dw 403
+	dw 397
 	db 3
 .Route11:
 	map_id ROUTE_11
 	dw 438
 	db 5
-	dw 406
+	dw 400
 	db 1
 .VermilionCity:
 	map_id VERMILION_CITY
 	dw 443
 	db 1
-	dw 407
+	dw 401
 	db 5
 .VermilionFishingSpeechHouse:
 	map_id VERMILION_FISHING_SPEECH_HOUSE
 	dw 444
 	db 0
-	dw 412
+	dw 406
 	db 1
 .VermilionPokecenter1F:
 	map_id VERMILION_POKECENTER_1F
 	dw 444
 	db 0
-	dw 413
+	dw 407
 	db 1
 .VermilionPokecenter2FBeta:
 	map_id VERMILION_POKECENTER_2F_BETA
@@ -1727,115 +1727,115 @@ DemoWorldMaps:
 	map_id POKEMON_FAN_CLUB
 	dw 444
 	db 0
-	dw 414
+	dw 408
 	db 1
 .VermilionMagnetTrainSpeechHouse:
 	map_id VERMILION_MAGNET_TRAIN_SPEECH_HOUSE
 	dw 444
 	db 0
-	dw 415
+	dw 409
 	db 1
 .VermilionMart:
 	map_id VERMILION_MART
 	dw 444
 	db 0
-	dw 416
+	dw 410
 	db 1
 .VermilionDiglettsCaveSpeechHouse:
 	map_id VERMILION_DIGLETTS_CAVE_SPEECH_HOUSE
 	dw 444
 	db 0
-	dw 417
+	dw 411
 	db 1
 .VermilionGym:
 	map_id VERMILION_GYM
 	dw 444
 	db 3
-	dw 418
+	dw 412
 	db 1
 .Route6SaffronGate:
 	map_id ROUTE_6_SAFFRON_GATE
 	dw 447
 	db 0
-	dw 419
+	dw 413
 	db 1
 .Route6UndergroundPathEntrance:
 	map_id ROUTE_6_UNDERGROUND_PATH_ENTRANCE
 	dw 447
 	db 0
-	dw 420
+	dw 414
 	db 1
 .Route1:
 	map_id ROUTE_1
 	dw 447
 	db 2
-	dw 421
+	dw 415
 	db 7
 .PalletTown:
 	map_id PALLET_TOWN
 	dw 449
 	db 0
-	dw 428
+	dw 422
 	db 6
 .RedsHouse1F:
 	map_id REDS_HOUSE_1F
 	dw 449
 	db 0
-	dw 434
+	dw 428
 	db 1
 .RedsHouse2F:
 	map_id REDS_HOUSE_2F
 	dw 449
 	db 0
-	dw 435
+	dw 429
 	db 1
 .BluesHouse:
 	map_id BLUES_HOUSE
 	dw 449
 	db 0
-	dw 436
+	dw 430
 	db 1
 .OaksLab:
 	map_id OAKS_LAB
 	dw 449
 	db 0
-	dw 437
+	dw 431
 	db 1
 .Route3:
 	map_id ROUTE_3
 	dw 449
 	db 4
-	dw 438
+	dw 432
 	db 3
 .PewterCity:
 	map_id PEWTER_CITY
 	dw 453
 	db 0
-	dw 441
+	dw 435
 	db 4
 .PewterNidoranSpeechHouse:
 	map_id PEWTER_NIDORAN_SPEECH_HOUSE
 	dw 453
 	db 0
-	dw 445
+	dw 439
 	db 1
 .PewterGym:
 	map_id PEWTER_GYM
 	dw 453
 	db 1
-	dw 446
+	dw 440
 	db 1
 .PewterMart:
 	map_id PEWTER_MART
 	dw 454
 	db 0
-	dw 447
+	dw 441
 	db 1
 .PewterPokecenter1F:
 	map_id PEWTER_POKECENTER_1F
 	dw 454
 	db 0
-	dw 448
+	dw 442
 	db 1
 .PewterPokecenter2FBeta:
 	map_id PEWTER_POKECENTER_2F_BETA
@@ -1847,121 +1847,121 @@ DemoWorldMaps:
 	map_id PEWTER_SNOOZE_SPEECH_HOUSE
 	dw 454
 	db 0
-	dw 449
+	dw 443
 	db 1
 .OlivinePort:
 	map_id OLIVINE_PORT
 	dw 454
 	db 1
-	dw 450
-	db 3
+	dw 444
+	db 2
 .VermilionPort:
 	map_id VERMILION_PORT
 	dw 455
 	db 1
-	dw 453
-	db 3
+	dw 446
+	db 2
 .FastShip1F:
 	map_id FAST_SHIP_1F
 	dw 456
 	db 0
-	dw 456
+	dw 448
 	db 2
 .FastShipCabinsNnwNneNe:
 	map_id FAST_SHIP_CABINS_NNW_NNE_NE
 	dw 456
 	db 6
-	dw 458
+	dw 450
 	db 3
 .FastShipCabinsSwSswNw:
 	map_id FAST_SHIP_CABINS_SW_SSW_NW
 	dw 462
 	db 4
-	dw 461
+	dw 453
 	db 3
 .FastShipCabinsSeSseCaptainsCabin:
 	map_id FAST_SHIP_CABINS_SE_SSE_CAPTAINS_CABIN
 	dw 466
 	db 7
-	dw 464
+	dw 456
 	db 3
 .FastShipB1F:
 	map_id FAST_SHIP_B1F
 	dw 473
 	db 10
-	dw 467
+	dw 459
 	db 1
 .OlivinePortPassage:
 	map_id OLIVINE_PORT_PASSAGE
 	dw 483
 	db 0
-	dw 468
+	dw 460
 	db 2
 .VermilionPortPassage:
 	map_id VERMILION_PORT_PASSAGE
 	dw 483
 	db 0
-	dw 470
+	dw 462
 	db 2
 .MountMoonSquare:
 	map_id MOUNT_MOON_SQUARE
 	dw 483
 	db 1
-	dw 472
+	dw 464
 	db 2
 .MountMoonGiftShop:
 	map_id MOUNT_MOON_GIFT_SHOP
 	dw 484
 	db 0
-	dw 474
+	dw 466
 	db 1
 .TinTowerRoof:
 	map_id TIN_TOWER_ROOF
 	dw 484
 	db 0
-	dw 475
+	dw 467
 	db 1
 .Route23:
 	map_id ROUTE_23
 	dw 484
 	db 0
-	dw 476
+	dw 468
 	db 1
 .IndigoPlateauPokecenter1F:
 	map_id INDIGO_PLATEAU_POKECENTER_1F
 	dw 484
 	db 0
-	dw 477
+	dw 469
 	db 1
 .WillsRoom:
 	map_id WILLS_ROOM
 	dw 484
 	db 0
-	dw 478
+	dw 470
 	db 1
 .KogasRoom:
 	map_id KOGAS_ROOM
 	dw 484
 	db 0
-	dw 479
+	dw 471
 	db 1
 .BrunosRoom:
 	map_id BRUNOS_ROOM
 	dw 484
 	db 0
-	dw 480
+	dw 472
 	db 1
 .KarensRoom:
 	map_id KARENS_ROOM
 	dw 484
 	db 0
-	dw 481
+	dw 473
 	db 1
 .LancesRoom:
 	map_id LANCES_ROOM
 	dw 484
 	db 0
-	dw 482
+	dw 474
 	db 1
 .HallOfFame:
 	map_id HALL_OF_FAME
@@ -1973,61 +1973,61 @@ DemoWorldMaps:
 	map_id ROUTE_13
 	dw 484
 	db 6
-	dw 483
-	db 6
+	dw 475
+	db 4
 .Route14:
 	map_id ROUTE_14
 	dw 490
 	db 3
-	dw 489
+	dw 479
 	db 4
 .Route15:
 	map_id ROUTE_15
 	dw 493
 	db 7
-	dw 493
+	dw 483
 	db 3
 .Route18:
 	map_id ROUTE_18
 	dw 500
 	db 2
-	dw 496
+	dw 486
 	db 3
 .FuchsiaCity:
 	map_id FUCHSIA_CITY
 	dw 502
 	db 0
-	dw 499
+	dw 489
 	db 4
 .FuchsiaMart:
 	map_id FUCHSIA_MART
 	dw 502
 	db 0
-	dw 503
+	dw 493
 	db 1
 .SafariZoneMainOffice:
 	map_id SAFARI_ZONE_MAIN_OFFICE
 	dw 502
 	db 0
-	dw 504
+	dw 494
 	db 1
 .FuchsiaGym:
 	map_id FUCHSIA_GYM
 	dw 502
 	db 0
-	dw 505
+	dw 495
 	db 1
 .BillsOlderSistersHouse:
 	map_id BILLS_OLDER_SISTERS_HOUSE
 	dw 502
 	db 0
-	dw 506
+	dw 496
 	db 1
 .FuchsiaPokecenter1F:
 	map_id FUCHSIA_POKECENTER_1F
 	dw 502
 	db 0
-	dw 507
+	dw 497
 	db 1
 .FuchsiaPokecenter2FBeta:
 	map_id FUCHSIA_POKECENTER_2F_BETA
@@ -2039,43 +2039,43 @@ DemoWorldMaps:
 	map_id SAFARI_ZONE_WARDENS_HOME
 	dw 502
 	db 0
-	dw 508
+	dw 498
 	db 1
 .Route15FuchsiaGate:
 	map_id ROUTE_15_FUCHSIA_GATE
 	dw 502
 	db 0
-	dw 509
+	dw 499
 	db 1
 .Route8:
 	map_id ROUTE_8
 	dw 502
 	db 5
-	dw 510
+	dw 500
 	db 3
 .Route12:
 	map_id ROUTE_12
 	dw 507
 	db 7
-	dw 513
-	db 9
+	dw 503
+	db 5
 .Route10South:
 	map_id ROUTE_10_SOUTH
 	dw 514
 	db 2
-	dw 522
+	dw 508
 	db 2
 .LavenderTown:
 	map_id LAVENDER_TOWN
 	dw 516
 	db 0
-	dw 524
+	dw 510
 	db 4
 .LavenderPokecenter1F:
 	map_id LAVENDER_POKECENTER_1F
 	dw 516
 	db 0
-	dw 528
+	dw 514
 	db 1
 .LavenderPokecenter2FBeta:
 	map_id LAVENDER_POKECENTER_2F_BETA
@@ -2087,73 +2087,73 @@ DemoWorldMaps:
 	map_id MR_FUJIS_HOUSE
 	dw 516
 	db 0
-	dw 529
+	dw 515
 	db 1
 .LavenderSpeechHouse:
 	map_id LAVENDER_SPEECH_HOUSE
 	dw 516
 	db 0
-	dw 530
+	dw 516
 	db 1
 .LavenderNameRater:
 	map_id LAVENDER_NAME_RATER
 	dw 516
 	db 0
-	dw 531
+	dw 517
 	db 1
 .LavenderMart:
 	map_id LAVENDER_MART
 	dw 516
 	db 0
-	dw 532
+	dw 518
 	db 1
 .SoulHouse:
 	map_id SOUL_HOUSE
 	dw 516
 	db 0
-	dw 533
+	dw 519
 	db 3
 .LavRadioTower1F:
 	map_id LAV_RADIO_TOWER_1F
 	dw 516
 	db 0
-	dw 536
+	dw 522
 	db 1
 .Route8SaffronGate:
 	map_id ROUTE_8_SAFFRON_GATE
 	dw 516
 	db 0
-	dw 537
+	dw 523
 	db 1
 .Route12SuperRodHouse:
 	map_id ROUTE_12_SUPER_ROD_HOUSE
 	dw 516
 	db 0
-	dw 538
+	dw 524
 	db 1
 .Route28:
 	map_id ROUTE_28
 	dw 516
 	db 1
-	dw 539
+	dw 525
 	db 3
 .SilverCaveOutside:
 	map_id SILVER_CAVE_OUTSIDE
 	dw 517
 	db 1
-	dw 542
+	dw 528
 	db 3
 .SilverCavePokecenter1F:
 	map_id SILVER_CAVE_POKECENTER_1F
 	dw 518
 	db 0
-	dw 545
+	dw 531
 	db 1
 .Route28SteelWingHouse:
 	map_id ROUTE_28_STEEL_WING_HOUSE
 	dw 518
 	db 0
-	dw 546
+	dw 532
 	db 1
 .Pokecenter2F:
 	map_id POKECENTER_2F
@@ -2195,103 +2195,103 @@ DemoWorldMaps:
 	map_id ROUTE_7
 	dw 518
 	db 0
-	dw 547
+	dw 533
 	db 2
 .Route16:
 	map_id ROUTE_16
 	dw 518
 	db 0
-	dw 549
+	dw 535
 	db 3
 .Route17:
 	map_id ROUTE_17
 	dw 518
 	db 6
-	dw 552
+	dw 538
 	db 3
 .CeladonCity:
 	map_id CELADON_CITY
 	dw 524
 	db 1
-	dw 555
+	dw 541
 	db 2
 .CeladonDeptStore1F:
 	map_id CELADON_DEPT_STORE_1F
 	dw 525
 	db 0
-	dw 557
+	dw 543
 	db 1
 .CeladonDeptStore2F:
 	map_id CELADON_DEPT_STORE_2F
 	dw 525
 	db 0
-	dw 558
+	dw 544
 	db 1
 .CeladonDeptStore3F:
 	map_id CELADON_DEPT_STORE_3F
 	dw 525
 	db 0
-	dw 559
+	dw 545
 	db 1
 .CeladonDeptStore4F:
 	map_id CELADON_DEPT_STORE_4F
 	dw 525
 	db 0
-	dw 560
+	dw 546
 	db 1
 .CeladonDeptStore5F:
 	map_id CELADON_DEPT_STORE_5F
 	dw 525
 	db 0
-	dw 561
+	dw 547
 	db 1
 .CeladonDeptStore6F:
 	map_id CELADON_DEPT_STORE_6F
 	dw 525
 	db 0
-	dw 562
+	dw 548
 	db 1
 .CeladonDeptStoreElevator:
 	map_id CELADON_DEPT_STORE_ELEVATOR
 	dw 525
 	db 0
-	dw 563
+	dw 549
 	db 1
 .CeladonMansion1F:
 	map_id CELADON_MANSION_1F
 	dw 525
 	db 0
-	dw 564
+	dw 550
 	db 3
 .CeladonMansion2F:
 	map_id CELADON_MANSION_2F
 	dw 525
 	db 0
-	dw 567
+	dw 553
 	db 2
 .CeladonMansion3F:
 	map_id CELADON_MANSION_3F
 	dw 525
 	db 0
-	dw 569
+	dw 555
 	db 2
 .CeladonMansionRoof:
 	map_id CELADON_MANSION_ROOF
 	dw 525
 	db 0
-	dw 571
+	dw 557
 	db 2
 .CeladonMansionRoofHouse:
 	map_id CELADON_MANSION_ROOF_HOUSE
 	dw 525
 	db 0
-	dw 573
+	dw 559
 	db 1
 .CeladonPokecenter1F:
 	map_id CELADON_POKECENTER_1F
 	dw 525
 	db 0
-	dw 574
+	dw 560
 	db 1
 .CeladonPokecenter2FBeta:
 	map_id CELADON_POKECENTER_2F_BETA
@@ -2303,109 +2303,109 @@ DemoWorldMaps:
 	map_id CELADON_GAME_CORNER
 	dw 525
 	db 0
-	dw 575
+	dw 561
 	db 1
 .CeladonGameCornerPrizeRoom:
 	map_id CELADON_GAME_CORNER_PRIZE_ROOM
 	dw 525
 	db 0
-	dw 576
+	dw 562
 	db 1
 .CeladonGym:
 	map_id CELADON_GYM
 	dw 525
 	db 5
-	dw 577
+	dw 563
 	db 1
 .CeladonCafe:
 	map_id CELADON_CAFE
 	dw 530
 	db 0
-	dw 578
+	dw 564
 	db 1
 .Route16FuchsiaSpeechHouse:
 	map_id ROUTE_16_FUCHSIA_SPEECH_HOUSE
 	dw 530
 	db 0
-	dw 579
+	dw 565
 	db 1
 .Route16Gate:
 	map_id ROUTE_16_GATE
 	dw 530
 	db 0
-	dw 580
+	dw 566
 	db 1
 .Route7SaffronGate:
 	map_id ROUTE_7_SAFFRON_GATE
 	dw 530
 	db 0
-	dw 581
+	dw 567
 	db 1
 .Route17Route18Gate:
 	map_id ROUTE_17_ROUTE_18_GATE
 	dw 530
 	db 0
-	dw 582
+	dw 568
 	db 1
 .Route40:
 	map_id ROUTE_40
 	dw 530
 	db 5
-	dw 583
+	dw 569
 	db 3
 .Route41:
 	map_id ROUTE_41
 	dw 535
 	db 11
-	dw 586
+	dw 572
 	db 9
 .CianwoodCity:
 	map_id CIANWOOD_CITY
 	dw 546
 	db 2
-	dw 595
+	dw 581
 	db 2
 .ManiasHouse:
 	map_id MANIAS_HOUSE
 	dw 548
 	db 0
-	dw 597
+	dw 583
 	db 1
 .CianwoodGym:
 	map_id CIANWOOD_GYM
 	dw 548
 	db 4
-	dw 598
+	dw 584
 	db 1
 .CianwoodPokecenter1F:
 	map_id CIANWOOD_POKECENTER_1F
 	dw 552
 	db 0
-	dw 599
+	dw 585
 	db 1
 .CianwoodPharmacy:
 	map_id CIANWOOD_PHARMACY
 	dw 552
 	db 0
-	dw 600
+	dw 586
 	db 1
 .CianwoodPhotoStudio:
 	map_id CIANWOOD_PHOTO_STUDIO
 	dw 552
 	db 0
-	dw 601
+	dw 587
 	db 1
 .CianwoodLugiaSpeechHouse:
 	map_id CIANWOOD_LUGIA_SPEECH_HOUSE
 	dw 552
 	db 0
-	dw 602
+	dw 588
 	db 1
 .PokeSeersHouse:
 	map_id POKE_SEERS_HOUSE
 	dw 552
 	db 0
-	dw 603
+	dw 589
 	db 1
 .BattleTower1F:
 	map_id BATTLE_TOWER_1F
@@ -2447,55 +2447,55 @@ DemoWorldMaps:
 	map_id ROUTE_2
 	dw 552
 	db 11
-	dw 604
+	dw 590
 	db 5
 .Route22:
 	map_id ROUTE_22
 	dw 563
 	db 0
-	dw 609
+	dw 595
 	db 2
 .ViridianCity:
 	map_id VIRIDIAN_CITY
 	dw 563
 	db 0
-	dw 611
+	dw 597
 	db 7
 .ViridianGym:
 	map_id VIRIDIAN_GYM
 	dw 563
 	db 0
-	dw 618
+	dw 604
 	db 1
 .ViridianNicknameSpeechHouse:
 	map_id VIRIDIAN_NICKNAME_SPEECH_HOUSE
 	dw 563
 	db 0
-	dw 619
+	dw 605
 	db 1
 .TrainerHouse1F:
 	map_id TRAINER_HOUSE_1F
 	dw 563
 	db 0
-	dw 620
+	dw 606
 	db 1
 .TrainerHouseB1F:
 	map_id TRAINER_HOUSE_B1F
 	dw 563
 	db 0
-	dw 621
+	dw 607
 	db 1
 .ViridianMart:
 	map_id VIRIDIAN_MART
 	dw 563
 	db 0
-	dw 622
+	dw 608
 	db 1
 .ViridianPokecenter1F:
 	map_id VIRIDIAN_POKECENTER_1F
 	dw 563
 	db 0
-	dw 623
+	dw 609
 	db 1
 .ViridianPokecenter2FBeta:
 	map_id VIRIDIAN_POKECENTER_2F_BETA
@@ -2507,133 +2507,133 @@ DemoWorldMaps:
 	map_id ROUTE_2_NUGGET_HOUSE
 	dw 563
 	db 0
-	dw 624
+	dw 610
 	db 1
 .Route2Gate:
 	map_id ROUTE_2_GATE
 	dw 563
 	db 0
-	dw 625
+	dw 611
 	db 1
 .VictoryRoadGate:
 	map_id VICTORY_ROAD_GATE
 	dw 563
 	db 0
-	dw 626
+	dw 612
 	db 1
 .Route26:
 	map_id ROUTE_26
 	dw 563
 	db 7
-	dw 627
-	db 7
+	dw 613
+	db 5
 .Route27:
 	map_id ROUTE_27
 	dw 570
 	db 8
-	dw 634
-	db 10
+	dw 618
+	db 9
 .Route29:
 	map_id ROUTE_29
 	dw 578
 	db 1
-	dw 644
+	dw 627
 	db 1
 .NewBarkTown:
 	map_id NEW_BARK_TOWN
 	dw 579
 	db 0
-	dw 645
+	dw 628
 	db 2
 .ElmsLab:
 	map_id ELMS_LAB
 	dw 579
 	db 0
-	dw 647
+	dw 630
 	db 1
 .PlayersHouse1F:
 	map_id PLAYERS_HOUSE_1F
 	dw 579
 	db 0
-	dw 648
+	dw 631
 	db 1
 .PlayersHouse2F:
 	map_id PLAYERS_HOUSE_2F
 	dw 579
 	db 0
-	dw 649
+	dw 632
 	db 1
 .PlayersNeighborsHouse:
 	map_id PLAYERS_NEIGHBORS_HOUSE
 	dw 579
 	db 0
-	dw 650
+	dw 633
 	db 1
 .ElmsHouse:
 	map_id ELMS_HOUSE
 	dw 579
 	db 0
-	dw 651
+	dw 634
 	db 1
 .Route26HealHouse:
 	map_id ROUTE_26_HEAL_HOUSE
 	dw 579
 	db 0
-	dw 652
+	dw 635
 	db 1
 .DayOfWeekSiblingsHouse:
 	map_id DAY_OF_WEEK_SIBLINGS_HOUSE
 	dw 579
 	db 0
-	dw 653
+	dw 636
 	db 1
 .Route27SandstormHouse:
 	map_id ROUTE_27_SANDSTORM_HOUSE
 	dw 579
 	db 0
-	dw 654
+	dw 637
 	db 1
 .Route29Route46Gate:
 	map_id ROUTE_29_ROUTE_46_GATE
 	dw 579
 	db 0
-	dw 655
+	dw 638
 	db 1
 .Route5:
 	map_id ROUTE_5
 	dw 579
 	db 0
-	dw 656
+	dw 639
 	db 3
 .SaffronCity:
 	map_id SAFFRON_CITY
 	dw 579
 	db 0
-	dw 659
+	dw 642
 	db 2
 .FightingDojo:
 	map_id FIGHTING_DOJO
 	dw 579
 	db 1
-	dw 661
+	dw 644
 	db 1
 .SaffronGym:
 	map_id SAFFRON_GYM
 	dw 580
 	db 4
-	dw 662
+	dw 645
 	db 9
 .SaffronMart:
 	map_id SAFFRON_MART
 	dw 584
 	db 0
-	dw 671
+	dw 654
 	db 1
 .SaffronPokecenter1F:
 	map_id SAFFRON_POKECENTER_1F
 	dw 584
 	db 0
-	dw 672
+	dw 655
 	db 1
 .SaffronPokecenter2FBeta:
 	map_id SAFFRON_POKECENTER_2F_BETA
@@ -2645,115 +2645,115 @@ DemoWorldMaps:
 	map_id MR_PSYCHICS_HOUSE
 	dw 584
 	db 0
-	dw 673
+	dw 656
 	db 1
 .SaffronMagnetTrainStation:
 	map_id SAFFRON_MAGNET_TRAIN_STATION
 	dw 584
 	db 0
-	dw 674
+	dw 657
 	db 1
 .SilphCo1F:
 	map_id SILPH_CO_1F
 	dw 584
 	db 0
-	dw 675
+	dw 658
 	db 1
 .CopycatsHouse1F:
 	map_id COPYCATS_HOUSE_1F
 	dw 584
 	db 0
-	dw 676
+	dw 659
 	db 1
 .CopycatsHouse2F:
 	map_id COPYCATS_HOUSE_2F
 	dw 584
 	db 0
-	dw 677
+	dw 660
 	db 1
 .Route5UndergroundPathEntrance:
 	map_id ROUTE_5_UNDERGROUND_PATH_ENTRANCE
 	dw 584
 	db 0
-	dw 678
+	dw 661
 	db 1
 .Route5SaffronGate:
 	map_id ROUTE_5_SAFFRON_GATE
 	dw 584
 	db 0
-	dw 679
+	dw 662
 	db 1
 .Route5CleanseTagHouse:
 	map_id ROUTE_5_CLEANSE_TAG_HOUSE
 	dw 584
 	db 0
-	dw 680
+	dw 663
 	db 1
 .Route30:
 	map_id ROUTE_30
 	dw 584
 	db 5
-	dw 681
+	dw 664
 	db 1
 .Route31:
 	map_id ROUTE_31
 	dw 589
 	db 3
-	dw 682
+	dw 665
 	db 2
 .CherrygroveCity:
 	map_id CHERRYGROVE_CITY
 	dw 592
 	db 0
-	dw 684
+	dw 667
 	db 1
 .CherrygroveMart:
 	map_id CHERRYGROVE_MART
 	dw 592
 	db 0
-	dw 685
+	dw 668
 	db 1
 .CherrygrovePokecenter1F:
 	map_id CHERRYGROVE_POKECENTER_1F
 	dw 592
 	db 0
-	dw 686
+	dw 669
 	db 1
 .CherrygroveGymSpeechHouse:
 	map_id CHERRYGROVE_GYM_SPEECH_HOUSE
 	dw 592
 	db 0
-	dw 687
+	dw 670
 	db 1
 .GuideGentsHouse:
 	map_id GUIDE_GENTS_HOUSE
 	dw 592
 	db 0
-	dw 688
+	dw 671
 	db 1
 .CherrygroveEvolutionSpeechHouse:
 	map_id CHERRYGROVE_EVOLUTION_SPEECH_HOUSE
 	dw 592
 	db 0
-	dw 689
+	dw 672
 	db 1
 .Route30BerryHouse:
 	map_id ROUTE_30_BERRY_HOUSE
 	dw 592
 	db 0
-	dw 690
+	dw 673
 	db 1
 .MrPokemonsHouse:
 	map_id MR_POKEMONS_HOUSE
 	dw 592
 	db 0
-	dw 691
+	dw 674
 	db 1
 .Route31VioletGate:
 	map_id ROUTE_31_VIOLET_GATE
 	dw 592
 	db 0
-	dw 692
+	dw 675
 	db 1
 
 	assert NUM_DEMO_TARGETS == 592, "NUM_DEMO_TARGETS (constants/demo_constants.asm) should be 592"

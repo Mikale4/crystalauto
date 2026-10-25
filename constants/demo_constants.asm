@@ -91,8 +91,9 @@ DEF DFLOW_GOAL      EQU $fe
 
 DEF DEMO_QUEUE_SIZE EQU $200 ; cells
 DEF NUM_DEMO_WORLD_MAPS EQU 388 ; (every map: see data/demo/world.asm)
-DEF NUM_DEMO_NODES EQU 693 ; (see data/demo/world_nodes.asm)
+DEF NUM_DEMO_NODES EQU 676 ; (see data/demo/world_nodes.asm)
 DEF DEMO_MAX_START_NODES EQU 24
+DEF DEMO_MAX_HOP_NODES EQU 12 ; (a map has 9 at most)
 
 ; DemoNodeEdges kinds: each edge is its kind, the warp (from 1) or direction, the
 ; node it leads to (dw), the field moves it needs (DEMOFIELD_* bits)
@@ -107,6 +108,9 @@ DEF DEMO_EDGE_LENGTH EQU 5
 	const DEMOSEARCH_MAP    ; 0: a map (wDemoRouteTo)
 	const DEMOSEARCH_CENTER ; 1: a POKéMON CENTER
 	const DEMOSEARCH_TARGETS ; 2: a map with something still to do (DemoMapOpenTargets)
+	const DEMOSEARCH_HOP    ; 3: a region it's going round to (wDemoHopNodes; see DemoStartHop)
+DEF DEMO_HOP_KEY EQU $fffe ; (wDemoRouteTo for DEMOSEARCH_HOP)
+DEF DEMO_ROUTE_HERE EQU -2 ; (wDemoRouteKind: it's in one of them)
 DEF NUM_DEMO_TARGETS EQU 592
 
 ; DemoTargets kinds
