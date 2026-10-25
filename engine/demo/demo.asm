@@ -80,17 +80,145 @@ DemoRequests:
 	xor a
 .got_speed
 	ld [wDemoSpeed], a
-	ret
+	jr DemoShowSign
 
 DemoStop:
-; Hand the game to the player.
+; Hand the game to the player (at the game's own speed).
 	ld a, DEMO_STOPPED
 	ld [wDemoState], a
 	xor a
 	ld [wDemoPad], a
 	ld [wDemoPadPressed], a
 	ld [wDemoGoal], a
+	ld [wDemoSpeed], a
+	; fallthrough
+
+DemoShowSign:
+; Show the Demo's sign on the next overworld frame (see PlaceMapNameSign).
+	ld hl, wDemoSign
+	set DEMOSIGN_PENDING_F, [hl]
 	ret
+
+ResumeDemo::
+; Hand the game back to the Demo (the START menu's DEMO): its plan picks up
+; wherever the game is.
+	call InitDemo
+	xor a
+	ld [wDemoGoal], a
+	ld [wDemoWait], a
+	ld [wDemoAnswer], a
+	ld [wDemoPad], a
+	ld [wDemoSpeed], a
+	ld [wDemoFlowKey], a ; (it works out its way again)
+	dec a
+	ld [wDemoPadLast], a ; (the buttons the player holds now aren't presses)
+	ld a, DEMO_RUNNING
+	ld [wDemoState], a
+	jr DemoShowSign
+
+DemoSetStatus:
+; a: DSTATUS_*. Say so, on the sign if it's news.
+	ld hl, wDemoStatus
+	cp [hl]
+	ret z
+	ld [hl], a
+	jr DemoShowSign
+
+PlaceDemoSign::
+; The Demo's sign, in the frame PlaceMapNameSign puts up: what it's doing and
+; its speed, or (stopped) how to hand it back.
+	ld a, [wDemoState]
+	cp DEMO_RUNNING
+	jr z, .running
+	ld de, .Stopped
+	hlcoord 0, 1
+	call .Centered
+	ld de, .HandBack
+	jr .second_line
+
+.running
+	ld a, [wDemoStatus]
+	cp NUM_DSTATUSES
+	jr c, .got_status
+	xor a
+.got_status
+	ld hl, DemoStatusTexts
+	ld e, a
+	ld d, 0
+	add hl, de
+	add hl, de
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	hlcoord 0, 1
+	call .Centered
+	ld de, .Speed1
+	ld a, [wDemoSpeed]
+	and a
+	jr z, .second_line
+	ld de, .Speed2
+.second_line
+	hlcoord 0, 2
+	; fallthrough
+
+.Centered:
+; Place string de centered on the row at hl.
+	push de
+	ld c, 0
+.length
+	ld a, [de]
+	inc de
+	cp '@'
+	jr z, .got_length
+	inc c
+	jr .length
+
+.got_length
+	pop de
+	ld a, SCREEN_WIDTH
+	sub c
+	srl a
+	ld c, a
+	ld b, 0
+	add hl, bc
+	jp PlaceString
+
+.Stopped:  db "DEMO stopped@"
+.HandBack: db "START menu: DEMO@"
+.Speed1:   db "DEMO ×1 START:stop@"
+.Speed2:   db "DEMO ×2 START:stop@"
+
+DemoStatusTexts:
+; entries correspond to DSTATUS_* constants
+	table_width 2
+	dw .Starting
+	dw .Starter
+	dw .Errand
+	dw .BackToElm
+	dw .Lesson
+	dw .ToViolet
+	dw .Healing
+	dw .Falkner
+	dw .Training
+	dw .Catching
+	dw .Shopping
+	dw .Done
+	dw .Giving
+	assert_table_length NUM_DSTATUSES
+
+.Starting:  db "Off on a journey@"
+.Starter:   db "To get a POKéMON@"
+.Errand:    db "To MR.POKéMON's@"
+.BackToElm: db "Back to PROF.ELM@"
+.Lesson:    db "A catching lesson@"
+.ToViolet:  db "Getting ready@"
+.Healing:   db "To a POKéMON CENTER@"
+.Falkner:   db "FALKNER's GYM@"
+.Training:  db "Training@"
+.Catching:  db "Catching a team@"
+.Shopping:  db "Shopping@"
+.Done:      db "That's all for now@"
+.Giving:    db "Giving out items@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -427,29 +555,53 @@ DemoPackJob:
 	ret
 
 DemoGiveTarget:
-; Return carry, and in c the first POKéMON in the team (not an egg) that doesn't
-; hold item a.
+; Return carry, and in c the POKéMON in the team (not an egg) to give item a to:
+; the first that holds nothing, else the first that holds something else (not
+; one a team may hold only one of). None if one a team may hold only one of is
+; held already.
 	ld b, a
+	call IsLimitedHeldItem
+	jr nc, .not_limited
+	call DemoCountItem.Team
+	and a
+	ret nz ; (nc)
+.not_limited
+	ld e, 0 ; (anything else held: no)
+	call .Find
+	ret c
+	ld e, 1 ; (anything else held: yes)
+	; fallthrough
+
+.Find:
+; b: the item; e: whether a POKéMON holding something else will do.
 	ld c, 0
 	ld hl, wPartySpecies
-	ld de, wPartyMon1Item
 .loop
 	ld a, [hli]
 	cp -1
 	jr z, .none
 	cp EGG
 	jr z, .next
-	ld a, [de]
+	push hl
+	ld a, c
+	ld hl, wPartyMon1Item
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	pop bc
+	ld a, [hl]
+	pop hl
+	and a
+	jr z, .found
 	cp b
+	jr z, .next
+	call IsLimitedHeldItem
+	jr c, .next
+	ld a, e
+	and a
 	jr nz, .found
 .next
 	inc c
-	ld a, e
-	add PARTYMON_STRUCT_LENGTH
-	ld e, a
-	adc d
-	sub e
-	ld d, a
 	jr .loop
 
 .found
@@ -482,6 +634,12 @@ DemoCountItem:
 ; pockets), and held by the team.
 	ld b, a
 	call DemoPackCount
+	jr .count_held
+
+.Team:
+; (b: the item) how many the team holds
+	xor a
+.count_held
 	ld c, a
 	ld a, [wPartyCount]
 	and a
@@ -794,7 +952,9 @@ DemoPlan_Status:
 	pop hl
 	inc hl
 	ld a, [hli]
-	ld [wDemoStatus], a
+	push hl
+	call DemoSetStatus
+	pop hl
 	jp DemoNextCommand
 
 DemoPlan_Travel:
@@ -1249,7 +1409,7 @@ DemoHealUp:
 	ccf
 	ret c
 	ld a, DSTATUS_HEALING
-	ld [wDemoStatus], a
+	call DemoSetStatus
 	call DemoNearestCenter
 	cp -1
 	jr z, .none

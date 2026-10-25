@@ -156,6 +156,9 @@ ResetBatonPassStatus:
 	call GetBattleVarAddr
 	ld [hl], 0
 
+	; (nor an attack, for its QUICK CLAW and KING'S ROCK)
+	farcall ResetEntryHeldFlags
+
 	xor a
 	ld [wPlayerWrapCount], a
 	ld [wEnemyWrapCount], a

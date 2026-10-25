@@ -1,5 +1,8 @@
 CheckBattleScene:
-; Return carry if battle scene is turned off.
+; Return carry if battle scene is turned off (or the Demo runs at speed).
+	ld a, [wDemoSpeed]
+	and a
+	jr nz, .off
 
 	ld a, BANK(wLinkMode)
 	ld hl, wLinkMode

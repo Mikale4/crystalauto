@@ -1,5 +1,11 @@
+PUSHS
+SECTION "Print Letter Delay", ROM0 ; (out of "Home", which is full)
+
 PrintLetterDelay::
-; Wait before printing the next letter.
+; Wait before printing the next letter (none while the Demo runs at speed).
+	ld a, [wDemoSpeed]
+	and a
+	ret nz
 
 ; The text speed setting in wOptions is actually a frame count:
 ; 	fast: 1 frame
@@ -79,6 +85,8 @@ PrintLetterDelay::
 	pop de
 	pop hl
 	ret
+
+POPS
 
 CopyDataUntil::
 ; Copy [hl .. bc) to de.

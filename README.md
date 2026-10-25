@@ -11,7 +11,9 @@ the **FAIRY type** and today's **type chart**, and **moves** with their modern p
 accuracy, PP and effects. Pokémon have **natures**, shown with their DVs on a new
 page of the stats screen. **Evolutions are simpler** (no trading or friendship
 needed), and, as in PalletToPewter, **no items are used in battle**: the X items
-are held instead, and give their boost when the Pokémon comes in.
+are held instead, and give their boost when the Pokémon comes in. Several **held
+items** work in new ways (QUICK CLAW, KING'S ROCK, FOCUS BAND, …), a team holds only
+one of some of them, and **critical hits** work as they do today.
 
 Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
@@ -231,6 +233,31 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   the max HP a turn. DISABLE lasts four turns, ENCORE three, SPITE takes 4 PP, and
   PROTECT, DETECT and ENDURE are a third as likely to work each time in a row.
 - HIDDEN POWER is a special move with 60 power.
+- **TRANSFORM** works like the latest games' IMPOSTER: a Pokémon that knows it turns
+  into the foe as soon as it comes in, before anything else happens (it takes no
+  turn and no PP). A wild DITTO turns into your Pokémon right away. It doesn't when
+  the foe has transformed too, or is out of sight (FLY, DIG).
+
+### Critical hits
+
+Critical hits work as they do in the latest games. They do 1.5× damage (not 2×), and
+ignore the attacker's lowered Attack or Special Attack, the defender's raised
+Defense or Special Defense, and REFLECT and LIGHT SCREEN. How likely one is goes by
+stages:
+
+| Stage | Chance |
+|---|---|
+| 0 | 1 in 24 |
+| +1 | 1 in 8 |
+| +2 | 1 in 2 |
+| +3 and up | every hit |
+
+- FOCUS ENERGY (and DIRE HIT): +2
+- moves that are likely to land one (KARATE CHOP, RAZOR WIND, RAZOR LEAF,
+  CRABHAMMER, SLASH, AEROBLAST, CROSS CHOP, SKY ATTACK): +1
+- SCOPE LENS: +2
+- STICK and LUCKY PUNCH: +1, and every hit for FARFETCH'D holding a STICK, and for
+  CHANSEY or BLISSEY holding a LUCKY PUNCH
 
 ### No items in battle
 
@@ -245,16 +272,38 @@ see below):
 
 | Item | When the holder comes in |
 |---|---|
-| X ATTACK | Attack +2 |
-| X DEFEND | Defense +2 |
-| X SPEED | Speed +2 |
-| X SPECIAL | Special Attack +2 |
-| X ACCURACY | accuracy +2 |
+| X ATTACK | Attack +1 |
+| X DEFEND | Defense +1 |
+| X SPEED | Speed +1 |
+| X SPECIAL | Special Attack +1 |
+| X ACCURACY | accuracy +1 |
 | DIRE HIT | it's getting pumped (FOCUS ENERGY) |
 | GUARD SPEC. | it's shrouded in MIST |
 
-They're sold on the 3rd floor of the GOLDENROD DEPT. STORE, and trainers' Pokémon
-hold them too (see [Difficulty](#difficulty)).
+They're sold on the 3rd floor of the GOLDENROD DEPT. STORE (VIOLET CITY's mart has
+X ATTACK, X DEFEND and X SPEED), and trainers' Pokémon hold them too (see
+[Difficulty](#difficulty)). A team holds only one of each (see below).
+
+### Held items
+
+These held items work in new ways:
+
+| Item | What it does |
+|---|---|
+| QUICK CLAW | the first move its holder uses after it comes in (an attack or not) has +1 priority |
+| KING'S ROCK | the first attack its holder uses after it comes in makes the foe flinch, if it hits before the foe has moved |
+| FOCUS BAND | once a battle, the first time its holder would faint from an attack, it hangs on with 1 HP |
+| SCOPE LENS | +2 critical hit stages (see [Critical hits](#critical-hits)) |
+| STICK, LUCKY PUNCH | +1 critical hit stage; every hit for FARFETCH'D (STICK), CHANSEY and BLISSEY (LUCKY PUNCH) |
+| CHARCOAL, MYSTIC WATER and the other type boosters | moves of their type do 1.5× damage (instead of 1.1×) |
+
+**One to a team.** A team, yours or a trainer's, holds only one of each of these:
+the X items (X ATTACK, X DEFEND, X SPEED, X SPECIAL, X ACCURACY, DIRE HIT and
+GUARD SPEC.), BERSERK GENE, FOCUS BAND, KING'S ROCK and QUICK CLAW. You can't GIVE
+one to a Pokémon while another on your team holds one ("QUICK CLAW: only one per
+team!"), and if two hold one anyway (a Pokémon you caught or traded for, say), only
+the first in your party counts in battle. Different ones are fine: an X ATTACK, an
+X DEFEND and a QUICK CLAW on the same team all work.
 
 ### Held items come back
 
@@ -429,7 +478,7 @@ shows it.
 
 A trainer's Pokémon that holds an item gets the one that suits it best, and no two
 on a team are the same: the X ATTACK or X SPECIAL for its best attack (so it comes
-in with +2), else the item that boosts that attack's type (CHARCOAL, MYSTIC WATER,
+in with +1), else the item that boosts that attack's type (CHARCOAL, MYSTIC WATER,
 …), else LEFTOVERS, X SPEED, X DEFEND, DIRE HIT, QUICK CLAW, KING'S ROCK, SCOPE LENS,
 BRIGHTPOWDER, a berry, FOCUS BAND, X ACCURACY or GUARD SPEC.
 
@@ -499,7 +548,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 7ea56656adaf6b8f2befdab9953887db5e5d20da`.
+The patched ROM has `sha1: b6da1938d38b5af1bd423d050667e44c28430b25`.
 
 
 ## Building it
@@ -635,6 +684,20 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `SaveBattleHeldItems` remembers what the party holds as a battle starts
   (`wBattleHeldItems`, in battle RAM), and `RestoreBattleHeldItems`, at the start
   of `ExitBattle`, gives back what's gone.
+- `GetUserItem` and `GetOpponentItem` ask `CheckHeldItemLimit` (in
+  `modern_moves.asm`; `LimitedHeldItems` lists the one-to-a-team items) whether a
+  teammate earlier in the party held the same one going in, and if so return no
+  effect. `CheckTeamHoldsLimitedItem` stops a GIVE (`TryGiveItemToPartymon`).
+  QUICK CLAW is in `CompareMovePriority` (while `wPlayerTurnsTaken` or
+  `wEnemyTurnsTaken`, which count the moves used since coming in, is 0); KING'S
+  ROCK is `MarkFirstAttack` (from `BattleCommand_DoTurn`) and `HeldKingsRock`
+  (from `BattleCommand_ApplyDamage`, where FOCUS BAND is too), with
+  `wPlayerHeldFlags` and `wEnemyHeldFlags` in battle RAM. `HandleEntryTransform`
+  runs at the start of the turn, before `HandleBerserkGene`.
+- Critical hits: `BattleCommand_Critical` counts the stages
+  ([`data/battle/critical_hit_chances.asm`](data/battle/critical_hit_chances.asm)),
+  `ModernCriticalStats` picks the stats a critical hit uses, and
+  `.CriticalMultiplier` makes it 1.5×.
 - [`engine/pokemon/natures.asm`](engine/pokemon/natures.asm) has `GetNature` (the
   DVs as a 16-bit number, + 15, mod 25), `ApplyNature`, which `CalcMonStatC` calls
   for every stat it works out, and `ApplyNaturesToOldSave`, run once on CONTINUE

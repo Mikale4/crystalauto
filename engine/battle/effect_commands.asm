@@ -973,6 +973,11 @@ BattleCommand_DoTurn:
 	ld a, [bc]
 	inc a
 	ld [bc], a
+	push de
+	push hl
+	farcall MarkFirstAttack
+	pop hl
+	pop de
 
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
@@ -1118,7 +1123,10 @@ CheckMimicUsed:
 	ret
 
 BattleCommand_Critical:
-; Determine whether this attack's hit will be critical.
+; Determine whether this attack's hit will be critical, as in the latest games:
+; a stage for each of FOCUS ENERGY (2), a high critical hit move (1), SCOPE LENS
+; (2), STICK and LUCKY PUNCH (1; every hit for FARFETCH'D, or CHANSEY and
+; BLISSEY), and from stage 3 every hit is (see CriticalHitChances).
 
 	xor a
 	ld [wCriticalHit], a
@@ -1137,28 +1145,26 @@ BattleCommand_Critical:
 	ld a, [wBattleMonSpecies]
 
 .Item:
+	ld b, a
 	ld c, 0
-
-	cp CHANSEY
-	jr nz, .Farfetchd
 	ld a, [hl]
 	cp LUCKY_PUNCH
-	jr nz, .FocusEnergy
+	jr nz, .Stick
+	ld a, b
+	cp CHANSEY
+	jr z, .Critical
+	cp BLISSEY
+	jr z, .Critical
+	inc c
+	jr .FocusEnergy
 
-; +2 critical level
-	ld c, 2
-	jr .Tally
-
-.Farfetchd:
-	cp FARFETCH_D
-	jr nz, .FocusEnergy
-	ld a, [hl]
+.Stick:
 	cp STICK
 	jr nz, .FocusEnergy
-
-; +2 critical level
-	ld c, 2
-	jr .Tally
+	ld a, b
+	cp FARFETCH_D
+	jr z, .Critical
+	inc c
 
 .FocusEnergy:
 	ld a, BATTLE_VARS_SUBSTATUS4
@@ -1166,7 +1172,8 @@ BattleCommand_Critical:
 	bit SUBSTATUS_FOCUS_ENERGY, a
 	jr z, .CheckCritical
 
-; +1 critical level
+; +2 critical level
+	inc c
 	inc c
 
 .CheckCritical:
@@ -1179,8 +1186,7 @@ BattleCommand_Critical:
 	pop bc
 	jr nc, .ScopeLens
 
-; +2 critical level
-	inc c
+; +1 critical level
 	inc c
 
 .ScopeLens:
@@ -1191,16 +1197,21 @@ BattleCommand_Critical:
 	pop bc
 	jr nz, .Tally
 
-; +1 critical level
+; +2 critical level
+	inc c
 	inc c
 
 .Tally:
+	ld a, c
+	cp 3
+	jr nc, .Critical
 	ld hl, CriticalHitChances
 	ld b, 0
 	add hl, bc
 	call BattleRandom
 	cp [hl]
 	ret nc
+.Critical:
 	ld a, 1
 	ld [wCriticalHit], a
 	ret
@@ -2108,6 +2119,7 @@ BattleCommand_FailureText:
 	jp EndMoveEffect
 
 BattleCommand_ApplyDamage:
+	farcall HeldKingsRock
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVar
 	bit SUBSTATUS_ENDURE, a
@@ -2120,18 +2132,26 @@ BattleCommand_ApplyDamage:
 	jr .damage
 
 .focus_band
+; (once a battle, the first time its holder would faint)
 	call GetOpponentItem
 	ld a, b
 	cp HELD_FOCUS_BAND
 	ld b, 0
 	jr nz, .damage
-
-	call BattleRandom
-	cp c
-	jr nc, .damage
+	ldh a, [hBattleTurn]
+	and a
+	ld hl, wEnemyHeldFlags
+	jr z, .got_flags
+	ld hl, wPlayerHeldFlags
+.got_flags
+	bit HELDFLAG_FOCUS_BAND_F, [hl]
+	jr nz, .damage
+	push hl
 	call BattleCommand_FalseSwipe
+	pop hl
 	ld b, 0
 	jr nc, .damage
+	set HELDFLAG_FOCUS_BAND_F, [hl]
 	ld b, 2
 
 .damage
@@ -2561,14 +2581,7 @@ PlayerAttackDamage:
 
 .physicalcrit
 	ld hl, wBattleMonAttack
-	call CheckDamageStatsCritical
-	jr c, .thickclub
-
-	ld hl, wEnemyDefense
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	ld hl, wPlayerAttack
+	call ModernCriticalStats
 	jr .thickclub
 
 .special
@@ -2585,14 +2598,7 @@ PlayerAttackDamage:
 
 .specialcrit
 	ld hl, wBattleMonSpclAtk
-	call CheckDamageStatsCritical
-	jr c, .lightball
-
-	ld hl, wEnemySpDef
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	ld hl, wPlayerSpAtk
+	call ModernCriticalStats
 
 .lightball
 ; Note: Returns player special attack at hl in hl.
@@ -2660,51 +2666,78 @@ TruncateHL_BC:
 	ld b, l
 	ret
 
-CheckDamageStatsCritical:
-; Return carry if boosted stats should be used in damage calculations.
-; Unboosted stats should be used if the attack is a critical hit,
-;  and the stage of the opponent's defense is higher than the user's attack.
-
+ModernCriticalStats:
+; A critical hit, as in the latest games, ignores the attacker's lowered attack,
+; the defender's raised defense, and REFLECT and LIGHT SCREEN.
+; hl: the attack stat (with its changes); bc: the defense (with its changes and
+; screens). Return the ones to use in hl and bc (de kept: d is the move's power).
 	ld a, [wCriticalHit]
 	and a
-	scf
 	ret z
-
+	push de
 	push hl
-	push bc
 	ldh a, [hBattleTurn]
 	and a
-	jr nz, .enemy
+	ld de, .Stats
 	ld a, [wPlayerMoveStructType]
-	cp SPECIAL
-; special
-	ld a, [wPlayerSAtkLevel]
-	ld b, a
-	ld a, [wEnemySDefLevel]
-	jr nc, .end
-; physical
-	ld a, [wPlayerAtkLevel]
-	ld b, a
-	ld a, [wEnemyDefLevel]
-	jr .end
-
-.enemy
+	jr z, .got_side
+	ld de, .Stats + 2 * 10 ; (the foe's)
 	ld a, [wEnemyMoveStructType]
+.got_side
 	cp SPECIAL
-; special
-	ld a, [wEnemySAtkLevel]
+	jr c, .got_category
+	ld hl, 10 ; (special)
+	add hl, de
+	ld d, h
+	ld e, l
+.got_category
+; the defense: with its changes, unless they raised it
+	ld hl, 2
+	add hl, de
+	call .Pointed
+	ld hl, 4
+	cp BASE_STAT_LEVEL + 1
+	jr c, .got_defense
+	ld hl, 6
+.got_defense
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [hli]
 	ld b, a
-	ld a, [wPlayerSDefLevel]
-	jr nc, .end
-; physical
-	ld a, [wEnemyAtkLevel]
-	ld b, a
-	ld a, [wPlayerDefLevel]
-.end
-	cp b
-	pop bc
+	ld c, [hl]
+; the attack: with its changes, unless they lowered it
+	ld h, d
+	ld l, e
+	call .Pointed
 	pop hl
+	cp BASE_STAT_LEVEL
+	jr nc, .done
+	ld hl, 8
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+.done
+	pop de
 	ret
+
+.Pointed:
+; Return the byte at the pointer at hl.
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [hl]
+	ret
+
+.Stats:
+; attack level, defense level, defense with changes, without, attack without
+	dw wPlayerAtkLevel,  wEnemyDefLevel,   wEnemyMonDefense,  wEnemyDefense,  wPlayerAttack
+	dw wPlayerSAtkLevel, wEnemySDefLevel,  wEnemyMonSpclDef,  wEnemySpDef,    wPlayerSpAtk
+	dw wEnemyAtkLevel,   wPlayerDefLevel,  wBattleMonDefense, wPlayerDefense, wEnemyAttack
+	dw wEnemySAtkLevel,  wPlayerSDefLevel, wBattleMonSpclDef, wPlayerSpDef,   wEnemySpAtk
+
 
 ThickClubBoost:
 ; Return in hl the stat value at hl.
@@ -2805,14 +2838,7 @@ EnemyAttackDamage:
 
 .physicalcrit
 	ld hl, wEnemyMonAttack
-	call CheckDamageStatsCritical
-	jr c, .thickclub
-
-	ld hl, wPlayerDefense
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	ld hl, wEnemyAttack
+	call ModernCriticalStats
 	jr .thickclub
 
 .special
@@ -2829,13 +2855,7 @@ EnemyAttackDamage:
 
 .specialcrit
 	ld hl, wEnemyMonSpclAtk
-	call CheckDamageStatsCritical
-	jr c, .lightball
-	ld hl, wPlayerSpDef
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	ld hl, wEnemySpAtk
+	call ModernCriticalStats
 
 .lightball
 	call LightBallBoost
@@ -3106,22 +3126,24 @@ DEF DAMAGE_CAP EQU MAX_DAMAGE - MIN_DAMAGE
 	and a
 	ret z
 
-; x2
-	ldh a, [hQuotient + 3]
-	add a
-	ldh [hQuotient + 3], a
-
+; x1.5, as in the latest games
 	ldh a, [hQuotient + 2]
-	rl a
-	ldh [hQuotient + 2], a
-
+	ld h, a
+	ldh a, [hQuotient + 3]
+	ld l, a
+	ld d, h
+	ld e, l
+	srl d
+	rr e
+	add hl, de
+	jr nc, .critical_ok
 ; Cap at $ffff.
-	ret nc
-
-	ld a, $ff
+	ld hl, $ffff
+.critical_ok
+	ld a, h
 	ldh [hQuotient + 2], a
+	ld a, l
 	ldh [hQuotient + 3], a
-
 	ret
 
 INCLUDE "data/types/type_boost_items.asm"
@@ -5373,31 +5395,7 @@ CheckOpponentWentFirst:
 	ret
 
 BattleCommand_HeldFlinch:
-; kingsrock
-
-	ld a, [wAttackMissed]
-	and a
-	ret nz
-
-	call GetUserItem
-	ld a, b
-	cp HELD_FLINCH
-	ret nz
-
-	call CheckSubstituteOpp
-	ret nz
-	ld a, BATTLE_VARS_MOVE_EFFECT
-	call GetBattleVarAddr
-	ld d, h
-	ld e, l
-	call GetUserItem
-	call BattleRandom
-	cp c
-	ret nc
-	call EndRechargeOpp
-	ld a, BATTLE_VARS_SUBSTATUS3_OPP
-	call GetBattleVarAddr
-	set SUBSTATUS_FLINCHED, [hl]
+; kingsrock (KING'S ROCK works on every attack now: see HeldKingsRock)
 	ret
 
 BattleCommand_OHKO:
@@ -6461,26 +6459,39 @@ CheckHiddenOpponent:
 	ret
 
 GetUserItem:
-; Return the effect of the user's item in bc, and its id at hl.
-	ld hl, wBattleMonItem
+; Return the effect of the user's item in bc, and its id at hl. A second of an
+; item a team may hold only one of has no effect (and returns carry): see
+; CheckHeldItemLimit.
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .go
-	ld hl, wEnemyMonItem
-.go
-	ld b, [hl]
-	jp GetItemHeldEffect
+	jr z, GetPlayerMonItem
+	jr GetEnemyMonItem
 
 GetOpponentItem:
-; Return the effect of the opponent's item in bc, and its id at hl.
-	ld hl, wEnemyMonItem
+; Return the effect of the opponent's item in bc, and its id at hl (as above).
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .go
+	jr nz, GetPlayerMonItem
+GetEnemyMonItem:
+	ld hl, wEnemyMonItem
+	ld a, 1
+	jr GetSideItem
+
+GetPlayerMonItem:
 	ld hl, wBattleMonItem
-.go
+	xor a
+GetSideItem:
+	push af
 	ld b, [hl]
-	jp GetItemHeldEffect
+	call GetItemHeldEffect
+	pop af
+	push bc
+	ld c, a
+	farcall CheckHeldItemLimit
+	pop bc
+	ret nc
+	ld bc, 0
+	ret
 
 GetItemHeldEffect:
 ; Return the effect of item b in bc.

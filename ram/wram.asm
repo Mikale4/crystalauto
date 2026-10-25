@@ -650,6 +650,8 @@ wABCurScore:: db
 wABCurUs:: db
 wABCandidateOut:: db ; whether wABCandidate is the one out (its accuracy and evasion count)
 wBattleHeldItems:: ds PARTY_LENGTH ; what the party held going in (see SaveBattleHeldItems)
+wPlayerHeldFlags:: db ; HELDFLAG_* (see MarkFirstAttack and BattleCommand_ApplyDamage)
+wEnemyHeldFlags:: db
 wABCandidate:: battle_struct wABCandidate
 wBattleEnd::
 
@@ -952,6 +954,7 @@ wDemoGridH:: db
 SECTION "Demo RAM 1", WRAM0
 
 wDemoAway:: db ; set when anything but walking about asks for buttons (see DemoTalkTo)
+wDemoSign:: db ; DEMOSIGN_* flags (see PlaceMapNameSign)
 
 SECTION UNION "Overworld Map", WRAM0
 

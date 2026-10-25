@@ -270,6 +270,8 @@ GiveTakePartyMonItem:
 TryGiveItemToPartymon:
 	call SpeechTextbox
 	call PartyMonItemName
+	farcall CheckTeamHoldsLimitedItem
+	jr c, .one_per_team
 	call GetPartyItemLocation
 	ld a, [hl]
 	and a
@@ -292,6 +294,11 @@ TryGiveItemToPartymon:
 
 .please_remove_mail
 	ld hl, PokemonRemoveMailText
+	call MenuTextboxBackup
+	ret
+
+.one_per_team
+	ld hl, OnePerTeamText
 	call MenuTextboxBackup
 	ret
 
@@ -397,6 +404,13 @@ PokemonHoldItemText:
 PokemonRemoveMailText:
 	text_far _PokemonRemoveMailText
 	text_end
+
+OnePerTeamText:
+; (see LimitedHeldItems)
+	text_ram wStringBuffer1
+	text ":"
+	line "only one per team!"
+	prompt
 
 PokemonNotHoldingText:
 	text_far _PokemonNotHoldingText

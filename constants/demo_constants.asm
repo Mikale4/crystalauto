@@ -26,6 +26,10 @@ DEF DEMOCTX_HELD EQU 1 << DEMOCTX_HELD_F
 	const DEMOSPEED_2X ; 1
 DEF NUM_DEMOSPEEDS EQU const_value
 
+; wDemoSign
+DEF DEMOSIGN_PENDING_F EQU 0 ; show the Demo's sign on the next overworld frame
+DEF DEMOSIGN_SHOWING_F EQU 1 ; the sign up is the Demo's
+
 ; how long the Demo holds a tapped button, and lets go between taps (frames)
 DEF DEMO_TAP_FRAMES EQU 3
 

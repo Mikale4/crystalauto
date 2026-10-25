@@ -247,7 +247,7 @@ HandleHeldEntryItems::
 	jr z, .focus
 	cp ENTRY_MIST
 	jr z, .mist
-; a stat, two stages up (as BERSERK GENE does it)
+; a stat, a stage up
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVarAddr
 	push hl
@@ -265,7 +265,7 @@ HandleHeldEntryItems::
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld a, BANK(BattleCommand_AttackUp2)
+	ld a, BANK(BattleCommand_AttackUp)
 	rst FarCall
 	pop af
 	pop hl
@@ -297,12 +297,12 @@ HandleHeldEntryItems::
 
 .StatUps:
 ; entries correspond to ENTRY_* constants
-	dw BattleCommand_AttackUp2
-	dw BattleCommand_DefenseUp2
-	dw BattleCommand_SpeedUp2
-	dw BattleCommand_SpecialAttackUp2
-	dw BattleCommand_SpecialDefenseUp2
-	dw BattleCommand_AccuracyUp2
+	dw BattleCommand_AttackUp
+	dw BattleCommand_DefenseUp
+	dw BattleCommand_SpeedUp
+	dw BattleCommand_SpecialAttackUp
+	dw BattleCommand_SpecialDefenseUp
+	dw BattleCommand_AccuracyUp
 
 SaveBattleHeldItems:
 ; Remember what each POKéMON in the party holds as the battle starts, so that
@@ -352,4 +352,269 @@ RestoreBattleHeldItems:
 	pop bc
 	dec c
 	jr nz, .loop
+	ret
+
+LimitedHeldItems:
+; A team may hold only one of each of these (see CheckHeldItemLimit).
+	db X_ATTACK, X_DEFEND, X_SPEED, X_SPECIAL, X_ACCURACY, DIRE_HIT, GUARD_SPEC
+	db BERSERK_GENE, FOCUS_BAND, KINGS_ROCK, QUICK_CLAW
+	db -1
+
+IsLimitedHeldItem:
+; Return carry if item a is one a team may hold only one of (a, bc, hl kept).
+	push hl
+	push bc
+	ld c, a
+	ld hl, LimitedHeldItems
+.find
+	ld a, [hli]
+	cp -1
+	jr z, .no
+	cp c
+	jr nz, .find
+	ld a, c
+	pop bc
+	pop hl
+	scf
+	ret
+
+.no
+	ld a, c
+	pop bc
+	pop hl
+	and a
+	ret
+
+CheckHeldItemLimit::
+; c: a side (0: the player's POKéMON out, 1: the foe). Return its item's address
+; in hl, and carry if that item is one a team may hold only one of and a teammate
+; before it in the party holds one too: only the first counts. (The player's
+; team as it went into the battle, see SaveBattleHeldItems; a wild POKéMON has no
+; team.)
+	push de
+	ld a, c
+	and a
+	jr nz, .enemy
+	ld hl, wBattleMonItem
+	ld de, wBattleHeldItems
+	ld a, [wCurBattleMon]
+	ld b, a
+	ld c, 1 ; (a byte for each)
+	jr .got_side
+
+.enemy
+	ld hl, wEnemyMonItem
+	ld a, [wBattleMode]
+	dec a
+	jr z, .no
+	ld de, wOTPartyMon1Item
+	ld a, [wCurOTMon]
+	ld b, a
+	ld c, PARTYMON_STRUCT_LENGTH
+.got_side
+	ld a, b
+	and a
+	jr z, .no ; (the first in the party)
+	ld a, [hl]
+	and a
+	jr z, .no
+	call IsLimitedHeldItem
+	jr nc, .no
+	push hl
+	ld h, a
+.teammate
+	ld a, [de]
+	cp h
+	jr z, .yes
+	ld a, e
+	add c
+	ld e, a
+	adc d
+	sub e
+	ld d, a
+	dec b
+	jr nz, .teammate
+	pop hl
+.no
+	pop de
+	and a
+	ret
+
+.yes
+	pop hl
+	pop de
+	scf
+	ret
+
+CheckTeamHoldsLimitedItem::
+; Return carry if wCurItem is one a team may hold only one of and a POKéMON in
+; the party other than wCurPartyMon holds one (see TryGiveItemToPartymon).
+	ld a, [wCurItem]
+	call IsLimitedHeldItem
+	ret nc
+	ld c, a
+	ld hl, wPartyMon1Item
+	ld a, [wPartyCount]
+	and a
+	ret z
+	ld b, a
+	ld e, 0
+.loop
+	ld a, [wCurPartyMon]
+	cp e
+	jr z, .next
+	ld a, [hl]
+	cp c
+	jr z, .yes
+.next
+	ld a, l
+	add PARTYMON_STRUCT_LENGTH
+	ld l, a
+	adc h
+	sub l
+	ld h, a
+	inc e
+	dec b
+	jr nz, .loop
+	and a
+	ret
+
+.yes
+	scf
+	ret
+
+UserHeldFlags:
+; hl: the user's wPlayerHeldFlags or wEnemyHeldFlags.
+	ld hl, wPlayerHeldFlags
+	ldh a, [hBattleTurn]
+	and a
+	ret z
+	ld hl, wEnemyHeldFlags
+	ret
+
+MarkFirstAttack::
+; (BattleCommand_DoTurn) For KING'S ROCK: whether the move the user is using is
+; the first attack it's used since it came in.
+	call UserHeldFlags
+	res HELDFLAG_KINGS_ROCK_F, [hl]
+	bit HELDFLAG_ATTACKED_F, [hl]
+	ret nz
+	ld a, BATTLE_VARS_MOVE_POWER
+	call GetBattleVar
+	and a
+	ret z
+	set HELDFLAG_ATTACKED_F, [hl]
+	set HELDFLAG_KINGS_ROCK_F, [hl]
+	ret
+
+HeldKingsRock::
+; (BattleCommand_ApplyDamage) KING'S ROCK: the first attack its holder uses
+; since it came in makes the foe flinch, if it hits before the foe has moved.
+	call UserHeldFlags
+	bit HELDFLAG_KINGS_ROCK_F, [hl]
+	ret z
+	res HELDFLAG_KINGS_ROCK_F, [hl]
+	ld a, [wAttackMissed]
+	and a
+	ret nz
+	farcall GetUserItem
+	ld a, b
+	cp HELD_FLINCH
+	ret nz
+	farcall CheckSubstituteOpp
+	ret nz
+	farcall CheckOpponentWentFirst
+	ret nz
+	farcall EndRechargeOpp
+	ld a, BATTLE_VARS_SUBSTATUS3_OPP
+	call GetBattleVarAddr
+	set SUBSTATUS_FLINCHED, [hl]
+	ret
+
+ResetEntryHeldFlags::
+; A POKéMON coming in by BATON PASS (the user's side): no moves or attacks since,
+; for its QUICK CLAW and KING'S ROCK.
+	call UserHeldFlags
+	ld a, [hl]
+	and HELDFLAGS_ON_ENTRY
+	ld [hl], a
+	ld hl, wPlayerTurnsTaken
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_turns
+	ld hl, wEnemyTurnsTaken
+.got_turns
+	ld [hl], 0
+	ret
+
+HandleEntryTransform::
+; TRANSFORM, as the latest games' IMPOSTER: a POKéMON that knows it turns into the
+; foe as it comes in, before it does anything (each turn, see BattleTurn: one
+; that hasn't moved since it came in). Not when it's already transformed, or the
+; foe is, or is out of sight (FLY, DIG).
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .reverse
+	call .player
+	jr .enemy
+
+.reverse
+	call .enemy
+	; fallthrough
+
+.player
+	xor a
+	ldh [hBattleTurn], a
+	ld a, [wPlayerTurnsTaken]
+	ld hl, wBattleMonMoves
+	jr .go
+
+.enemy
+	ld a, 1
+	ldh [hBattleTurn], a
+	ld a, [wEnemyTurnsTaken]
+	ld hl, wEnemyMonMoves
+.go
+	and a
+	ret nz
+	ld b, NUM_MOVES
+.find
+	ld a, [hli]
+	cp TRANSFORM
+	jr z, .knows
+	dec b
+	jr nz, .find
+	ret
+
+.knows
+	ld a, BATTLE_VARS_SUBSTATUS5
+	call GetBattleVar
+	bit SUBSTATUS_TRANSFORMED, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS5_OPP
+	call GetBattleVar
+	bit SUBSTATUS_TRANSFORMED, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS3_OPP
+	call GetBattleVar
+	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
+	ret nz
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVarAddr
+	ld a, [hl]
+	push hl
+	push af
+	ld [hl], TRANSFORM
+	farcall BattleCommand_Transform
+	pop af
+	pop hl
+	ld [hl], a
 	ret

@@ -375,8 +375,8 @@ CarbosDesc:
 	next "one #MON.@"
 
 LuckyPunchDesc:
-	db   "Ups critical hit"
-	next "ratio of CHANSEY.@"
+	db   "Ups critical hits."
+	next "ALWAYS for CHANSEY@"
 
 CalciumDesc:
 	db   "Ups SPECIAL stats"
@@ -388,7 +388,7 @@ RareCandyDesc:
 
 XAccuracyDesc:
 	db   "Raises ACCURACY by"
-	next "2 on entry. (HOLD)@"
+	next "1 on entry. (HOLD)@"
 
 LeafStoneDesc:
 	db   "Evolves certain"
@@ -451,22 +451,22 @@ LemonadeDesc:
 
 XAttackDesc:
 	db   "Raises ATTACK by"
-	next "2 on entry. (HOLD)@"
+	next "1 on entry. (HOLD)@"
 
 TeruSama4Desc:
 	db   "?@"
 
 XDefendDesc:
 	db   "Raises DEFENSE by"
-	next "2 on entry. (HOLD)@"
+	next "1 on entry. (HOLD)@"
 
 XSpeedDesc:
 	db   "Raises SPEED by"
-	next "2 on entry. (HOLD)@"
+	next "1 on entry. (HOLD)@"
 
 XSpecialDesc:
 	db   "Raises SPCL.ATK by"
-	next "2 on entry. (HOLD)@"
+	next "1 on entry. (HOLD)@"
 
 CoinCaseDesc:
 	db   "Holds up to 9,999"
@@ -544,8 +544,8 @@ MoomooMilkDesc:
 	next "HP by 100.@"
 
 QuickClawDesc:
-	db   "Raises 1st strike"
-	next "ratio. (HOLD)@"
+	db   "1st move on entry"
+	next "goes first. (HOLD)@"
 
 PsnCureBerryDesc:
 	db   "A self-cure for"
@@ -580,8 +580,8 @@ PoisonBarbDesc:
 	next "type moves. (HOLD)@"
 
 KingsRockDesc:
-	db   "May make the foe"
-	next "flinch. (HOLD)@"
+	db   "1st hit on entry"
+	next "makes foe flinch.@"
 
 BitterBerryDesc:
 	db   "A self-cure for"
@@ -665,8 +665,8 @@ PinkBowDesc:
 	next "type moves. (HOLD)@"
 
 StickDesc:
-	db   "An ordinary stick."
-	next "Sell low.@"
+	db   "Ups critical hits."
+	next "ALWAYS: FARFETCH'D@"
 
 SmokeBallDesc:
 	db   "Escape from wild"
@@ -721,8 +721,8 @@ ThickClubDesc:
 	next "sort. Sell low.@"
 
 FocusBandDesc:
-	db   "May prevent faint-"
-	next "ing. (HOLD)@"
+	db   "Survives a KO hit"
+	next "at 1 HP, once.@"
 
 TeruSama8Desc:
 	db   "?@"

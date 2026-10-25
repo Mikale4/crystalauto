@@ -133,12 +133,16 @@ DemoPlan:
 .Falkner:
 	dstatus DSTATUS_TO_VIOLET
 	dheal
-; an X ATTACK for each of the team to hold (FALKNER's birds are two levels up;
-; it's used up as each comes in, and back after the battle)
+; X items for the team to hold (FALKNER's birds are two levels up; each is used
+; up as its holder comes in, and back after the battle; a team holds one of each)
 	dstatus DSTATUS_SHOPPING
-	dbuy X_ATTACK, 0, VIOLET_MART
+	dbuy X_ATTACK, 1, VIOLET_MART
+	dbuy X_DEFEND, 1, VIOLET_MART
+	dbuy X_SPEED, 1, VIOLET_MART
 	dstatus DSTATUS_GIVING
 	dgive X_ATTACK
+	dgive X_DEFEND
+	dgive X_SPEED
 	dstatus DSTATUS_FALKNER
 	dtravel VIOLET_GYM
 ; the GYM's trainers first, then (healed again) FALKNER

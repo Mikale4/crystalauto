@@ -172,6 +172,7 @@ BattleTurn:
 	ld [wCurDamage], a
 	ld [wCurDamage + 1], a
 
+	farcall HandleEntryTransform
 	call HandleBerserkGene
 	farcall HandleHeldEntryItems
 	call UpdateBattleMonInParty
@@ -377,6 +378,9 @@ HandleBerserkGene:
 	push bc
 	callfar GetUserItem
 	ld a, [hl]
+	jr nc, .counts
+	xor a ; (a second on the team: see CheckHeldItemLimit)
+.counts
 	ld [wNamedObjectIndex], a
 	sub BERSERK_GENE
 	pop bc
@@ -485,52 +489,6 @@ DetermineMoveOrder:
 	jp .enemy_first
 
 .equal_priority
-	call SetPlayerTurn
-	callfar GetUserItem
-	push bc
-	callfar GetOpponentItem
-	pop de
-	ld a, d
-	cp HELD_QUICK_CLAW
-	jr nz, .player_no_quick_claw
-	ld a, b
-	cp HELD_QUICK_CLAW
-	jr z, .both_have_quick_claw
-	call BattleRandom
-	cp e
-	jr nc, .speed_check
-	jp .player_first
-
-.player_no_quick_claw
-	ld a, b
-	cp HELD_QUICK_CLAW
-	jr nz, .speed_check
-	call BattleRandom
-	cp c
-	jr nc, .speed_check
-	jp .enemy_first
-
-.both_have_quick_claw
-	ldh a, [hSerialConnectionStatus]
-	cp USING_INTERNAL_CLOCK
-	jr z, .player_2b
-	call BattleRandom
-	cp c
-	jp c, .enemy_first
-	call BattleRandom
-	cp e
-	jp c, .player_first
-	jr .speed_check
-
-.player_2b
-	call BattleRandom
-	cp e
-	jp c, .player_first
-	call BattleRandom
-	cp c
-	jp c, .enemy_first
-	jr .speed_check
-
 .speed_check
 	ld de, wBattleMonSpeed
 	ld hl, wEnemyMonSpeed
@@ -827,15 +785,45 @@ INCLUDE "data/wild/flee_mons.asm"
 CompareMovePriority:
 ; Compare the priority of the player and enemy's moves.
 ; Return carry if the player goes first, or z if they match.
+; A QUICK CLAW gives +1 to the first move its holder uses since it came in.
 
+	ldh a, [hBattleTurn]
+	push af
 	ld a, [wCurPlayerMove]
 	call GetMovePriority
 	ld b, a
+	xor a
+	ldh [hBattleTurn], a
+	ld a, [wPlayerTurnsTaken]
+	call .QuickClaw
 	push bc
 	ld a, [wCurEnemyMove]
 	call GetMovePriority
+	ld b, a
+	ld a, 1
+	ldh [hBattleTurn], a
+	ld a, [wEnemyTurnsTaken]
+	call .QuickClaw
+	ld a, b
 	pop bc
+	ld c, a
+	pop af
+	ldh [hBattleTurn], a
+	ld a, c
 	cp b
+	ret
+
+.QuickClaw:
+; b: the priority; a: the moves the user has used since it came in.
+	and a
+	ret nz
+	push bc
+	callfar GetUserItem
+	ld a, b
+	pop bc
+	cp HELD_QUICK_CLAW
+	ret nz
+	inc b
 	ret
 
 GetMovePriority:
@@ -3633,6 +3621,9 @@ endr
 	ld [wEnemyTurnsTaken], a
 	ld hl, wPlayerSubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
+	ld a, [wEnemyHeldFlags]
+	and HELDFLAGS_ON_ENTRY
+	ld [wEnemyHeldFlags], a
 	ret
 
 ResetEnemyStatLevels:
@@ -4121,6 +4112,9 @@ endr
 	ld [wPlayerTurnsTaken], a
 	ld hl, wEnemySubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
+	ld a, [wPlayerHeldFlags]
+	and HELDFLAGS_ON_ENTRY
+	ld [wPlayerHeldFlags], a
 	ret
 
 BreakAttraction:

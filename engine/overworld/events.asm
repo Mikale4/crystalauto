@@ -178,7 +178,12 @@ MaxOverworldDelay:
 	db 2
 
 ResetOverworldDelay:
+	ld a, [wDemoSpeed] ; (the Demo at speed: every frame)
+	and a
 	ld a, [MaxOverworldDelay]
+	jr z, .got_delay
+	ld a, 1
+.got_delay
 	ld [wOverworldDelay], a
 	ret
 

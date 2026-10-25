@@ -143,3 +143,9 @@ DEF MAIL_STRUCT_LENGTH_JP EQU $2a ; mailmsg_jp struct
 	const HELD_BRIGHTPOWDER
 	const_skip
 	const HELD_FOCUS_BAND
+
+; wPlayerHeldFlags, wEnemyHeldFlags
+DEF HELDFLAG_ATTACKED_F   EQU 0 ; it's used an attack since it came in (KING'S ROCK)
+DEF HELDFLAG_KINGS_ROCK_F EQU 1 ; the move it's using is that first attack
+DEF HELDFLAG_FOCUS_BAND_F EQU 2 ; its FOCUS BAND has kept it in the battle (once a battle)
+DEF HELDFLAGS_ON_ENTRY EQU 1 << HELDFLAG_FOCUS_BAND_F ; (the ones a new POKéMON keeps)

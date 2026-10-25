@@ -9,6 +9,7 @@
 	const STARTMENUITEM_EXIT     ; 6
 	const STARTMENUITEM_POKEGEAR ; 7
 	const STARTMENUITEM_QUIT     ; 8
+	const STARTMENUITEM_DEMO     ; 9
 
 StartMenu::
 	call ClearWindowData
@@ -185,6 +186,7 @@ StartMenu::
 	dw StartMenu_Exit,     .ExitString,     .ExitDesc
 	dw StartMenu_Pokegear, .PokegearString, .PokegearDesc
 	dw StartMenu_Quit,     .QuitString,     .QuitDesc
+	dw StartMenu_Demo,     .DemoString,     .DemoDesc
 
 .PokedexString:  db "#DEX@"
 .PartyString:    db "#MON@"
@@ -195,6 +197,7 @@ StartMenu::
 .ExitString:     db "EXIT@"
 .PokegearString: db "<POKE>GEAR@"
 .QuitString:     db "QUIT@"
+.DemoString:     db "DEMO@"
 
 .PokedexDesc:
 	db   "#MON"
@@ -231,6 +234,10 @@ StartMenu::
 .QuitDesc:
 	db   "Quit and"
 	next "be judged.@"
+
+.DemoDesc:
+	db   "Let the"
+	next "DEMO play@"
 
 .OpenMenu:
 	ld a, [wMenuSelection]
@@ -337,8 +344,20 @@ endr
 
 	ld a, STARTMENUITEM_OPTION
 	call .AppendMenuList
+; DEMO, while the Demo is stopped (in place of EXIT if there's no room: B and
+; START close the menu too)
+	ld a, [wDemoState]
+	cp DEMO_STOPPED
+	jr nz, .no_demo
+	ld a, STARTMENUITEM_DEMO
+	call .AppendMenuList
+	ld a, c
+	cp 8 ; (as many as fit)
+	jr nc, .no_exit
+.no_demo
 	ld a, STARTMENUITEM_EXIT
 	call .AppendMenuList
+.no_exit
 	ld a, c
 	ld [wMenuItemsList], a
 	ret
@@ -405,6 +424,12 @@ endr
 StartMenu_Exit:
 ; Exit the menu.
 
+	ld a, 1
+	ret
+
+StartMenu_Demo:
+; Hand the game back to the Demo.
+	farcall ResumeDemo
 	ld a, 1
 	ret
 

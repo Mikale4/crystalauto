@@ -40,6 +40,8 @@ InitMapNameSign::
 	jr z, .dont_do_map_sign
 
 ; Display for 60 frames
+	ld hl, wDemoSign ; (the map's name, not the Demo's sign)
+	res DEMOSIGN_SHOWING_F, [hl]
 	ld a, 60
 	ld [wLandmarkSignTimer], a
 	call LoadMapNameSignGFX
@@ -97,6 +99,16 @@ InitMapNameSign::
 	ret
 
 PlaceMapNameSign::
+; (the Demo's sign, when it asks: what it's doing, and its speed)
+	ld hl, wDemoSign
+	bit DEMOSIGN_PENDING_F, [hl]
+	jr z, .no_demo_sign
+	res DEMOSIGN_PENDING_F, [hl]
+	set DEMOSIGN_SHOWING_F, [hl]
+	call LoadMapNameSignGFX
+	ld a, 60
+	ld [wLandmarkSignTimer], a
+.no_demo_sign
 	ld hl, wLandmarkSignTimer
 	ld a, [hl]
 	and a
@@ -107,7 +119,14 @@ PlaceMapNameSign::
 	cp 59
 	jr nz, .already_initialized
 	call InitMapNameFrame
+	ld a, [wDemoSign]
+	bit DEMOSIGN_SHOWING_F, a
+	jr nz, .demo_sign
 	call PlaceMapNameCenterAlign
+	jr .placed
+.demo_sign
+	farcall PlaceDemoSign
+.placed
 	farcall HDMATransfer_OnlyTopFourRows
 .already_initialized
 	ld a, $80

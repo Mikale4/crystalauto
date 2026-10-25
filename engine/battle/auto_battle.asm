@@ -51,6 +51,10 @@ AutoBattleTextDelay::
 
 	push bc
 	ld c, AUTO_BATTLE_TEXT_DELAY
+	ld a, [wDemoSpeed] ; (the Demo at speed: a quarter as long)
+	and a
+	jr z, .wait
+	ld c, AUTO_BATTLE_TEXT_DELAY / 4
 .wait
 	call DelayFrame
 	call JoyTextDelay
