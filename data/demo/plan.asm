@@ -573,9 +573,7 @@ DemoPlan:
 	dskipif EVENT_OPENED_DOOR_TO_GIOVANNIS_OFFICE, .OfficeOpen
 	dtravel TEAM_ROCKET_BASE_B3F
 	dgoto 8, 10 ; (the rival, the first time)
-	dgoto 10, 10
-	dface UP
-	dpress PAD_A
+	dtalkat 10, 9 ; the door
 	djump .OfficeDoor
 .OfficeOpen:
 	dskipif EVENT_BEAT_ROCKET_EXECUTIVEM_4, .BeatExecutive
@@ -591,9 +589,7 @@ DemoPlan:
 .HailGiovanni:
 	dskipif EVENT_OPENED_DOOR_TO_ROCKET_HIDEOUT_TRANSMITTER, .TransmitterOpen
 	dtravel TEAM_ROCKET_BASE_B2F
-	dgoto 14, 13
-	dface UP
-	dpress PAD_A
+	dtalkat 14, 12 ; the door
 	djump .HailGiovanni
 .TransmitterOpen:
 	dskipif EVENT_BEAT_ROCKET_EXECUTIVEF_2, .Electrodes
@@ -642,9 +638,7 @@ DemoPlan:
 .BasementKey:
 	dskipif EVENT_USED_BASEMENT_KEY, .BasementOpen
 	dtravel GOLDENROD_UNDERGROUND
-	dgoto 18, 7
-	dface UP
-	dpress PAD_A
+	dtalkat 18, 6 ; the door
 	djump .BasementKey
 .BasementOpen:
 	dskipif EVENT_RECEIVED_CARD_KEY, .GotCardKey
@@ -653,23 +647,17 @@ DemoPlan:
 .Switch3:
 	dskipif EVENT_SWITCH_3, .Switch2
 	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
-	dgoto 2, 2
-	dface UP
-	dpress PAD_A
+	dtalkat 2, 1 ; switch 3
 	djump .Switch3
 .Switch2:
 	dskipif EVENT_SWITCH_2, .Switch1
 	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
-	dgoto 10, 2
-	dface UP
-	dpress PAD_A
+	dtalkat 10, 1 ; switch 2
 	djump .Switch2
 .Switch1:
 	dskipif EVENT_SWITCH_1, .CardKey
 	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
-	dgoto 16, 2
-	dface UP
-	dpress PAD_A
+	dtalkat 16, 1 ; switch 1
 	djump .Switch1
 .CardKey:
 	dheal
@@ -680,9 +668,7 @@ DemoPlan:
 .GotCardKey:
 	dskipif EVENT_USED_THE_CARD_KEY_IN_THE_RADIO_TOWER, .CardKeyUsed
 	dtravel RADIO_TOWER_3F
-	dgoto 14, 3
-	dface UP
-	dpress PAD_A
+	dtalkat 14, 2 ; the card slot
 	djump .GotCardKey
 .CardKeyUsed:
 	dtutor
@@ -846,9 +832,7 @@ DemoPlan:
 .MistyBack:
 	dskipif EVENT_FOUND_MACHINE_PART_IN_CERULEAN_GYM, .FoundPart
 	dtravel CERULEAN_GYM
-	dgoto 3, 7
-	dface DOWN
-	dpress PAD_A
+	dtalkat 3, 8 ; (in the water)
 	djump .MistyBack
 .FoundPart:
 	dtravel POWER_PLANT
