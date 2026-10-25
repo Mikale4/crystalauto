@@ -979,9 +979,11 @@ DemoSeedGoals:
 	ld d, 0
 .grass_cell
 	call DemoCollAtIndex
-	and $f0
-	cp COLL_TALL_GRASS & $f0
-	jr nz, .not_grass
+	cp COLL_TALL_GRASS
+	jr z, .grass
+	cp COLL_LONG_GRASS
+	jr nz, .not_grass ; (not CUT or HEADBUTT trees: see CheckGrassCollision)
+.grass
 	push hl
 	push de
 	call DemoSeedGoal
