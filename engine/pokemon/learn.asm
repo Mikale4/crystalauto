@@ -204,24 +204,11 @@ ForgetMove:
 	ld c, a
 	ld b, 0
 	add hl, bc
-	ld a, [hl]
-	push af
-	push bc
-	call IsHMMove
-	pop bc
-	pop de
-	ld a, d
-	jr c, .hmmove
+	ld a, [hl] ; (HM moves can be forgotten too, as in PalletToPewter)
 	pop hl
 	add hl, bc
 	and a
 	ret
-
-.hmmove
-	ld hl, MoveCantForgetHMText
-	call PrintText
-	pop hl
-	jr .loop
 
 .cancel
 	scf
@@ -261,6 +248,3 @@ Text_1_2_and_Poof:
 	text_far _MoveForgotText
 	text_end
 
-MoveCantForgetHMText:
-	text_far _MoveCantForgetHMText
-	text_end

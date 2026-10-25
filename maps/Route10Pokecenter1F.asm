@@ -4,6 +4,8 @@
 	const ROUTE10POKECENTER1F_GYM_GUIDE
 	const ROUTE10POKECENTER1F_COOLTRAINER_F
 	const ROUTE10POKECENTER1F_CHANSEY
+	const ROUTE10POKECENTER1F_MOVE_REMINDER
+	const ROUTE10POKECENTER1F_MOVE_TUTOR
 
 Route10Pokecenter1F_MapScripts:
 	def_scene_scripts
@@ -15,6 +17,12 @@ Route10Pokecenter1FNurseScript:
 
 Route10Pokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+Route10Pokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+Route10Pokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 Route10Pokecenter1FGentlemanScript:
 	jumptextfaceplayer Route10Pokecenter1FGentlemanText
@@ -100,3 +108,5 @@ Route10Pokecenter1F_MapEvents:
 	object_event  7,  2, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, Route10Pokecenter1FGymGuideScript, -1
 	object_event  1,  3, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, Route10Pokecenter1FCooltrainerFScript, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, Route10Pokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, Route10Pokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, Route10Pokecenter1FMoveTutorScript, -1

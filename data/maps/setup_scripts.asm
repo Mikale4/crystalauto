@@ -13,6 +13,7 @@ MapSetupScripts:
 	dw MapSetupScript_Submenu
 	dw MapSetupScript_BadWarp
 	dw MapSetupScript_Fly
+	dw MapSetupScript_PhoneTrip
 	assert_table_length NUM_MAPSETUP_SCRIPTS
 
 ; valid commands are listed in MapSetupCommands (see data/maps/setup_script_pointers.asm)
@@ -50,6 +51,32 @@ MapSetupScript_Warp:
 	mapsetup PlayMapMusicBike
 	mapsetup FadeInToMusic
 	mapsetup FadeInFromWhite
+	mapsetup ActivateMapAnims
+	mapsetup LoadWildMonData
+	db -1 ; end
+
+MapSetupScript_PhoneTrip:
+; as a warp, but through black, with a chime, and with the LCD on all the while
+; (the screen is white while it's off: see engine/phone/phone_trip.asm)
+	mapsetup SuspendMapAnims
+	mapsetup InitSound
+	mapsetup EnterMapSpawnPoint
+	mapsetup LoadMapAttributes
+	mapsetup HandleNewMap
+	mapsetup SpawnPlayer
+	mapsetup RefreshPlayerCoords
+	mapsetup GetMapScreenCoords
+	mapsetup LoadBlockData
+	mapsetup BufferScreen
+	mapsetup LoadMapGraphicsWithLCDOn ; (and the time of day)
+	mapsetup LoadMapObjects
+	mapsetup EnableLCD
+	mapsetup LoadMapPalettes
+	mapsetup SpawnInFacingDown
+	mapsetup RefreshMapSprites
+	mapsetup PlayMapMusicBike
+	mapsetup FadeInToMusic
+	mapsetup PhoneTripArrives
 	mapsetup ActivateMapAnims
 	mapsetup LoadWildMonData
 	db -1 ; end

@@ -17,7 +17,10 @@ one of some of them, and **critical hits** work as they do today.
 
 Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
-whenever you ask.
+whenever you ask. As in PalletToPewter, **TMs never run out**, **HMs work without
+the move** (and HM moves can be forgotten), and every POKéMON CENTER has a **MOVE
+REMINDER** and a **MOVE TUTOR**. When a trainer calls for a rematch, you can **go
+there right away**.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
@@ -455,7 +458,8 @@ shows it.
   trade evolutions from Lv 34, each trainer going its own way where a line branches.
   Every leader's Pokémon holds an item, and every other trainer's strongest one does.
 - **EXTREME**: as HARD, and you get the **ENDLESSCANDY**, a RARE CANDY that never
-  runs out, right up to the level cap. But every trainer brings **six Pokémon**
+  runs out, right up to the level cap (use it and you stay on the party screen,
+  for another, until you press B). But every trainer brings **six Pokémon**
   (except your rival in CHERRYGROVE CITY, who has just his starter). Their own are
   joined by others that suit them, from a list for each kind of trainer: birds for
   FALKNER and the BIRD KEEPERS, ice for PRYCE and the SKIERS, water for MISTY and the
@@ -538,6 +542,43 @@ it to take it with you:
 The CHANSEY and its heals are saved with your game.
 
 
+## TMs and HMs
+
+As in PalletToPewter:
+
+- **TMs never run out.** Teach a TM's move to as many Pokémon as you like.
+- **HMs work without the move.** With an HM in your PACK (and the badge it needs),
+  your team can use its field move though no Pokémon knows it: walk up to a tree to
+  CUT it, to the water to SURF, to a boulder for STRENGTH, and so on. FLY and FLASH
+  show in your Pokémon's menu. ROCK SMASH and HEADBUTT work the same way with their
+  TMs.
+- **HM moves can be forgotten** like any other move, to make room for a new one.
+
+
+## The MOVE REMINDER and the MOVE TUTOR
+
+Every POKéMON CENTER has two more people behind the counter, to the left of NURSE
+JOY (at the INDIGO PLATEAU, behind the mart's counter). Both are free:
+
+- The **MOVE REMINDER** (the old woman) teaches a Pokémon any move it learns by
+  leveling up, up to its level, that it doesn't know.
+- The **MOVE TUTOR** (the old man) teaches a Pokémon its EGG moves (those of its first
+  form), and whichever of the moves GOLDENROD's tutor teaches it can learn
+  (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
+
+Pick a Pokémon, then the move from the list (each with its type). A Pokémon that
+already knows four moves forgets one to learn it.
+
+
+## Going to a rematch
+
+When a trainer on your POKéGEAR calls to ask for a rematch, the game asks, once the
+call is over, whether to go there now. Say **YES** and the screen fades to black as
+you set off, then fades back in with a chime as you arrive, on the spot in front of
+the trainer, facing them. You arrive on foot, even if you were surfing or on the
+BICYCLE, and going ends the Bug-Catching Contest, as flying away would.
+
+
 ## Playing it
 
 You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
@@ -548,7 +589,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: b6da1938d38b5af1bd423d050667e44c28430b25`.
+The patched ROM has `sha1: 0ca9402ae17d2de8d905ecd7158bbfdaf8bb0885`.
 
 
 ## Building it
@@ -698,6 +739,31 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   ([`data/battle/critical_hit_chances.asm`](data/battle/critical_hit_chances.asm)),
   `ModernCriticalStats` picks the stats a critical hit uses, and
   `.CriticalMultiplier` makes it 1.5×.
+- `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
+  a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
+  which every field move asks, falls back on `FieldMoveItems` (each field move's HM
+  or TM) when no Pokémon knows the move, and
+  [`engine/pokemon/mon_submenu.asm`](engine/pokemon/mon_submenu.asm) adds FLY and
+  FLASH to the menu (`GetMonSubmenuItems.OwnedFieldMove`). `ForgetMove` in
+  [`engine/pokemon/learn.asm`](engine/pokemon/learn.asm) no longer keeps HM moves.
+- [`engine/events/move_relearner.asm`](engine/events/move_relearner.asm) has the
+  MOVE REMINDER and MOVE TUTOR (`MoveReminderScript` and `MoveTutorScript`, standard
+  scripts every POKéMON CENTER's map uses; the specials `MoveReminder` and
+  `PokecenterMoveTutor`). They list the moves in `wMoveRelearnerMoves` (in the
+  POKéDEX's RAM, which nothing else uses then), show them in a scrolling menu, and
+  teach them with the game's own `LearnMove`.
+- [`engine/phone/phone_trip.asm`](engine/phone/phone_trip.asm) has the trip.
+  `PhoneScript_WantsToBattle_Male` and `_Female` mark the call (`MarkPhoneTrip`, a
+  spare bit of `wCurCaller`), and `Script_ReceivePhoneCall` ends with
+  `PhoneScript_OfferTrip`, which asks, fades out, and warps with a new map setup,
+  `MAPSETUP_PHONE_TRIP`. That loads the map with the LCD on
+  ([`engine/overworld/load_map_lcd_on.asm`](engine/overworld/load_map_lcd_on.asm):
+  the screen turns white while the LCD is off, so it copies to VRAM by HBlank DMA
+  while every palette is black) and fades in (`PhoneTripArrives`). The destinations
+  are in [`data/phone/trip_destinations.asm`](data/phone/trip_destinations.asm),
+  made by [`tools/phone_trips.py`](tools/phone_trips.py) from each contact's phone
+  script and map: the cell in front of the trainer, or beside them where that one
+  can't be stood on.
 - [`engine/pokemon/natures.asm`](engine/pokemon/natures.asm) has `GetNature` (the
   DVs as a 16-bit number, + 15, mod 25), `ApplyNature`, which `CalcMonStatC` calls
   for every stat it works out, and `ApplyNaturesToOldSave`, run once on CONTINUE

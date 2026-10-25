@@ -517,6 +517,9 @@ VerboseReceiveTMHM: ; unreferenced
 	ret
 
 ConsumeTM:
+; (TMs are never used up, as in PalletToPewter)
+	ret
+
 	call ConvertCurItemIntoCurTMHM
 	ld a, [wTempTMHM]
 	dec a

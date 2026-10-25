@@ -4,6 +4,8 @@
 	const SAFFRONPOKECENTER1F_FISHER
 	const SAFFRONPOKECENTER1F_YOUNGSTER
 	const SAFFRONPOKECENTER1F_CHANSEY
+	const SAFFRONPOKECENTER1F_MOVE_REMINDER
+	const SAFFRONPOKECENTER1F_MOVE_TUTOR
 
 SaffronPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -15,6 +17,12 @@ SaffronPokecenter1FNurseScript:
 
 SaffronPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+SaffronPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+SaffronPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 SaffronPokecenter1FTeacherScript:
 	special CheckMobileAdapterStatusSpecial
@@ -131,3 +139,5 @@ SaffronPokecenter1F_MapEvents:
 	object_event  8,  6, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FFisherScript, -1
 	object_event  1,  4, SPRITE_YOUNGSTER, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FYoungsterScript, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FMoveTutorScript, -1

@@ -1305,11 +1305,20 @@ RareCandyEffect:
 	push hl
 	farcall CheckLevelCapForCandy
 	pop hl
-	jp c, RareCandy_StatBooster_ExitMenu
+	jp c, .not_used
 
 	ld a, [hl]
 	cp MAX_LEVEL
-	jp nc, NoEffectMessage
+	jr c, .use
+	call NoEffectMessage
+.not_used
+; (the ENDLESSCANDY: back to the party, for another; else back to the PACK)
+	ld a, [wCurItem]
+	cp ENDLESS_CANDY
+	jp z, RareCandyEffect
+	jp RareCandy_StatBooster_ExitMenu
+
+.use
 
 	inc a
 	ld [hl], a
@@ -1386,7 +1395,7 @@ RareCandyEffect:
 
 	ld a, [wCurItem]
 	cp ENDLESS_CANDY
-	ret z ; (it never runs out)
+	jp z, RareCandyEffect ; (it never runs out: another, till B)
 	jp UseDisposableItem
 
 HealPowderEffect:

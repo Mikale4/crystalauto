@@ -183,3 +183,6 @@ SpecialsPointers::
 	add_special InitialSetDSTFlag
 	add_special InitialClearDSTFlag
 	add_special UnusedDummySpecial ; unused
+
+	add_special MoveReminder
+	add_special PokecenterMoveTutor

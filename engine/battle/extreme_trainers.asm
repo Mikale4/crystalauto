@@ -961,38 +961,13 @@ AutoLearn_ForgetChoice::
 	call CopyBytes
 	ld a, [wPutativeTMHMMove]
 	ld [de], a
-; its HM moves stay
+; (no move has to stay: HM moves too can go, as in PalletToPewter)
 	xor a
 	ld [wXNumChosen], a
 	ld hl, wXChosen
 rept NUM_MOVES
 	ld [hli], a
 endr
-	ld hl, wXCandidates
-	ld c, NUM_MOVES
-.hm_loop
-	ld a, [hli]
-	push hl
-	push bc
-	ld b, a
-	ld [wXMove], a
-	push bc
-	call IsHMMove
-	pop bc
-	jr nc, .not_hm
-	ld hl, wXChosen
-	ld a, [wXNumChosen]
-	ld e, a
-	ld d, 0
-	add hl, de
-	ld [hl], b
-	inc a
-	ld [wXNumChosen], a
-.not_hm
-	pop bc
-	pop hl
-	dec c
-	jr nz, .hm_loop
 ; the best set
 	ld a, TRUE
 	ld [wXExplicit], a

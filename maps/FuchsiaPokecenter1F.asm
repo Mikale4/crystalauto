@@ -4,6 +4,8 @@
 	const FUCHSIAPOKECENTER1F_COOLTRAINER_F
 	const FUCHSIAPOKECENTER1F_JANINE_IMPERSONATOR
 	const FUCHSIAPOKECENTER1F_CHANSEY
+	const FUCHSIAPOKECENTER1F_MOVE_REMINDER
+	const FUCHSIAPOKECENTER1F_MOVE_TUTOR
 
 FuchsiaPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -19,6 +21,12 @@ FuchsiaPokecenter1FNurseScript:
 
 FuchsiaPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+FuchsiaPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+FuchsiaPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 FuchsiaPokecenter1FCooltrainerMScript:
 	jumptextfaceplayer FuchsiaPokecenter1FCooltrainerMText
@@ -108,3 +116,5 @@ FuchsiaPokecenter1F_MapEvents:
 	object_event  1,  4, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, FuchsiaPokecenter1FCooltrainerFScript, -1
 	object_event  5,  3, SPRITE_JANINE_IMPERSONATOR, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, FuchsiaPokecenter1FJanineImpersonatorScript, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, FuchsiaPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, FuchsiaPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, FuchsiaPokecenter1FMoveTutorScript, -1

@@ -102,8 +102,60 @@ CheckPartyMove:
 	xor a
 	ret
 .no
+; none knows it: its HM (or TM) in the PACK will do, for the first POKéMON that
+; isn't an egg to use (as in PalletToPewter)
+	ld hl, FieldMoveItems
+.find_item
+	ld a, [hli]
+	and a
+	jr z, .none
+	cp d
+	ld a, [hli]
+	jr nz, .find_item
+	ld b, a
+	ld a, [wCurItem]
+	push af
+	ld a, b
+	ld [wCurItem], a
+	ld hl, wNumItems
+	call CheckItem
+	pop bc
+	ld a, b
+	ld [wCurItem], a
+	jr nc, .none
+	ld e, 0
+	ld hl, wPartySpecies
+.first_mon
+	ld a, [hli]
+	cp -1
+	jr z, .none
+	cp EGG
+	jr nz, .got_mon
+	inc e
+	jr .first_mon
+
+.got_mon
+	ld a, e
+	ld [wCurPartyMon], a
+	xor a
+	ret
+
+.none
 	scf
 	ret
+
+FieldMoveItems::
+; field moves, and the HM or TM that lets the team use them untaught
+	db CUT,        HM_CUT
+	db FLY,        HM_FLY
+	db SURF,       HM_SURF
+	db STRENGTH,   HM_STRENGTH
+	db FLASH,      HM_FLASH
+	db WHIRLPOOL,  HM_WHIRLPOOL
+	db WATERFALL,  HM_WATERFALL
+	db ROCK_SMASH, TM_ROCK_SMASH
+	db HEADBUTT,   TM_HEADBUTT
+	db 0
 
 FieldMoveFailed:
 	ld hl, .CantUseItemText

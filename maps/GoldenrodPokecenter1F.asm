@@ -5,6 +5,8 @@
 	const GOLDENRODPOKECENTER1F_LASS
 	const GOLDENRODPOKECENTER1F_POKEFAN_F
 	const GOLDENRODPOKECENTER1F_CHANSEY
+	const GOLDENRODPOKECENTER1F_MOVE_REMINDER
+	const GOLDENRODPOKECENTER1F_MOVE_TUTOR
 
 GoldenrodPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -17,6 +19,12 @@ GoldenrodPokecenter1FNurseScript:
 
 GoldenrodPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+GoldenrodPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+GoldenrodPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 GoldenrodPokecenter1F_GSBallSceneLeft:
 	setval BATTLETOWERACTION_GSBALL
@@ -828,3 +836,5 @@ GoldenrodPokecenter1F_MapEvents:
 	object_event  1,  4, SPRITE_LASS, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, GoldenrodPokecenter1FLassScript, -1
 	object_event  7,  5, SPRITE_POKEFAN_F, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, GoldenrodPokecenter1FPokefanF, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, GoldenrodPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, GoldenrodPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, GoldenrodPokecenter1FMoveTutorScript, -1

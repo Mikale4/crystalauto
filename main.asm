@@ -78,6 +78,7 @@ INCLUDE "engine/overworld/tile_events.asm"
 INCLUDE "engine/menus/save.asm"
 INCLUDE "engine/overworld/spawn_points.asm"
 INCLUDE "engine/overworld/map_setup.asm"
+INCLUDE "engine/overworld/load_map_lcd_on.asm"
 INCLUDE "engine/events/pokecenter_pc.asm"
 INCLUDE "engine/items/mart.asm"
 INCLUDE "engine/events/money.asm"
@@ -333,6 +334,16 @@ INCLUDE "engine/rtc/timeset.asm"
 INCLUDE "engine/pokegear/pokegear.asm"
 INCLUDE "engine/events/fish.asm"
 INCLUDE "engine/games/slot_machine.asm"
+
+
+SECTION "Move Relearner", ROMX
+
+INCLUDE "engine/events/move_relearner.asm"
+
+
+SECTION "Phone Trips", ROMX
+
+INCLUDE "engine/phone/phone_trip.asm"
 
 
 SECTION "Phone Scripts 1", ROMX

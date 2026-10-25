@@ -524,11 +524,15 @@ Phone_WhoLostAMon_Female:
 
 PhoneScript_WantsToBattle_Male:
 	farscall PhoneScript_RematchText_Male
-	farsjump PhoneScript_HangUpText_Male
+	farscall PhoneScript_HangUpText_Male
+	callasm MarkPhoneTrip ; (offered once the call is over)
+	end
 
 PhoneScript_WantsToBattle_Female:
 	farscall PhoneScript_RematchText_Female
-	farsjump PhoneScript_HangUpText_Female
+	farscall PhoneScript_HangUpText_Female
+	callasm MarkPhoneTrip ; (offered once the call is over)
+	end
 
 PhoneScript_RematchText_Male:
 	readvar VAR_CALLERID

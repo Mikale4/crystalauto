@@ -805,6 +805,11 @@ wPokegearRadioChannelAddr:: dw
 wPokegearRadioMusicPlaying:: db
 
 NEXTU
+; move reminder and tutor (see engine/events/move_relearner.asm)
+wMoveRelearnerCount:: db
+wMoveRelearnerMoves:: ds MAX_RELEARNER_MOVES + 1
+
+NEXTU
 ; trade
 wPlayerTrademon:: trademon wPlayerTrademon
 wOTTrademon::     trademon wOTTrademon

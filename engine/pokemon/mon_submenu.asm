@@ -146,6 +146,14 @@ GetMonSubmenuItems:
 	dec c
 	jr nz, .loop
 
+; FLY and FLASH, untaught, while the PACK has their HMs
+	ld a, MONMENUITEM_FLY
+	ld b, HM_FLY
+	call .OwnedFieldMove
+	ld a, MONMENUITEM_FLASH
+	ld b, HM_FLASH
+	call .OwnedFieldMove
+
 .skip_moves
 	ld a, MONMENUITEM_STATS
 	call AddMonMenuItem
@@ -226,6 +234,42 @@ TerminateMonSubmenu:
 	add hl, de
 	ld [hl], -1
 	ret
+
+GetMonSubmenuItems.OwnedFieldMove:
+; a: a MONMENUITEM_*; b: its HM. Add it if it isn't there, there's room (four
+; field moves at most), and the PACK has the HM.
+	ld c, a
+	ld a, [wMonSubmenuCount]
+	cp NUM_MOVES
+	ret nc
+	ld e, a
+	ld d, 0
+	ld hl, wMonSubmenuItems
+.listed
+	ld a, e
+	and a
+	jr z, .not_listed
+	ld a, [hli]
+	cp c
+	ret z
+	dec e
+	jr .listed
+
+.not_listed
+	ld a, [wCurItem]
+	push af
+	ld a, b
+	ld [wCurItem], a
+	push bc
+	ld hl, wNumItems
+	call CheckItem
+	pop bc
+	pop de
+	ld a, d
+	ld [wCurItem], a
+	ret nc
+	ld a, c
+	jp AddMonMenuItem
 
 AddMonMenuItem:
 	push hl

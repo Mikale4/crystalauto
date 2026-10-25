@@ -4,6 +4,8 @@
 	const MAHOGANYPOKECENTER1F_YOUNGSTER
 	const MAHOGANYPOKECENTER1F_COOLTRAINER_F
 	const MAHOGANYPOKECENTER1F_CHANSEY
+	const MAHOGANYPOKECENTER1F_MOVE_REMINDER
+	const MAHOGANYPOKECENTER1F_MOVE_TUTOR
 
 MahoganyPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -15,6 +17,12 @@ MahoganyPokecenter1FNurseScript:
 
 MahoganyPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+MahoganyPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+MahoganyPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 MahoganyPokecenter1FPokefanMScript:
 	jumptextfaceplayer MahoganyPokecenter1FPokefanMText
@@ -73,3 +81,5 @@ MahoganyPokecenter1F_MapEvents:
 	object_event  1,  3, SPRITE_YOUNGSTER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, MahoganyPokecenter1FYoungsterScript, -1
 	object_event  2,  3, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, MahoganyPokecenter1FCooltrainerFScript, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, MahoganyPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, MahoganyPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, MahoganyPokecenter1FMoveTutorScript, -1

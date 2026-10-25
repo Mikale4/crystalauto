@@ -3,6 +3,8 @@
 	const CINNABARPOKECENTER1F_COOLTRAINER_F
 	const CINNABARPOKECENTER1F_FISHER
 	const CINNABARPOKECENTER1F_CHANSEY
+	const CINNABARPOKECENTER1F_MOVE_REMINDER
+	const CINNABARPOKECENTER1F_MOVE_TUTOR
 
 CinnabarPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -14,6 +16,12 @@ CinnabarPokecenter1FNurseScript:
 
 CinnabarPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+CinnabarPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+CinnabarPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 CinnabarPokecenter1FCooltrainerFScript:
 	jumptextfaceplayer CinnabarPokecenter1FCooltrainerFText
@@ -53,3 +61,5 @@ CinnabarPokecenter1F_MapEvents:
 	object_event  7,  6, SPRITE_COOLTRAINER_F, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 2, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FCooltrainerFScript, -1
 	object_event  2,  4, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FFisherScript, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FMoveTutorScript, -1

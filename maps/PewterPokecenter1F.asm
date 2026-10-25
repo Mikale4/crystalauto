@@ -5,6 +5,8 @@
 	const PEWTERPOKECENTER1F_BUG_CATCHER
 	const PEWTERPOKECENTER1F_CHRIS
 	const PEWTERPOKECENTER1F_CHANSEY
+	const PEWTERPOKECENTER1F_MOVE_REMINDER
+	const PEWTERPOKECENTER1F_MOVE_TUTOR
 
 PewterPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -16,6 +18,12 @@ PewterPokecenter1FNurseScript:
 
 PewterPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+PewterPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+PewterPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 PewterPokecenter1FTeacherScript:
 	jumptextfaceplayer PewterPokecenter1FTeacherText
@@ -88,3 +96,5 @@ PewterPokecenter1F_MapEvents:
 	object_event  2,  3, SPRITE_BUG_CATCHER, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, PewterPokecenter1FBugCatcherScript, -1
 	object_event  7,  2, SPRITE_POKEFAN_M, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, Chris, -1
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, PewterPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, PewterPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, PewterPokecenter1FMoveTutorScript, -1

@@ -429,7 +429,7 @@ Script_ReceivePhoneCall:
 	callasm HangUp
 	closetext
 	callasm InitCallReceiveDelay
-	end
+	farsjump PhoneScript_OfferTrip
 
 Script_SpecialBillCall::
 	callasm .LoadBillScript

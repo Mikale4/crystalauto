@@ -59,3 +59,6 @@ DEF CARDFLIP_DECK_SIZE EQU 4 * 6
 
 ; SGB command MLT_REQ can be used to detect SGB hardware
 DEF JOYP_SGB_MLT_REQ EQU %00000011
+
+; the MOVE REMINDER and MOVE TUTOR's lists (see engine/events/move_relearner.asm)
+DEF MAX_RELEARNER_MOVES EQU 60

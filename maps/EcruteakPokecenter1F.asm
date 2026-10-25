@@ -5,6 +5,8 @@
 	const ECRUTEAKPOKECENTER1F_GYM_GUIDE
 	const ECRUTEAKPOKECENTER1F_BILL
 	const ECRUTEAKPOKECENTER1F_CHANSEY
+	const ECRUTEAKPOKECENTER1F_MOVE_REMINDER
+	const ECRUTEAKPOKECENTER1F_MOVE_TUTOR
 
 EcruteakPokecenter1F_MapScripts:
 	def_scene_scripts
@@ -61,6 +63,12 @@ EcruteakPokecenter1FNurseScript:
 
 EcruteakPokecenter1FChanseyScript:
 	jumpstd PokecenterChanseyScript
+
+EcruteakPokecenter1FMoveReminderScript:
+	jumpstd MoveReminderScript
+
+EcruteakPokecenter1FMoveTutorScript:
+	jumpstd MoveTutorScript
 
 EcruteakPokecenter1FPokefanMScript:
 	special CheckMobileAdapterStatusSpecial
@@ -227,3 +235,5 @@ EcruteakPokecenter1F_MapEvents:
 	object_event  7,  1, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, EcruteakPokecenter1FGymGuideScript, -1
 	object_event  0,  7, SPRITE_BILL, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, ObjectEvent, EVENT_ECRUTEAK_POKE_CENTER_BILL
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, EcruteakPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
+	object_event  1,  1, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, EcruteakPokecenter1FMoveReminderScript, -1
+	object_event  0,  1, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, EcruteakPokecenter1FMoveTutorScript, -1

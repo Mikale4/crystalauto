@@ -655,10 +655,19 @@ endr
 
 .bankswitch
 	ldh [rVBK], a
+	ld a, [wSpriteFlags]
+	bit SPRITES_LCD_ON_COPY_F, a
+	jr nz, .lcd_on
 	call Get2bpp
+	jr .copied
+
+.lcd_on
+	call Copy2bppWithLCDOn
+.copied
 	pop af
 	ldh [rVBK], a
 	ret
+
 
 ReloadFollowerSpriteGFX::
 ; Load the lead Pokémon's icon into SPRITE_FOLLOWER's tiles.
