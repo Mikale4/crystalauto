@@ -202,6 +202,11 @@ class Map:
             return surf
         return 0
 
+    def is_warp(self, cell):
+        """A warp tile (a door, stairs, a cave...): stepping on it is going through
+        it, so no way across a map goes over one (as the Demo walks)."""
+        return self.grid.get(cell, 0) & 0xf0 == self.c["HI_NYBBLE_WARPS"]
+
     def side_blocked(self, cell, d, table):
         v = self.grid.get(cell, 0)
         hi = v & 0xf0
@@ -209,9 +214,9 @@ class Map:
             return table[v & 7] >> d & 1
         return 0
 
-    def can_step(self, a, d):
+    def can_step(self, a, d, onto_warps=False):
         """The field moves a step from cell a that way needs, and where it ends (sliding
-        on ice); None if it can't."""
+        on ice); None if it can't (or it ends on a warp, unless onto_warps)."""
         ka = self.kind(a)
         if ka is None:
             return None
@@ -231,6 +236,8 @@ class Map:
                 break
             b = n
             seen += 1
+        if self.is_warp(b) and not onto_warps:
+            return None
         return need, b
 
     def ledge_jump(self, a, d):
@@ -241,7 +248,7 @@ class Map:
         dx, dy = STEP[d]
         over = (a[0] + dx, a[1] + dy)
         land = (a[0] + 2 * dx, a[1] + 2 * dy)
-        if self.kind(over) is None and self.kind(land) in ("land", "ice"):
+        if self.kind(over) is None and self.kind(land) in ("land", "ice") and not self.is_warp(land):
             return land
         return None
 
@@ -311,7 +318,10 @@ def sccs(nodes, succ):
 def regions(label):
     """(Map, {cell: region}, {(region, region): {needs}}) for a map: regions are
     the free-move strongly connected components; each way between two needs the
-    field moves of one of its masks."""
+    field moves of one of its masks. (Nothing steps onto a warp tile but to go
+    through it: m.entries holds, for each, the regions a step onto it is from,
+    and m.exits the regions a step off it (having come through it) is to:
+    {warp cell: {region: (cell, needs)}}.)"""
     m = Map(label)
     edges = m.edges()
     free = {a: [b for b, need in lst if need == 0] for a, lst in edges.items()}
@@ -328,6 +338,19 @@ def regions(label):
                 continue
             masks -= {m for m in masks if m & need == need}
             masks.add(need)
+    m.entries, m.exits = {}, {}
+    for w in edges:
+        if not m.is_warp(w):
+            continue
+        for d, (dx, dy) in STEP.items():
+            n = (w[0] - dx, w[1] - dy)
+            if n in comp and not m.is_warp(n):
+                r = m.can_step(n, d, onto_warps=True)
+                if r and r[1] == w:
+                    m.entries.setdefault(w, {}).setdefault(comp[n], (n, r[0]))
+            r = m.can_step(w, d)
+            if r:
+                m.exits.setdefault(w, {}).setdefault(comp[r[1]], (r[1], r[0]))
     return m, comp, between
 
 

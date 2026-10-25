@@ -91,7 +91,7 @@ DemoWalk:
 	call DemoCarpetDir
 	jr c, .hold_dir
 ; (it's on the warp it came in by: off it, and back on)
-	ld a, DOWN
+	call DemoOffWarpDir
 	jr .hold_dir
 
 .edge
@@ -418,6 +418,46 @@ DemoCarpetDir:
 .yes
 	ld a, b
 	scf
+	ret
+
+DemoOffWarpDir:
+; On the warp it's going through (the one it came in by): return in a a way off
+; it to a cell the way leads back from.
+	ld c, DOWN
+.off
+	ld a, [wXCoord]
+	ld d, a
+	ld a, [wYCoord]
+	ld e, a
+	ld a, c
+	and a ; DOWN
+	jr nz, .not_down
+	inc e
+	jr .check
+.not_down
+	dec a ; UP
+	jr nz, .not_up
+	dec e
+	jr .check
+.not_up
+	dec a ; LEFT
+	jr nz, .right
+	dec d
+	jr .check
+.right
+	inc d
+.check
+	push bc
+	call DemoFlowAt
+	pop bc
+	cp NUM_DIRECTIONS
+	ld a, c
+	ret c
+	inc c
+	ld a, c
+	cp NUM_DIRECTIONS
+	jr c, .off
+	xor a ; DOWN (no way back: it tries anyway)
 	ret
 
 DemoDirPad:
@@ -1353,18 +1393,22 @@ DemoCanStep:
 	ret
 
 .Waterfall:
-; a: a collision. Return nz if it's a waterfall, and the way isn't up or down.
+; a: a collision (kept, for .Walls). Return nz if it's a waterfall, and the way
+; isn't up or down.
+	ld b, a
 	cp COLL_WATERFALL
 	jr nz, .not_waterfall
 	ld a, [wDemoCellDir]
 	cp LEFT
 	jr nc, .across
 .not_waterfall
-	xor a
+	ld a, b
+	cp a ; (z)
 	ret
 
 .across
-	or 1
+	ld a, b
+	and a ; (nz)
 	ret
 
 .no
@@ -1709,6 +1753,10 @@ DemoFreeStep:
 	ld [wDemoFloodTo], a
 	cp COLL_WALL
 	jr z, .ledge
+	and $f0
+	cp HI_NYBBLE_WARPS
+	jp z, .blocked ; (on it is through it)
+	ld a, [wDemoFloodTo]
 	push hl
 	ld hl, DemoSideWallEntries
 	call DemoCanStep.Walls

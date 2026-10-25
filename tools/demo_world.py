@@ -98,7 +98,16 @@ def map_nodes(label, const, attrs, seen):
     m, comp, between = R.regions(label)
     ports = {}
     for i, (x, y, dest, _) in enumerate(R.warp_events(label)):
-        if (x, y) in comp and dest in seen:
+        if (x, y) not in comp or dest not in seen:
+            continue
+        if m.is_warp((x, y)):
+            # a warp tile: where a step onto it is from, and where a step off it
+            # (having come through it) is to
+            for r, (cell, _) in m.entries.get((x, y), {}).items():
+                ports.setdefault(r, cell)
+            for r, (cell, _) in m.exits.get((x, y), {}).items():
+                ports.setdefault(r, cell)
+        else:
             ports.setdefault(comp[(x, y)], (x, y))
     for side, other_const, offset in attrs[const][2]:
         if other_const not in seen:
@@ -244,15 +253,21 @@ def main():
         for r in sorted(ports):
             edges = []
             for i, (x, y, dest, num) in enumerate(R.warp_events(label)):
-                if comp.get((x, y)) != r or dest not in info:
+                if dest not in info or r not in m.entries.get((x, y), {}):
                     continue
+                need = m.entries[(x, y)][r][1]
                 dwarps = R.warp_events(attrs[dest][0])
                 if num - 1 >= len(dwarps):
                     continue
                 cell = dwarps[num - 1][:2]
-                dr = info[dest][1].get(cell)
-                if (dest, dr) in node_ids:
-                    edges.append((DEDGE_WARP, i + 1, node_ids[(dest, dr)], 0))
+                dm, dcomp = info[dest][0], info[dest][1]
+                if dm.is_warp(cell):
+                    # (off the warp tile it comes out on)
+                    for dr, (_, need2) in dm.exits.get(cell, {}).items():
+                        if (dest, dr) in node_ids:
+                            edges.append((DEDGE_WARP, i + 1, node_ids[(dest, dr)], need | need2))
+                elif (dest, dcomp.get(cell)) in node_ids:
+                    edges.append((DEDGE_WARP, i + 1, node_ids[(dest, dcomp[cell])], need))
             for side, other_const, offset in attrs[c][2]:
                 if other_const not in info:
                     continue

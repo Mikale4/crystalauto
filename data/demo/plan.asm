@@ -275,6 +275,375 @@ DemoPlan:
 	dstatus DSTATUS_EXPLORING
 	dsweep ILEX_FOREST
 	dsweep ROUTE_34
+	dsweep GOLDENROD_CITY
+; the BICYCLE
+	dskipif EVENT_GOT_BICYCLE, .GotBike
+.Bike:
+	dtravel GOLDENROD_BIKE_SHOP
+	dtalk 1 ; the clerk
+	duntil EVENT_GOT_BICYCLE, .Bike
+.GotBike:
+	dsweep ROUTE_35
+	dsweep NATIONAL_PARK
+; WHITNEY, with the team at the level cap; she cries, and once she's done (a
+; step onto (8, 5) brings her friend) she hands over the badge and TM45
+	dskipif EVENT_GOT_TM45_ATTRACT, .GotPlainBadge
+	dskipif EVENT_BEAT_WHITNEY, .BeatWhitney
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_35
+.Whitney:
+	dtutor
+	dstatus DSTATUS_WHITNEY
+	dheal
+	dsweep GOLDENROD_GYM
+	dheal
+	dtravel GOLDENROD_GYM
+	dtalk 1 ; WHITNEY
+	dskipif EVENT_BEAT_WHITNEY, .BeatWhitney
+	djump .Whitney
+.BeatWhitney:
+	dtravel GOLDENROD_GYM
+	dgoto 8, 6
+	dgoto 8, 5
+	dtalk 1 ; WHITNEY
+	duntil EVENT_GOT_TM45_ATTRACT, .BeatWhitney
+.GotPlainBadge:
+; the SQUIRTBOTTLE: FLORIA by the odd tree on ROUTE 36, then at her sister's
+; FLOWER SHOP, where her sister gives it
+	dskipif EVENT_GOT_SQUIRTBOTTLE, .GotSquirtbottle
+	dstatus DSTATUS_SQUIRTBOTTLE
+.Floria:
+	dskipif EVENT_MET_FLORIA, .MetFloria
+	dtravel ROUTE_36
+	dtalk 8 ; FLORIA
+	duntil EVENT_MET_FLORIA, .Floria
+.MetFloria:
+	dskipif EVENT_TALKED_TO_FLORIA_AT_FLOWER_SHOP, .FloriaAtShop
+	dtravel GOLDENROD_FLOWER_SHOP
+	dtalk 2 ; FLORIA
+	duntil EVENT_TALKED_TO_FLORIA_AT_FLOWER_SHOP, .MetFloria
+.FloriaAtShop:
+	dtravel GOLDENROD_FLOWER_SHOP
+	dtalk 1 ; her sister
+	duntil EVENT_GOT_SQUIRTBOTTLE, .FloriaAtShop
+.GotSquirtbottle:
+; the odd tree: water from the SQUIRTBOTTLE (YES), and it's a SUDOWOODO
+	dskipif EVENT_FOUGHT_SUDOWOODO, .FoughtSudowoodo
+.Sudowoodo:
+	dtutor
+	dstatus DSTATUS_SUDOWOODO
+	dheal
+	dtravel ROUTE_36
+	dtalk 3 ; SUDOWOODO
+	duntil EVENT_FOUGHT_SUDOWOODO, .Sudowoodo
+.FoughtSudowoodo:
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_36
+	dsweep ROUTE_37
+	dsweep ECRUTEAK_CITY
+; the BURNED TOWER: the rival (then the floor gives way), and the three beasts
+; in the basement (MORTY's GYM opens after)
+	dskipif EVENT_RELEASED_THE_BEASTS, .ReleasedBeasts
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_37
+.BurnedTower:
+	dskipif EVENT_BEAT_RIVAL_IN_BURNED_TOWER, .FellThrough
+	dtutor
+	dstatus DSTATUS_BURNED_TOWER
+	dheal
+	dtravel BURNED_TOWER_1F
+	dgoto 11, 9
+	djump .BurnedTower
+.FellThrough:
+	dstatus DSTATUS_BURNED_TOWER
+	dtravel BURNED_TOWER_B1F
+	dgoto 10, 6
+	duntil EVENT_RELEASED_THE_BEASTS, .FellThrough
+.ReleasedBeasts:
+	dstatus DSTATUS_EXPLORING
+	dsweep BURNED_TOWER_B1F
+	dsweep BURNED_TOWER_1F
+; MORTY, with the team at the level cap
+	dskipif EVENT_BEAT_MORTY, .BeatMorty
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_38
+.Morty:
+	dtutor
+	dstatus DSTATUS_MORTY
+	dheal
+	dsweep ECRUTEAK_GYM
+	dheal
+	dtravel ECRUTEAK_GYM
+	dtalk 1 ; MORTY
+	dskipif EVENT_BEAT_MORTY, .BeatMorty
+	djump .Morty
+.BeatMorty:
+; HM03 SURF: the DANCE THEATER's KIMONO GIRLS, then the gentleman
+	dskipif EVENT_GOT_HM03_SURF, .GotSurf
+	dstatus DSTATUS_KIMONO_GIRLS
+.Kimono:
+	dheal
+	dsweep DANCE_THEATER
+	dtravel DANCE_THEATER
+	dtalk 6 ; the gentleman
+	duntil EVENT_GOT_HM03_SURF, .Kimono
+.GotSurf:
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_38
+	dsweep ROUTE_39
+	dsweep OLIVINE_CITY
+; HM04 STRENGTH, from the sailor in OLIVINE's CAFE
+	dskipif EVENT_GOT_HM04_STRENGTH, .GotStrength
+.Strength:
+	dtravel OLIVINE_CAFE
+	dtalk 1 ; the sailor
+	duntil EVENT_GOT_HM04_STRENGTH, .Strength
+.GotStrength:
+; the LIGHTHOUSE: JASMINE, at the top with the sick AMPHAROS
+	dskipif EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS, .JasmineExplained
+	dstatus DSTATUS_LIGHTHOUSE
+	dsweep OLIVINE_LIGHTHOUSE_1F
+	dsweep OLIVINE_LIGHTHOUSE_2F
+	dsweep OLIVINE_LIGHTHOUSE_3F
+	dsweep OLIVINE_LIGHTHOUSE_4F
+	dsweep OLIVINE_LIGHTHOUSE_5F
+.Lighthouse:
+	dheal
+	dtravel OLIVINE_LIGHTHOUSE_6F
+	dtalk 1 ; JASMINE
+	duntil EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS, .Lighthouse
+.JasmineExplained:
+; the team at the level cap for the next three GYMS (CHUCK, JASMINE, PRYCE)
+	dskipif EVENT_BEAT_CHUCK, .BeatChuck
+	dstatus DSTATUS_TRAINING
+	dgrind ROUTE_39
+; across the sea to CIANWOOD CITY, and CHUCK: his half of the GYM is behind
+; boulders (the middle one, pushed up twice, opens it; they're back each time
+; the player comes in)
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_40
+	dsweep ROUTE_41
+	dsweep CIANWOOD_CITY
+.Chuck:
+	dtutor
+	dstatus DSTATUS_CHUCK
+	dheal
+	dtravel CIANWOOD_GYM
+	dpush 8, UP
+	dpush 8, UP
+	dsweep CIANWOOD_GYM
+	dheal
+	dtravel CIANWOOD_GYM
+	dpush 8, UP
+	dpush 8, UP
+	dtalk 1 ; CHUCK
+	dskipif EVENT_BEAT_CHUCK, .BeatChuck
+	djump .Chuck
+.BeatChuck:
+; HM02 FLY from CHUCK's wife, and the SECRETPOTION from the PHARMACY
+	dskipif EVENT_GOT_HM02_FLY, .GotFly
+.Fly:
+	dtravel CIANWOOD_CITY
+	dtalk 10 ; CHUCK's wife
+	duntil EVENT_GOT_HM02_FLY, .Fly
+.GotFly:
+	dskipif EVENT_GOT_SECRETPOTION_FROM_PHARMACY, .GotSecretpotion
+	dstatus DSTATUS_LIGHTHOUSE
+.Secretpotion:
+	dtravel CIANWOOD_PHARMACY
+	dtalk 1 ; the pharmacist
+	duntil EVENT_GOT_SECRETPOTION_FROM_PHARMACY, .Secretpotion
+.GotSecretpotion:
+; the medicine for AMPHAROS (YES): JASMINE goes back to her GYM
+	dskipif EVENT_JASMINE_RETURNED_TO_GYM, .JasmineBack
+	dstatus DSTATUS_LIGHTHOUSE
+.Medicine:
+	dheal
+	dtravel OLIVINE_LIGHTHOUSE_6F
+	dtalk 1 ; JASMINE
+	duntil EVENT_JASMINE_RETURNED_TO_GYM, .Medicine
+.JasmineBack:
+	dskipif EVENT_BEAT_JASMINE, .BeatJasmine
+.Jasmine:
+	dtutor
+	dstatus DSTATUS_JASMINE
+	dheal
+	dsweep OLIVINE_GYM
+	dheal
+	dtravel OLIVINE_GYM
+	dtalk 1 ; JASMINE
+	dskipif EVENT_BEAT_JASMINE, .BeatJasmine
+	djump .Jasmine
+.BeatJasmine:
+; on east to MAHOGANY TOWN, and north to the LAKE OF RAGE: its red GYARADOS (on
+; the water: gone once it's beaten), then LANCE (YES: he's off to the ROCKETS'
+; hideout)
+	dstatus DSTATUS_EXPLORING
+	dsweep ROUTE_42
+	dsweep MAHOGANY_TOWN
+	dsweep ROUTE_43
+	dsweep LAKE_OF_RAGE
+	dskipif EVENT_DECIDED_TO_HELP_LANCE, .HelpingLance
+	dstatus DSTATUS_LAKE_OF_RAGE
+.RedGyarados:
+	dskipif EVENT_LAKE_OF_RAGE_RED_GYARADOS, .Lance
+	dtutor
+	dheal
+	dtravel LAKE_OF_RAGE
+	dtalk 9 ; the red GYARADOS
+	djump .RedGyarados
+.Lance:
+	dtravel LAKE_OF_RAGE
+	dtalk 1 ; LANCE
+	duntil EVENT_DECIDED_TO_HELP_LANCE, .Lance
+.HelpingLance:
+; the ROCKETS' hideout, under MAHOGANY's shop: its trainers and items, then on
+; B3F the two grunts' passwords (a word each, after the battle), the boss's
+; door, the boss and its MURKROW; then on B2F the door to the transmitter, its
+; boss, and the three ELECTRODE powering it (there's no leaving till they're
+; beaten)
+	dskipif EVENT_CLEARED_ROCKET_HIDEOUT, .ClearedHideout
+	dstatus DSTATUS_HIDEOUT
+	dheal
+	dsweep TEAM_ROCKET_BASE_B1F
+	dsweep TEAM_ROCKET_BASE_B2F
+	dsweep TEAM_ROCKET_BASE_B3F
+.Slowpoketail:
+	dskipif EVENT_LEARNED_SLOWPOKETAIL, .RaticateTail
+	dtravel TEAM_ROCKET_BASE_B3F
+	dtalk 4 ; the ROCKET girl
+	djump .Slowpoketail
+.RaticateTail:
+	dskipif EVENT_LEARNED_RATICATE_TAIL, .OfficeDoor
+	dtravel TEAM_ROCKET_BASE_B3F
+	dtalk 5 ; the ROCKET
+	djump .RaticateTail
+.OfficeDoor:
+	dskipif EVENT_OPENED_DOOR_TO_GIOVANNIS_OFFICE, .OfficeOpen
+	dtravel TEAM_ROCKET_BASE_B3F
+	dgoto 8, 10 ; (the rival, the first time)
+	dgoto 10, 10
+	dface UP
+	dpress PAD_A
+	djump .OfficeDoor
+.OfficeOpen:
+	dskipif EVENT_BEAT_ROCKET_EXECUTIVEM_4, .BeatExecutive
+	dheal
+	dtravel TEAM_ROCKET_BASE_B3F
+	dgoto 10, 8
+	djump .OfficeOpen
+.BeatExecutive:
+	dskipif EVENT_LEARNED_HAIL_GIOVANNI, .HailGiovanni
+	dtravel TEAM_ROCKET_BASE_B3F
+	dtalk 3 ; the MURKROW
+	djump .BeatExecutive
+.HailGiovanni:
+	dskipif EVENT_OPENED_DOOR_TO_ROCKET_HIDEOUT_TRANSMITTER, .TransmitterOpen
+	dtravel TEAM_ROCKET_BASE_B2F
+	dgoto 14, 13
+	dface UP
+	dpress PAD_A
+	djump .HailGiovanni
+.TransmitterOpen:
+	dskipif EVENT_BEAT_ROCKET_EXECUTIVEF_2, .Electrodes
+	dheal
+	dtravel TEAM_ROCKET_BASE_B2F
+	dgoto 14, 11
+	djump .TransmitterOpen
+.Electrodes:
+	dtravel TEAM_ROCKET_BASE_B2F
+	dtalk 5 ; an ELECTRODE
+	dtalk 6
+	dtalk 7
+	duntil EVENT_CLEARED_ROCKET_HIDEOUT, .Electrodes
+.ClearedHideout:
+; PRYCE (across his GYM's ice)
+	dskipif EVENT_BEAT_PRYCE, .BeatPryce
+.Pryce:
+	dtutor
+	dstatus DSTATUS_PRYCE
+	dheal
+	dsweep MAHOGANY_GYM
+	dheal
+	dtravel MAHOGANY_GYM
+	dtalk 1 ; PRYCE
+	dskipif EVENT_BEAT_PRYCE, .BeatPryce
+	djump .Pryce
+.BeatPryce:
+; GOLDENROD's RADIO TOWER, taken over by the ROCKETS: their fake director on 5F
+; (the BASEMENT KEY), the UNDERGROUND's locked door, the switches that open the
+; way to the warehouse (3, then 2, then 1), the real director there (the CARD
+; KEY), the card slot on 3F, and the ROCKETS' boss on 5F
+	dskipif EVENT_CLEARED_RADIO_TOWER, .ClearedRadioTower
+	dstatus DSTATUS_RADIO_TOWER
+.FakeDirector:
+	dskipif EVENT_BEAT_ROCKET_EXECUTIVEM_3, .BasementKey
+	dtutor
+	dheal
+	dsweep RADIO_TOWER_1F
+	dsweep RADIO_TOWER_2F
+	dsweep RADIO_TOWER_3F
+	dsweep RADIO_TOWER_4F
+	dheal
+	dtravel RADIO_TOWER_5F
+	dgoto 0, 3
+	djump .FakeDirector
+.BasementKey:
+	dskipif EVENT_USED_BASEMENT_KEY, .BasementOpen
+	dtravel GOLDENROD_UNDERGROUND
+	dgoto 18, 7
+	dface UP
+	dpress PAD_A
+	djump .BasementKey
+.BasementOpen:
+	dskipif EVENT_RECEIVED_CARD_KEY, .GotCardKey
+	dheal
+	dsweep GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+.Switch3:
+	dskipif EVENT_SWITCH_3, .Switch2
+	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+	dgoto 2, 2
+	dface UP
+	dpress PAD_A
+	djump .Switch3
+.Switch2:
+	dskipif EVENT_SWITCH_2, .Switch1
+	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+	dgoto 10, 2
+	dface UP
+	dpress PAD_A
+	djump .Switch2
+.Switch1:
+	dskipif EVENT_SWITCH_1, .CardKey
+	dtravel GOLDENROD_UNDERGROUND_SWITCH_ROOM_ENTRANCES
+	dgoto 16, 2
+	dface UP
+	dpress PAD_A
+	djump .Switch1
+.CardKey:
+	dheal
+	dsweep GOLDENROD_UNDERGROUND_WAREHOUSE
+	dtravel GOLDENROD_UNDERGROUND_WAREHOUSE
+	dtalk 4 ; the director
+	duntil EVENT_RECEIVED_CARD_KEY, .BasementOpen
+.GotCardKey:
+	dskipif EVENT_USED_THE_CARD_KEY_IN_THE_RADIO_TOWER, .CardKeyUsed
+	dtravel RADIO_TOWER_3F
+	dgoto 14, 3
+	dface UP
+	dpress PAD_A
+	djump .GotCardKey
+.CardKeyUsed:
+	dtutor
+	dheal
+	dsweep RADIO_TOWER_3F
+	dsweep RADIO_TOWER_4F
+	dsweep RADIO_TOWER_5F
+	dheal
+	dtravel RADIO_TOWER_5F
+	dgoto 16, 5
+	duntil EVENT_CLEARED_RADIO_TOWER, .CardKeyUsed
+.ClearedRadioTower:
 	dstatus DSTATUS_DONE
 	dend
 

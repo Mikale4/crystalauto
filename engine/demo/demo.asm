@@ -210,6 +210,19 @@ DemoStatusTexts:
 	dw .Bugsy
 	dw .Farfetchd
 	dw .Moves
+	dw .Whitney
+	dw .Squirtbottle
+	dw .Sudowoodo
+	dw .BurnedTower
+	dw .Morty
+	dw .KimonoGirls
+	dw .Lighthouse
+	dw .Chuck
+	dw .Jasmine
+	dw .LakeOfRage
+	dw .Hideout
+	dw .Pryce
+	dw .RadioTower
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -231,6 +244,19 @@ DemoStatusTexts:
 .Bugsy:     db "BUGSY's GYM@"
 .Farfetchd: db "Finding FARFETCH'D@"
 .Moves:     db "Learning moves@"
+.Whitney:   db "WHITNEY's GYM@"
+.Squirtbottle: db "FLORIA's errand@"
+.Sudowoodo: db "The odd tree@"
+.BurnedTower: db "BURNED TOWER@"
+.Morty:     db "MORTY's GYM@"
+.KimonoGirls: db "KIMONO GIRLS@"
+.Lighthouse: db "The LIGHTHOUSE@"
+.Chuck:     db "CHUCK's GYM@"
+.Jasmine:   db "JASMINE's GYM@"
+.LakeOfRage: db "LAKE OF RAGE@"
+.Hideout:   db "The ROCKET hideout@"
+.Pryce:     db "PRYCE's GYM@"
+.RadioTower: db "The RADIO TOWER@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.

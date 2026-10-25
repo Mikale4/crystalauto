@@ -85,7 +85,7 @@ DEF DFLOW_GOAL      EQU $fe
 
 DEF DEMO_QUEUE_SIZE EQU $200 ; cells
 DEF NUM_DEMO_WORLD_MAPS EQU 388 ; (every map: see data/demo/world.asm)
-DEF NUM_DEMO_NODES EQU 623 ; (see data/demo/world_nodes.asm)
+DEF NUM_DEMO_NODES EQU 693 ; (see data/demo/world_nodes.asm)
 DEF DEMO_MAX_START_NODES EQU 24
 
 ; DemoNodeEdges kinds: each edge is its kind, the warp (from 1) or direction, the
@@ -139,4 +139,17 @@ DEF DEMO_MAX_TUTORING EQU 24 ; visits to the MOVE REMINDER and TUTOR for a dtuto
 	const DSTATUS_BUGSY       ; 16
 	const DSTATUS_FARFETCHD   ; 17
 	const DSTATUS_MOVES       ; 18
+	const DSTATUS_WHITNEY     ; 19
+	const DSTATUS_SQUIRTBOTTLE ; 20
+	const DSTATUS_SUDOWOODO   ; 21
+	const DSTATUS_BURNED_TOWER ; 22
+	const DSTATUS_MORTY       ; 23
+	const DSTATUS_KIMONO_GIRLS ; 24
+	const DSTATUS_LIGHTHOUSE  ; 25
+	const DSTATUS_CHUCK       ; 26
+	const DSTATUS_JASMINE     ; 27
+	const DSTATUS_LAKE_OF_RAGE ; 28
+	const DSTATUS_HIDEOUT     ; 29
+	const DSTATUS_PRYCE       ; 30
+	const DSTATUS_RADIO_TOWER ; 31
 DEF NUM_DSTATUSES EQU const_value
