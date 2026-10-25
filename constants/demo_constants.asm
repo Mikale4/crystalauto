@@ -58,6 +58,7 @@ DEF DEMO_TAP_FRAMES EQU 3
 	const DPLAN_PUSH      ; 14
 	const DPLAN_TALK_FROM ; 15
 	const DPLAN_FARFETCHD ; 16
+	const DPLAN_TUTOR     ; 17
 DEF NUM_DPLANS EQU const_value
 
 ; wDemoGoal: what the Demo is walking to
@@ -115,6 +116,7 @@ DEF DEMOFIELD_WHIRLPOOL_F  EQU 2 ; whirlpools
 DEF DEMOFIELD_WATERFALL_F  EQU 3 ; waterfalls (up them)
 DEF DEMOFIELD_ROCK_SMASH_F EQU 4 ; rocks
 DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
+DEF DEMO_MAX_TUTORING EQU 24 ; visits to the MOVE REMINDER and TUTOR for a dtutor (see DemoPlan_Tutor)
 
 ; wDemoStatus: what the Demo says it's doing (DemoStatusTexts)
 	const_def
@@ -136,4 +138,5 @@ DEF DEMO_TEAM_MINUTES EQU 15 ; (of play time: see DemoTimeUp)
 	const DSTATUS_SLOWPOKE_WELL ; 15
 	const DSTATUS_BUGSY       ; 16
 	const DSTATUS_FARFETCHD   ; 17
+	const DSTATUS_MOVES       ; 18
 DEF NUM_DSTATUSES EQU const_value

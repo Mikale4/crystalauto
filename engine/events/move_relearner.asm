@@ -212,7 +212,7 @@ ChooseRelearnerMove:
 	predef PrintMoveType
 	ret
 
-BuildReminderList:
+BuildReminderList::
 ; The moves wCurPartyMon learns by level up, up to its level, that it doesn't know.
 	call ClearMoveList
 	ld a, [wCurPartyMon]
@@ -261,7 +261,7 @@ BuildReminderList:
 	call AddToMoveList
 	jr .learnset
 
-BuildTutorList:
+BuildTutorList::
 ; The EGG moves of wCurPartyMon's first form, then the GOLDENROD tutor's moves it
 ; can learn, that it doesn't know.
 	call ClearMoveList

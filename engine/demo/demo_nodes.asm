@@ -95,8 +95,9 @@ DemoForgetRoutes::
 	ret
 
 DemoNearestCenter::
-; Return the nearest POKéMON CENTER: its map key in hl and its nurse (object,
-; from 1) in c; carry if there's none it can get to.
+; Return the nearest POKéMON CENTER: its map key in hl, its nurse (object, from
+; 1) in c and its MOVE REMINDER in b (the MOVE TUTOR is the object after); carry
+; if there's none it can get to.
 	farcall DemoCurMapKey
 	ret c
 	ld a, BANK(wDemoCenterFrom)
@@ -122,6 +123,8 @@ DemoNearestCenter::
 	call DemoNodeKey
 	call DemoCenterNurse
 	ld [wDemoCenterNurse], a
+	ld a, b
+	ld [wDemoCenterReminder], a
 	ld a, e
 	ld [wDemoCenterKey], a
 	ld a, d
@@ -133,7 +136,8 @@ DemoNearestCenter::
 	ld h, a
 	ld a, [wDemoCenterNurse]
 	ld c, a
-	ld b, 0
+	ld a, [wDemoCenterReminder]
+	ld b, a
 	ld a, BANK(wXCoord)
 	ldh [rWBK], a
 	ld a, h
@@ -145,8 +149,8 @@ DemoNearestCenter::
 	ret
 
 DemoCenterNurse:
-; de: a map key. Return in a the nurse of its POKéMON CENTER, if it's one (nz),
-; else z.
+; de: a map key. Return in a the nurse of its POKéMON CENTER and in b its MOVE
+; REMINDER, if it's one (nz), else z.
 	ld hl, DemoWorldCenters
 .loop
 	ld a, [hli]
@@ -162,10 +166,13 @@ DemoCenterNurse:
 	ld a, b
 	cp d
 	jr nz, .next
-	ld a, [hl]
+	ld a, [hli]
+	ld b, [hl]
 	and a
 	ret nz
+	dec hl
 .next
+	inc hl
 	inc hl
 	jr .loop
 

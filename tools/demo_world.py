@@ -186,7 +186,7 @@ def main():
     consts = map_constants()
     attrs = attributes()
     key = {c: k for k, _, _, c in consts}
-    links, targets, nurses = {}, {}, {}
+    links, targets, nurses, reminders = {}, {}, {}, {}
     for _, _, _, c in consts:
         if c not in attrs or SKIP.search(c):
             continue
@@ -202,9 +202,12 @@ def main():
             text = open(ROOT / f"maps/{label}.asm").read()
             objs = [l for l in text.splitlines() if l.strip().startswith("object_event")]
             for i, l in enumerate(objs):
-                if "SPRITE_NURSE" in l:
+                if "SPRITE_NURSE" in l and c not in nurses:
                     nurses[c] = i + 1
-                    break
+                if "MoveReminderScript" in l:
+                    reminders[c] = i + 1
+            # (the MOVE TUTOR is the object after the MOVE REMINDER)
+            assert "MoveTutorScript" in objs[reminders[c]], c
     # what can be reached from the player's room
     seen, todo = {START}, deque([START])
     while todo:
@@ -312,10 +315,11 @@ def main():
         print("\tdb -1")
     print()
     print("DemoWorldCenters:")
-    print("; the POKéMON CENTERs: map key, its nurse (object, from 1); -1 ends")
+    print("; the POKéMON CENTERs: map key, its nurse and its MOVE REMINDER (objects, from 1;")
+    print("; the MOVE TUTOR is the one after); -1 ends")
     for c in sorted(nurses, key=lambda c: key[c]):
         if c in seen:
-            print(f"\tdw {key[c]}\n\tdb {nurses[c]}")
+            print(f"\tdw {key[c]}\n\tdb {nurses[c]}, {reminders[c]}")
     print("\tdw -1")
     sys.stdout = stdout
     nodes_out.close()

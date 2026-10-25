@@ -7017,49 +7017,50 @@ DemoWorldNodes:
 	db -1
 
 DemoWorldCenters:
-; the POKéMON CENTERs: map key, its nurse (object, from 1); -1 ends
+; the POKéMON CENTERs: map key, its nurse and its MOVE REMINDER (objects, from 1;
+; the MOVE TUTOR is the one after); -1 ends
 	dw 0
-	db 1
+	db 1, 6
 	dw 16
-	db 1
+	db 1, 6
 	dw 114
-	db 1
+	db 1, 7
 	dw 126
-	db 1
+	db 1, 6
 	dw 131
-	db 1
+	db 1, 5
 	dw 142
-	db 1
+	db 1, 5
 	dw 146
-	db 1
+	db 1, 6
 	dw 156
-	db 1
+	db 1, 6
 	dw 178
-	db 1
+	db 1, 7
 	dw 181
-	db 1
+	db 1, 5
 	dw 205
-	db 1
+	db 1, 7
 	dw 214
-	db 1
+	db 1, 6
 	dw 234
-	db 1
+	db 1, 7
 	dw 250
-	db 1
+	db 1, 8
 	dw 266
-	db 1
+	db 1, 6
 	dw 274
-	db 1
+	db 1, 6
 	dw 286
-	db 1
+	db 1, 4
 	dw 310
-	db 1
+	db 1, 7
 	dw 325
-	db 1
+	db 1, 6
 	dw 344
-	db 1
+	db 1, 6
 	dw 367
-	db 1
+	db 1, 6
 	dw 381
-	db 1
+	db 1, 6
 	dw -1

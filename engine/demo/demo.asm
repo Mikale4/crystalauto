@@ -209,6 +209,7 @@ DemoStatusTexts:
 	dw .SlowpokeWell
 	dw .Bugsy
 	dw .Farfetchd
+	dw .Moves
 	assert_table_length NUM_DSTATUSES
 
 .Starting:  db "Off on a journey@"
@@ -229,6 +230,7 @@ DemoStatusTexts:
 .SlowpokeWell: db "SLOWPOKE WELL@"
 .Bugsy:     db "BUGSY's GYM@"
 .Farfetchd: db "Finding FARFETCH'D@"
+.Moves:     db "Learning moves@"
 
 DemoTap:
 ; Tap the buttons in a: hold them for DEMO_TAP_FRAMES, then let go as long.
@@ -342,6 +344,7 @@ DemoMenus:
 	demo_menu ItemsPocketMenuHeader.MenuData, DemoPackMenu
 	demo_menu BallsPocketMenuHeader.MenuData, DemoPackMenu
 	demo_menu KeyItemsPocketMenuHeader.MenuData, DemoPackMenu
+	demo_menu ChooseRelearnerMove.MenuData, DemoRelearnerMenu
 	db -1
 
 DemoMoveCursor:
@@ -472,15 +475,54 @@ DemoPackMenu:
 	jp DemoTap
 
 DemoPartyMenu:
-; The party menu: the POKéMON to give an item to (see DemoPackJob); else out.
+; The party menu: the POKéMON to teach a move to (see DemoTutorJob), or to give
+; an item to (see DemoPackJob); else out.
+	call DemoTutorJob
+	jr c, .got_mon
 	call DemoPackJob
 	ld a, PAD_B
 	jp nc, DemoTap
+.got_mon
 	ld b, c
 	inc b
 	ld a, [wMenuCursorY]
 	ld c, a
 	jp DemoMoveCursor
+
+DemoRelearnerMenu:
+; The MOVE REMINDER's or the MOVE TUTOR's list: the move to teach (see
+; DemoTutorJob); else out.
+	call DemoTutorJob
+	ld a, PAD_B
+	jp nc, DemoTap
+	ld a, b
+	call DemoScrollTo
+	ret nc
+	ld a, PAD_B
+	jp DemoTap
+
+DemoTutorJob:
+; Return carry, the POKéMON (from 0) in c and the move in b, if the plan is
+; teaching moves (dtutor).
+	call DemoPlanCommand
+	cp DPLAN_TUTOR
+	jr nz, .no
+	ldh a, [rWBK]
+	push af
+	ld a, BANK(wDemoTutorMon)
+	ldh [rWBK], a
+	ld a, [wDemoTutorMon]
+	ld c, a
+	ld a, [wDemoTutorMove]
+	ld b, a
+	pop af
+	ldh [rWBK], a
+	scf
+	ret
+
+.no
+	and a
+	ret
 
 DemoPlanCommand:
 ; Return the plan's command in a, and hl: what follows it.
@@ -708,9 +750,16 @@ DemoPocketCount:
 	ret
 
 DemoBallMenu:
-; A beaten wild POKéMON: a BALL at it if the plan wants it, it hasn't caught one
-; yet and the team has room (and, till the first POKéMON the plan wants is
-; caught, only that one), else LEAVE it be.
+; A beaten wild POKéMON: a BALL at it if the plan is catching (dcatch, dteam)
+; and wants it, it hasn't caught one yet and the team has room (and, till the
+; first POKéMON the plan wants is caught, only that one), else LEAVE it be.
+	call DemoPlanCommand
+	cp DPLAN_CATCH
+	jr z, .catching
+	cp DPLAN_TEAM
+	ld a, PAD_B
+	jp nz, DemoTap
+.catching
 	ld a, [wPartyCount]
 	cp PARTY_LENGTH
 	ld a, PAD_B
@@ -929,6 +978,7 @@ DemoRunCommand:
 	dw DemoPlan_Push
 	dw DemoPlan_TalkFrom
 	dw DemoPlan_Farfetchd
+	dw DemoPlan_Tutor
 	assert_table_length NUM_DPLANS
 
 DemoNextCommand:
@@ -1179,6 +1229,215 @@ DemoPlan_Farfetchd:
 .Sides:
 ; the way to face it at positions 1 to 10 (where walls allow)
 	db UP, UP, DOWN, RIGHT, DOWN, LEFT, UP, DOWN, LEFT, UP
+
+DemoPlan_Tutor:
+; dtutor: teach the team what the MOVE REMINDER and the MOVE TUTOR (in every
+; POKéMON CENTER) have that auto battle would have it learn, one move a visit
+; to the nearest POKéMON CENTER, through their menus (see DemoTutorJob; auto
+; battle chooses what to forget). What to teach is worked out again after each
+; visit (DemoTutorChoose).
+	pop hl
+	push hl
+	ld a, BANK(wDemoTutorFor)
+	ldh [rWBK], a
+	ld a, [wDemoTutorFor]
+	cp l
+	jr nz, .choose
+	ld a, [wDemoTutorFor + 1]
+	cp h
+	jr z, .chosen
+.choose
+	ld a, [wDemoTutorCount]
+	cp DEMO_MAX_TUTORING
+	jr nc, .done
+	ld a, l
+	ld [wDemoTutorFor], a
+	ld a, h
+	ld [wDemoTutorFor + 1], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	call DemoTutorChoose
+	jr nc, .done
+.chosen
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, DSTATUS_MOVES
+	call DemoSetStatus
+	farcall DemoNearestCenter
+	jr c, .done
+	push bc ; (b: the MOVE REMINDER)
+	ld d, h
+	ld e, l
+	farcall DemoKeyMap
+	call DemoTravel
+	pop bc
+	jr nc, .walking
+	ld a, BANK(wDemoTutorWho)
+	ldh [rWBK], a
+	ld a, [wDemoTutorWho]
+	add b
+	ld b, a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	ld a, b
+	call DemoTalkTo
+	jr nc, .walking
+; (been to them: what's next is worked out again)
+	ld a, BANK(wDemoTutorFor)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoTutorFor], a
+	ld [wDemoTutorFor + 1], a
+	ld hl, wDemoTutorCount
+	inc [hl]
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+.walking
+	pop hl
+	and a
+	ret
+
+.done
+	ld a, BANK(wDemoTutorFor)
+	ldh [rWBK], a
+	xor a
+	ld [wDemoTutorFor], a
+	ld [wDemoTutorFor + 1], a
+	ld [wDemoTutorCount], a
+	ld [wDemoTutorDone], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop hl
+	inc hl
+	jp DemoNextCommand
+
+DemoTutorChoose:
+; What to teach next (wDemoTutorMon, Move and Who): the first move, of the first
+; POKéMON's MOVE REMINDER's list then its MOVE TUTOR's, that auto battle would
+; have it learn (AutoLearn_WouldLearn). Return carry if there's one. (It's slow:
+; it skips the POKéMON it found nothing for before, see wDemoTutorDone.)
+	ld a, [wCurPartyMon]
+	push af
+	ld a, [wCurPartySpecies]
+	push af
+	ld c, 0
+.mon
+	ld a, [wPartyCount]
+	cp c
+	jr z, .none
+	call .Done
+	jr nz, .next_mon
+	ld hl, wPartySpecies
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	cp EGG
+	jr z, .next_mon
+	ld [wCurPartySpecies], a
+	ld a, c
+	ld [wCurPartyMon], a
+	push bc
+	farcall BuildReminderList
+	ld e, 0 ; (the MOVE REMINDER)
+	call .Try
+	jr c, .found
+	farcall BuildTutorList
+	ld e, 1 ; (the MOVE TUTOR)
+	call .Try
+	jr c, .found
+	pop bc
+; (nothing for this one)
+	call .Done
+	ld a, BANK(wDemoTutorDone)
+	ldh [rWBK], a
+	ld a, [wDemoTutorDone]
+	or b
+	ld [wDemoTutorDone], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+.next_mon
+	inc c
+	jr .mon
+
+.Done:
+; Return in b POKéMON c's bit, and nz if wDemoTutorDone has it (c kept).
+	ld a, c
+	ld b, 1
+	and a
+	jr z, .got_bit
+.shift
+	sla b
+	dec a
+	jr nz, .shift
+.got_bit
+	ld a, BANK(wDemoTutorDone)
+	ldh [rWBK], a
+	ld a, [wDemoTutorDone]
+	and b
+	push af
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop af
+	ret
+
+.none
+	pop af
+	ld [wCurPartySpecies], a
+	pop af
+	ld [wCurPartyMon], a
+	and a
+	ret
+
+.found
+; a: the move; e: who; c (on the stack): the POKéMON
+	pop bc
+	ld b, a
+	ld a, BANK(wDemoTutorMon)
+	ldh [rWBK], a
+	ld a, c
+	ld [wDemoTutorMon], a
+	ld a, b
+	ld [wDemoTutorMove], a
+	ld a, e
+	ld [wDemoTutorWho], a
+	ld a, BANK(wXCoord)
+	ldh [rWBK], a
+	pop af
+	ld [wCurPartySpecies], a
+	pop af
+	ld [wCurPartyMon], a
+	scf
+	ret
+
+.Try:
+; Return carry and the move in a if auto battle would have the POKéMON learn a
+; move of the list (wMoveRelearnerMoves) (e kept).
+	ld a, [wMoveRelearnerCount]
+	and a
+	ret z
+	ld b, a
+	ld hl, wMoveRelearnerMoves
+.try
+	ld a, [hli]
+	ld [wPutativeTMHMMove], a
+	push hl
+	push bc
+	push de
+	farcall AutoLearn_WouldLearn
+	pop de
+	pop bc
+	pop hl
+	jr c, .would
+	dec b
+	jr nz, .try
+	and a
+	ret
+
+.would
+	dec hl
+	ld a, [hl]
+	scf
+	ret
 
 DemoTalkFrom:
 ; a: a map object; b: a direction. Walk to its other side, face it that way and

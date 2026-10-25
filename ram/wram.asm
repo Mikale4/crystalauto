@@ -3713,6 +3713,7 @@ wDemoFloodTo:: db
 wDemoCenterFrom:: dw ; the nearest POKéMON CENTER it worked out last (see DemoNearestCenter)
 wDemoCenterKey:: dw
 wDemoCenterNurse:: db
+wDemoCenterReminder:: db
 wDemoTimer:: dw ; the play time (minutes) the command started at (see DemoTimeUp)
 wDemoSweepMap:: dw ; the map a sweep is for (see DemoPlan_Sweep)
 wDemoHealing:: db ; on its way to be healed: the status to go back to, + 1 (0: it isn't)
@@ -3720,6 +3721,12 @@ wDemoSkipped:: ds (NUM_DEMO_TARGETS + 7) / 8 ; targets it's leaving for now (see
 wDemoFieldMoves:: db ; DEMOFIELD_* flags: what the team can get past (see DemoFieldMoves)
 wDemoPushX:: db ; where the boulder it pushes was (see DemoPlan_Push)
 wDemoPushY:: db
+wDemoTutorFor:: dw ; the dtutor command its choice is for (0: none; see DemoPlan_Tutor)
+wDemoTutorMon:: db ; what to teach: the POKéMON (from 0),
+wDemoTutorMove:: db ; the move,
+wDemoTutorWho:: db ; and who teaches it (0: the MOVE REMINDER, 1: the MOVE TUTOR)
+wDemoTutorCount:: db ; how many times it's been to them for this command
+wDemoTutorDone:: db ; a bit for each POKéMON with nothing more to learn (for this command)
 
 
 SECTION "Battle Tower RAM", WRAMX

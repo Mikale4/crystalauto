@@ -99,6 +99,10 @@ MACRO dfarfetchd ; ILEX FOREST's FARFETCH'D: one step on toward the CHARCOAL KIL
 	db DPLAN_FARFETCHD
 ENDM
 
+MACRO dtutor ; teach the team the best moves a POKéMON CENTER's MOVE REMINDER and TUTOR have
+	db DPLAN_TUTOR
+ENDM
+
 MACRO dend
 	db DPLAN_END
 ENDM
@@ -149,14 +153,17 @@ DemoPlan:
 	dbuy POKE_BALL, 7, CHERRYGROVE_MART ; (one for each it catches, and a couple over)
 	dstatus DSTATUS_CATCHING
 	dcatch GEODUDE, ROUTE_46
-; a full team, from wherever there's something it hasn't caught (for a while
-; on each map: which POKéMON are out depends on the time of day)
-	dteam PARTY_LENGTH, ROUTE_46
-	dteam PARTY_LENGTH, ROUTE_29
-	dteam PARTY_LENGTH, ROUTE_31
+; a team of five (room for the EGG ELM's AIDE brings after FALKNER), from
+; wherever there's something it hasn't caught (for a while on each map: which
+; POKéMON are out depends on the time of day)
+	dteam PARTY_LENGTH - 1, ROUTE_46
+	dteam PARTY_LENGTH - 1, ROUTE_29
+	dteam PARTY_LENGTH - 1, ROUTE_31
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_31
 .Falkner:
+; the moves the MOVE REMINDER and TUTOR have for the team (FLAMETHROWER, ...)
+	dtutor
 	dstatus DSTATUS_TO_VIOLET
 	dheal
 ; X items for the team to hold (FALKNER's birds are two levels up; each is used
@@ -182,10 +189,10 @@ DemoPlan:
 .BeatAbe:
 	dtalk 1 ; FALKNER
 	dskipif EVENT_BEAT_FALKNER, .BeatFalkner
-; (lost: a full team for the next try, if it isn't one yet)
+; (lost: a team of five for the next try, if it isn't one yet)
 	dstatus DSTATUS_CATCHING
-	dteam PARTY_LENGTH, ROUTE_31
-	dteam PARTY_LENGTH, ROUTE_29
+	dteam PARTY_LENGTH - 1, ROUTE_31
+	dteam PARTY_LENGTH - 1, ROUTE_29
 	djump .Falkner
 .BeatFalkner:
 ; SPROUT TOWER: its SAGES, and FLASH from its ELDER
@@ -201,6 +208,17 @@ DemoPlan:
 	dtalk 3 ; SAGE LI (a battle, then FLASH)
 	duntil EVENT_GOT_HM05_FLASH, .Flash
 .GotFlash:
+; the EGG from ELM's AIDE, in VIOLET's POKéMON CENTER once ELM has called (he
+; calls when the player is outside); the way south (ROUTE 32) is open after
+	dskipif EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE, .GotTogepiEgg
+	dstatus DSTATUS_ERRAND
+.TogepiEgg:
+	dtravel VIOLET_CITY
+	dgoto 18, 20
+	dtravel VIOLET_POKECENTER_1F
+	dtalk 5 ; ELM's AIDE
+	duntil EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE, .TogepiEgg
+.GotTogepiEgg:
 ; on to AZALEA TOWN
 	dstatus DSTATUS_EXPLORING
 	dsweep ROUTE_32
@@ -230,6 +248,7 @@ DemoPlan:
 	dstatus DSTATUS_TRAINING
 	dgrind ROUTE_33
 .Bugsy:
+	dtutor
 	dstatus DSTATUS_BUGSY
 	dheal
 	dtravel AZALEA_GYM

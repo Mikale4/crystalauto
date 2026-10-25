@@ -922,24 +922,55 @@ TMHMBadgesNeeded:
 ; Auto battle's choice when a Pokémon learns a fifth move
 
 AutoLearn_Active::
-; Return carry if auto battle is deciding, in a battle.
+; Return carry if auto battle is deciding: in a battle, or while the Demo plays
+; (see engine/demo/demo.asm).
+	ld a, [wDemoState]
+	cp DEMO_RUNNING
+	jr z, .yes
 	ld a, [wBattleMode]
 	and a
 	ret z
 	ld a, [wAutoBattle]
 	and a
 	ret z
+.yes
 	scf
 	ret
 
+AutoLearn_WouldLearn::
+; Return carry if auto battle would have wCurPartyMon learn wPutativeTMHMMove:
+; it's in the best set of four from its moves and that one (and, while it has
+; room for more moves, it's an attack).
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1Moves + NUM_MOVES - 1
+	call GetPartyLocation
+	ld a, [hl]
+	and a
+	jr nz, .full
+	ld a, [wPutativeTMHMMove]
+	dec a
+	ld hl, Moves + MOVE_POWER
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	and a
+	ret z ; (nc)
+.full
+	call AutoLearn_Choose
+	ld a, c
+	cp NUM_MOVES + 1
+	ret ; (carry if 1-4)
+
 AutoLearn_ForgetChoice::
-; ForgetMove: c = 0 to ask the player; with auto battle on in a battle, 1-4 to
-; forget that move for wPutativeTMHMMove, or NUM_MOVES + 1 not to learn it: the
-; best set of four from the Pokémon's moves and the new one (as EXTREME's
-; trainers pick theirs), keeping any HM move.
+; ForgetMove: c = 0 to ask the player; with auto battle on in a battle (or the
+; Demo playing), 1-4 to forget that move for wPutativeTMHMMove, or NUM_MOVES + 1
+; not to learn it: the best set of four from the Pokémon's moves and the new
+; one (as EXTREME's trainers pick theirs).
 	ld c, 0
 	call AutoLearn_Active
 	ret nc
+AutoLearn_Choose:
 	ld a, [wCurSpecies]
 	push af
 	ld a, [wCurPartySpecies]
