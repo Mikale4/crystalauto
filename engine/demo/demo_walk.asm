@@ -91,7 +91,7 @@ DemoWalk:
 	call DemoCarpetDir
 	jr c, .hold_dir
 ; (it's on the warp it came in by: off it, and back on)
-	call DemoOffWarpDir
+	call DemoOffGoalDir
 	jr .hold_dir
 
 .edge
@@ -125,10 +125,9 @@ DemoWalk:
 	and %11
 	dec b
 	jr nz, .try_dir
-	xor a ; (nowhere: wait)
-	ld [wDemoPad], a
-	and a
-	ret
+; (no more grass next to it: off it, and back on, for another try)
+	call DemoOffGoalDir
+	jr .hold_dir
 
 .grass_dir
 	pop af
@@ -420,9 +419,9 @@ DemoCarpetDir:
 	scf
 	ret
 
-DemoOffWarpDir:
-; On the warp it's going through (the one it came in by): return in a a way off
-; it to a cell the way leads back from.
+DemoOffGoalDir:
+; On its goal (the warp it came in by, the only grass there): return in a a way
+; off it to a cell the way leads back from.
 	ld c, DOWN
 .off
 	ld a, [wXCoord]
