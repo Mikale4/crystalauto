@@ -58,6 +58,21 @@ BattleCommand_Sketch:
 	cp SKETCH
 	jr nz, .find_sketch
 	inc hl
+; Fail if it can't be in a moveset with the others (see CheckMovesetConflict).
+	push bc
+	push de
+	push hl
+	ld a, l
+	sub c
+	ld e, a
+	ld a, h
+	sbc 0
+	ld d, a
+	farcall CheckMovesetConflict
+	pop hl
+	pop de
+	pop bc
+	jr c, .fail
 ; The Sketched move is loaded to that slot.
 	ld a, b
 	ld [hl], a

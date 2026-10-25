@@ -280,7 +280,9 @@ COUNTER (a special one, MIRROR COAT), it hits back by itself for twice the damag
 can't be chosen ("COUNTER works by itself!"); a Pokémon with nothing else left to
 choose STRUGGLEs. A Pokémon can't know both, nor either one with an attack: one
 that would is told it "can't learn COUNTER with TACKLE!" (with four moves, you can
-pick another one to forget), and wild and trainers' Pokémon go without those moves.
+pick another one to forget), SKETCH and MIMIC fail to copy one, and wild and
+trainers' Pokémon go without those moves. A Pokémon that learned one with an attack
+in an older version keeps both, until it learns a move in place of one of them.
 
 ### Critical hits
 
@@ -638,7 +640,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: e42d8a0bf4ccd9d934d53014cfa85b72b6415ab9`.
+The patched ROM has `sha1: 7a236f4c8af48015bc199957189ad5f25f56a82a`.
 
 
 ## Building it
@@ -802,7 +804,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   (`wPlayerTimesHit`, `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower`
   command). FALSE SWIPE's miss is the `swipeagain` command (`FalseSwipeAgain`).
   `CheckMovesetConflict` keeps COUNTER and MIRROR COAT out of movesets they can't be
-  in (`LearnMove`, `FillMoves`, `InitEggMoves`), and `CheckPlayerHasUsableMoves`,
+  in (`LearnMove`, `FillMoves`, `InitEggMoves`, `BattleCommand_Sketch`,
+  `BattleCommand_Mimic`), and `CheckPlayerHasUsableMoves`,
   the move menu, `ParseEnemyAction` and `AIChooseMove` don't choose them; all of
   these are in [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm) but
   the last ones.

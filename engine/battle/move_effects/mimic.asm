@@ -19,6 +19,8 @@ BattleCommand_Mimic:
 	cp STRUGGLE
 	jr z, .fail
 	ld b, a
+	ld d, h
+	ld e, l
 	ld c, NUM_MOVES
 .check_already_knows_move
 	ld a, [hli]
@@ -32,6 +34,14 @@ BattleCommand_Mimic:
 	cp MIMIC
 	jr nz, .find_mimic
 	inc hl
+; Fail if it can't be in a moveset with the others (see CheckMovesetConflict).
+	push hl
+	ld a, l
+	sub e
+	ld c, a
+	farcall CheckMovesetConflict
+	pop hl
+	jr c, .fail
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
 	call GetBattleVar
 	ld [hl], a

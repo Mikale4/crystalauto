@@ -937,7 +937,9 @@ CheckMovesetConflict::
 ; move it can't be with. COUNTER and MIRROR COAT can't be in a moveset together,
 ; nor with any attack.
 	ld a, b
+	push bc
 	call MoveKind
+	pop bc
 	and a
 	ret z
 	ld h, a ; (the move's kind)
