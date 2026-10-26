@@ -251,7 +251,7 @@ Some moves work in new ways of their own:
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
 | BEAT UP | one of them now: 25 power, 2 to 5 hits |
 | DREAM EATER | works on a foe that's awake too |
-| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -277,17 +277,29 @@ Some moves work in new ways of their own:
 | SNORE | works by itself: at the end of each of its turns while it's asleep, the Pokémon SNOREs (1 PP); it can't be chosen |
 | SONICBOOM, SEISMIC TOSS, DRAGON RAGE, NIGHT SHADE | fixed damage, whatever the levels and stats, rolled as MAGNITUDE's power is: 20 (5%), 35 (10%), 50 (20%), 60 (30%), 70 (20%), 85 (10%) or 100 (5%). SONICBOOM is an ELECTRIC move now |
 | TRIPLE KICK | as TRIPLE AXEL: up to three kicks, of 20, 40 and 60 power, each one 90% accurate on its own; the first that misses ends it |
+| SPITE | works by itself: right after the foe uses a move, it loses 4 PP; once for each of the foe's moves (see below) |
+| NIGHTMARE | works by itself: a sleeping foe gets one (see below) |
+| SPLASH | a 20-power special WATER attack that works by itself, at the end of each of the Pokémon's turns (see below) |
+| CONVERSION, CONVERSION 2 | work by themselves, as in PokeSquad Battler: just before an attack's damage, the Pokémon becomes a type that resists it (CONVERSION 2: one it doesn't affect) (see below) |
+| SKETCH | copies the foe's move you choose, from a menu of its moves (see below) |
+| MEAN LOOK, SPIDER WEB | they can't be chosen: used only as the Pokémon comes in |
+| AMNESIA | as in the first games: SPCL.ATK and SPCL.DEF, 2 stages each; once while it's out (see below) |
+| GROWTH | ATTACK and SPCL.ATK, 2 stages each; once while it's out |
+| SWORDS DANCE | once while it's out |
+| TELEPORT | as in the latest games: moves last, and in a trainer battle, the Pokémon switches out (in the wild, it still flees) (see below) |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
-FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP or LOCK-ON uses each of them as it comes in,
+FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB or LOCK-ON uses each
+of them as it comes in,
 at the start of its first turn out, before anything else happens. Each takes 1 PP
 (none is used without PP left), and it doesn't count as the Pokémon's move (QUICK
 CLAW and KING'S ROCK still wait for that). LOCK-ON goes last, so its aim is for the
 next attack. None is used when it would do nothing: FUTURE SIGHT while one is on its
 way, SPIKES with three layers down, SAFEGUARD while it's up, PSYCH UP when none of the
-foe's stats have gone up. They can still be chosen as usual too, but FUTURE SIGHT and
-SAFEGUARD: like COUNTER and MIRROR COAT, they work only by themselves ("FUTURE SIGHT
-works by itself!"), and auto battle and the other side never choose them.
+foe's stats have gone up, MEAN LOOK and SPIDER WEB when the foe's trapped already. They
+can still be chosen as usual too, but FUTURE SIGHT, SAFEGUARD, MEAN LOOK and SPIDER
+WEB: like COUNTER and MIRROR COAT, they work only by themselves ("FUTURE SIGHT works by
+itself!"), and auto battle and the other side never choose them.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -308,12 +320,50 @@ with a move of its own. It doesn't take up moves that go on for turns (FLY, DIG,
 ROLLOUT, THRASH, BIDE), call another (METRONOME, SLEEP TALK) or work by themselves.
 Like COUNTER, it can't be chosen.
 
+**SPITE.** Right after the foe uses a move, a Pokémon that knows SPITE takes 4 PP from
+that move by itself (1 PP of SPITE's), unless it's asleep or frozen or the move has no
+PP left: once for each of the foe's moves, while both are out. So when the foe uses
+TACKLE, TACKLE loses 4 PP; the next TACKLE loses none, but the foe's first GROWL loses
+4 too. When either side switches, it starts over.
+
+**NIGHTMARE.** At the end of each turn, while the foe is asleep, a Pokémon that knows
+NIGHTMARE gives it one by itself (1 PP), unless it's asleep or frozen itself, or the
+foe has one already, is behind a SUBSTITUTE or out of sight (FLY, DIG).
+
+**SNORE and SPLASH.** At the end of each of its turns, a Pokémon that knows SNORE
+SNOREs by itself while it's asleep, and one that knows SPLASH SPLASHes while it's awake
+(not frozen, nor out of sight): SPLASH is a 20-power special WATER attack now. Each
+takes 1 PP. (A Pokémon with nothing left to choose, as a young MAGIKARP that only knows
+SPLASH, STRUGGLEs, then SPLASHes.)
+
+**CONVERSION and CONVERSION 2** work as in PokeSquad Battler. Just before an attack's
+damage (not STRUGGLE's), a Pokémon that knows CONVERSION becomes a type that resists
+the attack, picked at random, if it doesn't resist it already; with CONVERSION 2, it
+becomes a type the attack doesn't affect, if there is one (else, one that resists it).
+With both, CONVERSION 2 goes when there's a type the attack doesn't affect, else
+CONVERSION first. Each takes 1 PP, not when the Pokémon is out of sight or protected;
+the type lasts until it's switched out.
+
+**SKETCH.** Your Pokémon's SKETCH asks which of the foe's moves to copy, from a menu of
+them (not one it knows already, nor SKETCH or STRUGGLE); a foe's SKETCH takes your
+Pokémon's move with the most power. As before, the move takes SKETCH's place for good.
+
+**Once while out.** SWORDS DANCE, GROWTH and AMNESIA can each be used once while the
+Pokémon is out; then it can't choose it ("GROWTH works once while out!") until it has
+gone back and come out again. AMNESIA raises SPCL.ATK and SPCL.DEF by 2 stages each, as
+the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each.
+
+**TELEPORT.** As in the latest games, it moves after everything else, and in a trainer
+battle the Pokémon switches out (yours: you choose who comes in, or auto battle does),
+even when it's trapped; the one coming in starts afresh, with nothing passed on, as
+with any switch. In the wild, it flees the battle as before.
+
 ### Stat changes on the battle screen
 
-The stat levels a Pokémon has raised or lowered are shown on the battle screen: the
-foe's under its HP box, yours (to the right) over your Pokémon, as `AT+2 AC-1`: AT
-ATTACK, DF DEFENSE, SP SPEED, SA SPCL.ATK, SD SPCL.DEF, AC ACCURACY, EV EVASION, and
-how many stages up (+) or down (-). Up to three show for each side.
+The stat levels a Pokémon has raised or lowered are shown on the battle screen, in a
+small font: the foe's under its HP box, yours (to the right) over your Pokémon, as
+`AT+2 AC-1`: AT ATTACK, DF DEFENSE, SP SPEED, SA SPCL.ATK, SD SPCL.DEF, AC ACCURACY,
+EV EVASION, and how many stages up (+) or down (-). Up to four show for each side.
 
 ### Critical hits
 
@@ -671,7 +721,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: fd9277271c6cbcbde106071c100be09a9b013cfe`.
+The patched ROM has `sha1: 86526614c9b544cf83b2ef36fd16e2585d968a56`.
 
 
 ## Building it
@@ -850,12 +900,25 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   with `wTurnActed`). TRIPLE KICK aims each kick after the first with
   `BattleCommand_CheckHit` (in `BattleCommand_EndLoop`), and LOW KICK's power is
   `GetLowKickPower`. The fixed damage of SONICBOOM and the like is
-  rolled from `FixedDamageRolls` (auto battle counts on `TYPICAL_FIXED_DAMAGE`). SNORE is
-  `HandleAutoSnore` (after `AfterTurn`). The stat changes are drawn by
-  `DrawStatStages` (from `BattleTextbox` and the HUDs), with a `+` added to the font
-  (`$e4` in [`gfx/font/font.png`](gfx/font/font.png)).
-  `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
-  don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
+  rolled from `FixedDamageRolls` (auto battle counts on `TYPICAL_FIXED_DAMAGE`). After
+  each side's turn (`AfterTurn`): SPITE is `HandleAutoSpite` (the foe's moves it has
+  had: `wPlayerSpited`, `wEnemySpited`), NIGHTMARE `HandleAutoNightmare`, and SNORE and
+  SPLASH `HandleAutoEndOfTurn` (none of them once either has fainted or the battle is
+  over: `CantGoOn`). CONVERSION and CONVERSION 2 are `HandleAutoConversion`, from the
+  `stab` and `resettypematchup` commands (`BattleCommand_StabAndConvert`,
+  `BattleCommand_ResetTypeMatchupAndConvert`: not the AI's and auto battle's damage
+  guesses, which call `BattleCommand_Stab` themselves); its PP is `SpendPP`. SKETCH's
+  move is `ChooseSketchMove` (the player's menu is `MoveSelectionScreen` with
+  `wMoveSelectionMenuType` 1, the foe's moves). GROWTH's and AMNESIA's second stat is
+  the `secondstatup` command; SWORDS DANCE, GROWTH and AMNESIA set their field flag as
+  they're used (`OnceOutMoves`, in `MarkFirstAttack`). TELEPORT goes on to
+  `BattleCommand_BatonPass` in a trainer battle (`TeleportSwitch` resets what comes in).
+  The stat changes are drawn by `DrawStatStages` (from `BattleTextbox` and the HUDs),
+  with the small font's tiles (`StatStageTiles`: `$ba`, `$c6`-`$cf` and `$d7`-`$de` in
+  [`gfx/font/font.png`](gfx/font/font.png), unused before).
+  `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction`, `AIChooseMove` and
+  auto battle don't choose the moves that work by themselves (`AutoMoves`), nor those
+  used once while out (`CantChooseMove`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

@@ -221,13 +221,17 @@ SpeedUp:
 	endmove
 
 SpecialAttackUp:
+; GROWTH: ATTACK and SPCL.ATK, by 2 each (once while it's out: see OnceOutMoves)
 	checkobedience
 	usedmovetext
 	doturn
-	specialattackup
+	attackup2
 	lowersub
 	statupanim
 	raisesub
+	statupmessage
+	statupfailtext
+	secondstatup
 	statupmessage
 	statupfailtext
 	endmove
@@ -318,13 +322,18 @@ SpecialAttackUp2:
 	endmove
 
 SpecialDefenseUp2:
+; AMNESIA: SPCL.ATK and SPCL.DEF, by 2 each, as the first games' SPECIAL (once
+; while it's out: see OnceOutMoves)
 	checkobedience
 	usedmovetext
 	doturn
-	specialdefenseup2
+	specialattackup2
 	lowersub
 	statupanim
 	raisesub
+	statupmessage
+	statupfailtext
+	secondstatup
 	statupmessage
 	statupfailtext
 	endmove

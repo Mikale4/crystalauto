@@ -921,6 +921,17 @@ INCLUDE "data/battle/critical_hit_chances.asm"
 
 INCLUDE "engine/battle/move_effects/triple_kick.asm"
 
+BattleCommand_StabAndConvert:
+; (the stab command) CONVERSION and CONVERSION 2 work by themselves, just before
+; the damage (see HandleAutoConversion); then STAB and the type matchup.
+	farcall HandleAutoConversion
+	jp BattleCommand_Stab
+
+BattleCommand_ResetTypeMatchupAndConvert:
+; (the resettypematchup command) The same, for fixed damage.
+	farcall HandleAutoConversion
+	jp BattleCommand_ResetTypeMatchup
+
 BattleCommand_Stab:
 ; STAB = Same Type Attack Bonus
 	ld a, BATTLE_VARS_MOVE_ANIM
@@ -5762,6 +5773,32 @@ BattleCommand_DefenseUpFirst:
 	ld [wAttackMissed], a
 	ld [wFailedMessage], a
 	ret
+
+BattleCommand_SecondStatUp:
+; GROWTH (ATTACK, then SPCL.ATK) and AMNESIA (SPCL.ATK, then SPCL.DEF) raise two
+; stats by 2: after the first (see their effect scripts), the second, even when the
+; first couldn't go any higher (then with the animation it didn't get).
+	ld a, [wFailedMessage]
+	cp 2 ; (it couldn't go higher)
+	push af
+	jr nz, .raise
+	xor a
+	ld [wAttackMissed], a
+.raise
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	cp GROWTH
+	ld b, $10 | SP_ATTACK
+	jr z, .got_stat
+	ld b, $10 | SP_DEFENSE
+.got_stat
+	call BattleCommand_StatUp
+	pop af
+	ret nz
+	ld a, [wFailedMessage]
+	and a
+	ret nz
+	jp BattleCommand_StatUpAnim
 
 EndRechargeOpp:
 	push hl

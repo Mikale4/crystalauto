@@ -36,6 +36,7 @@ BattleCommand_BatonPass:
 	farcall CheckMobileBattleError
 	jp c, EndMoveEffect
 
+	call TeleportSwitch
 	ld hl, PassedBattleMonEntrance
 	call CallBattleCore
 
@@ -66,6 +67,7 @@ BattleCommand_BatonPass:
 	call CallBattleCore
 	ld hl, ResetBattleParticipants
 	call CallBattleCore
+	call TeleportSwitch
 	ld a, TRUE
 	ld [wApplyStatLevelMultipliersToEnemy], a
 	ld hl, ApplyStatLevelMultiplierOnAllStats
@@ -117,6 +119,27 @@ BatonPass_LinkEnemySwitch:
 	ld [wBattleAction], a
 .switch
 	jp CloseWindow
+
+TeleportSwitch:
+; TELEPORT (see BattleCommand_Teleport): the POKéMON coming in has none of the
+; user's stat changes or status (as with any switch).
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVar
+	cp TELEPORT
+	ret nz
+	ldh a, [hBattleTurn]
+	and a
+	jr nz, .enemy
+	ld hl, ResetPlayerStatLevels
+	call CallBattleCore
+	ld hl, NewBattleMonStatus
+	jp CallBattleCore
+
+.enemy
+	ld hl, ResetEnemyStatLevels
+	call CallBattleCore
+	ld hl, NewEnemyMonStatus
+	jp CallBattleCore
 
 FailedBatonPass:
 	call AnimateFailedMove

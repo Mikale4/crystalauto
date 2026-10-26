@@ -351,9 +351,26 @@ BattleText_TheMoveIsDisabled:
 	prompt
 
 BattleText_MoveWorksByItself:
+; (or, for a move it can use once while it's out, that it has: see CantChooseMove)
+	text_asm
+	ld a, [wNamedObjectIndex]
+	ld b, a
+	farcall IsOnceOutMove
+	ld hl, .WorksByItselfText
+	ret nc
+	ld hl, .OnceText
+	ret
+
+.WorksByItselfText:
 	text_ram wStringBuffer1
 	text " works"
 	line "by itself!"
+	prompt
+
+.OnceText:
+	text_ram wStringBuffer1
+	text " works"
+	line "once while out!"
 	prompt
 
 SwipedAgainText:
@@ -646,6 +663,19 @@ TookAimText:
 	line "took aim!"
 	prompt
 
+SketchWhichMoveText:
+; (ChooseSketchMove)
+	text "Which move will"
+	line "<USER> sketch?"
+	prompt
+
+CantSketchThatText:
+	text "<USER> can't"
+	line "sketch @"
+	text_ram wStringBuffer1
+	text "!"
+	prompt
+
 SketchedText:
 	text "<USER>"
 	line "SKETCHED"
@@ -844,6 +874,19 @@ WasDisabledText:
 CoinsScatteredText:
 	text "Coins scattered"
 	line "everywhere!"
+	prompt
+
+ConversionAutoText:
+; (HandleAutoConversion)
+	text "<USER>'s"
+	line "@"
+	text_ram wStringBuffer2
+	text "!"
+	para "<USER>"
+	line "transformed into"
+	cont "the @"
+	text_ram wStringBuffer1
+	text "-type!"
 	prompt
 
 TransformedTypeText:

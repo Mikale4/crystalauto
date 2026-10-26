@@ -317,8 +317,8 @@ RazorWindDescription:
 	next "cal hit ratio.@"
 
 SwordsDanceDescription:
-	db   "A dance that in-"
-	next "creases ATTACK.@"
+	db   "A dance: ATTACK +2"
+	next "once while out.@"
 
 CutDescription:
 	db   "Cuts using claws,"
@@ -557,8 +557,8 @@ LeechSeedDescription:
 	next "foe on every turn.@"
 
 GrowthDescription:
-	db   "Raises the SPCL."
-	next "ATK rating.@"
+	db   "ATTACK & SP.ATK"
+	next "+2, once while out@"
 
 RazorLeafDescription:
 	db   "Has a high criti-"
@@ -661,8 +661,8 @@ RageDescription:
 	next "hit the user took.@"
 
 TeleportDescription:
-	db   "A move for fleeing"
-	next "from battle.@"
+	db   "Moves last: flees"
+	next "or switches out.@"
 
 NightShadeDescription:
 	db   "Fixed damage, from"
@@ -793,8 +793,8 @@ ConstrictDescription:
 	next "lowers SPEED.@"
 
 AmnesiaDescription:
-	db   "Sharply raises the"
-	next "user's SPCL.DEF.@"
+	db   "SP.ATK & SP.DEF"
+	next "+2, once while out@"
 
 KinesisDescription:
 	db   "Reduces the foe's"
@@ -861,8 +861,8 @@ PsywaveDescription:
 	next "like MAGNITUDE.@"
 
 SplashDescription:
-	db   "Has no effect"
-	next "whatsoever.@"
+	db   "Hits by itself at"
+	next "its turn's end.@"
 
 AcidArmorDescription:
 	db   "Sharply raises the"
@@ -901,8 +901,8 @@ SharpenDescription:
 	next "the user's ATTACK.@"
 
 ConversionDescription:
-	db   "Change user's type"
-	next "to a move's type.@"
+	db   "Takes a resisting"
+	next "type by itself.@"
 
 TriAttackDescription:
 	db   "Fires three kinds"
@@ -926,7 +926,7 @@ StruggleDescription:
 
 SketchDescription:
 	db   "Copies the foe's"
-	next "move permanently.@"
+	next "move you choose.@"
 
 TripleKickDescription:
 	db   "Up to 3 kicks, at"
@@ -938,15 +938,15 @@ ThiefDescription:
 
 SpiderWebDescription:
 	db   "Prevents fleeing"
-	next "or switching.@"
+	next "as it comes in.@"
 
 MindReaderDescription:
 	db   "Ensures the next"
 	next "attack will hit.@"
 
 NightmareDescription:
-	db   "A sleeper loses"
-	next "1/4 HP every turn.@"
+	db   "Sleeping foe loses"
+	next "1/4 HP; by itself.@"
 
 FlameWheelDescription:
 	db   "An attack that may"
@@ -965,8 +965,8 @@ FlailDescription:
 	next "it moves last.@"
 
 Conversion2Description:
-	db   "The user's type is"
-	next "made resistant.@"
+	db   "Takes an immune"
+	next "type by itself.@"
 
 AeroblastDescription:
 	db   "Has a high criti-"
@@ -981,8 +981,8 @@ ReversalDescription:
 	next "it moves last.@"
 
 SpiteDescription:
-	db   "Cuts the PP of the"
-	next "foe's last move.@"
+	db   "Cuts 4 PP of foe's"
+	next "moves by itself.@"
 
 PowderSnowDescription:
 	db   "An attack that may"
@@ -1110,7 +1110,7 @@ SteelWingDescription:
 
 MeanLookDescription:
 	db   "Prevents fleeing"
-	next "or switching.@"
+	next "as it comes in.@"
 
 AttractDescription:
 	db   "Makes the foe fall"

@@ -1,4 +1,9 @@
 BattleCommand_Teleport:
+; As in the latest games: in a trainer battle, the user switches out (as with BATON
+; PASS, but nothing is passed on: see TeleportSwitch), even when it's trapped.
+	ld a, [wBattleMode]
+	dec a
+	jp nz, BattleCommand_BatonPass
 	ld a, [wBattleType]
 	cp BATTLETYPE_FORCESHINY
 	jr z, .failed

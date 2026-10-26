@@ -11,7 +11,7 @@ BattleCommandPointers:
 	dw BattleCommand_DoTurn
 	dw BattleCommand_Critical
 	dw BattleCommand_DamageStats
-	dw BattleCommand_Stab
+	dw BattleCommand_StabAndConvert
 	dw BattleCommand_DamageVariation
 	dw BattleCommand_CheckHit
 	dw BattleCommand_LowerSub
@@ -167,7 +167,7 @@ BattleCommandPointers:
 	dw BattleCommand_Teleport
 	dw BattleCommand_BeatUp
 	dw BattleCommand_RagePower
-	dw BattleCommand_ResetTypeMatchup
+	dw BattleCommand_ResetTypeMatchupAndConvert
 	dw BattleCommand_AllStatsUp
 	dw BattleCommand_BideFailText
 	dw BattleCommand_RaiseSubNoAnim
@@ -184,4 +184,5 @@ BattleCommandPointers:
 	dw BattleCommand_SwipeAgain
 	dw BattleCommand_DefenseUpFirst
 	dw BattleCommand_MovedLast
+	dw BattleCommand_SecondStatUp
 	assert_table_length NUM_EFFECT_COMMANDS

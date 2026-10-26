@@ -437,7 +437,18 @@ UserHeldFlags:
 
 MarkFirstAttack::
 ; (BattleCommand_DoTurn) For KING'S ROCK: whether the move the user is using is
-; the first attack it's used since it came in.
+; the first attack it's used since it came in. (And a move it can use once while
+; it's out has been: see OnceOutMoves.)
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	ld b, a
+	ldh a, [hBattleTurn]
+	ld c, a
+	call OnceOutFlag
+	jr nc, .not_once
+	or [hl]
+	ld [hl], a
+.not_once
 	call UserHeldFlags
 	res HELDFLAG_KINGS_ROCK_F, [hl]
 	bit HELDFLAG_ATTACKED_F, [hl]
@@ -476,8 +487,8 @@ HeldKingsRock::
 
 ResetEntryHeldFlags::
 ; A POKéMON coming in by BATON PASS (the user's side): no moves or attacks since,
-; for its QUICK CLAW and KING'S ROCK, its entry moves to come, and its COUNTER
-; and MIRROR COAT.
+; for its QUICK CLAW and KING'S ROCK, its entry moves to come, its COUNTER and
+; MIRROR COAT, and SPITE for both (see HandleAutoSpite).
 	call UserHeldFlags
 	ld a, [hl]
 	and HELDFLAGS_ON_ENTRY
@@ -493,6 +504,8 @@ ResetEntryHeldFlags::
 	xor a
 	ld [hl], a
 	ld [de], a
+	ld [wPlayerSpited], a
+	ld [wEnemySpited], a
 	ret
 
 HandleEntryTransform::
@@ -573,9 +586,9 @@ HandleEntryTransform::
 
 HandleEntryMoves:
 ; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD,
-; PSYCH UP and LOCK-ON work as a POKéMON comes in: at the start of its first turn
-; out, it uses each of them it knows with PP left (taking their PP), before it
-; does anything else.
+; PSYCH UP, MEAN LOOK, SPIDER WEB and LOCK-ON work as a POKéMON comes in: at the
+; start of its first turn out, it uses each of them it knows with PP left (taking
+; their PP), before it does anything else.
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -623,6 +636,10 @@ HandleEntryMoves:
 	ld a, b
 	cp SPIKES
 	jr z, .spikes
+	cp MEAN_LOOK
+	jr z, .mean_look
+	cp SPIDER_WEB
+	jr z, .mean_look
 	cp SAFEGUARD
 	jr z, .safeguard
 	cp PSYCH_UP
@@ -675,6 +692,14 @@ HandleEntryMoves:
 	jr nz, .raised
 	ret
 
+.mean_look
+; (not when it has the foe trapped already)
+	ld a, BATTLE_VARS_SUBSTATUS5
+	call GetBattleVar
+	bit SUBSTATUS_CANT_RUN, a
+	ret nz
+	jr .use
+
 .spikes
 ; (not when the foe's side has as many layers as there can be)
 	ld hl, wEnemySpikes
@@ -699,6 +724,8 @@ EntryMoves:
 	db SPIKES
 	db SAFEGUARD
 	db PSYCH_UP
+	db MEAN_LOOK
+	db SPIDER_WEB
 	db LOCK_ON
 	db -1
 
@@ -836,29 +863,190 @@ AfterTurn:
 	jr nz, .acted
 	ld [hl], b
 	call HandleAutoCounter
-	jr HandleAutoSnore
+	call HandleAutoNightmare
+	jr HandleAutoEndOfTurn
 
 .acted
 	call HandleAutoCounter
 	call HandleAutoMirrorMove
+	call HandleAutoSpite
+	call HandleAutoNightmare
 	; fallthrough
 
-HandleAutoSnore:
-; SNORE works by itself: at the end of each of its turns while it's asleep, a
-; POKéMON that knows SNORE (with PP left) uses it. Not if either has fainted.
+HandleAutoEndOfTurn:
+; SNORE and SPLASH work by themselves, at the end of each of its turns: a POKéMON
+; that knows SNORE (with PP left) uses it while it's asleep; one that knows SPLASH
+; uses it while it's awake (not frozen, nor out of sight: FLY, DIG).
+	call CantGoOn
+	ret nz
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	ld b, SNORE
+	and SLP_MASK
+	jr nz, .use
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	bit FRZ, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS3
+	call GetBattleVar
+	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
+	ret nz
+	ld b, SPLASH
+.use
+	farcall AutoMove_Setup
+	ret c
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+CantGoOn:
+; Return nz if either POKéMON has fainted, or the battle is over (one fled: see
+; BattleCommand_Teleport), so no move works by itself now.
+	ld a, [wForcedSwitch]
+	ld hl, wBattleEnded
+	or [hl]
+	ret nz
 	ld hl, wBattleMonHP
 	ld a, [hli]
 	or [hl]
-	ret z
+	jr z, .fainted
 	ld hl, wEnemyMonHP
 	ld a, [hli]
 	or [hl]
-	ret z
+	jr z, .fainted
+	xor a
+	ret
+
+.fainted
+	inc a
+	ret
+
+HandleAutoSpite:
+; SPITE works by itself: right after the foe used a move, a POKéMON that knows
+; SPITE (with PP left) takes 4 PP from it, once for each of the foe's moves while
+; both are out. Not if it's asleep or frozen, or the move has no PP left.
+	call CantGoOn
+	ret nz
+; (as the other side)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Spite
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Spite:
 	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
+	call GetBattleVar
+	and a
+	ret z
+	cp STRUGGLE
+	ret z
+	ld b, a
+; its slot in the foe's moves (c), with PP left
+	ld hl, wEnemyMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wBattleMonMoves
+.got_moves
+	ld c, 0
+.find
+	ld a, [hli]
+	cp b
+	jr z, .found
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .find
+	ret
+
+.found
+	dec hl
+	ld de, wBattleMonPP - wBattleMonMoves
+	add hl, de
+	ld a, [hl]
+	and PP_MASK
+	ret z
+	ld a, 1
+	inc c
+.bit
+	dec c
+	jr z, .got_bit
+	add a
+	jr .bit
+.got_bit
+	ld e, a
+	ld hl, wPlayerSpited
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_spited
+	ld hl, wEnemySpited
+.got_spited
+	ld a, [hl]
+	and e
+	ret nz ; (that move's had it, since they're out)
+	push de
+	push hl
+	ld b, SPITE
+	farcall AutoMove_Setup
+	pop hl
+	pop de
+	ret c
+	ld a, [hl]
+	or e
+	ld [hl], a
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+HandleAutoNightmare:
+; NIGHTMARE works by itself: at the end of each turn, while the foe is asleep (and
+; not having one already), a POKéMON that knows NIGHTMARE (with PP left) gives it
+; one. Not if it's asleep or frozen itself, or the foe is behind a SUBSTITUTE or
+; out of sight (FLY, DIG). The side whose turn it was first.
+	ldh a, [hBattleTurn]
+	push af
+	call .Nightmare
+	ldh a, [hBattleTurn]
+	xor 1
+	ldh [hBattleTurn], a
+	call .Nightmare
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Nightmare:
+	call CantGoOn
+	ret nz
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVar
 	and SLP_MASK
 	ret z
-	ld b, SNORE
+	ld a, BATTLE_VARS_SUBSTATUS1_OPP
+	call GetBattleVar
+	bit SUBSTATUS_NIGHTMARE, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS4_OPP
+	call GetBattleVar
+	bit SUBSTATUS_SUBSTITUTE, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS3_OPP
+	call GetBattleVar
+	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
+	ret nz
+	ld b, NIGHTMARE
 	farcall AutoMove_Setup
 	ret c
 	ld de, 0 ; (its own effect script)
@@ -893,14 +1081,8 @@ HandleAutoCounter:
 	cp SPECIAL
 	ret nz
 .got_move
-	ld hl, wBattleMonHP
-	ld a, [hli]
-	or [hl]
-	ret z
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	or [hl]
-	ret z
+	call CantGoOn
+	ret nz
 	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVar
 	and SLP_MASK | 1 << FRZ
@@ -977,14 +1159,8 @@ HandleAutoMirrorMove:
 ; knows MIRROR MOVE (with PP left) uses that move too, once while it's out. Not if
 ; either fainted, it's asleep, frozen or busy (charging, recharging, locked into a
 ; move), or the move is one it can't take up (MirrorMoveCant).
-	ld hl, wBattleMonHP
-	ld a, [hli]
-	or [hl]
-	ret z
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	or [hl]
-	ret z
+	call CantGoOn
+	ret nz
 ; (as the other side)
 	ldh a, [hBattleTurn]
 	push af
@@ -1213,8 +1389,9 @@ MovedLastPower::
 
 DrawStatStages::
 ; Each side's stat levels that aren't as they were (BASE_STAT_LEVEL), on the
-; battle screen: the foe's under its HP box, the player's over its POKéMON, as
-; "AT+2SP-1" (up to three each, in the order of wPlayerStatLevels).
+; battle screen in a small font: the foe's under its HP box, the player's over its
+; POKéMON, as "AT+2 SP-1" (up to MAX_STAT_STAGES_SHOWN each, in the order of
+; wPlayerStatLevels; two tiles each, see StatStageTiles).
 	ld a, [wBattleMode]
 	and a
 	ret z
@@ -1274,7 +1451,7 @@ DrawStatStages::
 	call .Clear
 	pop hl
 	pop bc
-; up to MAX_STAT_STAGES_SHOWN of them; with fewer, a space between them
+; up to MAX_STAT_STAGES_SHOWN of them, a space between them
 	ld a, b
 	cp MAX_STAT_STAGES_SHOWN + 1
 	jr c, .got_count
@@ -1282,28 +1459,15 @@ DrawStatStages::
 .got_count
 	ld [wStatStagesLeft], a
 	ld b, a
-	cp MAX_STAT_STAGES_SHOWN
-	ld a, 0
-	jr nc, .got_gap
-	inc a
-.got_gap
-	ld [wStatStagesGap], a
 ; (the player's line is to the right, by its HP box)
 	bit 1, c
 	jr z, .got_start
 	push de
 	ld a, b
 	add a
-	add a
-	ld e, a ; ("AT+2" each)
-	ld a, [wStatStagesGap]
-	and a
-	jr z, .no_gaps
-	ld a, e
 	add b
-	dec a
+	dec a ; ("AT+2 " each, the last without its space)
 	ld e, a
-.no_gaps
 	ld a, STAT_LINE_LENGTH
 	sub e
 	ld e, a
@@ -1311,7 +1475,7 @@ DrawStatStages::
 	add hl, de
 	pop de
 .got_start
-	ld bc, StatStageCodes
+	ld bc, StatStageTiles
 .stat
 	ld a, [de]
 	inc de
@@ -1319,37 +1483,33 @@ DrawStatStages::
 	jr z, .next_stat
 	push af
 	ld a, [bc]
-	ld [hli], a
-	inc bc
-	ld a, [bc]
-	ld [hli], a
-	dec bc
+	ld [hli], a ; (the stat)
 	pop af
+	push bc
+	ld bc, StatStageTiles.Up - 1
 	sub BASE_STAT_LEVEL
-	jr nc, .up
+	jr nc, .got_stages
 	cpl
 	inc a
-	ld [hl], "-"
-	jr .digit
-.up
-	ld [hl], "+"
-.digit
+	ld bc, StatStageTiles.Down - 1
+.got_stages
+	add c
+	ld c, a
+	jr nc, .got_tile
+	inc b
+.got_tile
+	ld a, [bc]
+	ld [hli], a ; (how many stages up or down)
 	inc hl
-	add "0"
-	ld [hli], a
+	pop bc
 	ld a, [wStatStagesLeft]
 	dec a
 	ret z
 	ld [wStatStagesLeft], a
-	ld a, [wStatStagesGap]
-	and a
-	jr z, .next_stat
-	inc hl
 .next_stat
 	inc bc
-	inc bc
 	ld a, c
-	cp LOW(StatStageCodes.End)
+	cp LOW(StatStageTiles.Up)
 	jr nz, .stat
 	ret
 
@@ -1362,13 +1522,521 @@ DrawStatStages::
 	jr nz, .clear
 	ret
 
-StatStageCodes:
-; in the order of wPlayerStatLevels
-	db "AT" ; ATTACK
-	db "DF" ; DEFENSE
-	db "SP" ; SPEED
-	db "SA" ; SPCL.ATK
-	db "SD" ; SPCL.DEF
-	db "AC" ; ACCURACY
-	db "EV" ; EVASION
-.End:
+StatStageTiles:
+; the small font's tiles (gfx/font/font.png): each stat's, in the order of
+; wPlayerStatLevels
+	db $c6 ; "AT": ATTACK
+	db $c7 ; "DF": DEFENSE
+	db $c8 ; "SP": SPEED
+	db $c9 ; "SA": SPCL.ATK
+	db $ca ; "SD": SPCL.DEF
+	db $cb ; "AC": ACCURACY
+	db $cc ; "EV": EVASION
+.Up: ; "+1" to "+6"
+	db $cd, $ce, $cf, $d7, $d8, $d9
+.Down: ; "-1" to "-6"
+	db $da, $db, $dc, $dd, $de, $ba
+
+CantChooseMove::
+; b: a move; c: whose (0: the player's POKéMON, 1: the foe's). Return z if it can't
+; be chosen: it works by itself (AutoMoves), or it can be used once while the
+; POKéMON is out and has been (OnceOutMoves). b and c are kept.
+	push bc
+	ld a, b
+	ld hl, AutoMoves
+	ld de, 1
+	call IsInArray
+	pop bc
+	jr c, .cant
+	call OnceOutFlag
+	jr nc, .can
+	and [hl]
+	jr nz, .cant
+.can
+	or 1
+	ret
+
+.cant
+	xor a
+	ret
+
+IsOnceOutMove::
+; Return carry if move b is one that can be used once while the POKéMON is out.
+	ld c, 0
+	; fallthrough
+
+OnceOutFlag:
+; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves):
+; then hl is its side's field flags (c: 0, the player's; 1, the foe's) and a the
+; flag for it.
+	ld hl, OnceOutMoves
+.loop
+	ld a, [hli]
+	cp -1
+	ret z ; (nc)
+	cp b
+	jr z, .found
+	inc hl
+	jr .loop
+
+.found
+	ld a, [hl]
+	ld hl, wPlayerFieldFlags
+	dec c
+	inc c
+	jr z, .got_flags
+	ld hl, wEnemyFieldFlags
+.got_flags
+	scf
+	ret
+
+AutoMoves:
+; moves that work by themselves, so they can't be chosen (for the player, the foe
+; and auto battle: see CantChooseMove)
+	db COUNTER      ; right after an attack: see HandleAutoCounter
+	db MIRROR_COAT
+	db MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
+	db SPITE        ; (see HandleAutoSpite)
+	db FUTURE_SIGHT ; as it comes in: see HandleEntryMoves
+	db SAFEGUARD
+	db MEAN_LOOK
+	db SPIDER_WEB
+	db SNORE        ; at the end of its turn: see HandleAutoEndOfTurn
+	db SPLASH
+	db NIGHTMARE    ; when the foe is asleep: see HandleAutoNightmare
+	db CONVERSION   ; just before an attack's damage: see HandleAutoConversion
+	db CONVERSION2
+	db -1
+
+OnceOutMoves:
+; moves that can be used once while the POKéMON is out (see MarkFirstAttack), and
+; their FIELD_*_F flags
+	db SWORDS_DANCE, 1 << FIELD_SWORDS_DANCE_F
+	db GROWTH,       1 << FIELD_GROWTH_F
+	db AMNESIA,      1 << FIELD_AMNESIA_F
+	db -1
+
+HandleAutoConversion::
+; (the stab and resettypematchup commands) CONVERSION and CONVERSION 2 work by
+; themselves: just before an attack's damage, its target, if it knows one with PP
+; left (taking 1), becomes a type picked at random that's better against it than
+; what it is: with CONVERSION 2, one the attack doesn't affect, if there is one;
+; else (and with CONVERSION) one that resists it. With both, CONVERSION 2 goes when
+; there's a type the attack doesn't affect, else CONVERSION first. Not against
+; STRUGGLE, or when the target is out of sight (FLY, DIG) or protected. The type
+; lasts until it's switched out.
+	ld a, [wAttackMissed]
+	and a
+	ret nz
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVar
+	cp STRUGGLE
+	ret z
+	ld a, BATTLE_VARS_MOVE_TYPE
+	call GetBattleVar
+	ld b, a
+	and ~TYPE_MASK
+	cp STATUS
+	ret z
+	ld a, b
+	and TYPE_MASK
+	cp CURSE_TYPE
+	ret z
+	ld a, BATTLE_VARS_SUBSTATUS3_OPP
+	call GetBattleVar
+	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS1_OPP
+	call GetBattleVar
+	bit SUBSTATUS_PROTECT, a
+	ret nz
+	ld hl, wEnemyMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wBattleMonHP
+.got_hp
+	ld a, [hli]
+	or [hl]
+	ret z
+; (does it know either?)
+	ld b, CONVERSION2
+	call .Knows
+	jr nc, .knows_one
+	ld b, CONVERSION
+	call .Knows
+	ret c
+.knows_one
+; the attack against its types as they are
+	call .Types
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	push de
+	farcall BattleCheckTypeMatchup
+	ld a, [wTypeMatchup]
+	ld [wConversionMatchup], a
+; CONVERSION 2, to a type the attack doesn't affect
+	ld d, 0
+	call .Count
+	and a
+	jr z, .resist
+	ld e, a
+	ld a, [wConversionMatchup]
+	and a
+	jr z, .done ; (it doesn't already)
+	ld b, CONVERSION2
+	call .Knows
+	jr nc, .convert
+.resist
+; else, to one that resists it
+	ld a, [wConversionMatchup]
+	cp EFFECTIVE / 2 + 1
+	jr c, .done ; (it resists it already)
+	ld d, 1
+	call .Count
+	and a
+	jr z, .done
+	ld e, a
+	ld b, CONVERSION
+	call .Knows
+	jr nc, .convert
+	ld b, CONVERSION2
+	call .Knows
+	jr nc, .convert
+.done
+; (its types as they were)
+	pop de
+	call .Types
+	ld a, d
+	ld [hli], a
+	ld [hl], e
+	ret
+
+.convert
+; b: the move; c: its slot; d: which types; e: how many
+	pop hl ; (its types as they were: they're gone)
+	push bc
+	ld c, e
+.random
+	call BattleRandom
+	and %11111
+	cp c
+	jr nc, .random
+	ld e, a
+	call .Nth
+	pop bc
+	push af
+	call .Types
+	pop af
+	ld [hli], a
+	ld [hl], a
+	push af
+; as the one that knows it
+	ldh a, [hBattleTurn]
+	xor 1
+	ldh [hBattleTurn], a
+	call SpendPP
+	ld a, b
+	ld [wNamedObjectIndex], a
+	call GetMoveName
+	call CopyName1
+	pop af
+	ld [wNamedObjectIndex], a
+	farcall GetTypeName
+	ld hl, ConversionAutoText
+	call StdBattleTextbox
+	ldh a, [hBattleTurn]
+	xor 1
+	ldh [hBattleTurn], a
+; (the attack's name, as it was)
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	ld [wNamedObjectIndex], a
+	call GetMoveName
+	jp CopyName1
+
+.Types:
+; hl: the target's types
+	ld hl, wEnemyMonType1
+	ldh a, [hBattleTurn]
+	and a
+	ret z
+	ld hl, wBattleMonType1
+	ret
+
+.Knows:
+; Return carry if the target doesn't know move b with PP left; else its slot in c.
+	push de
+	ld hl, wEnemyMonMoves
+	ld de, wEnemyMonPP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wBattleMonMoves
+	ld de, wBattleMonPP
+.got_moves
+	ld c, 0
+.find
+	ld a, [hli]
+	cp b
+	jr nz, .next
+	ld a, [de]
+	and PP_MASK
+	jr nz, .known
+.next
+	inc de
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .find
+	pop de
+	scf
+	ret
+
+.known
+	pop de
+	and a
+	ret
+
+.Count:
+; a: how many types the attack doesn't affect (d = 0), or resists (d = 1)
+	ld e, -1
+	call .Nth
+	ld a, e
+	cpl ; (-1 - e: how many it went by)
+	ret
+
+.Nth:
+; a: type number e of those (d), from 0; or, with e = -1, e is -1 - how many
+; there are
+	push bc
+	ld c, -1
+.next_type
+	inc c
+	ld a, c
+	cp TYPES_END
+	jr nc, .end
+	cp BIRD
+	jr z, .next_type
+	cp UNUSED_TYPES
+	jr c, .try
+	cp UNUSED_TYPES_END
+	jr c, .next_type
+.try
+	call .Types
+	ld a, c
+	ld [hli], a
+	ld [hl], a
+	farcall BattleCheckTypeMatchup
+	ld a, [wTypeMatchup]
+	and a
+	jr z, .immune
+	cp EFFECTIVE
+	jr nc, .next_type
+	ld a, d
+	and a
+	jr z, .next_type
+	jr .counts
+
+.immune
+	ld a, d
+	and a
+	jr nz, .next_type
+.counts
+	ld a, e
+	and a
+	jr z, .found
+	dec e
+	jr .next_type
+
+.found
+	ld a, c
+.end
+	pop bc
+	ret
+
+SpendPP:
+; The user (hBattleTurn) uses 1 PP of its move in slot c: in battle, and in its
+; party data (not when it's transformed, or the move isn't its own: MIMIC). bc is
+; kept.
+	push bc
+	ld b, 0
+	ld hl, wBattleMonPP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_pp
+	ld hl, wEnemyMonPP
+.got_pp
+	add hl, bc
+	dec [hl]
+	ld a, BATTLE_VARS_SUBSTATUS5
+	call GetBattleVar
+	bit SUBSTATUS_TRANSFORMED, a
+	jr nz, .done
+; (the move, in battle)
+	ld de, wBattleMonMoves - wBattleMonPP
+	add hl, de
+	ld a, [hl]
+	push af
+	push bc
+	ldh a, [hBattleTurn]
+	and a
+	ld hl, wPartyMon1Moves
+	ld a, [wCurBattleMon]
+	jr z, .party
+	ld hl, wWildMonMoves
+	ld a, [wBattleMode]
+	dec a
+	jr z, .got_moves
+	ld hl, wOTPartyMon1Moves
+	ld a, [wCurOTMon]
+.party
+	call GetPartyLocation
+.got_moves
+	pop bc
+	add hl, bc
+	pop af
+	cp [hl]
+	jr nz, .done ; (not its own)
+	ld de, MON_PP - MON_MOVES
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_offset
+	ld a, [wBattleMode]
+	dec a
+	jr nz, .got_offset
+	ld de, wWildMonPP - wWildMonMoves
+.got_offset
+	add hl, de
+	ld a, [hl]
+	and PP_MASK
+	jr z, .done
+	dec [hl]
+.done
+	pop bc
+	ret
+
+ChooseSketchMove::
+; b: the foe's move the user (hBattleTurn) sketches (see BattleCommand_Sketch), or
+; 0 if there's none it can (STRUGGLE, SKETCH, or ones it knows): the player
+; chooses it, from a menu of the foe's moves; the foe sketches the player's move
+; with the most power.
+	ld hl, wEnemyMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wBattleMonMoves
+.got_moves
+; the one it can with the most power: e (0: none), its power d
+	ld de, 0
+	ld c, NUM_MOVES
+.best
+	ld a, [hli]
+	push hl
+	push bc
+	call .CanSketch
+	jr c, .next_best
+	ld b, a
+	call .Power
+	ld c, a
+	ld a, e
+	and a
+	jr z, .take
+	ld a, d
+	cp c
+	jr nc, .next_best
+.take
+	ld d, c
+	ld e, b
+.next_best
+	pop bc
+	pop hl
+	dec c
+	jr nz, .best
+	ld b, e
+	ld a, e
+	and a
+	ret z
+	ldh a, [hBattleTurn]
+	and a
+	ret nz
+; the player chooses
+	ld hl, SketchWhichMoveText
+	call StdBattleTextbox
+.menu
+	ld a, 1 ; (the foe's moves)
+	ld [wMoveSelectionMenuType], a
+	farcall MoveSelectionScreen
+	xor a
+	ld [wMoveSelectionMenuType], a
+	ld a, [wMenuCursorY]
+	ld c, a
+	ld b, 0
+	ld hl, wEnemyMonMoves
+	add hl, bc
+	ld a, [hl]
+	call .CanSketch
+	jr nc, .chosen
+	ld [wNamedObjectIndex], a
+	call GetMoveName
+	ld hl, CantSketchThatText
+	call StdBattleTextbox
+	jr .menu
+
+.chosen
+	ld b, a
+	ret
+
+.CanSketch:
+; Return carry if the user can't sketch move a. a is kept.
+	and a
+	jr z, .cant
+	cp STRUGGLE
+	jr z, .cant
+	cp SKETCH
+	jr z, .cant
+	push hl
+	push bc
+	ld b, a
+	ld hl, wBattleMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_own
+	ld hl, wEnemyMonMoves
+.got_own
+	ld c, NUM_MOVES
+.known
+	ld a, [hli]
+	cp b
+	jr z, .knows_it
+	dec c
+	jr nz, .known
+	ld a, b
+	pop bc
+	pop hl
+	and a
+	ret
+
+.knows_it
+	ld a, b
+	pop bc
+	pop hl
+.cant
+	scf
+	ret
+
+.Power:
+; a: the power of move b
+	push hl
+	push bc
+	ld a, b
+	dec a
+	ld hl, Moves + MOVE_POWER
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	pop bc
+	pop hl
+	ret

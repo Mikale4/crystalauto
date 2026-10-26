@@ -3622,6 +3622,8 @@ endr
 	ld [wEnemyWrapCount], a
 	ld [wEnemyTurnsTaken], a
 	ld [wEnemyFieldFlags], a
+	ld [wPlayerSpited], a
+	ld [wEnemySpited], a
 	ld hl, wPlayerSubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wEnemyHeldFlags]
@@ -4114,6 +4116,8 @@ endr
 	ld [wPlayerWrapCount], a
 	ld [wPlayerTurnsTaken], a
 	ld [wPlayerFieldFlags], a
+	ld [wPlayerSpited], a
+	ld [wEnemySpited], a
 	ld hl, wEnemySubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ld a, [wPlayerHeldFlags]
@@ -5773,21 +5777,24 @@ MoveInfoBox:
 	ret
 
 MoveWorksByItself:
-; Return z for a move that works by itself, so it can't be chosen: COUNTER and
-; MIRROR COAT (see HandleAutoCounter), FUTURE SIGHT (see HandleEntryMoves),
-; MIRROR MOVE (see HandleAutoMirrorMove), SAFEGUARD (as it comes in), SNORE (see
-; HandleAutoSnore).
-	cp COUNTER
-	ret z
-	cp MIRROR_COAT
-	ret z
-	cp FUTURE_SIGHT
-	ret z
-	cp MIRROR_MOVE
-	ret z
-	cp SAFEGUARD
-	ret z
-	cp SNORE
+; Return z for the player's POKéMON's move a if it can't be chosen (see
+; CantChooseMove). a is kept.
+	push hl
+	push bc
+	ld c, 0
+	jr CantChooseMove_Far
+
+EnemyMoveWorksByItself:
+; The same, for the foe's.
+	push hl
+	push bc
+	ld c, 1
+CantChooseMove_Far:
+	ld b, a
+	farcall CantChooseMove
+	ld a, b
+	pop bc
+	pop hl
 	ret
 
 CheckPlayerHasUsableMoves:
@@ -5895,7 +5902,7 @@ ParseEnemyAction:
 	cp [hl]
 	jr z, .disabled
 	ld a, [hl]
-	call MoveWorksByItself
+	call EnemyMoveWorksByItself
 	jr z, .disabled
 	ld a, [de]
 	and PP_MASK
@@ -5929,7 +5936,7 @@ ParseEnemyAction:
 	ld a, [hl]
 	and a
 	jr z, .loop2
-	call MoveWorksByItself
+	call EnemyMoveWorksByItself
 	jr z, .loop2
 	ld hl, wEnemyMonPP
 	add hl, bc

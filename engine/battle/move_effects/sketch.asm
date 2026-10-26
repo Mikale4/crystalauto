@@ -31,14 +31,16 @@ BattleCommand_Sketch:
 	jr z, .get_last_move
 	ld hl, wEnemyMonMoves
 .get_last_move
-	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
-	call GetBattleVar
+; The move: one of the foe's, chosen (see ChooseSketchMove). Fail if there's none
+; it can sketch.
+	push de
+	push hl
+	farcall ChooseSketchMove
+	pop hl
+	pop de
+	ld a, b
 	ld [wNamedObjectIndex], a
-	ld b, a
-; Fail if move is invalid or is Struggle.
 	and a
-	jr z, .fail
-	cp STRUGGLE
 	jr z, .fail
 ; Fail if user already knows that move
 	ld c, NUM_MOVES

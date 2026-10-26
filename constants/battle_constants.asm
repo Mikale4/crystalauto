@@ -279,11 +279,14 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_COUNTER_F     ; 1: its COUNTER has hit back (see HandleAutoCounter)
 	const FIELD_MIRROR_COAT_F ; 2: its MIRROR COAT has
 	const FIELD_MIRROR_MOVE_F ; 3: its MIRROR MOVE has (see HandleAutoMirrorMove)
+	const FIELD_SWORDS_DANCE_F ; 4: it has used SWORDS DANCE (see OnceOutMoves)
+	const FIELD_GROWTH_F       ; 5: GROWTH
+	const FIELD_AMNESIA_F      ; 6: AMNESIA
 
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 
 DEF STAT_LINE_LENGTH EQU 12 ; tiles, for DrawStatStages
-DEF MAX_STAT_STAGES_SHOWN EQU STAT_LINE_LENGTH / 4 ; ("AT+2")
+DEF MAX_STAT_STAGES_SHOWN EQU (STAT_LINE_LENGTH + 1) / 3 ; ("AT+2 ": two tiles and a space)
 
 DEF MAX_SPIKES EQU 3 ; layers on a side (see BattleCommand_Spikes)
 

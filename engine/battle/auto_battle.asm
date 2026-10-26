@@ -249,17 +249,12 @@ AutoBattle_RateMove:
 	ld a, [hl]
 	and a
 	jr z, .cant_select
-	cp COUNTER ; (it works by itself)
-	jr z, .cant_select
-	cp MIRROR_COAT
-	jr z, .cant_select
-	cp FUTURE_SIGHT ; (as the POKéMON comes in)
-	jr z, .cant_select
-	cp MIRROR_MOVE ; (after the foe's move)
-	jr z, .cant_select
-	cp SAFEGUARD ; (as the POKéMON comes in)
-	jr z, .cant_select
-	cp SNORE ; (while it's asleep)
+	push bc
+	ld b, a
+	ld c, 0 ; (the player's)
+	farcall CantChooseMove ; (it works by itself, or once while it's out)
+	ld a, b
+	pop bc
 	jr z, .cant_select
 	ld [wCurPlayerMove], a
 	callfar UpdateMoveData
@@ -2203,6 +2198,6 @@ AutoBattleStatUpEffects:
 	db EFFECT_ATTACK_UP,    ATTACK,  PHYSICAL ; MEDITATE, SHARPEN
 	db EFFECT_CURSE,        ATTACK,  PHYSICAL ; (not a GHOST's)
 	db EFFECT_SP_ATK_UP_2,  SP_ATTACK, SPECIAL
-	db EFFECT_SP_ATK_UP,    SP_ATTACK, SPECIAL ; GROWTH
+	db EFFECT_SP_ATK_UP,    SP_ATTACK, 0 ; GROWTH (and ATTACK)
 	db EFFECT_SPEED_UP_2,   SPEED,   0 ; AGILITY (when slower)
 	db -1
