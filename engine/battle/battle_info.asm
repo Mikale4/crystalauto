@@ -361,6 +361,7 @@ BattleInfo_Field:
 	; fallthrough
 
 .Say:
+	push bc
 	push de
 	push hl
 	inc hl
@@ -369,6 +370,7 @@ BattleInfo_Field:
 	ld de, SCREEN_WIDTH
 	add hl, de
 	pop de
+	pop bc
 	ret
 
 .Room:
