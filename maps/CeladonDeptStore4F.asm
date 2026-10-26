@@ -2,6 +2,7 @@
 	const CELADONDEPTSTORE4F_CLERK
 	const CELADONDEPTSTORE4F_SUPER_NERD
 	const CELADONDEPTSTORE4F_YOUNGSTER
+	const CELADONDEPTSTORE4F_CLERK2
 
 CeladonDeptStore4F_MapScripts:
 	def_scene_scripts
@@ -12,6 +13,13 @@ CeladonDeptStore4FClerkScript:
 	faceplayer
 	opentext
 	pokemart MARTTYPE_STANDARD, MART_CELADON_4F
+	closetext
+	end
+
+CeladonDeptStore4FClerk2Script:
+	faceplayer
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_EVOLUTION_ITEMS
 	closetext
 	end
 
@@ -66,3 +74,4 @@ CeladonDeptStore4F_MapEvents:
 	object_event 13,  5, SPRITE_CLERK, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore4FClerkScript, -1
 	object_event  7,  6, SPRITE_SUPER_NERD, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore4FSuperNerdScript, -1
 	object_event  8,  2, SPRITE_YOUNGSTER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore4FYoungsterScript, -1
+	object_event 14,  5, SPRITE_CLERK, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore4FClerk2Script, -1

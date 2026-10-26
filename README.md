@@ -558,7 +558,8 @@ UP-GRADE on the 3rd floor, and the LINKING CORD and six evolution stones (FIRE,
 WATER, THUNDER, LEAF, MOON and SUN) on the 4th. So does the CELADON DEPT. STORE, on
 its 5th floor: the stones and the LINKING CORD from the clerk with the vitamins, the
 other four from the one with the X items. The items that evolve the [new
-Pokémon](#66-new-pokémon) are sold by a third clerk on both floors.
+Pokémon](#66-new-pokémon) are sold by a clerk on GOLDENROD's 3rd floor and on
+CELADON's 4th.
 
 
 ## 66 new Pokémon
@@ -622,7 +623,7 @@ LINKING CORD):
 | HARD STONE | SCYTHER (into KLEAVOR) |
 
 The last seven are held items too, and still work as held items. A new clerk sells
-them at both DEPT. STOREs (GOLDENROD's 3rd floor, CELADON's 5th), for ¥2100 each.
+them at both DEPT. STOREs (GOLDENROD's 3rd floor, CELADON's 4th), for ¥2100 each.
 
 Their pics, shiny colors, stats, Pokédex entries and cries come from DanielOlivaw's
 [pokecrystal16][pokecrystal16-daniel]; their moves from [PokéAPI](https://pokeapi.co).
@@ -642,7 +643,7 @@ Their pics aren't animated.
   PUNCH, TM08 BODY SLAM, ...), that GEN 1 TM is here too. The TM pocket lists it just
   before this game's TM of the number, the two marked **GEN 1** and **GEN 2**; a
   number whose move is the same in both (TM06 TOXIC) is one TM. GEN 1's TMs never run
-  out either. A new clerk at the GOLDENROD DEPT. STORE's 5th floor sells 24 of them,
+  out either. A new clerk at the GOLDENROD DEPT. STORE's 4th floor sells 24 of them,
   and one on the CELADON DEPT. STORE's 3rd floor the other 13, at RED and BLUE's
   prices. GEN 1 Pokémon learn the ones they learned in RED, BLUE and YELLOW; GEN 2
   Pokémon, the ones they could learn by TM or tutor in GEN 3.
@@ -926,7 +927,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 360150355b41d3a9a8d990bcadb255672eb63fe6`.
+The patched ROM has `sha1: 57397e810f5dd8510db19cbaf5fb43d6df6ed79c`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
