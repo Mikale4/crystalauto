@@ -49,7 +49,13 @@ FindSpeciesInArray::
 .check_high
 	ld a, [hl]
 	cp b
-	jr nz, .next
+	jr z, .found
+	and c
+	inc a
+	jr z, .no ; -1: the end (for an index whose low byte is $ff)
+	jr .next
+
+.found
 	dec hl
 	pop bc
 	scf

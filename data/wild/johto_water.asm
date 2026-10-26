@@ -13,7 +13,7 @@ JohtoWaterWildMons:
 	db 2 percent ; encounter rate
 	dbw 15, WOOPER
 	dbw 20, QUAGSIRE
-	dbw 15, QUAGSIRE
+	dbw 15, WOOPER_P
 	end_water_wildmons
 
 	def_water_wildmons UNION_CAVE_B1F
@@ -40,7 +40,7 @@ JohtoWaterWildMons:
 	def_water_wildmons SLOWPOKE_WELL_B2F
 	db 2 percent ; encounter rate
 	dbw 15, SLOWPOKE
-	dbw 20, SLOWPOKE
+	dbw 20, SLOWPOKE_G
 	dbw 20, SLOWBRO
 	end_water_wildmons
 
@@ -173,7 +173,7 @@ JohtoWaterWildMons:
 	def_water_wildmons ROUTE_41
 	db 6 percent ; encounter rate
 	dbw 20, TENTACOOL
-	dbw 20, TENTACRUEL
+	dbw 18, MANTYKE
 	dbw 20, MANTINE
 	end_water_wildmons
 

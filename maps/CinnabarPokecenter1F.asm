@@ -23,6 +23,9 @@ CinnabarPokecenter1FMoveReminderScript:
 CinnabarPokecenter1FMoveTutorScript:
 	jumpstd MoveTutorScript
 
+CinnabarPokecenter1FEggMoveTutorScript:
+	jumpstd EggMoveTutorScript
+
 CinnabarPokecenter1FCooltrainerFScript:
 	jumptextfaceplayer CinnabarPokecenter1FCooltrainerFText
 
@@ -63,3 +66,4 @@ CinnabarPokecenter1F_MapEvents:
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
 	object_event  0,  4, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FMoveReminderScript, -1
 	object_event  0,  5, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FMoveTutorScript, -1
+	object_event  0,  3, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CinnabarPokecenter1FEggMoveTutorScript, -1

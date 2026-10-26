@@ -177,12 +177,12 @@ FishGroups:
 .WhirlIslands_Good:
 	fishmon  35 percent,     MAGIKARP,   20
 	fishmon  70 percent,     KRABBY,     20
-	fishmon  90 percent + 1, KRABBY,     20
+	fishmon  90 percent + 1, CORSOLA_G,  20
 	time_group 100 percent,     18
 .WhirlIslands_Super:
 	fishmon  40 percent,     KRABBY,     40
 	time_group  70 percent,     19
-	fishmon  90 percent + 1, KINGLER,    40
+	fishmon  90 percent + 1, CORSOLA_G,  40
 	fishmon 100 percent,     SEADRA,     40
 .Qwilfish_NoSwarm_Old:
 .Qwilfish_Old:
@@ -237,5 +237,5 @@ TimeFishGroups:
 	time_fish DRATINI,    10,  DRATINI,    10 ; 17
 	time_fish HORSEA,     20,  HORSEA,     20 ; 18
 	time_fish HORSEA,     40,  HORSEA,     40 ; 19
-	time_fish TENTACOOL,  20,  TENTACOOL,  20 ; 20
-	time_fish TENTACOOL,  40,  TENTACOOL,  40 ; 21
+	time_fish TENTACOOL,  20,  QWILFISH_H, 20 ; 20
+	time_fish TENTACOOL,  40,  QWILFISH_H, 40 ; 21

@@ -305,9 +305,9 @@ JohtoGrassWildMons:
 	dbw 14, KOFFING
 	dbw 15, RATTATA
 	dbw 14, ZUBAT
-	dbw 15, RATTATA
-	dbw 15, RATICATE
-	dbw 15, RATICATE
+	dbw 14, CUBONE
+	dbw 16, CUBONE
+	dbw 17, MAROWAK_A
 	end_grass_wildmons
 
 	def_grass_wildmons BURNED_TOWER_B1F
@@ -319,7 +319,7 @@ JohtoGrassWildMons:
 	dbw 15, ZUBAT
 	dbw 12, KOFFING
 	dbw 16, KOFFING
-	dbw 16, WEEZING
+	dbw 16, WEEZING_G
 	; day
 	dbw 14, RATTATA
 	dbw 14, KOFFING
@@ -327,7 +327,7 @@ JohtoGrassWildMons:
 	dbw 15, ZUBAT
 	dbw 12, KOFFING
 	dbw 16, KOFFING
-	dbw 16, WEEZING
+	dbw 16, WEEZING_G
 	; nite
 	dbw 14, RATTATA
 	dbw 14, KOFFING
@@ -389,7 +389,7 @@ JohtoGrassWildMons:
 	dbw 22, NATU
 	dbw 18, NATU
 	dbw 24, NATU
-	dbw 22, WOOPER
+	dbw 22, WOOPER_P
 	dbw 22, QUAGSIRE
 	dbw 22, QUAGSIRE
 	end_grass_wildmons
@@ -428,7 +428,7 @@ JohtoGrassWildMons:
 	dbw 6, GEODUDE
 	dbw 6, SANDSHREW
 	dbw 5, ZUBAT
-	dbw 4, RATTATA
+	dbw 5, GEODUDE_A
 	dbw 7, ZUBAT
 	dbw 6, ONIX
 	dbw 6, ONIX
@@ -436,7 +436,7 @@ JohtoGrassWildMons:
 	dbw 6, GEODUDE
 	dbw 6, SANDSHREW
 	dbw 5, ZUBAT
-	dbw 4, RATTATA
+	dbw 5, GEODUDE_A
 	dbw 7, ZUBAT
 	dbw 6, ONIX
 	dbw 6, ONIX
@@ -444,7 +444,7 @@ JohtoGrassWildMons:
 	dbw 6, GEODUDE
 	dbw 6, RATTATA
 	dbw 5, WOOPER
-	dbw 4, RATTATA
+	dbw 5, GEODUDE_A
 	dbw 7, ZUBAT
 	dbw 6, ONIX
 	dbw 6, ONIX
@@ -514,24 +514,24 @@ JohtoGrassWildMons:
 	dbw 7, ZUBAT
 	dbw 6, SLOWPOKE
 	dbw 8, ZUBAT
-	dbw 8, SLOWPOKE
-	dbw 8, SLOWPOKE
+	dbw 8, SLOWPOKE_G
+	dbw 8, SLOWPOKE_G
 	; day
 	dbw 5, ZUBAT
 	dbw 6, ZUBAT
 	dbw 7, ZUBAT
 	dbw 6, SLOWPOKE
 	dbw 8, ZUBAT
-	dbw 8, SLOWPOKE
-	dbw 8, SLOWPOKE
+	dbw 8, SLOWPOKE_G
+	dbw 8, SLOWPOKE_G
 	; nite
 	dbw 5, ZUBAT
 	dbw 6, ZUBAT
 	dbw 7, ZUBAT
 	dbw 6, SLOWPOKE
 	dbw 8, ZUBAT
-	dbw 8, SLOWPOKE
-	dbw 8, SLOWPOKE
+	dbw 8, SLOWPOKE_G
+	dbw 8, SLOWPOKE_G
 	end_grass_wildmons
 
 	def_grass_wildmons SLOWPOKE_WELL_B2F
@@ -542,24 +542,24 @@ JohtoGrassWildMons:
 	dbw 19, ZUBAT
 	dbw 21, SLOWPOKE
 	dbw 23, GOLBAT
-	dbw 23, SLOWPOKE
-	dbw 23, SLOWPOKE
+	dbw 23, SLOWPOKE_G
+	dbw 23, SLOWPOKE_G
 	; day
 	dbw 21, ZUBAT
 	dbw 23, ZUBAT
 	dbw 19, ZUBAT
 	dbw 21, SLOWPOKE
 	dbw 23, GOLBAT
-	dbw 23, SLOWPOKE
-	dbw 23, SLOWPOKE
+	dbw 23, SLOWPOKE_G
+	dbw 23, SLOWPOKE_G
 	; nite
 	dbw 21, ZUBAT
 	dbw 23, ZUBAT
 	dbw 19, ZUBAT
 	dbw 21, SLOWPOKE
 	dbw 23, GOLBAT
-	dbw 23, SLOWPOKE
-	dbw 23, SLOWPOKE
+	dbw 23, SLOWPOKE_G
+	dbw 23, SLOWPOKE_G
 	end_grass_wildmons
 
 	def_grass_wildmons ILEX_FOREST
@@ -655,7 +655,7 @@ JohtoGrassWildMons:
 	dbw 30, RATICATE
 	dbw 28, MACHOP
 	dbw 30, GOLBAT
-	dbw 30, GOLBAT
+	dbw 31, GRAVELER_A
 	; day
 	dbw 31, GRAVELER
 	dbw 32, MACHOKE
@@ -663,7 +663,7 @@ JohtoGrassWildMons:
 	dbw 30, RATICATE
 	dbw 28, MACHOP
 	dbw 30, GOLBAT
-	dbw 30, GOLBAT
+	dbw 31, GRAVELER_A
 	; nite
 	dbw 31, GRAVELER
 	dbw 31, GEODUDE
@@ -671,7 +671,7 @@ JohtoGrassWildMons:
 	dbw 30, GOLBAT
 	dbw 28, MARILL
 	dbw 32, GOLBAT
-	dbw 32, GOLBAT
+	dbw 31, GRAVELER_A
 	end_grass_wildmons
 
 	def_grass_wildmons MOUNT_MORTAR_B1F
@@ -710,24 +710,24 @@ JohtoGrassWildMons:
 	dbw 22, GOLBAT
 	dbw 23, SWINUB
 	dbw 24, GOLBAT
-	dbw 22, GOLBAT
-	dbw 22, GOLBAT
+	dbw 22, SANDSHREW_A
+	dbw 22, SANDSHREW_A
 	; day
 	dbw 21, SWINUB
 	dbw 22, ZUBAT
 	dbw 22, GOLBAT
 	dbw 23, SWINUB
 	dbw 24, GOLBAT
-	dbw 22, GOLBAT
-	dbw 22, GOLBAT
+	dbw 22, SANDSHREW_A
+	dbw 22, SANDSHREW_A
 	; nite
 	dbw 21, DELIBIRD
 	dbw 22, ZUBAT
 	dbw 22, GOLBAT
 	dbw 23, DELIBIRD
 	dbw 24, GOLBAT
-	dbw 22, GOLBAT
-	dbw 22, GOLBAT
+	dbw 22, VULPIX_A
+	dbw 22, VULPIX_A
 	end_grass_wildmons
 
 	def_grass_wildmons ICE_PATH_B1F
@@ -738,7 +738,7 @@ JohtoGrassWildMons:
 	dbw 23, GOLBAT
 	dbw 24, SWINUB
 	dbw 25, GOLBAT
-	dbw 23, GOLBAT
+	dbw 23, SANDSHREW_A
 	dbw 22, JYNX
 	; day
 	dbw 22, SWINUB
@@ -746,7 +746,7 @@ JohtoGrassWildMons:
 	dbw 23, GOLBAT
 	dbw 24, SWINUB
 	dbw 25, GOLBAT
-	dbw 23, GOLBAT
+	dbw 23, SANDSHREW_A
 	dbw 22, JYNX
 	; nite
 	dbw 22, DELIBIRD
@@ -754,7 +754,7 @@ JohtoGrassWildMons:
 	dbw 23, GOLBAT
 	dbw 24, DELIBIRD
 	dbw 25, GOLBAT
-	dbw 23, GOLBAT
+	dbw 23, VULPIX_A
 	dbw 22, SNEASEL
 	end_grass_wildmons
 
@@ -765,7 +765,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, SWINUB
-	dbw 26, GOLBAT
+	dbw 25, SANDSHREW_A
 	dbw 22, JYNX
 	dbw 24, JYNX
 	; day
@@ -773,7 +773,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, SWINUB
-	dbw 26, GOLBAT
+	dbw 25, SANDSHREW_A
 	dbw 22, JYNX
 	dbw 24, JYNX
 	; nite
@@ -781,7 +781,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, DELIBIRD
-	dbw 26, GOLBAT
+	dbw 25, VULPIX_A
 	dbw 22, SNEASEL
 	dbw 24, SNEASEL
 	end_grass_wildmons
@@ -793,7 +793,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, SWINUB
-	dbw 26, GOLBAT
+	dbw 25, SANDSHREW_A
 	dbw 22, JYNX
 	dbw 24, JYNX
 	; day
@@ -801,7 +801,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, SWINUB
-	dbw 26, GOLBAT
+	dbw 25, SANDSHREW_A
 	dbw 22, JYNX
 	dbw 24, JYNX
 	; nite
@@ -809,7 +809,7 @@ JohtoGrassWildMons:
 	dbw 24, ZUBAT
 	dbw 24, GOLBAT
 	dbw 25, DELIBIRD
-	dbw 26, GOLBAT
+	dbw 25, VULPIX_A
 	dbw 22, SNEASEL
 	dbw 24, SNEASEL
 	end_grass_wildmons
@@ -821,7 +821,7 @@ JohtoGrassWildMons:
 	dbw 25, ZUBAT
 	dbw 25, GOLBAT
 	dbw 26, SWINUB
-	dbw 22, JYNX
+	dbw 24, MR__MIME_G
 	dbw 24, JYNX
 	dbw 26, JYNX
 	; day
@@ -829,7 +829,7 @@ JohtoGrassWildMons:
 	dbw 25, ZUBAT
 	dbw 25, GOLBAT
 	dbw 26, SWINUB
-	dbw 22, JYNX
+	dbw 24, MR__MIME_G
 	dbw 24, JYNX
 	dbw 26, JYNX
 	; nite
@@ -1088,7 +1088,7 @@ JohtoGrassWildMons:
 	dbw 43, GRAVELER
 	dbw 44, GOLBAT
 	dbw 42, ONIX
-	dbw 42, GOLBAT
+	dbw 44, WEAVILE
 	dbw 45, GOLDUCK
 	dbw 46, GOLBAT
 	dbw 46, GOLBAT
@@ -1101,7 +1101,7 @@ JohtoGrassWildMons:
 	dbw 48, MACHOKE
 	dbw 47, URSARING
 	dbw 46, PARASECT
-	dbw 48, PARASECT
+	dbw 47, MAMOSWINE
 	dbw 15, LARVITAR
 	dbw 20, LARVITAR
 	; day
@@ -1109,7 +1109,7 @@ JohtoGrassWildMons:
 	dbw 48, MACHOKE
 	dbw 47, URSARING
 	dbw 46, PARASECT
-	dbw 48, PARASECT
+	dbw 47, MAMOSWINE
 	dbw 15, LARVITAR
 	dbw 20, LARVITAR
 	; nite
@@ -1119,7 +1119,7 @@ JohtoGrassWildMons:
 	dbw 46, PARASECT
 	dbw 48, PARASECT
 	dbw 45, MISDREAVUS
-	dbw 45, MISDREAVUS
+	dbw 47, MISMAGIUS
 	end_grass_wildmons
 
 	def_grass_wildmons SILVER_CAVE_ROOM_3
@@ -1127,7 +1127,7 @@ JohtoGrassWildMons:
 	; morn
 	dbw 51, GOLBAT
 	dbw 48, ONIX
-	dbw 48, GRAVELER
+	dbw 48, GRAVELER_A
 	dbw 50, URSARING
 	dbw 20, LARVITAR
 	dbw 15, LARVITAR
@@ -1135,7 +1135,7 @@ JohtoGrassWildMons:
 	; day
 	dbw 51, GOLBAT
 	dbw 48, ONIX
-	dbw 48, GRAVELER
+	dbw 48, GRAVELER_A
 	dbw 50, URSARING
 	dbw 20, LARVITAR
 	dbw 15, LARVITAR
@@ -1144,10 +1144,10 @@ JohtoGrassWildMons:
 	dbw 51, GOLBAT
 	dbw 48, ONIX
 	dbw 48, GRAVELER
-	dbw 49, GOLBAT
+	dbw 50, URSALUNA
 	dbw 45, GOLDUCK
-	dbw 53, GOLBAT
-	dbw 53, GOLBAT
+	dbw 50, WEAVILE
+	dbw 50, WEAVILE
 	end_grass_wildmons
 
 	def_grass_wildmons SILVER_CAVE_ITEM_ROOMS
@@ -1201,8 +1201,8 @@ JohtoGrassWildMons:
 	dbw 2, ZUBAT
 	dbw 2, GEODUDE
 	dbw 4, GEODUDE
-	dbw 2, ZUBAT
-	dbw 4, ZUBAT
+	dbw 3, WYNAUT
+	dbw 4, WYNAUT
 	dbw 4, DUNSPARCE
 	end_grass_wildmons
 
@@ -1257,7 +1257,7 @@ JohtoGrassWildMons:
 	dbw 2, RATTATA
 	dbw 3, HOOTHOOT
 	dbw 3, RATTATA
-	dbw 2, RATTATA
+	dbw 3, RATTATA_A
 	dbw 3, HOOTHOOT
 	dbw 3, HOOTHOOT
 	end_grass_wildmons
@@ -1326,21 +1326,21 @@ JohtoGrassWildMons:
 	dbw 7, BELLSPROUT
 	dbw 6, HOPPIP
 	dbw 7, PIDGEY
-	dbw 7, HOPPIP
-	dbw 7, HOPPIP
+	dbw 6, AZURILL
+	dbw 7, AZURILL
 	; day
 	dbw 4, EKANS
 	dbw 5, RATTATA
 	dbw 7, BELLSPROUT
 	dbw 6, HOPPIP
 	dbw 7, PIDGEY
-	dbw 7, HOPPIP
-	dbw 7, HOPPIP
+	dbw 6, AZURILL
+	dbw 7, AZURILL
 	; nite
 	dbw 4, WOOPER
 	dbw 5, RATTATA
 	dbw 7, BELLSPROUT
-	dbw 6, ZUBAT
+	dbw 6, WOOPER_P
 	dbw 7, HOOTHOOT
 	dbw 7, GASTLY
 	dbw 7, GASTLY
@@ -1369,9 +1369,9 @@ JohtoGrassWildMons:
 	dbw 6, ZUBAT
 	dbw 6, GEODUDE
 	dbw 6, ZUBAT
-	dbw 7, RATTATA
-	dbw 7, RATTATA
-	dbw 7, RATTATA
+	dbw 7, RATTATA_A
+	dbw 7, RATTATA_A
+	dbw 7, RATTATA_A
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_34
@@ -1381,7 +1381,7 @@ JohtoGrassWildMons:
 	dbw 11, RATTATA
 	dbw 12, PIDGEY
 	dbw 10, ABRA
-	dbw 12, JIGGLYPUFF
+	dbw 10, HAPPINY
 	dbw 10, DITTO
 	dbw 10, DITTO
 	; day
@@ -1389,7 +1389,7 @@ JohtoGrassWildMons:
 	dbw 11, RATTATA
 	dbw 12, PIDGEY
 	dbw 10, ABRA
-	dbw 12, JIGGLYPUFF
+	dbw 10, HAPPINY
 	dbw 10, DITTO
 	dbw 10, DITTO
 	; nite
@@ -1397,7 +1397,7 @@ JohtoGrassWildMons:
 	dbw 11, RATTATA
 	dbw 12, HOOTHOOT
 	dbw 10, ABRA
-	dbw 12, JIGGLYPUFF
+	dbw 11, MIME_JR
 	dbw 10, DITTO
 	dbw 10, DITTO
 	end_grass_wildmons
@@ -1438,7 +1438,7 @@ JohtoGrassWildMons:
 	dbw 5, BELLSPROUT
 	dbw 5, GROWLITHE
 	dbw 5, PIDGEY
-	dbw 6, PIDGEY
+	dbw 5, BONSLY
 	dbw 6, PIDGEY
 	; day
 	dbw 4, PIDGEY
@@ -1446,7 +1446,7 @@ JohtoGrassWildMons:
 	dbw 5, BELLSPROUT
 	dbw 5, GROWLITHE
 	dbw 5, PIDGEY
-	dbw 6, PIDGEY
+	dbw 5, BONSLY
 	dbw 6, PIDGEY
 	; nite
 	dbw 4, SPINARAK
@@ -1464,7 +1464,7 @@ JohtoGrassWildMons:
 	dbw 13, LEDYBA
 	dbw 14, GROWLITHE
 	dbw 15, PIDGEY
-	dbw 16, GROWLITHE
+	dbw 15, GROWLITHE_H
 	dbw 15, PIDGEOTTO
 	dbw 15, LEDIAN
 	dbw 15, LEDIAN
@@ -1472,7 +1472,7 @@ JohtoGrassWildMons:
 	dbw 13, PIDGEY
 	dbw 14, GROWLITHE
 	dbw 15, PIDGEY
-	dbw 16, GROWLITHE
+	dbw 15, GROWLITHE_H
 	dbw 15, PIDGEOTTO
 	dbw 15, PIDGEY
 	dbw 15, PIDGEY
@@ -1482,8 +1482,8 @@ JohtoGrassWildMons:
 	dbw 15, HOOTHOOT
 	dbw 16, STANTLER
 	dbw 15, NOCTOWL
-	dbw 15, ARIADOS
-	dbw 15, ARIADOS
+	dbw 15, PONYTA_G
+	dbw 15, PONYTA_G
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_38
@@ -1510,8 +1510,8 @@ JohtoGrassWildMons:
 	dbw 16, MAGNEMITE
 	dbw 16, NOCTOWL
 	dbw 16, MEOWTH
-	dbw 16, MEOWTH
-	dbw 16, MEOWTH
+	dbw 16, MEOWTH_A
+	dbw 16, MEOWTH_A
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_39
@@ -1538,8 +1538,8 @@ JohtoGrassWildMons:
 	dbw 16, MAGNEMITE
 	dbw 16, NOCTOWL
 	dbw 18, MEOWTH
-	dbw 18, MEOWTH
-	dbw 18, MEOWTH
+	dbw 18, MEOWTH_G
+	dbw 18, MEOWTH_G
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_42
@@ -1576,7 +1576,7 @@ JohtoGrassWildMons:
 	dbw 15, SENTRET
 	dbw 16, PIDGEOTTO
 	dbw 16, FARFETCH_D
-	dbw 15, FURRET
+	dbw 16, FARFETCH_D_G
 	dbw 17, RATICATE
 	dbw 17, FURRET
 	dbw 17, FURRET
@@ -1584,7 +1584,7 @@ JohtoGrassWildMons:
 	dbw 15, SENTRET
 	dbw 16, PIDGEOTTO
 	dbw 16, FARFETCH_D
-	dbw 15, FURRET
+	dbw 16, FARFETCH_D_G
 	dbw 17, RATICATE
 	dbw 17, FURRET
 	dbw 17, FURRET
@@ -1607,7 +1607,7 @@ JohtoGrassWildMons:
 	dbw 24, WEEPINBELL
 	dbw 24, LICKITUNG
 	dbw 26, LICKITUNG
-	dbw 26, LICKITUNG
+	dbw 30, LICKILICKY
 	; day
 	dbw 23, TANGELA
 	dbw 22, LICKITUNG
@@ -1615,7 +1615,7 @@ JohtoGrassWildMons:
 	dbw 24, WEEPINBELL
 	dbw 24, LICKITUNG
 	dbw 26, LICKITUNG
-	dbw 26, LICKITUNG
+	dbw 30, LICKILICKY
 	; nite
 	dbw 23, TANGELA
 	dbw 22, POLIWAG
@@ -1651,7 +1651,7 @@ JohtoGrassWildMons:
 	dbw 25, GRAVELER
 	dbw 27, GRAVELER
 	dbw 27, GRAVELER
-	dbw 27, GRAVELER
+	dbw 30, GLISCOR
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_46
@@ -1691,7 +1691,7 @@ JohtoGrassWildMons:
 	dbw 44, RAPIDASH
 	dbw 41, DODUO
 	dbw 43, DODRIO
-	dbw 43, DODRIO
+	dbw 44, TANGROWTH
 	; day
 	dbw 41, TANGELA
 	dbw 42, PONYTA
@@ -1699,15 +1699,15 @@ JohtoGrassWildMons:
 	dbw 44, RAPIDASH
 	dbw 41, DODUO
 	dbw 43, DODRIO
-	dbw 43, DODRIO
+	dbw 44, TANGROWTH
 	; nite
 	dbw 41, TANGELA
 	dbw 42, POLIWHIRL
 	dbw 42, GOLBAT
 	dbw 44, POLIWHIRL
 	dbw 40, GOLBAT
-	dbw 44, GOLBAT
-	dbw 44, GOLBAT
+	dbw 44, HONCHKROW
+	dbw 44, HONCHKROW
 	end_grass_wildmons
 
 	db -1 ; end

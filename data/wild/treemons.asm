@@ -76,7 +76,7 @@ TreeMonSet_Route:
 	treemon 15, PINECO,     10
 	treemon 10, EXEGGCUTE,  10
 	treemon  5, EXEGGCUTE,  10
-	treemon  5, EXEGGCUTE,  10
+	treemon  5, MUNCHLAX,   10
 	db -1
 
 TreeMonSet_Kanto:
@@ -94,7 +94,7 @@ TreeMonSet_Kanto:
 	treemon 15, PINECO,     10
 	treemon 10, EXEGGCUTE,  10
 	treemon  5, EXEGGCUTE,  10
-	treemon  5, EXEGGCUTE,  10
+	treemon  5, MUNCHLAX,   10
 	db -1
 
 TreeMonSet_Lake:
@@ -128,12 +128,13 @@ TreeMonSet_Forest:
 	treemon 50, HOOTHOOT,   10
 	treemon 15, CATERPIE,   10
 	treemon 15, WEEDLE,     10
-	treemon 10, HOOTHOOT,   10
+	treemon 10, MUNCHLAX,   10
 	treemon  5, METAPOD,    10
 	treemon  5, KAKUNA,     10
 	db -1
 
 TreeMonSet_Rock:
-	treemon 90, KRABBY,     15
+	treemon 70, KRABBY,     15
+	treemon 20, BONSLY,     15
 	treemon 10, SHUCKLE,    15
 	db -1

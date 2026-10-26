@@ -79,7 +79,7 @@ KantoGrassWildMons:
 	; nite
 	dbw 12, ZUBAT
 	dbw 11, GEODUDE
-	dbw 12, GEODUDE
+	dbw 12, GEODUDE_A
 	dbw 17, HAUNTER
 	dbw 15, ZUBAT
 	dbw 15, ZUBAT
@@ -95,7 +95,7 @@ KantoGrassWildMons:
 	dbw 12, ZUBAT
 	dbw 15, MAROWAK
 	dbw 15, KANGASKHAN
-	dbw 15, KANGASKHAN
+	dbw 15, MAROWAK_A
 	; day
 	dbw 12, CUBONE
 	dbw 14, GEODUDE
@@ -103,7 +103,7 @@ KantoGrassWildMons:
 	dbw 12, ZUBAT
 	dbw 15, MAROWAK
 	dbw 15, KANGASKHAN
-	dbw 15, KANGASKHAN
+	dbw 15, MAROWAK_A
 	; nite
 	dbw 12, ZUBAT
 	dbw 14, GEODUDE
@@ -123,7 +123,7 @@ KantoGrassWildMons:
 	dbw 34, GOLBAT
 	dbw 35, SANDSLASH
 	dbw 35, RHYDON
-	dbw 35, RHYDON
+	dbw 40, RHYPERIOR
 	; day
 	dbw 34, GRAVELER
 	dbw 32, RHYHORN
@@ -131,15 +131,15 @@ KantoGrassWildMons:
 	dbw 34, GOLBAT
 	dbw 35, SANDSLASH
 	dbw 35, RHYDON
-	dbw 35, RHYDON
+	dbw 40, RHYPERIOR
 	; nite
 	dbw 34, GOLBAT
 	dbw 34, GRAVELER
 	dbw 32, ONIX
 	dbw 36, GRAVELER
 	dbw 38, GRAVELER
-	dbw 40, GRAVELER
-	dbw 40, GRAVELER
+	dbw 40, GRAVELER_A
+	dbw 40, GRAVELER_A
 	end_grass_wildmons
 
 	def_grass_wildmons TOHJO_FALLS
@@ -334,8 +334,8 @@ KantoGrassWildMons:
 	dbw 14, MAGNEMITE
 	dbw 15, PSYDUCK
 	dbw 12, JIGGLYPUFF
-	dbw 15, RATICATE
-	dbw 15, RATICATE
+	dbw 15, MEOWTH_A
+	dbw 15, MEOWTH_A
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_7
@@ -470,7 +470,7 @@ KantoGrassWildMons:
 	dbw 16, HOPPIP
 	; nite
 	dbw 14, DROWZEE
-	dbw 13, MEOWTH
+	dbw 13, MEOWTH_G
 	dbw 15, MAGNEMITE
 	dbw 16, NOCTOWL
 	dbw 16, RATICATE
@@ -502,7 +502,7 @@ KantoGrassWildMons:
 	dbw 25, NOCTOWL
 	dbw 25, VENOMOTH
 	dbw 25, QUAGSIRE
-	dbw 25, QUAGSIRE
+	dbw 25, CLODSIRE
 	dbw 25, CHANSEY
 	end_grass_wildmons
 
@@ -530,7 +530,7 @@ KantoGrassWildMons:
 	dbw 28, NOCTOWL
 	dbw 28, VENOMOTH
 	dbw 28, QUAGSIRE
-	dbw 28, QUAGSIRE
+	dbw 28, CLODSIRE
 	dbw 28, CHANSEY
 	end_grass_wildmons
 
@@ -558,7 +558,7 @@ KantoGrassWildMons:
 	dbw 25, NOCTOWL
 	dbw 25, VENOMOTH
 	dbw 25, QUAGSIRE
-	dbw 25, QUAGSIRE
+	dbw 25, CLODSIRE
 	dbw 25, CHANSEY
 	end_grass_wildmons
 
@@ -652,7 +652,7 @@ KantoGrassWildMons:
 	dbw 30, TANGELA
 	dbw 25, RATTATA
 	dbw 35, TANGELA
-	dbw 20, RATICATE
+	dbw 20, MIME_JR
 	dbw 30, MR__MIME
 	dbw 28, MR__MIME
 	dbw 28, MR__MIME
@@ -660,7 +660,7 @@ KantoGrassWildMons:
 	dbw 30, TANGELA
 	dbw 25, RATTATA
 	dbw 35, TANGELA
-	dbw 20, RATICATE
+	dbw 20, MIME_JR
 	dbw 28, MR__MIME
 	dbw 30, MR__MIME
 	dbw 30, MR__MIME
@@ -671,7 +671,7 @@ KantoGrassWildMons:
 	dbw 20, RATICATE
 	dbw 30, TANGELA
 	dbw 28, TANGELA
-	dbw 28, TANGELA
+	dbw 30, EXEGGUTOR_A
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_22
@@ -697,7 +697,7 @@ KantoGrassWildMons:
 	dbw 3, POLIWAG
 	dbw 5, RATTATA
 	dbw 4, POLIWAG
-	dbw 6, RATTATA
+	dbw 6, PONYTA_G
 	dbw 7, RATTATA
 	dbw 7, RATTATA
 	end_grass_wildmons
@@ -819,7 +819,7 @@ KantoGrassWildMons:
 	; morn
 	dbw 39, TANGELA
 	dbw 40, PONYTA
-	dbw 40, RAPIDASH
+	dbw 40, RAPIDASH_G
 	dbw 42, ARBOK
 	dbw 41, DODUO
 	dbw 43, DODRIO
@@ -827,7 +827,7 @@ KantoGrassWildMons:
 	; day
 	dbw 39, TANGELA
 	dbw 40, PONYTA
-	dbw 40, RAPIDASH
+	dbw 40, RAPIDASH_G
 	dbw 42, ARBOK
 	dbw 41, DODUO
 	dbw 43, DODRIO

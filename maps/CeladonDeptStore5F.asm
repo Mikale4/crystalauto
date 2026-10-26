@@ -4,6 +4,7 @@
 	const CELADONDEPTSTORE5F_GENTLEMAN
 	const CELADONDEPTSTORE5F_SAILOR
 	const CELADONDEPTSTORE5F_TEACHER
+	const CELADONDEPTSTORE5F_CLERK3
 
 CeladonDeptStore5F_MapScripts:
 	def_scene_scripts
@@ -21,6 +22,13 @@ CeladonDeptStore5FClerk2Script:
 	faceplayer
 	opentext
 	pokemart MARTTYPE_STANDARD, MART_CELADON_5F_2
+	closetext
+	end
+
+CeladonDeptStore5FClerk3Script:
+	faceplayer
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_EVOLUTION_ITEMS
 	closetext
 	end
 
@@ -89,3 +97,4 @@ CeladonDeptStore5F_MapEvents:
 	object_event 13,  5, SPRITE_GENTLEMAN, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore5FGentlemanScript, -1
 	object_event  3,  4, SPRITE_SAILOR, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore5FSailorScript, -1
 	object_event  1,  7, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore5FTeacherScript, -1
+	object_event  9,  5, SPRITE_CLERK, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, CeladonDeptStore5FClerk3Script, -1

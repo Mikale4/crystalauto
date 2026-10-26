@@ -1,7 +1,7 @@
-; The MOVE REMINDER and the MOVE TUTOR, in every POKéMON CENTER, as in
-; PalletToPewter. The reminder teaches a POKéMON any move it would have learned
-; by its level; the tutor, its EGG moves (its first form's), and the three moves
-; GOLDENROD's tutor teaches. Both are free.
+; The MOVE REMINDER, the MOVE TUTOR and the EGG MOVE TUTOR, in every POKéMON
+; CENTER, as in PalletToPewter. The reminder teaches a POKéMON any move it would
+; have learned by its level; the tutor, the three moves GOLDENROD's tutor
+; teaches; the EGG MOVE tutor, its EGG moves (its first form's). All are free.
 
 MoveReminderScript:
 	faceplayer
@@ -15,6 +15,14 @@ MoveTutorScript:
 	faceplayer
 	opentext
 	special PokecenterMoveTutor
+	waitbutton
+	closetext
+	end
+
+EggMoveTutorScript:
+	faceplayer
+	opentext
+	special PokecenterEggMoveTutor
 	waitbutton
 	closetext
 	end
@@ -53,6 +61,25 @@ PokecenterMoveTutor:
 	para "I teach #MON"
 	line "moves they'd never"
 	cont "learn by leveling."
+
+	para "Shall I teach one"
+	line "a move?"
+	done
+
+PokecenterEggMoveTutor:
+	ld hl, .IntroText
+	call RelearnerChooseMon
+	ret c
+	call BuildEggMoveList
+	jp TeachFromMoveList
+
+.IntroText:
+	text "I'm the EGG MOVE"
+	line "TUTOR!"
+
+	para "I teach #MON the"
+	line "moves they'd know"
+	cont "from their EGGS."
 
 	para "Shall I teach one"
 	line "a move?"
@@ -341,9 +368,8 @@ BuildReminderList::
 	call AddToMoveList
 	jr .learnset
 
-BuildTutorList::
-; The EGG moves of wCurPartyMon's first form, then the GOLDENROD tutor's moves it
-; can learn, that it doesn't know.
+BuildEggMoveList::
+; The EGG moves of wCurPartyMon's first form that it doesn't know.
 	call ClearMoveList
 	ld a, [wCurPartySpecies]
 	push af
@@ -368,7 +394,7 @@ BuildTutorList::
 	ld b, a
 	and c
 	inc a
-	jr z, .tutor_moves ; (-1: the end)
+	jr z, .done ; (-1: the end)
 	push hl
 	ld h, b
 	ld l, c
@@ -377,9 +403,14 @@ BuildTutorList::
 	call AddToMoveList
 	jr .egg_moves
 
-.tutor_moves
+.done
 	pop af
 	ld [wCurPartySpecies], a
+	ret
+
+BuildTutorList::
+; The GOLDENROD tutor's moves wCurPartyMon can learn, that it doesn't know.
+	call ClearMoveList
 	ld hl, .TutorMoves
 .tutor_loop
 	ld a, [hli]

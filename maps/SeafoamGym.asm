@@ -1,6 +1,7 @@
 	object_const_def
 	const SEAFOAMGYM_BLAINE
 	const SEAFOAMGYM_GYM_GUIDE
+	const SEAFOAMGYM_ARTICUNO_G
 
 SeafoamGym_MapScripts:
 	def_scene_scripts
@@ -155,6 +156,29 @@ SeafoamGymGuideWinText2:
 	line "for a building."
 	done
 
+SeafoamGymArticunoScript:
+; a boss from GALAR (see engine/battle/bosses.asm)
+	opentext
+	writetext SeafoamGymArticunoText
+	cry ARTICUNO_G
+	waitsfx
+	closetext
+	loadwildmon ARTICUNO_G, 50
+	startbattle
+	ifequal LOSE, .Lost
+	disappear SEAFOAMGYM_ARTICUNO_G
+	setevent EVENT_FOUGHT_ARTICUNO_G
+.Lost:
+	reloadmapafterbattle
+	end
+
+SeafoamGymArticunoText:
+	text "A purple ARTICUNO"
+	line "from a faraway"
+	cont "land! Its eyes"
+	cont "glow…"
+	done
+
 SeafoamGym_MapEvents:
 	db 0, 0 ; filler
 
@@ -168,3 +192,4 @@ SeafoamGym_MapEvents:
 	def_object_events
 	object_event  5,  2, SPRITE_BLAINE, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, SeafoamGymBlaineScript, -1
 	object_event  6,  5, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SeafoamGymGuideScript, EVENT_SEAFOAM_GYM_GYM_GUIDE
+	object_event  2,  4, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, SeafoamGymArticunoScript, EVENT_FOUGHT_ARTICUNO_G

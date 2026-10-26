@@ -81,3 +81,79 @@ level-up moves, EGG moves and TM/HM compatibility from [PokéAPI](https://pokeap
 | 904 | Overqwil | Hisuian Qwilfish (POISON BARB) | — | front utytft, back utytft |
 | 980 | Clodsire | Paldean Wooper (level 20) | — | front Egg3ggEgg, back leParagon |
 | 981 | Farigiraf | Girafarig (level 33) | — | front Egg3ggEgg, back KingOfThe-X-Roads |
+
+## Where to find them
+
+In the wild (grass and caves by time of day, surfing, fishing, HEADBUTT trees and
+ROCK SMASH rocks), as bosses, or by evolving the Pokémon before them. Trainers use
+them too: GYM LEADERS and the ELITE FOUR have one each, and on EXTREME they join
+the teams of the trainers they suit.
+
+| Pokémon | Where |
+| --- | --- |
+| Alolan Rattata | ROUTE 29 (Lv 3, night, rare); ROUTE 33 (Lv 7, night, uncommon) |
+| Alolan Raticate | evolves from Alolan Rattata (level 20) |
+| Alolan Raichu | evolves from Pikachu (TWISTEDSPOON) |
+| Alolan Sandshrew | ICE PATH (Lv 22-25, morning and day, rare) |
+| Alolan Sandslash | evolves from Alolan Sandshrew (NEVERMELTICE) |
+| Alolan Vulpix | ICE PATH (Lv 22-25, night, rare) |
+| Alolan Ninetales | evolves from Alolan Vulpix (NEVERMELTICE) |
+| Alolan Meowth | ROUTE 38 (Lv 16, night, rare); ROUTE 6 (Lv 15, night, rare) |
+| Galarian Meowth | ROUTE 39 (Lv 18, night, rare); ROUTE 11 (Lv 13, night, common) |
+| Alolan Persian | evolves from Alolan Meowth (level 28) |
+| Hisuian Growlithe | ROUTE 37 (Lv 15, morning and day, uncommon) |
+| Hisuian Arcanine | evolves from Hisuian Growlithe (FIRE STONE) |
+| Alolan Geodude | UNION CAVE (Lv 5, uncommon); ROCK TUNNEL (Lv 12, night, common) |
+| Alolan Graveler | MT.MORTAR (Lv 31, rare); SILVER CAVE (Lv 48, morning and day, common); VICTORY ROAD (Lv 40, night, rare); evolves from Alolan Geodude (level 25) |
+| Alolan Golem | evolves from Alolan Graveler (LINKING CORD) |
+| Galarian Ponyta | ROUTE 37 (Lv 15, night, rare); ROUTE 22 (Lv 6, night, rare) |
+| Galarian Rapidash | ROUTE 28 (Lv 40, morning and day, common); evolves from Galarian Ponyta (level 40) |
+| Galarian Slowpoke | SLOWPOKE WELL (Lv 8-23, rare); SLOWPOKE WELL, surfing (Lv 20, common) |
+| Galarian Slowbro | evolves from Galarian Slowpoke (level 37) |
+| Galarian Farfetch'd | ROUTE 43 (Lv 16, morning and day, uncommon) |
+| Alolan Exeggutor | ROUTE 21 (Lv 30, night, rare); evolves from Exeggcute (DRAGON FANG) |
+| Alolan Marowak | BURNED TOWER (Lv 17, night, rare); ROCK TUNNEL (Lv 15, morning and day, rare); evolves from Cubone (SPELL TAG) |
+| Galarian Weezing | BURNED TOWER (Lv 16, morning and day, rare); evolves from Koffing (POLKADOT BOW) |
+| Galarian Mr. Mime | ICE PATH (Lv 24, morning and day, rare); evolves from Mime Jr. (NEVERMELTICE) |
+| Galarian Articuno | boss at SEAFOAM ISLANDS (Lv 50) |
+| Galarian Zapdos | boss in the POWER PLANT (Lv 50) |
+| Galarian Moltres | boss in VICTORY ROAD (Lv 50) |
+| Hisuian Typhlosion | evolves from Quilava (SPELL TAG) |
+| Paldean Wooper | RUINS OF ALPH (Lv 22, night, rare); ROUTE 32 (Lv 6, night, uncommon); UNION CAVE, surfing (Lv 15, uncommon) |
+| Galarian Slowking | evolves from Galarian Slowpoke (KINGS ROCK) |
+| Hisuian Qwilfish | ROUTE 32, fishing (GOOD ROD Lv 20, SUPER ROD Lv 40, at night); ROUTE 12 and ROUTE 13, fishing (GOOD ROD Lv 20, SUPER ROD Lv 40, at night) |
+| Galarian Corsola | WHIRL ISLANDS, fishing (GOOD ROD Lv 20, SUPER ROD Lv 40) |
+| Azurill | ROUTE 32 (Lv 6-7, morning and day, rare) |
+| Wynaut | DARK CAVE (Lv 3-4, night, uncommon) |
+| Mismagius | SILVER CAVE (Lv 47, night, rare); evolves from Misdreavus (MOON STONE) |
+| Honchkrow | SILVER CAVE (Lv 44, night, rare); evolves from Murkrow (MOON STONE) |
+| Bonsly | ROUTE 36 (Lv 5, morning and day, rare); ROCK SMASH rocks (CIANWOOD CITY, DARK CAVE, ROUTE 40, SLOWPOKE WELL) |
+| Mime Jr. | ROUTE 34 (Lv 11, night, rare); ROUTE 21 (Lv 20, morning and day, uncommon) |
+| Happiny | ROUTE 34 (Lv 10, morning and day, rare) |
+| Munchlax | HEADBUTT trees (ROUTE 29, ROUTE 30, ROUTE 31, ROUTE 26, ROUTE 27, ROUTE 32, ILEX FOREST and 6 more; rare) |
+| Mantyke | ROUTE 41, surfing (Lv 18, common) |
+| Weavile | SILVER CAVE (Lv 44-50, night, uncommon); evolves from Sneasel (MOON STONE) |
+| Magnezone | evolves from Magneton (THUNDERSTONE) |
+| Lickilicky | ROUTE 44 (Lv 30, morning and day, rare); evolves from Lickitung (level 33) |
+| Rhyperior | VICTORY ROAD (Lv 40, morning and day, rare); evolves from Rhydon (LINKING CORD) |
+| Tangrowth | SILVER CAVE (Lv 44, morning and day, rare); evolves from Tangela (level 33) |
+| Electivire | evolves from Electabuzz (LINKING CORD) |
+| Magmortar | evolves from Magmar (LINKING CORD) |
+| Togekiss | evolves from Togetic (SUN STONE) |
+| Yanmega | evolves from Yanma (level 33) |
+| Leafeon | evolves from Eevee (LEAF STONE) |
+| Glaceon | evolves from Eevee (NEVERMELTICE) |
+| Gliscor | ROUTE 45 (Lv 30, night, rare); evolves from Gligar (MOON STONE) |
+| Mamoswine | SILVER CAVE (Lv 47, morning and day, rare); evolves from Piloswine (level 40) |
+| Porygon-Z | evolves from Porygon2 (UP GRADE) |
+| Sylveon | evolves from Eevee (POLKADOT BOW) |
+| Perrserker | evolves from Galarian Meowth (level 28) |
+| Cursola | evolves from Galarian Corsola (level 38) |
+| Sirfetch'd | evolves from Galarian Farfetch'd (level 30) |
+| Mr. Rime | evolves from Galarian Mr. Mime (level 42) |
+| Wyrdeer | evolves from Stantler (level 33) |
+| Kleavor | evolves from Scyther (HARD STONE) |
+| Ursaluna | SILVER CAVE (Lv 50, night, uncommon); evolves from Ursaring (MOON STONE) |
+| Overqwil | evolves from Hisuian Qwilfish (POISON BARB) |
+| Clodsire | ROUTE 13 (Lv 25, night, rare); ROUTE 14 (Lv 28, night, rare); ROUTE 15 (Lv 25, night, rare); evolves from Paldean Wooper (level 20) |
+| Farigiraf | evolves from Girafarig (level 33) |

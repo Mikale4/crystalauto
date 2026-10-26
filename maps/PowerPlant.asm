@@ -6,6 +6,7 @@
 	const POWERPLANT_GYM_GUIDE3
 	const POWERPLANT_MANAGER
 	const POWERPLANT_FOREST
+	const POWERPLANT_ZAPDOS_G
 
 PowerPlant_MapScripts:
 	def_scene_scripts
@@ -386,6 +387,29 @@ PowerPlantManagerMyBelovedGeneratorText:
 	line "electricity out!"
 	done
 
+PowerPlantZapdosScript:
+; a boss from GALAR (see engine/battle/bosses.asm)
+	opentext
+	writetext PowerPlantZapdosText
+	cry ZAPDOS_G
+	waitsfx
+	closetext
+	loadwildmon ZAPDOS_G, 50
+	startbattle
+	ifequal LOSE, .Lost
+	disappear POWERPLANT_ZAPDOS_G
+	setevent EVENT_FOUGHT_ZAPDOS_G
+.Lost:
+	reloadmapafterbattle
+	end
+
+PowerPlantZapdosText:
+	text "An orange ZAPDOS"
+	line "from a faraway"
+	cont "land! It's raring"
+	cont "to fight!"
+	done
+
 PowerPlant_MapEvents:
 	db 0, 0 ; filler
 
@@ -408,3 +432,4 @@ PowerPlant_MapEvents:
 	object_event  7,  2, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, PowerPlantGymGuide4Script, -1
 	object_event 14, 10, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, PowerPlantManager, -1
 	object_event  5,  5, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, Forest, -1
+	object_event 18,  2, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, PowerPlantZapdosScript, EVENT_FOUGHT_ZAPDOS_G

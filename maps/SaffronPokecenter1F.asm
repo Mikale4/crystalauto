@@ -24,6 +24,9 @@ SaffronPokecenter1FMoveReminderScript:
 SaffronPokecenter1FMoveTutorScript:
 	jumpstd MoveTutorScript
 
+SaffronPokecenter1FEggMoveTutorScript:
+	jumpstd EggMoveTutorScript
+
 SaffronPokecenter1FTeacherScript:
 	special CheckMobileAdapterStatusSpecial
 	iftrue .mobile
@@ -141,3 +144,4 @@ SaffronPokecenter1F_MapEvents:
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
 	object_event  0,  4, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FMoveReminderScript, -1
 	object_event  0,  5, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FMoveTutorScript, -1
+	object_event  0,  3, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, SaffronPokecenter1FEggMoveTutorScript, -1

@@ -285,9 +285,9 @@
 	const EVENT_JACK_ASKED_FOR_PHONE_NUMBER
 	const EVENT_BURNED_TOWER_B1F_ENTEI ; (formerly unused)
 	const EVENT_BEVERLY_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_ARTICUNO_G ; (formerly unused)
 	const EVENT_HUEY_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_ZAPDOS_G ; (formerly unused)
 	const EVENT_GOT_PROTEIN_FROM_HUEY
 	const EVENT_GOT_HP_UP_FROM_JOEY
 	const EVENT_GOT_CARBOS_FROM_VANCE
@@ -295,7 +295,7 @@
 	const EVENT_GOT_CALCIUM_FROM_ERIN
 	const EVENT_KENJI_ON_BREAK
 	const EVENT_GAVEN_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_MOLTRES_G ; (formerly unused)
 	const EVENT_BETH_ASKED_FOR_PHONE_NUMBER
 	const_skip ; unused in Crystal
 	const EVENT_JOSE_ASKED_FOR_PHONE_NUMBER

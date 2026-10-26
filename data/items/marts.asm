@@ -35,6 +35,7 @@ Marts:
 	dw MartMtMoon
 	dw MartIndigoPlateau
 	dw MartUnderground
+	dw MartEvolutionItems
 	assert_table_length NUM_MARTS
 
 MartCherrygrove:
@@ -426,4 +427,16 @@ DefaultMart:
 	db 2 ; # items
 	db POKE_BALL
 	db POTION
+	db -1 ; end
+
+MartEvolutionItems:
+; type items that evolve some POKéMON too (see docs/new_pokemon.md)
+	db 7 ; # items
+	db TWISTEDSPOON
+	db DRAGON_FANG
+	db SPELL_TAG
+	db POLKADOT_BOW
+	db NEVERMELTICE
+	db POISON_BARB
+	db HARD_STONE
 	db -1 ; end

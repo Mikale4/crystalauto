@@ -28,6 +28,9 @@ AzaleaPokecenter1FMoveReminderScript:
 AzaleaPokecenter1FMoveTutorScript:
 	jumpstd MoveTutorScript
 
+AzaleaPokecenter1FEggMoveTutorScript:
+	jumpstd EggMoveTutorScript
+
 AzaleaPokecenter1FGentlemanScript:
 	jumptextfaceplayer AzaleaPokecenter1FGentlemanText
 
@@ -106,3 +109,4 @@ AzaleaPokecenter1F_MapEvents:
 	object_event  4,  1, SPRITE_RENTAL_CHANSEY, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FChanseyScript, EVENT_RENTAL_CHANSEY_FROM_HERE
 	object_event  0,  4, SPRITE_GRANNY, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FMoveReminderScript, -1
 	object_event  0,  5, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FMoveTutorScript, -1
+	object_event  0,  3, SPRITE_TEACHER, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, AzaleaPokecenter1FEggMoveTutorScript, -1

@@ -76,12 +76,14 @@ ExtremeTeamPools:
 .Birds:
 	dw PIDGEY, SPEAROW, HOOTHOOT, NATU, DODUO, FARFETCH_D, MURKROW, DELIBIRD, ZUBAT
 	dw SKARMORY ; (steel, for the rock and electric types birds fear)
+	dw FARFETCH_D_G ; (from later games)
 	dw -1
 
 .Whitney:
 	dw CLEFFA, IGGLYBUFF, SNUBBULL, TEDDIURSA, AIPOM, SENTRET, MILTANK, DUNSPARCE
 	dw STANTLER, TOGEPI
 	dw GIRAFARIG ; (psychic, for fighting types)
+	dw MUNCHLAX, HAPPINY ; (from later games)
 	dw -1
 
 .Bugs:
@@ -94,27 +96,32 @@ ExtremeTeamPools:
 	dw GASTLY, MISDREAVUS, MURKROW, HOOTHOOT, ZUBAT, DROWZEE, GIRAFARIG
 	dw HOUNDOUR, SNEASEL ; (dark, for the ghost and psychic types)
 	dw CUBONE
+	dw CORSOLA_G ; (from later games)
 	dw -1
 
 .Ice:
 	dw SEEL, SHELLDER, SWINUB, SMOOCHUM, SNEASEL, DELIBIRD, LAPRAS, STARYU
 	dw HORSEA, SLOWPOKE ; (water, for the fire and rock types)
+	dw SANDSHREW_A, VULPIX_A ; (from later games)
 	dw -1
 
 .Steel:
 	dw MAGNEMITE, ONIX, SKARMORY, PINECO, SCYTHER, MAREEP, SHUCKLE
 	dw GEODUDE ; (ground, for the fire and electric types)
 	dw CORSOLA ; (water, for the fire and ground types)
+	dw MEOWTH_G ; (from later games)
 	dw -1
 
 .Fighting:
 	dw MANKEY, MACHOP, TYROGUE, POLIWAG, HERACROSS, TEDDIURSA, GEODUDE, ONIX
 	dw SNEASEL ; (dark, for the psychic types)
+	dw FARFETCH_D_G ; (from later games)
 	dw -1
 
 .Dragons:
 	dw DRATINI, HORSEA, MAGIKARP, CHARMANDER, AERODACTYL, EKANS, ONIX
 	dw SKARMORY ; (steel, for the ice and dragon types)
+	dw EXEGGCUTE ; (from later games)
 	dw -1
 
 .Lance:
@@ -135,6 +142,7 @@ ExtremeTeamPools:
 	dw ABRA, DROWZEE, NATU, EXEGGCUTE, SLOWPOKE, GIRAFARIG, MR__MIME, SMOOCHUM
 	dw STARYU, PORYGON
 	dw MAGNEMITE ; (steel, for the bug, ghost and dark types)
+	dw SLOWPOKE_G, PONYTA_G, MIME_JR, WYNAUT ; (from later games)
 	dw -1
 
 .Bruno:
@@ -147,28 +155,33 @@ ExtremeTeamPools:
 	dw HOUNDOUR, MURKROW, SNEASEL, LARVITAR, MISDREAVUS, ODDISH, ZUBAT
 	dw GASTLY ; (ghost, for the fighting types)
 	dw SLOWPOKE
+	dw RATTATA_A, MEOWTH_A ; (from later games)
 	dw -1
 
 .Poison:
 	dw ZUBAT, KOFFING, GRIMER, TENTACOOL, VENONAT, EKANS, NIDORAN_M, NIDORAN_F
 	dw QWILFISH, SPINARAK
 	dw SNEASEL ; (dark, for the psychic types)
+	dw QWILFISH_H, WOOPER_P ; (from later games)
 	dw -1
 
 .Rock:
 	dw GEODUDE, ONIX, RHYHORN, SUDOWOODO, SHUCKLE, LARVITAR, AERODACTYL, CUBONE
 	dw OMANYTE, KABUTO, CORSOLA ; (water, for the water and grass types)
+	dw GEODUDE_A, GROWLITHE_H, BONSLY ; (from later games)
 	dw -1
 
 .Water:
 	dw STARYU, HORSEA, PSYDUCK, GOLDEEN, SEEL, SHELLDER, MARILL, LAPRAS
 	dw CHINCHOU, WOOPER ; (electric and ground, for the electric types)
+	dw MANTYKE ; (from later games)
 	dw -1
 
 .Electric:
 	dw VOLTORB, MAGNEMITE, PIKACHU, ELEKID, MAREEP, PORYGON
 	dw CHINCHOU ; (water, for the ground types)
 	dw DODUO ; (flying, out of reach of ground moves)
+	dw GEODUDE_A ; (from later games)
 	dw -1
 
 .Science:
@@ -185,6 +198,7 @@ ExtremeTeamPools:
 .Youngster:
 	dw RATTATA, SPEAROW, EKANS, SANDSHREW, ZUBAT, PIDGEY, NIDORAN_M, WOOPER
 	dw SENTRET, GEODUDE, CATERPIE, MANKEY
+	dw RATTATA_A ; (from later games)
 	dw -1
 
 .Schoolboy:
@@ -195,6 +209,7 @@ ExtremeTeamPools:
 .Lass:
 	dw CLEFFA, IGGLYBUFF, ODDISH, MAREEP, MARILL, SNUBBULL, TOGEPI, PICHU
 	dw NIDORAN_F, HOPPIP, SENTRET
+	dw AZURILL, HAPPINY ; (from later games)
 	dw -1
 
 .CoolM:
@@ -205,103 +220,122 @@ ExtremeTeamPools:
 .CoolF:
 	dw CHIKORITA, CYNDAQUIL, TOTODILE, CLEFFA, STARYU, DRATINI, EEVEE, PONYTA
 	dw CHANSEY, LAPRAS, MAREEP
+	dw PONYTA_G ; (from later games)
 	dw -1
 
 .Beauty:
 	dw CLEFFA, IGGLYBUFF, VULPIX, PONYTA, STARYU, GOLDEEN, SMOOCHUM, SEEL
 	dw MEOWTH, SNUBBULL
+	dw VULPIX_A, PONYTA_G ; (from later games)
 	dw -1
 
 .Maniac:
 	dw SLOWPOKE, NIDORAN_M, RHYHORN, CUBONE, LICKITUNG, KANGASKHAN, LARVITAR
 	dw AERODACTYL, PORYGON, ONIX
+	dw SLOWPOKE_G, MUNCHLAX ; (from later games)
 	dw -1
 
 .Rocket:
 	dw RATTATA, ZUBAT, KOFFING, GRIMER, EKANS, DROWZEE, HOUNDOUR, MURKROW
 	dw MEOWTH, ODDISH
 	dw GEODUDE ; (rock and ground, for the psychic types' foes)
+	dw RATTATA_A, MEOWTH_A ; (from later games)
 	dw -1
 
 .Gentleman:
 	dw GROWLITHE, PONYTA, SNUBBULL, MEOWTH, NATU, STANTLER, NIDORAN_M
 	dw FARFETCH_D, EEVEE, PICHU
+	dw MEOWTH_G, GROWLITHE_H ; (from later games)
 	dw -1
 
 .Teacher:
 	dw CLEFFA, ABRA, NATU, CHANSEY, SMOOCHUM, DROWZEE, ODDISH, MAREEP, PSYDUCK
 	dw SLOWPOKE
+	dw HAPPINY ; (from later games)
 	dw -1
 
 .Fisher:
 	dw MAGIKARP, GOLDEEN, POLIWAG, TENTACOOL, KRABBY, SHELLDER, HORSEA, QWILFISH
 	dw REMORAID, STARYU
 	dw CHINCHOU, WOOPER ; (for the electric and grass types)
+	dw QWILFISH_H, MANTYKE ; (from later games)
 	dw -1
 
 .SwimmerM:
 	dw TENTACOOL, HORSEA, STARYU, SHELLDER, KRABBY, POLIWAG, PSYDUCK, SEEL
 	dw MANTINE, REMORAID, MARILL
 	dw CHINCHOU ; (electric, for the water types)
+	dw MANTYKE ; (from later games)
 	dw -1
 
 .SwimmerF:
 	dw GOLDEEN, STARYU, SEEL, HORSEA, MARILL, PSYDUCK, TENTACOOL, CORSOLA
 	dw MANTINE, SHELLDER, LAPRAS
 	dw CHINCHOU ; (electric, for the water types)
+	dw AZURILL ; (from later games)
 	dw -1
 
 .Sailor:
 	dw MACHOP, POLIWAG, TENTACOOL, KRABBY, MANKEY, SEEL, PSYDUCK, MAGIKARP
 	dw SHELLDER
 	dw WOOPER ; (ground, for the electric types)
+	dw WOOPER_P ; (from later games)
 	dw -1
 
 .Guitarist:
 	dw VOLTORB, MAGNEMITE, PIKACHU, ELEKID, MAREEP, IGGLYBUFF, KOFFING, SMOOCHUM
 	dw CHINCHOU ; (water, for the ground types)
+	dw GEODUDE_A ; (from later games)
 	dw -1
 
 .Hiker:
 	dw GEODUDE, ONIX, MACHOP, RHYHORN, SANDSHREW, DIGLETT, CUBONE, PHANPY
 	dw LARVITAR, SUDOWOODO, TEDDIURSA
 	dw SWINUB ; (ice, for the grass types)
+	dw GEODUDE_A, BONSLY ; (from later games)
 	dw -1
 
 .Biker:
 	dw KOFFING, GRIMER, VOLTORB, ZUBAT, EKANS, HOUNDOUR, GROWLITHE, PONYTA
 	dw MACHOP, MAGBY
+	dw WOOPER_P ; (from later games)
 	dw -1
 
 .Fire:
 	dw VULPIX, GROWLITHE, PONYTA, MAGBY, HOUNDOUR, CHARMANDER, CYNDAQUIL, KOFFING
 	dw SLUGMA, RHYHORN ; (rock, for the water and ground types' foes)
+	dw GROWLITHE_H ; (from later games)
 	dw -1
 
 .Burglar:
 	dw GROWLITHE, VULPIX, MEOWTH, KOFFING, MAGBY, MURKROW, SNEASEL, HOUNDOUR
 	dw PONYTA
+	dw MEOWTH_A ; (from later games)
 	dw -1
 
 .Juggler:
 	dw VOLTORB, DROWZEE, MR__MIME, KOFFING, ABRA, AIPOM, SMOOCHUM, GIRAFARIG
 	dw NATU, MAGNEMITE
+	dw MIME_JR ; (from later games)
 	dw -1
 
 .Executive:
 	dw KOFFING, ZUBAT, HOUNDOUR, MURKROW, GRIMER, DROWZEE, EKANS, ODDISH, MEOWTH
 	dw GASTLY, SNEASEL
 	dw MACHOP ; (fighting, for the dark types)
+	dw RATTATA_A ; (from later games)
 	dw -1
 
 .Picnicker:
 	dw ODDISH, BELLSPROUT, HOPPIP, SUNKERN, PIKACHU, SENTRET, NIDORAN_F, MAREEP
 	dw MARILL, PONYTA, CLEFFA, SNUBBULL
+	dw AZURILL, HAPPINY ; (from later games)
 	dw -1
 
 .Camper:
 	dw SANDSHREW, DIGLETT, GEODUDE, RATTATA, ZUBAT, CATERPIE, VULPIX, GROWLITHE
 	dw PHANPY, TEDDIURSA, NIDORAN_M, CUBONE
+	dw BONSLY ; (from later games)
 	dw -1
 
 .Sage:
@@ -312,21 +346,25 @@ ExtremeTeamPools:
 .Medium:
 	dw GASTLY, MISDREAVUS, DROWZEE, ABRA, NATU, MURKROW, HOUNDOUR, SMOOCHUM
 	dw GIRAFARIG
+	dw CORSOLA_G ; (from later games)
 	dw -1
 
 .Pokefan:
 	dw PICHU, CLEFFA, IGGLYBUFF, SNUBBULL, MARILL, TOGEPI, MEOWTH, EEVEE, CHANSEY
 	dw SENTRET, AIPOM
+	dw AZURILL, MUNCHLAX ; (from later games)
 	dw -1
 
 .Kimono:
 	dw EEVEE, VULPIX, PONYTA, SMOOCHUM, MISDREAVUS, CLEFFA, NATU, CHINCHOU
 	dw MARILL
+	dw VULPIX_A, PONYTA_G ; (from later games)
 	dw -1
 
 .Twins:
 	dw CLEFFA, IGGLYBUFF, PICHU, MARILL, TEDDIURSA, PHANPY, SPINARAK, LEDYBA
 	dw ODDISH, HOPPIP, NIDORAN_F, NIDORAN_M
+	dw AZURILL, BONSLY, HAPPINY, WYNAUT ; (from later games)
 	dw -1
 
 .Red:
@@ -347,4 +385,5 @@ ExtremeTeamPools:
 .Mystic:
 	dw DROWZEE, GASTLY, VOLTORB, NATU, MISDREAVUS, ABRA, GIRAFARIG, SMOOCHUM
 	dw VULPIX
+	dw WYNAUT ; (from later games)
 	dw -1

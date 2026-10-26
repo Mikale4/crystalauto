@@ -20,13 +20,20 @@ Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
 whenever you ask. As in PalletToPewter, **TMs never run out**, **HMs work without
 the move** (and HM moves can be forgotten), and every POKéMON CENTER has a **MOVE
-REMINDER** and a **MOVE TUTOR**. When a trainer calls for a rematch, you can **go
-there right away**.
+REMINDER**, a **MOVE TUTOR** and an **EGG MOVE TUTOR**. When a trainer calls for a
+rematch, you can **go there right away**.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
 you the RATTATA he catches. PalletToPewter's **level caps**, **difficulties**
 (NORMAL, HARD and EXTREME) and **boss Pokémon** are here too.
+
+There are **66 new Pokémon**, all from GEN 1 and 2's families: their **regional
+forms** (ALOLAN, GALARIAN, HISUIAN and PALDEAN) and the **later evolutions and
+babies** of their lines, from AZURILL to CLODSIRE. They live in the wild, battle on
+trainers' teams, and the GALARIAN birds wait as bosses. Every Pokémon's **level-up
+moves and EGG moves combine GEN 1's and GEN 2's**, and **GEN 1's TMs** are back
+beside this game's.
 
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
@@ -540,7 +547,94 @@ The GOLDENROD DEPT. STORE sells them all: KING'S ROCK, METAL COAT, DRAGON SCALE 
 UP-GRADE on the 3rd floor, and the LINKING CORD and six evolution stones (FIRE,
 WATER, THUNDER, LEAF, MOON and SUN) on the 4th. So does the CELADON DEPT. STORE, on
 its 5th floor: the stones and the LINKING CORD from the clerk with the vitamins, the
-other four from the one with the X items.
+other four from the one with the X items. The items that evolve the [new
+Pokémon](#66-new-pokémon) are sold by a third clerk on both floors.
+
+
+## 66 new Pokémon
+
+After CELEBI come 66 more Pokémon, each of a GEN 1 or 2 family:
+
+- **Regional forms**: ALOLAN RATTATA, RATICATE, RAICHU, SANDSHREW, SANDSLASH, VULPIX,
+  NINETALES, MEOWTH, PERSIAN, GEODUDE, GRAVELER, GOLEM, EXEGGUTOR and MAROWAK;
+  GALARIAN MEOWTH, PONYTA, RAPIDASH, SLOWPOKE, SLOWBRO, SLOWKING, FARFETCH'D,
+  WEEZING, MR. MIME, ARTICUNO, ZAPDOS, MOLTRES and CORSOLA; HISUIAN GROWLITHE,
+  ARCANINE, TYPHLOSION and QWILFISH; PALDEAN WOOPER. A form has its species' name (a
+  GALARIAN MEOWTH is a MEOWTH) with its own types, stats, moves and Pokédex entry.
+- **Later evolutions**: MISMAGIUS, HONCHKROW, WEAVILE, MAGNEZONE, LICKILICKY,
+  RHYPERIOR, TANGROWTH, ELECTIVIRE, MAGMORTAR, TOGEKISS, YANMEGA, LEAFEON, GLACEON,
+  GLISCOR, MAMOSWINE, PORYGON-Z, SYLVEON, PERRSERKER, CURSOLA, SIRFETCH'D, MR. RIME,
+  WYRDEER, KLEAVOR, URSALUNA, OVERQWIL, CLODSIRE and FARIGIRAF.
+- **Babies**: AZURILL, WYNAUT, BONSLY, MIME JR., HAPPINY, MUNCHLAX and MANTYKE. They
+  hatch from their families' EGGS (MARILL's, WOBBUFFET's, SUDOWOODO's...).
+
+The Pokédex and the stats screen show each one's national number (No.461 WEAVILE;
+a form has its species' number). In the Pokédex's NEW mode they follow their
+families; its OLD mode is the national order.
+
+**Where they are**: all over the wild, by time of day: ALOLAN RATTATA on ROUTES 29
+and 33 at night, ALOLAN SANDSHREW and VULPIX and GALARIAN MR. MIME in the ICE PATH,
+GALARIAN SLOWPOKE in the SLOWPOKE WELL, WYNAUT in DARK CAVE, MUNCHLAX in HEADBUTT
+trees, BONSLY in ROCK SMASH rocks, MANTYKE surfing on ROUTE 41, HISUIAN QWILFISH
+fished at night on ROUTE 32, WEAVILE and URSALUNA in SILVER CAVE... The
+[list of the new Pokémon](docs/new_pokemon.md#where-to-find-them) says where each
+one is. The **GALARIAN birds** are bosses (see [Boss Pokémon](#boss-pokémon)):
+ARTICUNO at the SEAFOAM ISLANDS, ZAPDOS in the POWER PLANT, MOLTRES in VICTORY ROAD.
+
+**Trainers** use them too. Every GYM LEADER from MORTY on has one (MORTY's ALOLAN
+MAROWAK, JASMINE's PERRSERKER, PRYCE's ALOLAN SANDSLASH, CLAIR's ALOLAN EXEGGUTOR,
+BROCK's ALOLAN GRAVELER, LT. SURGE's ALOLAN RAICHU and ELECTIVIRE, ERIKA's TANGROWTH,
+JANINE's GALARIAN WEEZING, BLAINE's MAGMORTAR), and so do the ELITE FOUR (WILL's
+GALARIAN SLOWBRO, KOGA's GALARIAN WEEZING, BRUNO's SIRFETCH'D, KAREN's HONCHKROW),
+BLUE (RHYPERIOR), your rival's last team (WEAVILE) and some other trainers (TEAM
+ROCKET's ALOLAN RATTATA...). On EXTREME they join the teams of the trainers they
+suit.
+
+**They evolve** by level or by an item used like a stone (trade evolutions take the
+LINKING CORD):
+
+| Item | Evolves |
+|---|---|
+| FIRE STONE | HISUIAN GROWLITHE |
+| THUNDERSTONE | MAGNETON (into MAGNEZONE) |
+| LEAF STONE | EEVEE (into LEAFEON) |
+| MOON STONE | MISDREAVUS, MURKROW, SNEASEL, GLIGAR, URSARING |
+| SUN STONE | TOGETIC |
+| LINKING CORD | ALOLAN GRAVELER, RHYDON, ELECTABUZZ, MAGMAR |
+| KING'S ROCK | GALARIAN SLOWPOKE (into GALARIAN SLOWKING) |
+| UP-GRADE | PORYGON2 |
+| TWISTEDSPOON | PIKACHU (into ALOLAN RAICHU) |
+| NEVERMELTICE | ALOLAN SANDSHREW, ALOLAN VULPIX, MIME JR. (into GALARIAN MR. MIME), EEVEE (into GLACEON) |
+| DRAGON FANG | EXEGGCUTE (into ALOLAN EXEGGUTOR) |
+| SPELL TAG | CUBONE (into ALOLAN MAROWAK), QUILAVA (into HISUIAN TYPHLOSION) |
+| POLKADOT BOW | KOFFING (into GALARIAN WEEZING), EEVEE (into SYLVEON) |
+| POISON BARB | HISUIAN QWILFISH |
+| HARD STONE | SCYTHER (into KLEAVOR) |
+
+The last seven are held items too, and still work as held items. A new clerk sells
+them at both DEPT. STOREs (GOLDENROD's 3rd floor, CELADON's 5th), for ¥2100 each.
+
+Their pics, shiny colors, stats, Pokédex entries and cries come from DanielOlivaw's
+[pokecrystal16][pokecrystal16-daniel]; their moves from [PokéAPI](https://pokeapi.co).
+The [list of the new Pokémon](docs/new_pokemon.md) credits each sprite's artists.
+Their pics aren't animated.
+
+
+## GEN 1 and GEN 2 moves together
+
+- **Level-up moves**: every Pokémon learns its CRYSTAL moves, and the ones RED and
+  BLUE, YELLOW, and GOLD and SILVER teach it that CRYSTAL doesn't (at the lowest
+  level any of them does). SNORLAX learns HARDEN and DOUBLE-EDGE again; RAICHU,
+  THUNDER WAVE.
+- **EGG moves**: GOLD and SILVER's are added to CRYSTAL's (SNORLAX's CHARM...).
+- **GEN 1's TMs**: where a TM's number taught another move in RED and BLUE (TM01 MEGA
+  PUNCH, TM08 BODY SLAM, ...), that GEN 1 TM is here too. The TM pocket lists it just
+  before this game's TM of the number, the two marked **GEN 1** and **GEN 2**; a
+  number whose move is the same in both (TM06 TOXIC) is one TM. GEN 1's TMs never run
+  out either. A new clerk at the GOLDENROD DEPT. STORE's 5th floor sells 24 of them,
+  and one on the CELADON DEPT. STORE's 3rd floor the other 13, at RED and BLUE's
+  prices. GEN 1 Pokémon learn the ones they learned in RED, BLUE and YELLOW; GEN 2
+  Pokémon, the ones they could learn by TM or tutor in GEN 3.
 
 
 ## Catching
@@ -587,6 +681,9 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | LUGIA (WHIRL ISLANDS) | 60 | HORSEA, CHINCHOU, MANTINE, SLOWPOKE, SKARMORY |
 | HO-OH (TIN TOWER's roof) | 60 | FLAREON, VAPOREON, JOLTEON, ESPEON, UMBREON |
 | CELEBI (ILEX FOREST) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
+| GALARIAN ARTICUNO (SEAFOAM ISLANDS) | 50 | GALARIAN MR. MIME, GALARIAN SLOWPOKE, GALARIAN PONYTA, NATU, GIRAFARIG |
+| GALARIAN ZAPDOS (POWER PLANT) | 50 | GALARIAN FARFETCH'D, MACHOP, MANKEY, HERACROSS, TYROGUE |
+| GALARIAN MOLTRES (VICTORY ROAD) | 50 | MURKROW, SNEASEL, HOUNDOUR, ALOLAN MEOWTH, ALOLAN RATTATA |
 
 On NORMAL the allies are two levels under the boss. On HARD and EXTREME they're at
 the level cap, and the boss at least two above it; on EXTREME they also have their
@@ -750,16 +847,17 @@ As in PalletToPewter:
 - **HM moves can be forgotten** like any other move, to make room for a new one.
 
 
-## The MOVE REMINDER and the MOVE TUTOR
+## The MOVE REMINDER and the MOVE TUTORS
 
-Every POKéMON CENTER has two more people, by the left wall of the lobby (at the
-INDIGO PLATEAU, by the right wall). Both are free:
+Every POKéMON CENTER has three more people, by the left wall of the lobby (at the
+INDIGO PLATEAU, by the right wall). All are free:
 
 - The **MOVE REMINDER** (the old woman) teaches a Pokémon any move it learns by
   leveling up, up to its level, that it doesn't know.
-- The **MOVE TUTOR** (the old man) teaches a Pokémon its EGG moves (those of its first
-  form), and whichever of the moves GOLDENROD's tutor teaches it can learn
-  (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
+- The **MOVE TUTOR** (the old man) teaches a Pokémon whichever of the moves
+  GOLDENROD's tutor teaches it can learn (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
+- The **EGG MOVE TUTOR** (the teacher) teaches a Pokémon its EGG moves (those of its
+  first form, GOLD and SILVER's with CRYSTAL's).
 
 Pick a Pokémon, then the move from the list (each with its type; the box below it
 shows the move's category, PP, power and accuracy). A Pokémon that already knows
@@ -785,11 +883,12 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 33601f077db1401c593109b26ca120080f90e1a1`.
+The patched ROM has `sha1: 07e8c9dc541e42fb979aae6d74f618a62085f142`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
-`.sav` beside it). On CONTINUE, its moves are taken over as they were (see
-[More than 255 moves](#more-than-255-moves)).
+`.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
+(see [More than 255 moves](#more-than-255-moves) and [More than 255
+Pokémon](#more-than-255-pokémon)).
 
 
 ## Building it
@@ -1017,9 +1116,10 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   FLASH to the menu (`GetMonSubmenuItems.OwnedFieldMove`). `ForgetMove` in
   [`engine/pokemon/learn.asm`](engine/pokemon/learn.asm) no longer keeps HM moves.
 - [`engine/events/move_relearner.asm`](engine/events/move_relearner.asm) has the
-  MOVE REMINDER and MOVE TUTOR (`MoveReminderScript` and `MoveTutorScript`, standard
-  scripts every POKéMON CENTER's map uses; the specials `MoveReminder` and
-  `PokecenterMoveTutor`). They list the moves in `wMoveRelearnerMoves` (in the
+  MOVE REMINDER, MOVE TUTOR and EGG MOVE TUTOR (`MoveReminderScript`,
+  `MoveTutorScript` and `EggMoveTutorScript`, standard scripts every POKéMON CENTER's
+  map uses; the specials `MoveReminder`, `PokecenterMoveTutor` and
+  `PokecenterEggMoveTutor`). They list the moves in `wMoveRelearnerMoves` (in the
   POKéDEX's RAM, which nothing else uses then), show them in a scrolling menu, and
   teach them with the game's own `LearnMove`.
 - [`engine/phone/phone_trip.asm`](engine/phone/phone_trip.asm) has the trip.
@@ -1080,6 +1180,65 @@ byte per move: an ID that stands for an index in `wMoveIndexTable`
   Crystal game knows only those), and none for the others.
 
 
+### More than 255 Pokémon
+
+Species have 16-bit indexes the same way, after pokecrystal16's expand-mon-ID
+branch: the constants in
+[`constants/pokemon_constants.asm`](constants/pokemon_constants.asm) are indexes
+(1-251, then the new ones from `FIRST_NEW_POKEMON`, 252-317), species data lists
+are `dw`, and memory and saves keep 8-bit IDs that `wPokemonIndexTable`
+([`engine/16/mon_table.asm`](engine/16/mon_table.asm)) maps to indexes, copied to
+SRAM as it changes. `MonIDPlaces` lists every place a species is kept, for the
+IDs nothing holds any more to be taken back.
+
+- Code compares IDs with `cpmon`, `ldmon`, `IsMon` and `CheckMonInList`, reads
+  species-indexed tables with `GetSpeciesTableEntry`, and finds a species in a
+  `dw` list with `FindSpeciesInArray` ([`home/array.asm`](home/array.asm)).
+  [`tools/check_species_ids.py`](tools/check_species_ids.py) lists any use of a
+  species constant as an 8-bit ID.
+- The box out keeps IDs; every box also has an array of its Pokémon's indexes in
+  its own SRAM bank (`SaveBox` writes it; `LoadBox` and BILL's PC rebuild the
+  box's IDs from it with `RefreshBoxSpecies`). An old save gets the identity table
+  and every box's array on CONTINUE.
+- The Pokédex keeps its flags for indexes 1-256 where they were and the new ones
+  after them (`wPokedexSeenExt`, `wPokedexCaughtExt`); the HALL OF FAME and mail
+  keep their layouts, with the index's 9th bit in a spare bit.
+- LUCKY PUNCH, STICK, THICK CLUB and LIGHT BALL find their species in
+  [`data/items/species_items.asm`](data/items/species_items.asm)
+  (`CheckSpeciesItem`).
+
+### The new Pokémon's data
+
+- Each new species has the files every species has: base stats
+  ([`data/pokemon/base_stats/`](data/pokemon/base_stats)), names, learnsets and
+  evolutions, EGG moves, Pokédex entries, cries, menu icons and pics
+  ([`gfx/pokemon/`](gfx/pokemon), in `New Pics` sections of
+  [`gfx/pics.asm`](gfx/pics.asm); pic pointers keep their real banks). Their pics
+  share one still animation (`StaticAnimation`).
+- [`data/pokemon/new_pokemon.asm`](data/pokemon/new_pokemon.asm) has their national
+  numbers and footprints; the Pokédex's OLD mode reads
+  [`data/pokemon/dex_order_old.asm`](data/pokemon/dex_order_old.asm).
+- The wild ones are in [`data/wild/`](data/wild); the GALARIAN birds are boss
+  objects in [`maps/SeafoamGym.asm`](maps/SeafoamGym.asm),
+  [`maps/PowerPlant.asm`](maps/PowerPlant.asm) and
+  [`maps/VictoryRoad.asm`](maps/VictoryRoad.asm) (`EVENT_FOUGHT_ARTICUNO_G` and
+  the other two, formerly unused event flags), with their teams in `BossTeams`.
+- [`docs/new_pokemon.md`](docs/new_pokemon.md) lists them, where to find them, and
+  who drew their sprites.
+
+### GEN 1's TMs
+
+- `add_g1tm` in [`constants/item_constants.asm`](constants/item_constants.asm)
+  makes each GEN 1-only TM (`G1TM01_MOVE`...) and its learnable flag (`G1MV_*`, after
+  the TMs, HMs and tutor moves in each Pokémon's `tmhm` list).
+- A player's GEN 1 TMs are flags in `wGen1TMs`, in save space nothing used (an old
+  save has none). The TM pocket ([`engine/items/tmhm.asm`](engine/items/tmhm.asm))
+  goes through `TMHMPocketEntries`, a GEN 1 TM's entry before the GEN 2 one of its
+  number; the `GEN1_TM` item (`wCurGen1TM`) stands for the one picked.
+- [`engine/events/gen1_tm_shop.asm`](engine/events/gen1_tm_shop.asm) has the two
+  clerks (`Gen1TMShop`), with their lists and RED and BLUE's prices.
+
+
 ## Other changes
 
 - The player's sprite (CHRIS) has black pixels instead of red ones beside his face.
@@ -1098,6 +1257,7 @@ This is a disassembly of Pokémon Crystal by [pret][pret]. For the disassembly i
 [pokecrystal]: https://github.com/pret/pokecrystal
 [pokecrystal16]: https://github.com/aaaaaa123456789/pokecrystal16
 [pokecrystal16-vulcandth]: https://github.com/vulcandth/pokecrystal16
+[pokecrystal16-daniel]: https://github.com/DanielOlivaw/pokecrystal16
 [pret]: https://pret.github.io/
 [rompatcher]: https://www.marcrobledo.com/RomPatcher.js/
 [docs]: https://pret.github.io/pokecrystal/

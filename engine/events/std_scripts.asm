@@ -59,6 +59,7 @@ StdScripts::
 	add_stdscript PokecenterChanseyScript
 	add_stdscript MoveReminderScript
 	add_stdscript MoveTutorScript
+	add_stdscript EggMoveTutorScript
 
 PokecenterNurseScript:
 ; EVENT_WELCOMED_TO_POKECOM_CENTER is never set
