@@ -5516,9 +5516,7 @@ MoveSelectionScreen:
 	ld hl, wBattleMonMoves
 	add hl, bc
 	ld a, [hl]
-	cp COUNTER
-	jr z, .works_by_itself
-	cp MIRROR_COAT
+	call MoveWorksByItself
 	jr z, .works_by_itself
 	ld hl, wBattleMonPP
 	add hl, bc
@@ -5769,9 +5767,19 @@ MoveInfoBox:
 	call PrintNum
 	ret
 
+MoveWorksByItself:
+; Return z for a move that works by itself, so it can't be chosen: COUNTER and
+; MIRROR COAT (see HandleAutoCounter), FUTURE SIGHT (see HandleEntryMoves).
+	cp COUNTER
+	ret z
+	cp MIRROR_COAT
+	ret z
+	cp FUTURE_SIGHT
+	ret
+
 CheckPlayerHasUsableMoves:
 ; Return nz if the player's POKéMON has a move to choose: one with PP left, not
-; disabled, and not COUNTER or MIRROR COAT (they work by themselves).
+; disabled, and not one that works by itself (see MoveWorksByItself).
 	ld a, STRUGGLE
 	ld [wCurPlayerMove], a
 	ld a, [wPlayerDisableCount]
@@ -5791,9 +5799,7 @@ CheckPlayerHasUsableMoves:
 	cp b
 	jr z, .next
 	ld a, [hl]
-	cp COUNTER
-	jr z, .next
-	cp MIRROR_COAT
+	call MoveWorksByItself
 	ret nz
 .next
 	inc hl
@@ -5876,9 +5882,7 @@ ParseEnemyAction:
 	cp [hl]
 	jr z, .disabled
 	ld a, [hl]
-	cp COUNTER
-	jr z, .disabled
-	cp MIRROR_COAT
+	call MoveWorksByItself
 	jr z, .disabled
 	ld a, [de]
 	and PP_MASK
@@ -5912,9 +5916,7 @@ ParseEnemyAction:
 	ld a, [hl]
 	and a
 	jr z, .loop2
-	cp COUNTER
-	jr z, .loop2
-	cp MIRROR_COAT
+	call MoveWorksByItself
 	jr z, .loop2
 	ld hl, wEnemyMonPP
 	add hl, bc

@@ -268,7 +268,9 @@ FUTURE SIGHT or LOCK-ON uses each of them as it comes in, at the start of its fi
 turn out, before anything else happens. Each takes 1 PP (none is used without PP
 left), and it doesn't count as the Pokémon's move (QUICK CLAW and KING'S ROCK still
 wait for that). LOCK-ON goes last, so its aim is for the next attack. They can still
-be chosen as usual too.
+be chosen as usual too, but FUTURE SIGHT: like COUNTER and MIRROR COAT, it works only
+by itself ("FUTURE SIGHT works by itself!"), and auto battle and the other side never
+choose it.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -638,7 +640,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: d5583dc325c389f01b203fa2ff49c679603e6b89`.
+The patched ROM has `sha1: 1d8ea1edac589cf2220983f18db231176e336ec5`.
 
 
 ## Building it
@@ -806,7 +808,7 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   miss is the `swipeagain` command (`FalseSwipeAgain`). All of these are in
   [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm).
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
-  don't choose COUNTER or MIRROR COAT.
+  don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

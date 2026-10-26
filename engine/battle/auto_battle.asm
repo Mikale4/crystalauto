@@ -253,6 +253,8 @@ AutoBattle_RateMove:
 	jr z, .cant_select
 	cp MIRROR_COAT
 	jr z, .cant_select
+	cp FUTURE_SIGHT ; (as the POKéMON comes in)
+	jr z, .cant_select
 	ld [wCurPlayerMove], a
 	callfar UpdateMoveData
 
