@@ -659,6 +659,9 @@ wEnemyFieldFlags:: db
 wPlayerSpikes:: db ; layers of SPIKES on the player's side (with SCREENS_SPIKES)
 wEnemySpikes:: db
 wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
+wStatStagesShown:: db ; which stat lines are on the screen: bit 0 the foe's, bit 1 the player's
+wStatStagesLeft:: db ; (DrawStatStages: how many more there's room for)
+wStatStagesGap:: db ; (DrawStatStages: whether there's a space between them)
 wHitDamage:: dw ; what the last attack did to its target (not to a SUBSTITUTE): see HandleAutoCounter
 wPlayerTimesHit:: ds PARTY_LENGTH ; how many times each POKéMON was hit this battle (RAGE)
 wEnemyTimesHit:: ds PARTY_LENGTH

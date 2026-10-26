@@ -953,8 +953,8 @@ FlameWheelDescription:
 	next "cause a burn.@"
 
 SnoreDescription:
-	db   "An attack useable"
-	next "only while asleep.@"
+	db   "Attacks by itself"
+	next "while it's asleep.@"
 
 CurseDescription:
 	db   "Works differently"
@@ -1113,8 +1113,8 @@ MeanLookDescription:
 	next "or switching.@"
 
 AttractDescription:
-	db   "Makes the opposite"
-	next "gender infatuated.@"
+	db   "Makes the foe fall"
+	next "in love. Any sex.@"
 
 SleepTalkDescription:
 	db   "Randomly attacks"
@@ -1137,8 +1137,8 @@ FrustrationDescription:
 	next "at full power.@"
 
 SafeguardDescription:
-	db   "Prevents all"
-	next "status problems.@"
+	db   "Guards status as"
+	next "it comes in.@"
 
 PainSplitDescription:
 	db   "Adds user & foe's"

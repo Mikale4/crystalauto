@@ -282,6 +282,9 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 
+DEF STAT_LINE_LENGTH EQU 12 ; tiles, for DrawStatStages
+DEF MAX_STAT_STAGES_SHOWN EQU STAT_LINE_LENGTH / 4 ; ("AT+2")
+
 DEF MAX_SPIKES EQU 3 ; layers on a side (see BattleCommand_Spikes)
 
 DEF NOT_ACTED EQU -1 ; wLast*CounterMove during a turn, until the POKéMON uses a move

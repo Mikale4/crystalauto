@@ -257,6 +257,10 @@ AutoBattle_RateMove:
 	jr z, .cant_select
 	cp MIRROR_MOVE ; (after the foe's move)
 	jr z, .cant_select
+	cp SAFEGUARD ; (as the POKéMON comes in)
+	jr z, .cant_select
+	cp SNORE ; (while it's asleep)
+	jr z, .cant_select
 	ld [wCurPlayerMove], a
 	callfar UpdateMoveData
 

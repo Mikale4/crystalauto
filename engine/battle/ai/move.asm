@@ -42,8 +42,8 @@ AIChooseMove:
 	add hl, bc
 	ld [hl], 80
 
-; Don't pick moves with 0 PP, or COUNTER, MIRROR COAT, FUTURE SIGHT and MIRROR MOVE
-; (they work by themselves).
+; Don't pick moves with 0 PP, or COUNTER, MIRROR COAT, FUTURE SIGHT, MIRROR MOVE,
+; SAFEGUARD and SNORE (they work by themselves).
 .CheckPP:
 	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonPP
@@ -62,6 +62,10 @@ AIChooseMove:
 	cp FUTURE_SIGHT
 	jr z, .Unusable
 	cp MIRROR_MOVE
+	jr z, .Unusable
+	cp SAFEGUARD
+	jr z, .Unusable
+	cp SNORE
 	jr z, .Unusable
 	ld a, [de]
 	inc de

@@ -4592,6 +4592,7 @@ UpdatePlayerHUD::
 DrawPlayerHUD:
 	xor a
 	ldh [hBGMapMode], a
+	farcall DrawStatStages
 
 	; Clear the area
 	hlcoord 9, 7
@@ -4730,6 +4731,7 @@ UpdateEnemyHUD::
 DrawEnemyHUD:
 	xor a
 	ldh [hBGMapMode], a
+	farcall DrawStatStages
 
 	hlcoord 1, 0
 	lb bc, 4, 11
@@ -5773,7 +5775,8 @@ MoveInfoBox:
 MoveWorksByItself:
 ; Return z for a move that works by itself, so it can't be chosen: COUNTER and
 ; MIRROR COAT (see HandleAutoCounter), FUTURE SIGHT (see HandleEntryMoves),
-; MIRROR MOVE (see HandleAutoMirrorMove).
+; MIRROR MOVE (see HandleAutoMirrorMove), SAFEGUARD (as it comes in), SNORE (see
+; HandleAutoSnore).
 	cp COUNTER
 	ret z
 	cp MIRROR_COAT
@@ -5781,6 +5784,10 @@ MoveWorksByItself:
 	cp FUTURE_SIGHT
 	ret z
 	cp MIRROR_MOVE
+	ret z
+	cp SAFEGUARD
+	ret z
+	cp SNORE
 	ret
 
 CheckPlayerHasUsableMoves:

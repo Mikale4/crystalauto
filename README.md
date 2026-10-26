@@ -251,7 +251,7 @@ Some moves work in new ways of their own:
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
 | BEAT UP | one of them now: 25 power, 2 to 5 hits |
 | DREAM EATER | works on a foe that's awake too |
-| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -273,17 +273,21 @@ Some moves work in new ways of their own:
 | BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate (and they still trap the foe) |
 | DOUBLE KICK, BONEMERANG, TWINEEDLE | 50 power, for each of the two hits |
 | LOW KICK | as in the first games (50 power, 90% accurate, 30% to flinch), and twice the power when the target's DEFENSE is higher than the user's ATTACK |
+| ATTRACT | works whatever the genders |
+| SNORE | works by itself: at the end of each of its turns while it's asleep, the Pokémon SNOREs (1 PP); it can't be chosen |
 | SONICBOOM, SEISMIC TOSS, DRAGON RAGE, NIGHT SHADE | fixed damage, whatever the levels and stats, rolled as MAGNITUDE's power is: 20 (5%), 35 (10%), 50 (20%), 60 (30%), 70 (20%), 85 (10%) or 100 (5%). SONICBOOM is an ELECTRIC move now |
 | TRIPLE KICK | as TRIPLE AXEL: up to three kicks, of 20, 40 and 60 power, each one 90% accurate on its own; the first that misses ends it |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
-FUTURE SIGHT, SPIKES or LOCK-ON uses each of them as it comes in, at the start of its first
-turn out, before anything else happens. Each takes 1 PP (none is used without PP
-left), and it doesn't count as the Pokémon's move (QUICK CLAW and KING'S ROCK still
-wait for that). LOCK-ON goes last, so its aim is for the next attack. They can still
-be chosen as usual too, but FUTURE SIGHT: like COUNTER and MIRROR COAT, it works only
-by itself ("FUTURE SIGHT works by itself!"), and auto battle and the other side never
-choose it.
+FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP or LOCK-ON uses each of them as it comes in,
+at the start of its first turn out, before anything else happens. Each takes 1 PP
+(none is used without PP left), and it doesn't count as the Pokémon's move (QUICK
+CLAW and KING'S ROCK still wait for that). LOCK-ON goes last, so its aim is for the
+next attack. None is used when it would do nothing: FUTURE SIGHT while one is on its
+way, SPIKES with three layers down, SAFEGUARD while it's up, PSYCH UP when none of the
+foe's stats have gone up. They can still be chosen as usual too, but FUTURE SIGHT and
+SAFEGUARD: like COUNTER and MIRROR COAT, they work only by themselves ("FUTURE SIGHT
+works by itself!"), and auto battle and the other side never choose them.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -303,6 +307,13 @@ couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back by it
 with a move of its own. It doesn't take up moves that go on for turns (FLY, DIG,
 ROLLOUT, THRASH, BIDE), call another (METRONOME, SLEEP TALK) or work by themselves.
 Like COUNTER, it can't be chosen.
+
+### Stat changes on the battle screen
+
+The stat levels a Pokémon has raised or lowered are shown on the battle screen: the
+foe's under its HP box, yours (to the right) over your Pokémon, as `AT+2 AC-1`: AT
+ATTACK, DF DEFENSE, SP SPEED, SA SPCL.ATK, SD SPCL.DEF, AC ACCURACY, EV EVASION, and
+how many stages up (+) or down (-). Up to three show for each side.
 
 ### Critical hits
 
@@ -660,7 +671,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: e9b07217de2d47eb1b45f3dedb51af1a9d44e7b0`.
+The patched ROM has `sha1: fd9277271c6cbcbde106071c100be09a9b013cfe`.
 
 
 ## Building it
@@ -839,7 +850,10 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   with `wTurnActed`). TRIPLE KICK aims each kick after the first with
   `BattleCommand_CheckHit` (in `BattleCommand_EndLoop`), and LOW KICK's power is
   `GetLowKickPower`. The fixed damage of SONICBOOM and the like is
-  rolled from `FixedDamageRolls` (auto battle counts on `TYPICAL_FIXED_DAMAGE`).
+  rolled from `FixedDamageRolls` (auto battle counts on `TYPICAL_FIXED_DAMAGE`). SNORE is
+  `HandleAutoSnore` (after `AfterTurn`). The stat changes are drawn by
+  `DrawStatStages` (from `BattleTextbox` and the HUDs), with a `+` added to the font
+  (`$e4` in [`gfx/font/font.png`](gfx/font/font.png)).
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
   don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up

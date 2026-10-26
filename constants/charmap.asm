@@ -179,6 +179,7 @@
 	charmap "<PK>",      $e1
 	charmap "<MN>",      $e2
 	charmap "-",         $e3
+	charmap "+",         $e4 ; (added: stat changes on the battle screen)
 
 	charmap "?",         $e6
 	charmap "!",         $e7

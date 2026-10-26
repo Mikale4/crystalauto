@@ -572,9 +572,10 @@ HandleEntryTransform::
 	ret
 
 HandleEntryMoves:
-; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES and LOCK-ON work
-; as a POKéMON comes in: at the start of its first turn out, it uses each of them it
-; knows with PP left (taking their PP), before it does anything else.
+; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD,
+; PSYCH UP and LOCK-ON work as a POKéMON comes in: at the start of its first turn
+; out, it uses each of them it knows with PP left (taking their PP), before it
+; does anything else.
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -622,6 +623,10 @@ HandleEntryMoves:
 	ld a, b
 	cp SPIKES
 	jr z, .spikes
+	cp SAFEGUARD
+	jr z, .safeguard
+	cp PSYCH_UP
+	jr z, .psych_up
 	cp FUTURE_SIGHT
 	jr nz, .use
 ; (not while one is on its way)
@@ -639,6 +644,35 @@ HandleEntryMoves:
 	ret c
 	ld de, 0 ; (its own effect script)
 	farcall AutoMove_Run
+	ret
+
+.safeguard
+; (not when it's up already)
+	ld hl, wPlayerScreens
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_screens
+	ld hl, wEnemyScreens
+.got_screens
+	bit SCREENS_SAFEGUARD, [hl]
+	ret nz
+	jr .use
+
+.psych_up
+; (only when the foe has a stat that's gone up, to take up)
+	ld hl, wEnemyStatLevels
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_levels
+	ld hl, wPlayerStatLevels
+.got_levels
+	ld c, NUM_LEVEL_STATS
+.raised
+	ld a, [hli]
+	cp BASE_STAT_LEVEL + 1
+	jr nc, .use
+	dec c
+	jr nz, .raised
 	ret
 
 .spikes
@@ -663,6 +697,8 @@ EntryMoves:
 	db FORESIGHT
 	db FUTURE_SIGHT
 	db SPIKES
+	db SAFEGUARD
+	db PSYCH_UP
 	db LOCK_ON
 	db -1
 
@@ -799,11 +835,35 @@ AfterTurn:
 	cp NOT_ACTED
 	jr nz, .acted
 	ld [hl], b
-	jr HandleAutoCounter
+	call HandleAutoCounter
+	jr HandleAutoSnore
 
 .acted
 	call HandleAutoCounter
-	jp HandleAutoMirrorMove
+	call HandleAutoMirrorMove
+	; fallthrough
+
+HandleAutoSnore:
+; SNORE works by itself: at the end of each of its turns while it's asleep, a
+; POKéMON that knows SNORE (with PP left) uses it. Not if either has fainted.
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK
+	ret z
+	ld b, SNORE
+	farcall AutoMove_Setup
+	ret c
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
 
 HandleAutoCounter:
 ; COUNTER and MIRROR COAT work by themselves: right after an attack hit (the
@@ -1150,3 +1210,165 @@ MovedLastPower::
 .done
 	pop bc
 	ret
+
+DrawStatStages::
+; Each side's stat levels that aren't as they were (BASE_STAT_LEVEL), on the
+; battle screen: the foe's under its HP box, the player's over its POKéMON, as
+; "AT+2SP-1" (up to three each, in the order of wPlayerStatLevels).
+	ld a, [wBattleMode]
+	and a
+	ret z
+	push bc
+	push de
+	ld de, wEnemyStatLevels
+	hlcoord 0, 4
+	ld c, 1 << 0
+	call .Line
+	ld de, wPlayerStatLevels
+	hlcoord 0, 5
+	ld c, 1 << 1
+	call .Line
+	pop de
+	pop bc
+	ret
+
+.Line:
+; de: the stat levels; hl: the line (STAT_LINE_LENGTH tiles); c: its bit in
+; wStatStagesShown
+	push hl
+	push de
+	ld b, 0 ; (how many have changed)
+	ld l, NUM_LEVEL_STATS
+.count
+	ld a, [de]
+	inc de
+	cp BASE_STAT_LEVEL
+	jr z, .next_count
+	inc b
+.next_count
+	dec l
+	jr nz, .count
+	pop de
+	pop hl
+	ld a, b
+	and a
+	jr nz, .show
+; (none: clear the line if it's up)
+	ld a, [wStatStagesShown]
+	and c
+	ret z
+	ld a, c
+	cpl
+	ld b, a
+	ld a, [wStatStagesShown]
+	and b
+	ld [wStatStagesShown], a
+	jr .Clear
+
+.show
+	ld a, [wStatStagesShown]
+	or c
+	ld [wStatStagesShown], a
+	push bc
+	push hl
+	call .Clear
+	pop hl
+	pop bc
+; up to MAX_STAT_STAGES_SHOWN of them; with fewer, a space between them
+	ld a, b
+	cp MAX_STAT_STAGES_SHOWN + 1
+	jr c, .got_count
+	ld a, MAX_STAT_STAGES_SHOWN
+.got_count
+	ld [wStatStagesLeft], a
+	ld b, a
+	cp MAX_STAT_STAGES_SHOWN
+	ld a, 0
+	jr nc, .got_gap
+	inc a
+.got_gap
+	ld [wStatStagesGap], a
+; (the player's line is to the right, by its HP box)
+	bit 1, c
+	jr z, .got_start
+	push de
+	ld a, b
+	add a
+	add a
+	ld e, a ; ("AT+2" each)
+	ld a, [wStatStagesGap]
+	and a
+	jr z, .no_gaps
+	ld a, e
+	add b
+	dec a
+	ld e, a
+.no_gaps
+	ld a, STAT_LINE_LENGTH
+	sub e
+	ld e, a
+	ld d, 0
+	add hl, de
+	pop de
+.got_start
+	ld bc, StatStageCodes
+.stat
+	ld a, [de]
+	inc de
+	cp BASE_STAT_LEVEL
+	jr z, .next_stat
+	push af
+	ld a, [bc]
+	ld [hli], a
+	inc bc
+	ld a, [bc]
+	ld [hli], a
+	dec bc
+	pop af
+	sub BASE_STAT_LEVEL
+	jr nc, .up
+	cpl
+	inc a
+	ld [hl], "-"
+	jr .digit
+.up
+	ld [hl], "+"
+.digit
+	inc hl
+	add "0"
+	ld [hli], a
+	ld a, [wStatStagesLeft]
+	dec a
+	ret z
+	ld [wStatStagesLeft], a
+	ld a, [wStatStagesGap]
+	and a
+	jr z, .next_stat
+	inc hl
+.next_stat
+	inc bc
+	inc bc
+	ld a, c
+	cp LOW(StatStageCodes.End)
+	jr nz, .stat
+	ret
+
+.Clear:
+	ld b, STAT_LINE_LENGTH
+	ld a, " "
+.clear
+	ld [hli], a
+	dec b
+	jr nz, .clear
+	ret
+
+StatStageCodes:
+; in the order of wPlayerStatLevels
+	db "AT" ; ATTACK
+	db "DF" ; DEFENSE
+	db "SP" ; SPEED
+	db "SA" ; SPCL.ATK
+	db "SD" ; SPCL.DEF
+	db "AC" ; ACCURACY
+	db "EV" ; EVASION
+.End:
