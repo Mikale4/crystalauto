@@ -97,10 +97,21 @@ endc
 	ld [wCurMailAuthorID], a
 	ld a, [hli]
 	ld [wCurMailAuthorID + 1], a
-	ld a, [hli] ; species
-	ld [wCurPartySpecies], a
+	ld a, [hli] ; species (its index's low byte)
+	ld c, a
 	ld b, [hl] ; type
 	call CloseSRAM
+	push hl
+	ld h, 0
+	ld l, c
+	bit MAIL_TYPE_SPECIES_HIGH_F, b
+	jr z, .got_index
+	inc h
+	res MAIL_TYPE_SPECIES_HIGH_F, b
+.got_index
+	call GetPokemonIDFromIndex
+	ld [wCurPartySpecies], a
+	pop hl
 	ld hl, MailGFXPointers
 	ld c, 0
 .loop2

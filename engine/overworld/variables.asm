@@ -65,22 +65,31 @@ _GetVarAction::
 	dwb wBlueCardBalance,               RETVAR_ADDR_DE
 	dwb wBuenasPassword,                RETVAR_ADDR_DE
 	dwb wKenjiBreakTimer,               RETVAR_STRBUF2
+	dwb .CountUncaughtMons,             RETVAR_EXECUTE
 	dwb NULL,                           RETVAR_STRBUF2
 
 .CountCaughtMons:
 ; Caught mons.
-	ld hl, wPokedexCaught
-	ld b, wEndPokedexCaught - wPokedexCaught
-	call CountSetBits
-	ld a, [wNumSetBits]
+	call CountPokedexCaught ; (up to 255)
 	jp .loadstringbuffer2
 
 .CountSeenMons:
 ; Seen mons.
-	ld hl, wPokedexSeen
-	ld b, wEndPokedexSeen - wPokedexSeen
-	call CountSetBits
-	ld a, [wNumSetBits]
+	call CountPokedexSeen ; (up to 255)
+	jp .loadstringbuffer2
+
+.CountUncaughtMons:
+; Species not caught yet, up to 255.
+	call CountPokedexCaught
+	ld a, LOW(NUM_POKEMON)
+	sub e
+	ld e, a
+	ld a, HIGH(NUM_POKEMON)
+	sbc d
+	ld a, e
+	jr z, .got_uncaught
+	ld a, $ff
+.got_uncaught
 	jp .loadstringbuffer2
 
 .CountBadges:

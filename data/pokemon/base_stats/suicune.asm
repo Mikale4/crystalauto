@@ -1,4 +1,4 @@
-	db SUICUNE ; 245
+	db 0 ; #245 (the species ID: see GetBaseData)
 
 	db 100,  75, 115,  85,  90, 115
 	;   hp  atk  def  spd  sat  sdf

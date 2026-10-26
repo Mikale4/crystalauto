@@ -1,7 +1,6 @@
 MACRO rating
 ; count, sfx, text
-	db \1
-	dw \2, \3
+	dw \1, \2, \3
 ENDM
 
 OakRatings:
@@ -25,4 +24,4 @@ OakRatings:
 	rating 229, SFX_DEX_FANFARE_200_229,      OakRating16
 	rating 239, SFX_DEX_FANFARE_230_PLUS,     OakRating17
 	rating 248, SFX_DEX_FANFARE_230_PLUS,     OakRating18
-	rating 255, SFX_DEX_FANFARE_230_PLUS,     OakRating19
+	rating $ffff, SFX_DEX_FANFARE_230_PLUS,   OakRating19

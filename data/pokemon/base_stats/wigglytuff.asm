@@ -1,4 +1,4 @@
-	db WIGGLYTUFF ; 040
+	db 0 ; #040 (the species ID: see GetBaseData)
 
 	db 140,  70,  45,  45,  75,  50
 	;   hp  atk  def  spd  sat  sdf

@@ -51,17 +51,27 @@ endr
 	inc hl
 	inc hl
 	inc hl
+	inc hl
 	jr .loop
 .ok
 	inc hl
 
 	; Species 0 reads from a time-based encounter table.
 	ld a, [hli]
-	ld d, a
-	and a
+	ld e, a
+	ld a, [hli]
+	ld d, a ; (the species' index)
+	or e
 	call z, .TimeEncounter
 
-	ld e, [hl]
+	ld a, [hl]
+	push af
+	ld h, d
+	ld l, e
+	call GetPokemonIDFromIndex
+	ld d, a
+	pop af
+	ld e, a
 	ret
 
 .no_bite
@@ -73,7 +83,7 @@ endr
 	ld e, [hl]
 	ld d, 0
 	ld hl, TimeFishGroups
-rept 4
+rept 2 * 3 ; (two species and levels)
 	add hl, de
 endr
 
@@ -83,10 +93,13 @@ endr
 	jr c, .time_species
 	inc hl
 	inc hl
+	inc hl
 
 .time_species
-	ld d, [hl]
-	inc hl
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
 	ret
 
 GetFishGroupIndex:

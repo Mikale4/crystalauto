@@ -57,6 +57,13 @@ DEF MAIL_MSG_LENGTH       EQU 2 * MAIL_LINE_LENGTH
 DEF MAILBOX_CAPACITY      EQU 10
 DEF MAIL_STRUCT_LENGTH    EQU $2f ; mailmsg struct
 DEF MAIL_STRUCT_LENGTH_JP EQU $2a ; mailmsg_jp struct
+; a mail's species: its 16-bit index's low byte, and bit 8 in its type's bit 6
+; (mail items have it clear: see ComposeMailMessage, ReadAnyMail)
+DEF MAIL_TYPE_SPECIES_HIGH_F EQU 6
+; (the same for a Hall of Fame entry's species, in its level: see GetHallOfFameParty)
+DEF HOF_MON_LEVEL_SPECIES_HIGH_F EQU 7
+	assert MAX_LEVEL < 1 << HOF_MON_LEVEL_SPECIES_HIGH_F
+	assert (FLOWER_MAIL | MIRAGE_MAIL | ITEM_BE) & (1 << MAIL_TYPE_SPECIES_HIGH_F) == 0
 
 ; mail languages
 	const_def

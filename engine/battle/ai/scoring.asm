@@ -1129,10 +1129,9 @@ AI_Smart_SpDefenseUp2:
 	push hl
 ; the player's Pokémon's base Attack
 	ld a, [wBattleMonSpecies]
-	dec a
 	ld hl, BaseData + BASE_ATK
 	ld bc, BASE_DATA_SIZE
-	call AddNTimes
+	call GetSpeciesTableEntry
 	ld a, BANK(BaseData)
 	call GetFarByte
 	ld d, a

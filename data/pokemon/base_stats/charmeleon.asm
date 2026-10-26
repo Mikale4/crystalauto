@@ -1,4 +1,4 @@
-	db CHARMELEON ; 005
+	db 0 ; #005 (the species ID: see GetBaseData)
 
 	db  58,  64,  58,  80,  80,  65
 	;   hp  atk  def  spd  sat  sdf

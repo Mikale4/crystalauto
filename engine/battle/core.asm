@@ -741,9 +741,8 @@ TryEnemyFlee:
 	jr nz, .Stay
 
 	ld a, [wTempEnemyMonSpecies]
-	ld de, 1
 	ld hl, AlwaysFleeMons
-	call IsInArray
+	call CheckMonInList
 	jr c, .Flee
 
 	call BattleRandom
@@ -753,9 +752,8 @@ TryEnemyFlee:
 
 	push bc
 	ld a, [wTempEnemyMonSpecies]
-	ld de, 1
 	ld hl, OftenFleeMons
-	call IsInArray
+	call CheckMonInList
 	pop bc
 	jr c, .Flee
 
@@ -764,9 +762,8 @@ TryEnemyFlee:
 	jr nc, .Stay
 
 	ld a, [wTempEnemyMonSpecies]
-	ld de, 1
 	ld hl, SometimesFleeMons
-	call IsInArray
+	call CheckMonInList
 	jr c, .Flee
 
 .Stay:
@@ -3312,10 +3309,9 @@ IsThePlayerMonTypesEffectiveAgainstOTMon:
 	ld b, 0
 	add hl, bc
 	ld a, [hl]
-	dec a
 	ld hl, BaseData + BASE_TYPES
 	ld bc, BASE_DATA_SIZE
-	call AddNTimes
+	call GetSpeciesTableEntry
 	ld de, wEnemyMonType
 	ld bc, BASE_CATCH_RATE - BASE_TYPES
 	ld a, BANK(BaseData)
@@ -3433,7 +3429,7 @@ LoadEnemyMonToSwitchTo:
 	call LoadEnemyMon
 
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .skip_unown
 	ld a, [wFirstUnownSeen]
 	and a
@@ -6169,7 +6165,7 @@ LoadEnemyMon:
 
 ; Unown
 	ld a, [wTempEnemyMonSpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .Magikarp
 
 ; Get letter based on DVs
@@ -6190,7 +6186,7 @@ LoadEnemyMon:
 ; After the conversion to feet, it is unable to target any,
 ; since the largest possible Magikarp is 5'3", and $0503 = 1283 mm.
 	ld a, [wTempEnemyMonSpecies]
-	cp MAGIKARP
+	cpmon MAGIKARP
 	jr nz, .Happiness
 
 ; Get Magikarp's length
@@ -6427,11 +6423,7 @@ LoadEnemyMon:
 
 ; Saw this mon
 	ld a, [wTempEnemyMonSpecies]
-	dec a
-	ld c, a
-	ld b, SET_FLAG
-	ld hl, wPokedexSeen
-	predef SmallFarFlagAction
+	call SetSeenMon
 
 	ld hl, wEnemyMonStats
 	ld de, wEnemyStats
@@ -6461,8 +6453,7 @@ CheckSleepingTreeMon:
 
 .Check:
 	ld a, [wTempEnemyMonSpecies]
-	ld de, 1 ; length of species id
-	call IsInArray
+	call CheckMonInList
 ; If it's a match, the opponent is asleep
 	ret c
 
@@ -8234,7 +8225,7 @@ InitEnemyWildmon:
 	ld hl, wEnemyMonDVs
 	predef GetUnownLetter
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .skip_unown
 	ld a, [wFirstUnownSeen]
 	and a

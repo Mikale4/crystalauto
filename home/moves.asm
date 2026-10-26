@@ -1,6 +1,7 @@
 
-; Moves' data, and the 8-bit IDs their 16-bit indexes have, are in "Move Data"
-; (see engine/16/move_table.asm): these reach them from any bank.
+; Moves' data, and the 8-bit IDs moves' and species' 16-bit indexes have, are in
+; "Move Data" (see engine/16/move_table.asm and engine/16/mon_table.asm): these
+; reach them from any bank.
 
 GetMoveIndexFromID::
 ; in: a = 8-bit move ID; out: hl = its 16-bit index; preserves bc, de
@@ -12,6 +13,24 @@ GetMoveIDFromIndex::
 ; in: hl = 16-bit move index; out: a = its 8-bit ID (given it one if it had none); preserves bc, de
 	push de
 	ld de, _GetMoveIDFromIndex
+	jr MoveDataCallPopDE
+
+GetPokemonIndexFromID::
+; in: a = 8-bit species ID; out: hl = its 16-bit index; preserves bc, de
+	push de
+	ld de, _GetPokemonIndexFromID
+	jr MoveDataCallPopDE
+
+GetPokemonIDFromIndex::
+; in: hl = 16-bit species index; out: a = its 8-bit ID (given it one if it had none); preserves bc, de
+	push de
+	ld de, _GetPokemonIDFromIndex
+	jr MoveDataCallPopDE
+
+LockPokemonID::
+; in: h = species ID (0 to clear), l = position (LOCKED_MON_ID_*)
+	push de
+	ld de, _LockPokemonID
 	jr MoveDataCallPopDE
 
 GetMoveAttribute::
@@ -69,6 +88,15 @@ MoveDataCall:
 	push de
 	ret
 
+IsMon::
+; z if species ID a is the species whose index is the dw after the call (which it
+; returns past: see the cpmon macro); preserves a, bc, de, hl
+	push hl
+	push de
+	push af
+	call GetPokemonIndexFromID
+	jr IsIndex
+
 IsMove::
 ; z if move ID a is the move whose index is the dw after the call (which it
 ; returns past: see the cpmove macro); preserves a, bc, de, hl
@@ -76,6 +104,7 @@ IsMove::
 	push de
 	push af
 	call GetMoveIndexFromID
+IsIndex:
 	ld d, h
 	ld e, l
 	ld hl, sp + 6 ; the return address: the index to compare
@@ -108,6 +137,16 @@ IsMove::
 	pop hl
 	ret
 
+CheckMonInList::
+; carry if species ID a's index is in list hl (dw, ending in -1); preserves a, bc, de, hl
+	push hl
+	push bc
+	push de
+	push af
+	push hl
+	call GetPokemonIndexFromID
+	jr CheckIndexInList
+
 CheckMoveInList::
 ; carry if move ID a's index is in list hl (dw, ending in -1); preserves a, bc, de, hl
 	push hl
@@ -116,6 +155,7 @@ CheckMoveInList::
 	push af
 	push hl
 	call GetMoveIndexFromID
+CheckIndexInList:
 	ld d, h
 	ld e, l
 	pop hl

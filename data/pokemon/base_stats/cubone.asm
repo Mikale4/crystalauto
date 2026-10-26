@@ -1,4 +1,4 @@
-	db CUBONE ; 104
+	db 0 ; #104 (the species ID: see GetBaseData)
 
 	db  50,  50,  95,  35,  40,  50
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db WEEDLE ; 013
+	db 0 ; #013 (the species ID: see GetBaseData)
 
 	db  40,  35,  30,  50,  20,  20
 	;   hp  atk  def  spd  sat  sdf

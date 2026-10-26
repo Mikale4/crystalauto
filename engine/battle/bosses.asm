@@ -16,26 +16,25 @@ DEF BOSS_TRAINER_CLASS EQU POKEMANIAC
 DEF NUM_BOSS_ALLIES EQU 5
 
 BossTeams:
-; the boss, then its allies (each evolves as far as its level allows)
-	db SUDOWOODO, GEODUDE,   ONIX,      BELLSPROUT, HOPPIP,    PINECO     ; rocks and trees
-	db LAPRAS,    SHELLDER,  SEEL,      WOOPER,     ZUBAT,     SLOWPOKE   ; UNION CAVE's waters
-	db GYARADOS,  MAGIKARP,  WOOPER,    POLIWAG,    TENTACOOL, GOLDEEN    ; the LAKE OF RAGE
-	db ELECTRODE, VOLTORB,   MAGNEMITE, PIKACHU,    ZUBAT,     KOFFING    ; the hideout's generator
-	db SNORLAX,   SLOWBRO,   WIGGLYTUFF, LICKITUNG, HYPNO,     KANGASKHAN ; (PalletToPewter's)
-	db SUICUNE,   STARYU,    SEEL,      WOOPER,     HORSEA,    SMOOCHUM   ; the north wind
-	db RAIKOU,    ELEKID,    JOLTEON,   CHINCHOU,   MAREEP,    HOPPIP     ; thunder
-	db ENTEI,     GROWLITHE, MAGBY,     HOUNDOUR,   VULPIX,    EXEGGCUTE  ; the volcano
-	db LUGIA,     HORSEA,    CHINCHOU,  MANTINE,    SLOWPOKE,  SKARMORY   ; the sea's guardian
-	db HO_OH,     FLAREON,   VAPOREON,  JOLTEON,    ESPEON,    UMBREON    ; the KIMONO GIRLS' EEVEE
-	db CELEBI,    PINECO,    ODDISH,    FARFETCH_D, HERACROSS, HOOTHOOT   ; ILEX FOREST
-	db -1
+; the boss, then its allies (each evolves as far as its level allows; 16-bit indexes)
+	dw SUDOWOODO, GEODUDE,   ONIX,      BELLSPROUT, HOPPIP,    PINECO     ; rocks and trees
+	dw LAPRAS,    SHELLDER,  SEEL,      WOOPER,     ZUBAT,     SLOWPOKE   ; UNION CAVE's waters
+	dw GYARADOS,  MAGIKARP,  WOOPER,    POLIWAG,    TENTACOOL, GOLDEEN    ; the LAKE OF RAGE
+	dw ELECTRODE, VOLTORB,   MAGNEMITE, PIKACHU,    ZUBAT,     KOFFING    ; the hideout's generator
+	dw SNORLAX,   SLOWBRO,   WIGGLYTUFF, LICKITUNG, HYPNO,     KANGASKHAN ; (PalletToPewter's)
+	dw SUICUNE,   STARYU,    SEEL,      WOOPER,     HORSEA,    SMOOCHUM   ; the north wind
+	dw RAIKOU,    ELEKID,    JOLTEON,   CHINCHOU,   MAREEP,    HOPPIP     ; thunder
+	dw ENTEI,     GROWLITHE, MAGBY,     HOUNDOUR,   VULPIX,    EXEGGCUTE  ; the volcano
+	dw LUGIA,     HORSEA,    CHINCHOU,  MANTINE,    SLOWPOKE,  SKARMORY   ; the sea's guardian
+	dw HO_OH,     FLAREON,   VAPOREON,  JOLTEON,    ESPEON,    UMBREON    ; the KIMONO GIRLS' EEVEE
+	dw CELEBI,    PINECO,    ODDISH,    FARFETCH_D, HERACROSS, HOOTHOOT   ; ILEX FOREST
+	dw -1
 
 FindBossTeam:
 ; Return carry and hl at the team of boss a.
 	ld hl, BossTeams
-	ld de, 1 + NUM_BOSS_ALLIES
-	call IsInArray
-	ret
+	ld de, 2 * (1 + NUM_BOSS_ALLIES)
+	jp FindSpeciesInArray
 
 BeginBossBattle::
 ; Before the enemy is set up: is this a scripted wild battle with a boss?
@@ -107,21 +106,30 @@ LoadBossParty::
 	ld a, [wBossBattle]
 	call FindBossTeam
 	inc hl
+	inc hl
 	ld c, 0
 .ally_loop
 	push bc
 	push hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
+	push af
 	ld a, [wBossBattle]
+	call GetPokemonIndexFromID
+	ld a, l ; (the boss's index)
 	add c
 	swap a
 	add c
 	ld e, a ; which way it evolves
-	ld a, [hl]
+	pop af
 	call FitEvolution
 	ld [wCurPartySpecies], a
 	call .AddMon
 	pop hl
 	pop bc
+	inc hl
 	inc hl
 	inc c
 	ld a, c
@@ -355,7 +363,7 @@ BossJoins::
 	ld a, [wEnemyMonLevel]
 	ld [wCurPartyLevel], a
 	ld a, [wBossBattle]
-	cp CELEBI
+	cpmon CELEBI
 	jr nz, .not_celebi
 	ld hl, wBattleResult
 	set BATTLERESULT_CAUGHT_CELEBI, [hl]
@@ -363,12 +371,10 @@ BossJoins::
 
 ; the POKéDEX
 	ld a, [wBossBattle]
-	dec a
 	call CheckCaughtMon
 	ld a, c
 	push af
 	ld a, [wBossBattle]
-	dec a
 	call SetSeenAndCaughtMon
 	pop af
 	and a
@@ -548,8 +554,8 @@ BossSentToPCText:
 CheckBeastsWillBattle::
 ; RAIKOU and ENTEI won't battle until SUICUNE has joined the player
 ; (see maps/BurnedTowerB1F.asm).
-	ld a, SUICUNE - 1
-	call CheckCaughtMon
+	ld de, SUICUNE
+	call CheckCaughtMonIndex
 	ld a, c
 	and a
 	jr z, .done

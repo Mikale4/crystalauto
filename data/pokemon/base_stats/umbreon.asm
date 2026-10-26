@@ -1,4 +1,4 @@
-	db UMBREON ; 197
+	db 0 ; #197 (the species ID: see GetBaseData)
 
 	db  95,  65, 110,  65,  60, 130
 	;   hp  atk  def  spd  sat  sdf

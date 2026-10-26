@@ -1,4 +1,4 @@
-	db MEW ; 151
+	db 0 ; #151 (the species ID: see GetBaseData)
 
 	db 100, 100, 100, 100, 100, 100
 	;   hp  atk  def  spd  sat  sdf

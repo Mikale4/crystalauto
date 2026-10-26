@@ -1,4 +1,4 @@
-	db BUTTERFREE ; 012
+	db 0 ; #012 (the species ID: see GetBaseData)
 
 	db  60,  45,  50,  70,  80,  80
 	;   hp  atk  def  spd  sat  sdf

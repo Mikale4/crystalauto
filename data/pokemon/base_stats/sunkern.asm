@@ -1,4 +1,4 @@
-	db SUNKERN ; 191
+	db 0 ; #191 (the species ID: see GetBaseData)
 
 	db  30,  30,  30,  30,  30,  30
 	;   hp  atk  def  spd  sat  sdf

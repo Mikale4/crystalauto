@@ -1,4 +1,4 @@
-	db ZUBAT ; 041
+	db 0 ; #041 (the species ID: see GetBaseData)
 
 	db  40,  45,  35,  55,  30,  40
 	;   hp  atk  def  spd  sat  sdf

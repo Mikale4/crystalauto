@@ -1,4 +1,4 @@
-	db MEWTWO ; 150
+	db 0 ; #150 (the species ID: see GetBaseData)
 
 	db 106, 110,  90, 130, 154,  90
 	;   hp  atk  def  spd  sat  sdf

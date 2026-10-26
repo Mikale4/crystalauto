@@ -1,4 +1,4 @@
-	db VENUSAUR ; 003
+	db 0 ; #003 (the species ID: see GetBaseData)
 
 	db  80,  82,  83,  80, 100, 100
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db FEAROW ; 022
+	db 0 ; #022 (the species ID: see GetBaseData)
 
 	db  65,  90,  65, 100,  61,  61
 	;   hp  atk  def  spd  sat  sdf

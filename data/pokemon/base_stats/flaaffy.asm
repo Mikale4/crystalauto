@@ -1,4 +1,4 @@
-	db FLAAFFY ; 180
+	db 0 ; #180 (the species ID: see GetBaseData)
 
 	db  70,  55,  55,  45,  80,  60
 	;   hp  atk  def  spd  sat  sdf

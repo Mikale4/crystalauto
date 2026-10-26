@@ -1,4 +1,4 @@
-	db VULPIX ; 037
+	db 0 ; #037 (the species ID: see GetBaseData)
 
 	db  38,  41,  40,  65,  50,  65
 	;   hp  atk  def  spd  sat  sdf

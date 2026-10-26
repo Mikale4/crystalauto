@@ -1,4 +1,4 @@
-	db JYNX ; 124
+	db 0 ; #124 (the species ID: see GetBaseData)
 
 	db  65,  50,  35,  95, 115,  95
 	;   hp  atk  def  spd  sat  sdf

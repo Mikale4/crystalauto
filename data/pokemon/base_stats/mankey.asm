@@ -1,4 +1,4 @@
-	db MANKEY ; 056
+	db 0 ; #056 (the species ID: see GetBaseData)
 
 	db  40,  80,  35,  70,  35,  45
 	;   hp  atk  def  spd  sat  sdf

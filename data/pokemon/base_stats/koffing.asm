@@ -1,4 +1,4 @@
-	db KOFFING ; 109
+	db 0 ; #109 (the species ID: see GetBaseData)
 
 	db  40,  65,  95,  35,  60,  45
 	;   hp  atk  def  spd  sat  sdf

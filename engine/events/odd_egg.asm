@@ -41,10 +41,19 @@ _GiveOddEgg:
 	ld a, ODD_EGG_LENGTH
 	call AddNTimes
 
-	; Writes to wOddEgg and wOddEggName (the data has its moves' 16-bit
-	; indexes: the struct, their IDs)
+	; Writes to wOddEgg and wOddEggName (the data has its species' and moves'
+	; 16-bit indexes: the struct, their IDs)
 	ld de, wOddEgg
-	ld bc, MON_MOVES
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
+	pop hl
+	inc hl
+	ld [de], a
+	inc de
+	ld bc, MON_MOVES - MON_ITEM
 	call CopyBytes
 	ld b, NUM_MOVES
 .moves

@@ -1,4 +1,4 @@
-	db MANTINE ; 226
+	db 0 ; #226 (the species ID: see GetBaseData)
 
 	db  65,  40,  70,  70,  80, 140
 	;   hp  atk  def  spd  sat  sdf

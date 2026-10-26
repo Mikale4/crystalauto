@@ -1,4 +1,4 @@
-	db PARAS ; 046
+	db 0 ; #046 (the species ID: see GetBaseData)
 
 	db  35,  70,  55,  25,  45,  55
 	;   hp  atk  def  spd  sat  sdf

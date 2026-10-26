@@ -1,4 +1,4 @@
-	db GRIMER ; 088
+	db 0 ; #088 (the species ID: see GetBaseData)
 
 	db  80,  80,  50,  25,  40,  50
 	;   hp  atk  def  spd  sat  sdf

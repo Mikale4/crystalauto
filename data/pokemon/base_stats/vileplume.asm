@@ -1,4 +1,4 @@
-	db VILEPLUME ; 045
+	db 0 ; #045 (the species ID: see GetBaseData)
 
 	db  75,  80,  85,  50, 100,  90
 	;   hp  atk  def  spd  sat  sdf

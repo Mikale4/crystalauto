@@ -1,4 +1,4 @@
-	db HITMONTOP ; 237
+	db 0 ; #237 (the species ID: see GetBaseData)
 
 	db  50,  95,  95,  70,  35, 110
 	;   hp  atk  def  spd  sat  sdf

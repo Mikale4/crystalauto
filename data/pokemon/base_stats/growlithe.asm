@@ -1,4 +1,4 @@
-	db GROWLITHE ; 058
+	db 0 ; #058 (the species ID: see GetBaseData)
 
 	db  55,  70,  45,  60,  70,  50
 	;   hp  atk  def  spd  sat  sdf

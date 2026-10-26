@@ -131,11 +131,11 @@ wUnusedScriptByte:: db
 
 wMapTimeOfDay:: db
 
-	ds 3
+	ds 2
 
 wPrinterConnectionOpen:: db
 wPrinterOpcode:: db
-wPrevDexEntry:: db
+wPrevDexEntry:: dw ; (a species' 16-bit index)
 wDisableTextAcceleration:: db
 wPrevLandmark:: db
 wCurLandmark:: db
@@ -771,16 +771,15 @@ ENDU
 UNION
 ; pokedex
 wPokedexDataStart::
-wPokedexOrder:: ds $100 ; >= NUM_POKEMON
-wPokedexOrderEnd::
-wDexListingScrollOffset:: db ; offset of the first displayed entry from the start
+; (wPokedexOrder is in WRAMX: see "Mobile RAM")
+wDexListingScrollOffset:: dw ; offset of the first displayed entry from the start
 wDexListingCursor:: db ; Dex cursor
-wDexListingEnd:: db ; Last mon to display
+wDexListingEnd:: dw ; Last mon to display
 wDexListingHeight:: db ; number of entries displayed at once in the dex listing
 wCurDexMode:: db ; Pokedex Mode
 wDexSearchMonType1:: db ; first type to search
 wDexSearchMonType2:: db ; second type to search
-wDexSearchResultCount:: db
+wDexSearchResultCount:: dw
 wDexArrowCursorPosIndex:: db
 wDexArrowCursorDelayCounter:: db
 wDexArrowCursorBlinkCounter:: db
@@ -789,19 +788,19 @@ wUnlockedUnownMode:: db
 wDexCurUnownIndex:: db
 wDexUnownCount:: db
 wDexConvertedMonType:: db ; mon type converted from dex search mon type
-wDexListingScrollOffsetBackup:: db
+wDexListingScrollOffsetBackup:: dw
 wDexListingCursorBackup:: db
 wBackupDexListingCursor:: db
-wBackupDexListingPage:: db
+wBackupDexListingPage:: dw
 wDexCurLocation:: db
-if DEF(_CRYSTAL11)
 wPokedexStatus:: db
+wPokedexDisplayNumber:: dw
+wDexTempCounter:: dw
 wPokedexDataEnd::
-else
-wPokedexDataEnd::
-	ds 1
-endc
-	ds 2
+
+wPrevDexEntryBackup:: dw
+wPrevDexEntryJumptableIndex:: db
+wPokedexNameBuffer:: ds MON_NAME_LENGTH
 
 NEXTU
 ; pokegear
@@ -1707,19 +1706,6 @@ wCreditsBorderMon:: db
 wCreditsLYOverride:: db
 
 NEXTU
-; pokedex
-wPrevDexEntryJumptableIndex:: db
-if DEF(_CRYSTAL11)
-wPrevDexEntryBackup:: db
-else
-; BUG: Crystal 1.0 reused the same byte in WRAM for
-; wPokedexStatus and wPrevDexEntryBackup.
-wPokedexStatus::
-wPrevDexEntryBackup:: db
-endc
-wUnusedPokedexByte:: db
-
-NEXTU
 ; pokegear
 wPokegearCard:: db
 wPokegearMapRegion:: db
@@ -2252,8 +2238,8 @@ ENDU
 SECTION UNION "Miscellaneous WRAM 1", WRAMX
 
 ; prof. oak's pc
-wTempPokedexSeenCount:: db
-wTempPokedexCaughtCount:: db
+wTempPokedexSeenCount:: dw ; (big-endian)
+wTempPokedexCaughtCount:: dw ; (big-endian)
 
 
 SECTION UNION "Miscellaneous WRAM 1", WRAMX
@@ -2920,7 +2906,7 @@ wCurBaseDataEnd::
 
 wCurDamage:: dw
 
-	ds 2
+wPokedexNumberBuffer:: ds 2 ; (a count or a dex number, big-endian, for PrintNum)
 
 wMornEncounterRate::  db
 wDayEncounterRate::   db
@@ -3584,12 +3570,18 @@ wPartyMon{d:n}Nickname:: ds MON_NAME_LENGTH
 endr
 wPartyMonNicknamesEnd::
 
-	ds 22
+; the Pokédex flags of the species past the first 256 (formerly unused bytes, so
+; a save keeps its layout): see SetSeenMon and the like
+wPokedexCaughtExt:: ds NUM_POKEDEX_EXT_BYTES
+wPokedexCaughtExtEnd::
+wPokedexSeenExt:: ds NUM_POKEDEX_EXT_BYTES
+wPokedexSeenExtEnd::
+	assert NUM_POKEMON <= 256 + 8 * NUM_POKEDEX_EXT_BYTES, "too many species for the Pokédex flags"
 
-wPokedexCaught:: flag_array NUM_POKEMON
+wPokedexCaught:: flag_array 256 ; (indexes 1 to 256: the save's layout)
 wEndPokedexCaught::
 
-wPokedexSeen:: flag_array NUM_POKEMON
+wPokedexSeen:: flag_array 256
 wEndPokedexSeen::
 
 wUnownDex:: ds NUM_UNOWN
@@ -3770,6 +3762,29 @@ wMoveGCGroups:: db
 wMoveGCGroupLength:: db
 wMoveGCSkip:: db
 wMoveGCCount:: db
+
+
+SECTION "16-bit WRAM species table", WRAMX
+
+; the 8-bit species IDs' 16-bit indexes (see engine/16/mon_table.asm); aligned to
+; $100 (see layout.link)
+	wram_conversion_table wPokemonIndexTable, MON_TABLE
+
+
+SECTION "16-bit WRAM species work", WRAMX
+
+; (the same bank as wPokemonIndexTable; aligned to $20: see layout.link)
+wMonConversionBitmap:: ds $20 ; the IDs in use (see MonTableGarbageCollection)
+wMonTableReady:: db ; wPokemonIndexTable is this game's (see InitMonTable): it's copied to SRAM as it changes
+wMonTableChanged:: db ; set when garbage collection runs
+; MonTableGarbageCollection's working space (see MonIDPlaces)
+wMonGCBank:: db
+wMonGCGroups:: db
+wMonGCGroupLength:: db
+wMonGCSkip:: db
+wMonGCCount:: db
+wBoxIndexBuffer:: ds 2 * MONS_PER_BOX ; a box's index array, on its way (see SaveBoxSpeciesIndexes)
+wMonProtectedBox:: db ; the box (1 to NUM_BOXES, or 0) whose species bytes are kept valid (see RefreshBoxSpecies)
 
 
 SECTION "Battle Tower RAM", WRAMX
@@ -3957,6 +3972,7 @@ ENDU
 
 SECTION "Mobile RAM", WRAMX
 
+UNION
 w5_d800:: ds $200
 w5_da00:: ds $200
 w5_dc00:: ds $d
@@ -3966,6 +3982,12 @@ w5_MobileOpponentBattleMessages:: ds $c
 w5_MobileOpponentBattleStartMessage:: ds $c
 w5_MobileOpponentBattleWinMessage:: ds $c
 w5_MobileOpponentBattleLossMessage:: ds $c
+
+NEXTU
+; pokedex (the species' 16-bit indexes; see engine/pokedex/pokedex.asm)
+wPokedexOrder:: ds 2 * (NUM_POKEMON + 1)
+wPokedexOrderEnd::
+ENDU
 
 
 SECTION "Scratch RAM", WRAMX

@@ -16,6 +16,8 @@
 
 INCLUDE "engine/16/macros.asm"
 
+REDEF ___conv_bitmap EQUS "wConversionTableBitmap"
+
 DEF MOVE_TABLE_MAGIC_LENGTH EQU 3
 
 _GetMoveIndexFromID::

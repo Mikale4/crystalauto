@@ -1,4 +1,4 @@
-	db QUILAVA ; 156
+	db 0 ; #156 (the species ID: see GetBaseData)
 
 	db  58,  64,  58,  80,  80,  65
 	;   hp  atk  def  spd  sat  sdf

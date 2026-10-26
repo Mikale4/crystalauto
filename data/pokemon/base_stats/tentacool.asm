@@ -1,4 +1,4 @@
-	db TENTACOOL ; 072
+	db 0 ; #072 (the species ID: see GetBaseData)
 
 	db  40,  40,  35,  70,  50, 100
 	;   hp  atk  def  spd  sat  sdf

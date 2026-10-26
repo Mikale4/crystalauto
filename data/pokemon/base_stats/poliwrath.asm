@@ -1,4 +1,4 @@
-	db POLIWRATH ; 062
+	db 0 ; #062 (the species ID: see GetBaseData)
 
 	db  90,  85,  95,  70,  70,  90
 	;   hp  atk  def  spd  sat  sdf

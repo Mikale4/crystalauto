@@ -1,4 +1,4 @@
-	db SNORLAX ; 143
+	db 0 ; #143 (the species ID: see GetBaseData)
 
 	db 160, 110,  65,  30,  65, 110
 	;   hp  atk  def  spd  sat  sdf

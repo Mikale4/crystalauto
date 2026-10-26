@@ -1,4 +1,4 @@
-	db BLASTOISE ; 009
+	db 0 ; #009 (the species ID: see GetBaseData)
 
 	db  79,  83, 100,  78,  85, 105
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db OCTILLERY ; 224
+	db 0 ; #224 (the species ID: see GetBaseData)
 
 	db  75, 105,  75,  45, 105,  75
 	;   hp  atk  def  spd  sat  sdf

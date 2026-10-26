@@ -197,7 +197,10 @@ FillExtremeTeam:
 	ld [wXPoolStart + 1], a
 	ld c, 0
 .count
+; (16-bit indexes, ending in -1)
 	ld a, [hli]
+	and [hl]
+	inc hl
 	inc a
 	jr z, .counted
 	inc c
@@ -246,7 +249,11 @@ FillExtremeTeam:
 	ld e, a
 	ld d, 0
 	add hl, de
-	ld a, [hl]
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
 	ld [wXPoolMon], a
 	ld a, [wXPoolIndex]
 	inc a
@@ -449,20 +456,8 @@ ForEachCandidateMove:
 
 .learnable
 	ld a, [wCurPartySpecies]
-	call GetEvosPointer
-.skip_evos
-	ld a, BANK(EvosAttacksPointers)
-	call GetFarByte
-	inc hl
-	and a
-	jr z, .learnset
-	cp EVOLVE_STAT
-	jr nz, .evo_3
-	inc hl
-.evo_3
-	inc hl
-	inc hl
-	jr .skip_evos
+	ld b, a
+	farcall GetLearnsetPointer
 
 .learnset
 ; (level, then the move's 16-bit index)

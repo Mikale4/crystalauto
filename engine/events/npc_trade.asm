@@ -21,9 +21,10 @@ NPCTrade::
 	jr c, .done
 
 	ld e, NPCTRADE_GIVEMON
-	call GetTradeAttr
+	call GetTradeMonSpecies
+	ld b, a
 	ld a, [wCurPartySpecies]
-	cp [hl]
+	cp b
 	ld a, TRADE_DIALOG_WRONG
 	jr nz, .done
 
@@ -113,13 +114,11 @@ Trade_GetDialog:
 
 DoNPCTrade:
 	ld e, NPCTRADE_GIVEMON
-	call GetTradeAttr
-	ld a, [hl]
+	call GetTradeMonSpecies
 	ld [wPlayerTrademonSpecies], a
 
 	ld e, NPCTRADE_GETMON
-	call GetTradeAttr
-	ld a, [hl]
+	call GetTradeMonSpecies
 	ld [wOTTrademonSpecies], a
 
 	ld a, [wPlayerTrademonSpecies]
@@ -275,17 +274,24 @@ DoNPCTrade:
 GetTradeAttr:
 	ld d, 0
 	push de
+	push bc
 	ld a, [wJumptableIndex]
 	and $f
-	swap a
-	ld e, a
-	ld d, 0
 	ld hl, NPCTrades
-	add hl, de
-	add hl, de
+	ld bc, NPCTRADE_STRUCT_LENGTH
+	call AddNTimes
+	pop bc
 	pop de
 	add hl, de
 	ret
+
+GetTradeMonSpecies:
+; a: the ID of the species (its 16-bit index) at trade attribute e
+	call GetTradeAttr
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	jp GetPokemonIDFromIndex
 
 Trade_GetAttributeOfCurrentPartymon:
 	ld a, [wCurPartyMon]
@@ -345,16 +351,14 @@ Trade_CopyTwoBytesReverseEndian:
 
 GetTradeMonNames:
 	ld e, NPCTRADE_GETMON
-	call GetTradeAttr
-	ld a, [hl]
+	call GetTradeMonSpecies
 	call GetTradeMonName
 
 	ld de, wStringBuffer2
 	call CopyTradeName
 
 	ld e, NPCTRADE_GIVEMON
-	call GetTradeAttr
-	ld a, [hl]
+	call GetTradeMonSpecies
 	call GetTradeMonName
 
 	ld de, wMonOrItemNameBuffer

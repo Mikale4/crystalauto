@@ -99,8 +99,7 @@ TrainerType1:
 	ret z
 
 	ld [wCurPartyLevel], a
-	ld a, [hli]
-	ld [wCurPartySpecies], a
+	call ReadTrainerPartySpecies
 	ld a, OTPARTYMON
 	ld [wMonType], a
 	push hl
@@ -118,8 +117,7 @@ TrainerType2:
 	ret z
 
 	ld [wCurPartyLevel], a
-	ld a, [hli]
-	ld [wCurPartySpecies], a
+	call ReadTrainerPartySpecies
 	ld a, OTPARTYMON
 	ld [wMonType], a
 
@@ -199,8 +197,7 @@ TrainerType3:
 	ret z
 
 	ld [wCurPartyLevel], a
-	ld a, [hli]
-	ld [wCurPartySpecies], a
+	call ReadTrainerPartySpecies
 	ld a, OTPARTYMON
 	ld [wMonType], a
 	push hl
@@ -227,8 +224,7 @@ TrainerType4:
 	ret z
 
 	ld [wCurPartyLevel], a
-	ld a, [hli]
-	ld [wCurPartySpecies], a
+	call ReadTrainerPartySpecies
 
 	ld a, OTPARTYMON
 	ld [wMonType], a
@@ -312,6 +308,18 @@ TrainerType4:
 
 	pop hl
 	jr .loop
+
+ReadTrainerPartySpecies:
+; wCurPartySpecies: the species at hl (its 16-bit index), which hl goes past
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
+	pop hl
+	inc hl
+	ld [wCurPartySpecies], a
+	ret
 
 ComputeTrainerReward:
 	ld hl, hProduct
@@ -409,7 +417,7 @@ SkipTrainers:
 	cp '@'
 	jr nz, .name
 	ld a, [hli] ; TRAINERTYPE_*
-	ld c, 2 ; level, species
+	ld c, 3 ; level, species
 	assert TRAINERTYPE_ITEM & TRAINERTYPE_ITEM_MOVES && !(TRAINERTYPE_MOVES & TRAINERTYPE_ITEM)
 	bit 1, a ; TRAINERTYPE_ITEM or TRAINERTYPE_ITEM_MOVES
 	jr z, .got_item

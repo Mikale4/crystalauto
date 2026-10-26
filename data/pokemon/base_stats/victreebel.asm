@@ -1,4 +1,4 @@
-	db VICTREEBEL ; 071
+	db 0 ; #071 (the species ID: see GetBaseData)
 
 	db  80, 105,  65,  70, 100,  60
 	;   hp  atk  def  spd  sat  sdf

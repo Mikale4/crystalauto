@@ -1,8 +1,8 @@
 ; npctrade struct members (see data/events/npc_trades.asm)
 rsreset
 DEF NPCTRADE_DIALOG   rb
-DEF NPCTRADE_GIVEMON  rb
-DEF NPCTRADE_GETMON   rb
+DEF NPCTRADE_GIVEMON  rw ; (a species' 16-bit index)
+DEF NPCTRADE_GETMON   rw
 DEF NPCTRADE_NICKNAME rb MON_NAME_LENGTH
 DEF NPCTRADE_DVS      rw
 DEF NPCTRADE_ITEM     rb

@@ -1,4 +1,4 @@
-	db PINSIR ; 127
+	db 0 ; #127 (the species ID: see GetBaseData)
 
 	db  65, 125, 100,  85,  55,  70
 	;   hp  atk  def  spd  sat  sdf

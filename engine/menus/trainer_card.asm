@@ -273,12 +273,10 @@ TrainerCard_Page1_PrintDexCaught_GameTime:
 	hlcoord 10, 15
 	ld de, .Badges
 	call PlaceString
-	ld hl, wPokedexCaught
-	ld b, wEndPokedexCaught - wPokedexCaught
-	call CountSetBits
-	ld de, wNumSetBits
+	call CountPokedexCaught
+	ld de, wPokedexNumberBuffer
 	hlcoord 15, 10
-	lb bc, 1, 3
+	lb bc, 2, 3
 	call PrintNum
 	call TrainerCard_Page1_PrintGameTime
 	farcall TrainerCard_PrintLevelCapAndDifficulty

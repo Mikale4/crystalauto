@@ -1,4 +1,4 @@
-	db EXEGGCUTE ; 102
+	db 0 ; #102 (the species ID: see GetBaseData)
 
 	db  60,  40,  80,  40,  60,  45
 	;   hp  atk  def  spd  sat  sdf

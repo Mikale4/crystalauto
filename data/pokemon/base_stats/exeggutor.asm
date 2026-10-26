@@ -1,4 +1,4 @@
-	db EXEGGUTOR ; 103
+	db 0 ; #103 (the species ID: see GetBaseData)
 
 	db  95,  95,  85,  55, 125,  65
 	;   hp  atk  def  spd  sat  sdf

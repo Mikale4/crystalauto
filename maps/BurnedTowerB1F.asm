@@ -42,14 +42,14 @@ BurnedTowerB1FBeastsCallback:
 	iffalse .Done
 	checkevent EVENT_FOUGHT_RAIKOU
 	iftrue .NoRaikou
-	setval RAIKOU
+	setmonval RAIKOU
 	special MonCheck
 	iftrue .NoRaikou
 	appear BURNEDTOWERB1F_RAIKOU3
 .NoRaikou:
 	checkevent EVENT_FOUGHT_ENTEI
 	iftrue .Done
-	setval ENTEI
+	setmonval ENTEI
 	special MonCheck
 	iftrue .Done
 	appear BURNEDTOWERB1F_ENTEI3

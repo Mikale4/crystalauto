@@ -291,7 +291,7 @@ ENDM
 	const checkpoke_command ; $2c
 MACRO checkpoke
 	db checkpoke_command
-	db \1 ; pkmn
+	dw \1 ; pkmn (its 16-bit index, as every species here)
 ENDM
 
 	const givepoke_command ; $2d
@@ -304,7 +304,7 @@ MACRO givepoke
 		givepoke \1, \2, \3, TRUE, \4, \5
 	else
 		db givepoke_command
-		db \1 ; pokemon
+		dw \1 ; pokemon
 		db \2 ; level
 		db \3 ; item
 		db \4 ; trainer
@@ -318,7 +318,7 @@ ENDM
 	const giveegg_command ; $2e
 MACRO giveegg
 	db giveegg_command
-	db \1 ; pkmn
+	dw \1 ; pkmn
 	db \2 ; level
 ENDM
 
@@ -429,7 +429,7 @@ ENDM
 	const getmonname_command ; $40
 MACRO getmonname
 	db getmonname_command
-	db \2 ; pokemon
+	dw \2 ; pokemon
 	db \1 ; string_buffer
 ENDM
 
@@ -563,7 +563,7 @@ ENDM
 	const pokepic_command ; $56
 MACRO pokepic
 	db pokepic_command
-	db \1 ; pokemon
+	dw \1 ; pokemon
 ENDM
 
 	const closepokepic_command ; $57
@@ -599,7 +599,7 @@ ENDM
 	const loadwildmon_command ; $5d
 MACRO loadwildmon
 	db loadwildmon_command
-	db \1 ; pokemon
+	dw \1 ; pokemon
 	db \2 ; level
 ENDM
 
@@ -837,7 +837,7 @@ ENDM
 	const cry_command ; $84
 MACRO cry
 	db cry_command
-	dw \1 ; cry_id
+	dw \1 ; pokemon
 ENDM
 
 	const playsound_command ; $85
@@ -1063,6 +1063,20 @@ ENDM
 	const checksave_command ; $a9
 MACRO checksave
 	db checksave_command
+ENDM
+
+	const setmonval_command ; $aa
+MACRO setmonval
+; wScriptVar = the species' ID (for the specials that take one there)
+	db setmonval_command
+	dw \1 ; pokemon
+ENDM
+
+	const checkmonval_command ; $ab
+MACRO checkmonval
+; wScriptVar = TRUE if the species whose ID wScriptVar is is this one
+	db checkmonval_command
+	dw \1 ; pokemon
 ENDM
 
 DEF NUM_EVENT_COMMANDS EQU const_value

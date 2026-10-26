@@ -96,6 +96,21 @@ MACRO cpmove
 	dw \1
 ENDM
 
+MACRO cpmon
+; z if species ID a is species \1 (an index: see engine/16/mon_table.asm); keeps
+; a, but not the carry flag
+	call IsMon
+	dw \1
+ENDM
+
+MACRO ldmon
+; a = species \1's ID (\1: its index); keeps bc, de, hl
+	push hl
+	ld hl, \1
+	call GetPokemonIDFromIndex
+	pop hl
+ENDM
+
 MACRO ld_anim
 ; wFXAnimID = \1 (an animation's index: a move's constant, or an ANIM_* one)
 	ld a, LOW(\1)

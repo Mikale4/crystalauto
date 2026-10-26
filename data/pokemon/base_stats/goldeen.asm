@@ -1,4 +1,4 @@
-	db GOLDEEN ; 118
+	db 0 ; #118 (the species ID: see GetBaseData)
 
 	db  45,  67,  60,  63,  35,  50
 	;   hp  atk  def  spd  sat  sdf

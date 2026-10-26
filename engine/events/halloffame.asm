@@ -96,8 +96,7 @@ AnimateHallOfFame:
 	ld hl, wHallOfFameTempMon1
 	ld bc, wHallOfFameTempMon1End - wHallOfFameTempMon1
 	call AddNTimes
-	ld a, [hl]
-	cp -1
+	call HOF_IsTeamEnd
 	jr z, .done
 	push hl
 	call AnimateHOFMonEntrance
@@ -166,11 +165,17 @@ GetHallOfFameParty:
 	ld c, l
 	ld b, h
 
+; (the species: its index's low byte here, bit 8 in the level's bit 7, so a
+; save keeps its layout and its indexes: see DisplayHOFMon)
 	ld hl, MON_SPECIES
 	add hl, bc
 	ld a, [hl]
+	call GetPokemonIndexFromID
+	ld a, l
 	ld [de], a
 	inc de
+	ld a, h
+	ld [wHallOfFameMonCounter], a ; (for now)
 
 	ld hl, MON_OT_ID
 	add hl, bc
@@ -192,7 +197,12 @@ GetHallOfFameParty:
 
 	ld hl, MON_LEVEL
 	add hl, bc
+	ld a, [wHallOfFameMonCounter]
+	and a
 	ld a, [hl]
+	jr z, .got_level
+	set HOF_MON_LEVEL_SPECIES_HIGH_F, a
+.got_level
 	ld [de], a
 	inc de
 
@@ -350,8 +360,7 @@ _HallOfFamePC:
 	ld hl, wHallOfFameTempMon1
 	ld bc, wHallOfFameTempMon1End - wHallOfFameTempMon1
 	call AddNTimes
-	ld a, [hl]
-	cp -1
+	call HOF_IsTeamEnd
 	jr nz, .okay
 
 .fail
@@ -431,11 +440,27 @@ LoadHOFTeam:
 	scf
 	ret
 
+HOF_IsTeamEnd:
+; z if the Hall of Fame entry at hl is its team's end: its species -1, and no
+; level (a species' index's low byte can be $ff); preserves bc, de, hl
+	ld a, [hl]
+	inc a
+	ret nz
+	push hl
+	push bc
+	ld bc, wHallOfFameTempMon1Level - wHallOfFameTempMon1
+	add hl, bc
+	ld a, [hl]
+	and a
+	pop bc
+	pop hl
+	ret
+
 DisplayHOFMon:
 	xor a
 	ldh [hBGMapMode], a
 	ld a, [hli]
-	ld [wTempMonSpecies], a
+	ld [wTempMonSpecies], a ; (its index's low byte: see GetHallOfFameParty)
 	ld a, [hli]
 	ld [wTempMonID], a
 	ld a, [hli]
@@ -445,7 +470,19 @@ DisplayHOFMon:
 	ld a, [hli]
 	ld [wTempMonDVs + 1], a
 	ld a, [hli]
+	push hl
+	ld h, 0
+	bit HOF_MON_LEVEL_SPECIES_HIGH_F, a
+	jr z, .got_index
+	inc h
+	res HOF_MON_LEVEL_SPECIES_HIGH_F, a
+.got_index
 	ld [wTempMonLevel], a
+	ld a, [wTempMonSpecies]
+	ld l, a
+	call GetPokemonIDFromIndex
+	ld [wTempMonSpecies], a
+	pop hl
 	ld de, wStringBuffer2
 	ld bc, MON_NAME_LENGTH - 1
 	call CopyBytes
@@ -477,9 +514,11 @@ DisplayHOFMon:
 	ld a, '№'
 	ld [hli], a
 	ld [hl], '<DOT>'
+	ld a, [wCurPartySpecies]
+	call GetPokedexNumber
 	hlcoord 3, 13
-	ld de, wTextDecimalByte
-	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
+	ld de, wPokedexNumberBuffer
+	lb bc, PRINTNUM_LEADINGZEROS | 2, 3
 	call PrintNum
 	call GetBasePokemonName
 	hlcoord 7, 13

@@ -1,4 +1,4 @@
-	db ODDISH ; 043
+	db 0 ; #043 (the species ID: see GetBaseData)
 
 	db  45,  50,  55,  30,  75,  65
 	;   hp  atk  def  spd  sat  sdf

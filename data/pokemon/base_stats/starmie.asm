@@ -1,4 +1,4 @@
-	db STARMIE ; 121
+	db 0 ; #121 (the species ID: see GetBaseData)
 
 	db  60,  75,  85, 115, 100,  85
 	;   hp  atk  def  spd  sat  sdf

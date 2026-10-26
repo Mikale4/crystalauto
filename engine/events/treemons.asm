@@ -161,7 +161,13 @@ GetTreeMon:
 .skip
 	ld a, [hli]
 	cp -1
-	jr nz, .skip
+	jr z, .skipped
+	inc hl
+	inc hl
+	inc hl
+	jr .skip
+
+.skipped
 	call SelectTreeMon
 	ret
 
@@ -176,6 +182,7 @@ SelectTreeMon:
 	inc hl
 	inc hl
 	inc hl
+	inc hl
 	jr .loop
 
 .ok
@@ -184,9 +191,15 @@ SelectTreeMon:
 	jr z, NoTreeMon
 
 	ld a, [hli]
-	ld [wTempWildMonSpecies], a
+	ld c, a
+	ld a, [hli]
+	ld b, a
 	ld a, [hl]
 	ld [wCurPartyLevel], a
+	ld h, b
+	ld l, c
+	call GetPokemonIDFromIndex
+	ld [wTempWildMonSpecies], a
 	scf
 	ret
 

@@ -1254,10 +1254,9 @@ AutoBattle_LoadPartyStruct:
 	pop hl
 ; its types
 	ld a, [hl]
-	dec a
 	ld hl, BaseData + BASE_TYPES
 	ld bc, BASE_DATA_SIZE
-	call AddNTimes
+	call GetSpeciesTableEntry
 	ld a, BANK(BaseData)
 	call GetFarByte
 	ld b, a

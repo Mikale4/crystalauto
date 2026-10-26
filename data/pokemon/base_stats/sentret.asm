@@ -1,4 +1,4 @@
-	db SENTRET ; 161
+	db 0 ; #161 (the species ID: see GetBaseData)
 
 	db  35,  46,  34,  20,  35,  45
 	;   hp  atk  def  spd  sat  sdf

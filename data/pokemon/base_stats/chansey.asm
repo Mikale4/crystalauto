@@ -1,4 +1,4 @@
-	db CHANSEY ; 113
+	db 0 ; #113 (the species ID: see GetBaseData)
 
 	db 250,  05,  05,  50,  35, 105
 	;   hp  atk  def  spd  sat  sdf

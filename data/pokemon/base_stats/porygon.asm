@@ -1,4 +1,4 @@
-	db PORYGON ; 137
+	db 0 ; #137 (the species ID: see GetBaseData)
 
 	db  65,  60,  70,  40,  85,  75
 	;   hp  atk  def  spd  sat  sdf

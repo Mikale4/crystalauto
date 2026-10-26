@@ -1,4 +1,4 @@
-	db MEGANIUM ; 154
+	db 0 ; #154 (the species ID: see GetBaseData)
 
 	db  80,  82, 100,  80,  83, 100
 	;   hp  atk  def  spd  sat  sdf

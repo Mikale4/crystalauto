@@ -1,4 +1,4 @@
-	db NIDORINA ; 030
+	db 0 ; #030 (the species ID: see GetBaseData)
 
 	db  70,  62,  67,  56,  55,  55
 	;   hp  atk  def  spd  sat  sdf

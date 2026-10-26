@@ -272,8 +272,9 @@ DEF JOHTO_POKEMON EQU const_value
 	const HO_OH      ; fa
 	const CELEBI     ; fb
 DEF NUM_POKEMON EQU const_value - 1
-	const_skip       ; fc
-	const EGG        ; fd
+; (an index: its 8-bit ID is $FD, which the species table keeps for it, see
+; engine/16/mon_table.asm)
+DEF EGG EQU -3
 
 ; Unown forms
 ; indexes for:

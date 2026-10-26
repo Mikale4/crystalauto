@@ -1,4 +1,4 @@
-	db HO_OH ; 250
+	db 0 ; #250 (the species ID: see GetBaseData)
 
 	db 106, 130,  90,  90, 110, 154
 	;   hp  atk  def  spd  sat  sdf

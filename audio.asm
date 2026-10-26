@@ -160,8 +160,11 @@ SECTION "Crystal Sound Effects", ROMX
 INCLUDE "audio/sfx_crystal.asm"
 
 
-SECTION "Cries", ROMX
+SECTION "Pokemon Cries", ROMX
 
 INCLUDE "data/pokemon/cries.asm"
+
+
+SECTION "Cries", ROMX
 
 INCLUDE "audio/cries.asm"

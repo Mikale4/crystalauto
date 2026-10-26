@@ -824,8 +824,9 @@ CheckMimicUsed:
 BattleCommand_Critical:
 ; Determine whether this attack's hit will be critical, as in the latest games:
 ; a stage for each of FOCUS ENERGY (2), a high critical hit move (1), SCOPE LENS
-; (2), STICK and LUCKY PUNCH (1; every hit for FARFETCH'D, or CHANSEY and
-; BLISSEY), and from stage 3 every hit is (see CriticalHitChances).
+; (2), STICK and LUCKY PUNCH (1; every hit for the species they're made for:
+; FARFETCH'D, or CHANSEY and BLISSEY), and from stage 3 every hit is (see
+; CriticalHitChances).
 
 	xor a
 	ld [wCriticalHit], a
@@ -845,25 +846,19 @@ BattleCommand_Critical:
 
 .Item:
 	ld b, a
-	ld c, 0
 	ld a, [hl]
+	ld c, 0
 	cp LUCKY_PUNCH
-	jr nz, .Stick
-	ld a, b
-	cp CHANSEY
-	jr z, .Critical
-	cp BLISSEY
-	jr z, .Critical
-	inc c
-	jr .FocusEnergy
-
-.Stick:
+	jr z, .SpeciesItem
 	cp STICK
 	jr nz, .FocusEnergy
-	ld a, b
-	cp FARFETCH_D
-	jr z, .Critical
-	inc c
+
+.SpeciesItem:
+; every hit for the species it's made for (see CheckSpeciesItem); +1 for others
+	ld c, a
+	farcall CheckSpeciesItem
+	ld c, 1
+	jr c, .Critical
 
 .FocusEnergy:
 	ld a, BATTLE_VARS_SUBSTATUS4
@@ -2186,7 +2181,7 @@ DittoMetalPowder:
 	ld a, [wTempEnemyMonSpecies]
 
 .got_species
-	cp DITTO
+	cpmon DITTO
 	ret nz
 
 	push bc
@@ -2442,74 +2437,51 @@ ModernCriticalStats:
 
 
 ThickClubBoost:
-; Return in hl the stat value at hl.
-
-; If the attacking monster is Cubone or Marowak and
-; it's holding a Thick Club, double it.
-	push bc
-	push de
-	ld b, CUBONE
-	ld c, MAROWAK
-	ld d, THICK_CLUB
-	call SpeciesItemBoost
-	pop de
-	pop bc
-	ret
+; Return in hl the stat value at hl: doubled if the attacker holds a THICK CLUB
+; made for its species (CUBONE, MAROWAK: see CheckSpeciesItem).
+	ld a, THICK_CLUB
+	jr SpeciesItemBoost
 
 LightBallBoost:
-; Return in hl the stat value at hl.
-
-; If the attacking monster is Pikachu and it's
-; holding a Light Ball, double it.
-	push bc
-	push de
-	ld b, PIKACHU
-	ld c, PIKACHU
-	ld d, LIGHT_BALL
-	call SpeciesItemBoost
-	pop de
-	pop bc
-	ret
+; The same, for a LIGHT BALL (PIKACHU).
+	ld a, LIGHT_BALL
+	; fallthrough
 
 SpeciesItemBoost:
-; Return in hl the stat value at hl.
-
-; If the attacking monster is species b or c and
-; it's holding item d, double it.
-
+; Return in hl the stat value at hl: doubled if the attacker holds item a, made
+; for its species (see CheckSpeciesItem).
+	push bc
+	push de
+	ld d, a
 	ld a, [hli]
 	ld l, [hl]
 	ld h, a
-
-	push hl
-	ld a, MON_SPECIES
-	call BattlePartyAttr
-
-	ldh a, [hBattleTurn]
-	and a
-	ld a, [hl]
-	jr z, .CompareSpecies
-	ld a, [wTempEnemyMonSpecies]
-.CompareSpecies:
-	pop hl
-
-	cp b
-	jr z, .GetItemHeldEffect
-	cp c
-	ret nz
-
-.GetItemHeldEffect:
 	push hl
 	call GetUserItem
 	ld a, [hl]
-	pop hl
 	cp d
-	ret nz
-
+	jr nz, .done
+	ld c, a
+	ld a, MON_SPECIES
+	call BattlePartyAttr
+	ldh a, [hBattleTurn]
+	and a
+	ld a, [hl]
+	jr z, .got_species
+	ld a, [wTempEnemyMonSpecies]
+.got_species
+	ld b, a
+	farcall CheckSpeciesItem
+	jr nc, .done
 ; Double the stat
 ; BUG: Thick Club and Light Ball can make (Special) Attack wrap around above 1024 (see docs/bugs_and_glitches.md)
-	sla l
-	rl h
+	pop hl
+	add hl, hl
+	push hl
+.done
+	pop hl
+	pop de
+	pop bc
 	ret
 
 EnemyAttackDamage:

@@ -102,23 +102,27 @@ _GetFrontpic:
 	pop hl
 	ret
 
-GetFrontpicPointer:
+GetPicPointers:
+; out: hl = wCurPartySpecies' pic pointers (wUnownLetter's if it's UNOWN), d = their bank
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	ld bc, 6
+	cpmon UNOWN
 	jr z, .unown
-	ld a, [wCurPartySpecies]
+	ld hl, PokemonPicPointers
+	call GetSpeciesTableEntry
 	ld d, BANK(PokemonPicPointers)
-	jr .ok
+	ret
+
 .unown
 	ld a, [wUnownLetter]
-	ld d, BANK(UnownPicPointers)
-.ok
-	; These are assumed to be at the same address in their respective banks.
-	assert PokemonPicPointers == UnownPicPointers
-	ld hl, PokemonPicPointers
 	dec a
-	ld bc, 6
+	ld hl, UnownPicPointers
 	call AddNTimes
+	ld d, BANK(UnownPicPointers)
+	ret
+
+GetFrontpicPointer:
+	call GetPicPointers
 	ld a, d
 	call GetFarByte
 	call FixPicBank
@@ -197,31 +201,15 @@ GetMonBackpic:
 	call IsAPokemon
 	ret c
 
-	ld a, [wCurPartySpecies]
-	ld b, a
-	ld a, [wUnownLetter]
-	ld c, a
 	ldh a, [rWBK]
 	push af
+	push de
+	call GetPicPointers
 	ld a, BANK(wDecompressScratch)
 	ldh [rWBK], a
-	push de
-
-	; These are assumed to be at the same address in their respective banks.
-	assert PokemonPicPointers == UnownPicPointers
-	ld hl, PokemonPicPointers
-	ld a, b
-	ld d, BANK(PokemonPicPointers)
-	cp UNOWN
-	jr nz, .ok
-	ld a, c
-	ld d, BANK(UnownPicPointers)
-.ok
-	dec a
-	ld bc, 6
-	call AddNTimes
-	ld bc, 3
-	add hl, bc
+	inc hl
+	inc hl
+	inc hl
 	ld a, d
 	call GetFarByte
 	call FixPicBank
@@ -286,25 +274,6 @@ EXPORT DEF PICS_FIX EQU $36
 	db BANK("Pics 22") ; BANK("Pics 1") + 21
 	db BANK("Pics 23") ; BANK("Pics 1") + 22
 	db BANK("Pics 24") ; BANK("Pics 1") + 23
-
-GSIntro_GetMonFrontpic: ; unreferenced
-	ld a, c
-	push de
-	ld hl, PokemonPicPointers
-	dec a
-	ld bc, 6
-	call AddNTimes
-	ld a, BANK(PokemonPicPointers)
-	call GetFarByte
-	call FixPicBank
-	push af
-	inc hl
-	ld a, BANK(PokemonPicPointers)
-	call GetFarWord
-	pop af
-	pop de
-	call FarDecompress
-	ret
 
 GetTrainerPic:
 	ld a, [wBossBattle]

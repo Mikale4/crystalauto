@@ -1,4 +1,4 @@
-	db SHUCKLE ; 213
+	db 0 ; #213 (the species ID: see GetBaseData)
 
 	db  20,  10, 230,  05,  10, 230
 	;   hp  atk  def  spd  sat  sdf

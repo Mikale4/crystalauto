@@ -1,4 +1,4 @@
-	db SMOOCHUM ; 238
+	db 0 ; #238 (the species ID: see GetBaseData)
 
 	db  45,  30,  15,  65,  85,  65
 	;   hp  atk  def  spd  sat  sdf

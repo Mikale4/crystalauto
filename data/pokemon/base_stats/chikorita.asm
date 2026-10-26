@@ -1,4 +1,4 @@
-	db CHIKORITA ; 152
+	db 0 ; #152 (the species ID: see GetBaseData)
 
 	db  45,  49,  65,  45,  49,  65
 	;   hp  atk  def  spd  sat  sdf

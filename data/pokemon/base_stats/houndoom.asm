@@ -1,4 +1,4 @@
-	db HOUNDOOM ; 229
+	db 0 ; #229 (the species ID: see GetBaseData)
 
 	db  75,  90,  50,  95, 110,  80
 	;   hp  atk  def  spd  sat  sdf

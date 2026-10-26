@@ -124,10 +124,18 @@ LoadRandomBattleTowerMon:
 	; includes check if item is double at the current team
 	ld bc, BATTLETOWER_DATA_MON_LENGTH
 	call AddNTimes
+	push hl
 	ld a, [hli]
-	ld b, a
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
+	pop hl
+	ld b, a ; (the species' ID)
+	inc hl
+	inc hl
 	ld a, [hld]
-	ld c, a
+	dec hl
+	ld c, a ; (the item)
 	ld a, [wBT_OTMon1]
 	cp b
 	jr z, .FindARandomBattleTowerMon
@@ -165,8 +173,13 @@ LoadRandomBattleTowerMon:
 	cp b
 	jr z, .FindARandomBattleTowerMon
 
-	; (the data has its moves' 16-bit indexes: the struct, their IDs)
-	ld bc, MON_MOVES
+	; (the data has its species' and moves' 16-bit indexes: the struct, their IDs)
+	ld a, b
+	ld [de], a
+	inc de
+	inc hl
+	inc hl
+	ld bc, MON_MOVES - MON_ITEM
 	call CopyBytes
 	ld b, NUM_MOVES
 .moves

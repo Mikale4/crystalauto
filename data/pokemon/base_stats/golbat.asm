@@ -1,4 +1,4 @@
-	db GOLBAT ; 042
+	db 0 ; #042 (the species ID: see GetBaseData)
 
 	db  75,  80,  70,  90,  65,  75
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db VAPOREON ; 134
+	db 0 ; #134 (the species ID: see GetBaseData)
 
 	db 130,  65,  60,  65, 110,  95
 	;   hp  atk  def  spd  sat  sdf

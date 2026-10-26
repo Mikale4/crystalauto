@@ -1,4 +1,4 @@
-	db MAGIKARP ; 129
+	db 0 ; #129 (the species ID: see GetBaseData)
 
 	db  20,  10,  55,  80,  15,  20
 	;   hp  atk  def  spd  sat  sdf

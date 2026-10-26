@@ -1,4 +1,4 @@
-	db FORRETRESS ; 205
+	db 0 ; #205 (the species ID: see GetBaseData)
 
 	db  75,  90, 140,  40,  60,  60
 	;   hp  atk  def  spd  sat  sdf

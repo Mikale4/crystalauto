@@ -1,4 +1,4 @@
-	db OMASTAR ; 139
+	db 0 ; #139 (the species ID: see GetBaseData)
 
 	db  70,  60, 125,  55, 115,  70
 	;   hp  atk  def  spd  sat  sdf

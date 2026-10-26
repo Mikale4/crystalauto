@@ -1,4 +1,4 @@
-	db OMANYTE ; 138
+	db 0 ; #138 (the species ID: see GetBaseData)
 
 	db  35,  40, 100,  35,  90,  55
 	;   hp  atk  def  spd  sat  sdf

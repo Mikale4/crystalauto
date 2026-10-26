@@ -56,7 +56,6 @@ WildMonWornOut::
 	and a
 	jr z, .worn_out
 	ld a, [wEnemyMonSpecies]
-	dec a
 	call CheckCaughtMon
 	ret nz
 

@@ -1,6 +1,7 @@
 MACRO npctrade
 ; dialog set, requested mon, offered mon, nickname, dvs, item, OT ID, OT name, gender requested
-	db \1, \2, \3
+	db \1
+	dw \2, \3 ; (16-bit indexes)
 	dname \4, NAME_LENGTH
 	db \5, \6, \7
 	dw \8

@@ -1,4 +1,4 @@
-	db STEELIX ; 208
+	db 0 ; #208 (the species ID: see GetBaseData)
 
 	db  75,  85, 200,  30,  55,  65
 	;   hp  atk  def  spd  sat  sdf

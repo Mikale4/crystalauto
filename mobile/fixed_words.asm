@@ -3128,7 +3128,6 @@ EZChat_GetSeenPokemonByKana:
 	push hl
 	push bc
 	push de
-	dec a
 	ld hl, rWBK
 	ld e, $1
 	ld [hl], e

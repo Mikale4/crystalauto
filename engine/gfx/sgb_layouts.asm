@@ -446,13 +446,9 @@ endr
 	ld bc, PALPACKET_LENGTH
 	call CopyBytes
 	ld a, [wCurPartySpecies]
-	ld l, a
-	ld h, 0
-	add hl, hl
-	add hl, hl
-	add hl, hl
-	ld de, PokemonPalettes
-	add hl, de
+	ld hl, PokemonPalettes + 2 * 2 * COLOR_SIZE
+	ld bc, 2 * 2 * COLOR_SIZE
+	call GetSpeciesTableEntry
 	ld a, [wUnusedSGB1eColorOffset]
 	and 3
 	sla a

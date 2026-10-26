@@ -1,4 +1,4 @@
-	db FLAREON ; 136
+	db 0 ; #136 (the species ID: see GetBaseData)
 
 	db  65, 130,  60,  65,  95, 110
 	;   hp  atk  def  spd  sat  sdf

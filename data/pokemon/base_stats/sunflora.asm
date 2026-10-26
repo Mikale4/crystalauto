@@ -1,4 +1,4 @@
-	db SUNFLORA ; 192
+	db 0 ; #192 (the species ID: see GetBaseData)
 
 	db  75,  75,  55,  30, 105,  85
 	;   hp  atk  def  spd  sat  sdf

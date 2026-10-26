@@ -1,4 +1,4 @@
-	db AIPOM ; 190
+	db 0 ; #190 (the species ID: see GetBaseData)
 
 	db  55,  70,  55,  85,  40,  55
 	;   hp  atk  def  spd  sat  sdf

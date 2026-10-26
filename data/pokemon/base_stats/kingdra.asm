@@ -1,4 +1,4 @@
-	db KINGDRA ; 230
+	db 0 ; #230 (the species ID: see GetBaseData)
 
 	db  75,  95,  95,  85,  95,  95
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db ARIADOS ; 168
+	db 0 ; #168 (the species ID: see GetBaseData)
 
 	db  70,  90,  70,  40,  60,  60
 	;   hp  atk  def  spd  sat  sdf

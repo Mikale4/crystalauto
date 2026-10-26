@@ -1,4 +1,4 @@
-	db POLITOED ; 186
+	db 0 ; #186 (the species ID: see GetBaseData)
 
 	db  90,  75,  75,  70,  90, 100
 	;   hp  atk  def  spd  sat  sdf

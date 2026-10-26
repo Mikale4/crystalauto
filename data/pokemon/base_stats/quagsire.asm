@@ -1,4 +1,4 @@
-	db QUAGSIRE ; 195
+	db 0 ; #195 (the species ID: see GetBaseData)
 
 	db  95,  85,  85,  35,  65,  65
 	;   hp  atk  def  spd  sat  sdf

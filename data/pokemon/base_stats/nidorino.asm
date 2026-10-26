@@ -1,4 +1,4 @@
-	db NIDORINO ; 033
+	db 0 ; #033 (the species ID: see GetBaseData)
 
 	db  61,  72,  57,  65,  55,  55
 	;   hp  atk  def  spd  sat  sdf

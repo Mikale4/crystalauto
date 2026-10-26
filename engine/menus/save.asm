@@ -276,6 +276,7 @@ _SaveGameData:
 	call ValidateSave
 	call SaveOptions
 	farcall SaveMoveTable
+	farcall SaveMonTable
 	call SavePlayerData
 	call SavePokemonData
 	call SaveBox
@@ -527,11 +528,13 @@ SavePokemonData:
 SaveBox:
 	call GetBoxAddress
 	call SaveBoxAddress
-; (in the box's own place, its moves' 16-bit indexes: see BillsPC_ConvertBoxData)
+; (in the box's own place, its moves' 16-bit indexes: see BillsPC_ConvertBoxData;
+; and its species', in its index array: see engine/16/mon_table.asm)
 	call GetBoxAddress
 	ld b, a
 	ld c, 0
 	farcall BillsPC_ConvertBoxData
+	farcall SaveBoxSpeciesIndexes
 	ret
 
 SaveChecksum:
@@ -775,6 +778,11 @@ LoadPokemonData:
 	ret
 
 LoadBox:
+; (its species' IDs first, where it's kept: see RefreshBoxSpecies)
+	ld a, [wCurBox]
+	inc a
+	ld b, a
+	farcall RefreshBoxSpecies
 	call GetBoxAddress
 	call LoadBoxAddress
 ; (out, its moves' IDs: see BillsPC_ConvertBoxData)

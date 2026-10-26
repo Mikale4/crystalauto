@@ -1,4 +1,4 @@
-	db SHELLDER ; 090
+	db 0 ; #090 (the species ID: see GetBaseData)
 
 	db  30,  65, 100,  40,  45,  25
 	;   hp  atk  def  spd  sat  sdf

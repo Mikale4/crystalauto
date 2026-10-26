@@ -1,4 +1,4 @@
-	db DITTO ; 132
+	db 0 ; #132 (the species ID: see GetBaseData)
 
 	db  48,  48,  48,  48,  48,  48
 	;   hp  atk  def  spd  sat  sdf

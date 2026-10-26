@@ -188,11 +188,9 @@ endr
 .registerpokedex
 	ld a, [wCurPartySpecies]
 	ld [wTempSpecies], a
-	dec a
 	push de
 	call CheckCaughtMon
 	ld a, [wTempSpecies]
-	dec a
 	call SetSeenAndCaughtMon
 	pop de
 
@@ -349,7 +347,7 @@ endr
 	and $f
 	jr nz, .done
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .done
 	ld hl, wPartyMon1DVs
 	ld a, [wPartyCount]
@@ -442,7 +440,6 @@ AddTempmonToParty:
 	ld [wNamedObjectIndex], a
 	cp EGG
 	jr z, .egg
-	dec a
 	call SetSeenAndCaughtMon
 	ld hl, wPartyMon1Happiness
 	ld a, [wPartyCount]
@@ -453,7 +450,7 @@ AddTempmonToParty:
 .egg
 
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .done
 	ld hl, wPartyMon1DVs
 	ld a, [wPartyCount]
@@ -1034,10 +1031,9 @@ SendMonIntoBox:
 	ld a, [wCurPartyLevel]
 	ld [de], a
 	ld a, [wCurPartySpecies]
-	dec a
 	call SetSeenAndCaughtMon
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .not_unown
 	ld hl, sBoxMon1DVs
 	predef GetUnownLetter
@@ -1119,7 +1115,6 @@ GiveEgg::
 	callfar GetPreEvolution
 	callfar GetPreEvolution
 	ld a, [wCurPartySpecies]
-	dec a
 
 ; TryAddMonToParty sets Seen and Caught flags
 ; when it is successful.  This routine will make
@@ -1141,12 +1136,13 @@ GiveEgg::
 	and a
 	jr nz, .skip_caught_flag
 	ld a, [wCurPartySpecies]
-	dec a
-	ld c, a
-	ld d, $0
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, wPokedexCaught
-	ld b, RESET_FLAG
-	predef SmallFarFlagAction
+	ld bc, wPokedexCaughtExt
+	ld a, RESET_FLAG
+	call PokedexFlagAction
 
 .skip_caught_flag
 ; If we haven't seen this Pokemon before receiving
@@ -1157,12 +1153,13 @@ GiveEgg::
 	and a
 	jr nz, .skip_seen_flag
 	ld a, [wCurPartySpecies]
-	dec a
-	ld c, a
-	ld d, $0
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, wPokedexSeen
-	ld b, RESET_FLAG
-	predef SmallFarFlagAction
+	ld bc, wPokedexSeenExt
+	ld a, RESET_FLAG
+	call PokedexFlagAction
 
 .skip_seen_flag
 	pop af

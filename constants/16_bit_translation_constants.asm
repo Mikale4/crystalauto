@@ -15,6 +15,22 @@ DEF MOVE_TABLE_CACHE_SIZE             EQU  16
 DEF MOVE_TABLE_SAVED_RECENT_INDEXES   EQU  16
 DEF MOVE_TABLE_MINIMUM_RESERVED_INDEX EQU $FF
 
+; the 16-bit species index table (see engine/16/mon_table.asm): IDs $FD (EGG) and up are special
+DEF MON_TABLE_ENTRIES                EQU 252
+DEF MON_TABLE_LOCKED_ENTRIES         EQU  16
+DEF MON_TABLE_CACHE_SIZE             EQU  16
+DEF MON_TABLE_SAVED_RECENT_INDEXES   EQU  16
+DEF MON_TABLE_MINIMUM_RESERVED_INDEX EQU $FD
+
+; Pokédex flags for the species after index 256 (see wPokedexCaughtExt)
+DEF NUM_POKEDEX_EXT_BYTES EQU 11
+
+; locked species IDs (see LockPokemonID)
+	const_def
+	const LOCKED_MON_ID_DEX_SELECTED ; the Pokédex's selected species
+DEF NUM_LOCKED_MON_IDS EQU const_value
+	assert NUM_LOCKED_MON_IDS <= MON_TABLE_LOCKED_ENTRIES
+
 ; locked move IDs (see LockMoveID)
 	const_def
 	const LOCKED_MOVE_ID_1

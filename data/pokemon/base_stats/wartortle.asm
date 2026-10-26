@@ -1,4 +1,4 @@
-	db WARTORTLE ; 008
+	db 0 ; #008 (the species ID: see GetBaseData)
 
 	db  59,  63,  80,  58,  65,  80
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db MACHOKE ; 067
+	db 0 ; #067 (the species ID: see GetBaseData)
 
 	db  80, 100,  70,  45,  50,  60
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db BLISSEY ; 242
+	db 0 ; #242 (the species ID: see GetBaseData)
 
 	db 255,  10,  10,  55,  75, 135
 	;   hp  atk  def  spd  sat  sdf

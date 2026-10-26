@@ -1,4 +1,4 @@
-	db AERODACTYL ; 142
+	db 0 ; #142 (the species ID: see GetBaseData)
 
 	db  80, 105,  65, 130,  60,  75
 	;   hp  atk  def  spd  sat  sdf

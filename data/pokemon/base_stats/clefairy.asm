@@ -1,4 +1,4 @@
-	db CLEFAIRY ; 035
+	db 0 ; #035 (the species ID: see GetBaseData)
 
 	db  70,  45,  48,  35,  60,  65
 	;   hp  atk  def  spd  sat  sdf

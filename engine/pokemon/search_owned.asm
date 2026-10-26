@@ -3,17 +3,17 @@ BeastsCheck:
 ; They must exist in either party or PC, and have the player's OT and ID.
 ; Return the result in wScriptVar.
 
-	ld a, RAIKOU
+	ldmon RAIKOU
 	ld [wScriptVar], a
 	call CheckOwnMonAnywhere
 	jr nc, .notexist
 
-	ld a, ENTEI
+	ldmon ENTEI
 	ld [wScriptVar], a
 	call CheckOwnMonAnywhere
 	jr nc, .notexist
 
-	ld a, SUICUNE
+	ldmon SUICUNE
 	ld [wScriptVar], a
 	call CheckOwnMonAnywhere
 	jr nc, .notexist
@@ -116,8 +116,13 @@ CheckOwnMonAnywhere:
 	cp c
 	jr z, .loopbox
 
-	; Load the box.
+	; Load the box (its species bytes first: see engine/16/mon_table.asm).
 
+	push bc
+	ld b, c
+	inc b
+	farcall RefreshBoxSpecies
+	pop bc
 	ld hl, SearchBoxAddressTable
 	ld b, 0
 	add hl, bc

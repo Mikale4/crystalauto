@@ -1,4 +1,4 @@
-	db EEVEE ; 133
+	db 0 ; #133 (the species ID: see GetBaseData)
 
 	db  55,  55,  50,  55,  45,  65
 	;   hp  atk  def  spd  sat  sdf

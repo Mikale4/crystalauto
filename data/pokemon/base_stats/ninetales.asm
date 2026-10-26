@@ -1,4 +1,4 @@
-	db NINETALES ; 038
+	db 0 ; #038 (the species ID: see GetBaseData)
 
 	db  73,  76,  75, 100,  81, 100
 	;   hp  atk  def  spd  sat  sdf

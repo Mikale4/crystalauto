@@ -1,4 +1,4 @@
-	db MAGMAR ; 126
+	db 0 ; #126 (the species ID: see GetBaseData)
 
 	db  65,  95,  57,  93, 100,  85
 	;   hp  atk  def  spd  sat  sdf

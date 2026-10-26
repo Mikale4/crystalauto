@@ -1,4 +1,4 @@
-	db LEDYBA ; 165
+	db 0 ; #165 (the species ID: see GetBaseData)
 
 	db  40,  20,  30,  55,  40,  80
 	;   hp  atk  def  spd  sat  sdf

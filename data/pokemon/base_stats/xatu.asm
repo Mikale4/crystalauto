@@ -1,4 +1,4 @@
-	db XATU ; 178
+	db 0 ; #178 (the species ID: see GetBaseData)
 
 	db  65,  75,  70,  95,  95,  70
 	;   hp  atk  def  spd  sat  sdf

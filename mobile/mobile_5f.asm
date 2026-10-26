@@ -389,11 +389,10 @@ CheckStringContainsLessThanBNextCharacters:
 
 Function17d1f1:
 	ld a, [wCurPartySpecies]
-	dec a
 	call SetSeenAndCaughtMon
 
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .asm_17d223
 
 	ld hl, wPartyMon1DVs

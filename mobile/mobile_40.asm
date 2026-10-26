@@ -6406,7 +6406,6 @@ Function102d48:
 	ld [wTempSpecies], a
 	cp EGG
 	jr z, .asm_102d6d
-	dec a
 	call SetSeenAndCaughtMon
 	ld a, [wcd4c]
 	dec a
@@ -6417,7 +6416,7 @@ Function102d48:
 
 .asm_102d6d
 	ld a, [wTempSpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .asm_102d98
 	ld a, [wcd4c]
 	dec a

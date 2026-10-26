@@ -1,4 +1,4 @@
-	db FERALIGATR ; 160
+	db 0 ; #160 (the species ID: see GetBaseData)
 
 	db  85, 105, 100,  78,  79,  83
 	;   hp  atk  def  spd  sat  sdf

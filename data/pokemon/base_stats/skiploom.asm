@@ -1,4 +1,4 @@
-	db SKIPLOOM ; 188
+	db 0 ; #188 (the species ID: see GetBaseData)
 
 	db  55,  45,  50,  80,  45,  65
 	;   hp  atk  def  spd  sat  sdf

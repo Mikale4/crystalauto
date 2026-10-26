@@ -1,4 +1,4 @@
-	db RHYHORN ; 111
+	db 0 ; #111 (the species ID: see GetBaseData)
 
 	db  80,  85,  95,  25,  30,  30
 	;   hp  atk  def  spd  sat  sdf

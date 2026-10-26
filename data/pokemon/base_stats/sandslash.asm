@@ -1,4 +1,4 @@
-	db SANDSLASH ; 028
+	db 0 ; #028 (the species ID: see GetBaseData)
 
 	db  75, 100, 110,  65,  45,  55
 	;   hp  atk  def  spd  sat  sdf

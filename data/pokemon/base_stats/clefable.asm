@@ -1,4 +1,4 @@
-	db CLEFABLE ; 036
+	db 0 ; #036 (the species ID: see GetBaseData)
 
 	db  95,  70,  73,  60,  85,  90
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db SLOWPOKE ; 079
+	db 0 ; #079 (the species ID: see GetBaseData)
 
 	db  90,  65,  65,  15,  40,  40
 	;   hp  atk  def  spd  sat  sdf

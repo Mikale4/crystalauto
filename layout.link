@@ -194,11 +194,8 @@ ROMX $46
 ROMX $47
 	"Battle Tower"
 ROMX $48
-	org $4000
-	"Pic Pointers"
 	"Pics 1"
 ROMX $49
-	org $4000
 	"Unown Pic Pointers"
 	"Pics 2"
 ROMX $4a
@@ -374,8 +371,12 @@ WRAMX 5
 	"GBC Video"
 	org $d300
 	"Battle Animations"
+	align 8
+	"16-bit WRAM species table"
 	org $d800
 	"Mobile RAM"
+	align 5
+	"16-bit WRAM species work"
 WRAMX 6
 	"Scratch RAM"
 WRAMX 7
@@ -389,6 +390,7 @@ SRAM $00
 	org $a600
 	"SRAM Bank 0"
 	"Saved Move Table"
+	"Saved Pokemon Table"
 	org $b200
 	"Backup Save"
 SRAM $01

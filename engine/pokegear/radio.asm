@@ -242,7 +242,7 @@ endr
 	cp DARKNESS_F
 	jr z, .loop2
 
-	ld bc, 2 * NUM_GRASSMON
+	ld bc, WILDMON_LENGTH * NUM_GRASSMON
 	call AddNTimes
 .loop3
 	; Choose one of the middle three Pokemon.
@@ -256,9 +256,11 @@ endr
 	ld d, 0
 	add hl, de
 	add hl, de
+	add hl, de
 	inc hl ; skip level
 	ld a, BANK(JohtoGrassWildMons)
-	call GetFarByte
+	call GetFarWord
+	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	ld [wCurPartySpecies], a
 	call GetPokemonName
@@ -640,43 +642,27 @@ ClearBottomLine:
 	ld a, ' '
 	jp ByteFill
 
-PokedexShow_GetDexEntryBank:
-	push hl
-	push de
-	ld a, [wCurPartySpecies]
-	dec a
-	rlca
-	rlca
-	maskbits NUM_DEX_ENTRY_BANKS
-	ld hl, .PokedexEntryBanks
-	ld d, 0
-	ld e, a
-	add hl, de
-	ld a, [hl]
-	pop de
-	pop hl
-	ret
-
-.PokedexEntryBanks:
-	db BANK("Pokedex Entries 001-064")
-	db BANK("Pokedex Entries 065-128")
-	db BANK("Pokedex Entries 129-192")
-	db BANK("Pokedex Entries 193-251")
-
 PokedexShow1:
 	call StartRadioStation
 .loop
+; a random caught species
+	assert NUM_POKEMON <= $200
 	call Random
-	cp NUM_POKEMON
+	ld e, a
+	call Random
+	and HIGH($1ff)
+	ld d, a
+	ld a, e
+	sub LOW(NUM_POKEMON)
+	ld a, d
+	sbc HIGH(NUM_POKEMON)
 	jr nc, .loop
-	ld c, a
-	push bc
-	ld a, c
-	call CheckCaughtMon
-	pop bc
+	inc de
+	push de
+	call CheckCaughtMonIndex
+	pop hl
 	jr z, .loop
-	inc c
-	ld a, c
+	call GetPokemonIDFromIndex
 	ld [wCurPartySpecies], a
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
@@ -686,15 +672,11 @@ PokedexShow1:
 
 PokedexShow2:
 	ld a, [wCurPartySpecies]
-	dec a
-	ld hl, PokedexDataPointerTable
-	ld c, a
-	ld b, 0
-	add hl, bc
-	add hl, bc
-	ld a, BANK(PokedexDataPointerTable)
-	call GetFarWord
-	call PokedexShow_GetDexEntryBank
+	ld b, a
+	farcall GetDexEntryPointer
+	ld h, d
+	ld l, e
+	ld a, b
 	push af
 	push hl
 	call CopyDexEntryPart1
@@ -1541,9 +1523,17 @@ GetBuenasPassword:
 	assert_table_length NUM_BUENA_FUNCTIONS
 
 .Mon:
-	call .GetTheIndex
-	call GetPokemonName
-	ret
+; (16-bit indexes)
+	ld h, 0
+	ld l, c
+	add hl, hl
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
+	ld [wNamedObjectIndex], a
+	jp GetPokemonName
 
 .Item:
 	call .GetTheIndex

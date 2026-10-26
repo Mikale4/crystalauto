@@ -1,4 +1,4 @@
-	db WOOPER ; 194
+	db 0 ; #194 (the species ID: see GetBaseData)
 
 	db  55,  45,  45,  15,  25,  25
 	;   hp  atk  def  spd  sat  sdf

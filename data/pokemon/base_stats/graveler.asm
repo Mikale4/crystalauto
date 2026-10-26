@@ -1,4 +1,4 @@
-	db GRAVELER ; 075
+	db 0 ; #075 (the species ID: see GetBaseData)
 
 	db  55,  95, 115,  35,  45,  45
 	;   hp  atk  def  spd  sat  sdf

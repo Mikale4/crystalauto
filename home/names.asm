@@ -120,13 +120,12 @@ GetPokemonName::
 	ld a, BANK(PokemonNames)
 	rst Bankswitch
 
-; Each name is ten characters
+; Each name is ten characters (by the species' index: EGG's is before PokemonNames)
 	ld a, [wNamedObjectIndex]
-	dec a
-	ld d, 0
-	ld e, a
-	ld h, 0
-	ld l, a
+	call GetPokemonIndexFromID
+	dec hl
+	ld e, l
+	ld d, h
 	add hl, hl
 	add hl, hl
 	add hl, de

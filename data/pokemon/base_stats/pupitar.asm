@@ -1,4 +1,4 @@
-	db PUPITAR ; 247
+	db 0 ; #247 (the species ID: see GetBaseData)
 
 	db  70,  84,  70,  51,  65,  70
 	;   hp  atk  def  spd  sat  sdf

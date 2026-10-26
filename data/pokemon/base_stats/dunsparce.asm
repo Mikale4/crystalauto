@@ -1,4 +1,4 @@
-	db DUNSPARCE ; 206
+	db 0 ; #206 (the species ID: see GetBaseData)
 
 	db 100,  70,  70,  45,  65,  65
 	;   hp  atk  def  spd  sat  sdf

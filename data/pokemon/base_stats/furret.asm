@@ -1,4 +1,4 @@
-	db FURRET ; 162
+	db 0 ; #162 (the species ID: see GetBaseData)
 
 	db  85,  76,  64,  90,  45,  55
 	;   hp  atk  def  spd  sat  sdf

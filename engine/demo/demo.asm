@@ -881,26 +881,33 @@ DemoBallMenu:
 	ld a, PAD_B
 	jp nc, DemoTap
 	ld a, [wEnemyMonSpecies]
-	dec a
 	call CheckCaughtMon
 	ld a, PAD_B
 	jp nz, DemoTap
-	ld a, [DemoWantedMons]
-	dec a
-	call CheckCaughtMon
-	ld a, [DemoWantedMons]
-	ld hl, wEnemyMonSpecies
+	ld hl, DemoWantedMons
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	push de
+	call CheckCaughtMonIndex
+	pop de
 	jr nz, .any_wanted
-	cp [hl]
+	ld a, [wEnemyMonSpecies]
+	call GetPokemonIndexFromID
+	ld a, l
+	cp e
+	ld a, PAD_B
+	jp nz, DemoTap
+	ld a, h
+	cp d
 	ld a, PAD_B
 	jp nz, DemoTap
 	jr .throw
 
 .any_wanted
-	ld a, [hl]
+	ld a, [wEnemyMonSpecies]
 	ld hl, DemoWantedMons
-	ld de, 1
-	call IsInArray
+	call CheckMonInList
 	ld a, PAD_B
 	jp nc, DemoTap
 .throw
@@ -2071,15 +2078,23 @@ DemoPlan_Catch:
 	push hl
 	inc hl
 	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a ; (the species' index)
 	push hl
-	dec a
-	call CheckCaughtMon
+	call CheckCaughtMonIndex
 	pop hl
-	jr nz, DemoPlan_Team.done
+	jr nz, .done
 	call DemoBattleInGrass
 	pop hl
 	and a
 	ret
+
+.done
+	pop hl
+	ld de, 5
+	add hl, de
+	jp DemoNextCommand
 
 DemoPlan_Team:
 ; dteam N, MAP: battle in that map's grass until the team has N POKéMON (the

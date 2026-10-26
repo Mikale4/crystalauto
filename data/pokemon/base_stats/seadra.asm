@@ -1,4 +1,4 @@
-	db SEADRA ; 117
+	db 0 ; #117 (the species ID: see GetBaseData)
 
 	db  55,  65,  95,  85,  95,  45
 	;   hp  atk  def  spd  sat  sdf

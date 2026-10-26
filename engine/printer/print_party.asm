@@ -27,7 +27,6 @@ PrintPage1:
 	lb bc, 5, 18
 	call ClearBox
 	ld a, [wTempSpecies]
-	dec a
 	call CheckCaughtMon
 	push af
 	ld a, [wTempSpecies]
@@ -76,7 +75,6 @@ PrintPage2:
 	ld a, $32
 	call ByteFill
 	ld a, [wTempSpecies]
-	dec a
 	call CheckCaughtMon
 	push af
 	ld a, [wTempSpecies]
@@ -186,8 +184,12 @@ PrintPartyMonPage1:
 	inc hl
 	ld [hl], '.'
 	inc hl
-	ld de, wNamedObjectIndex
-	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
+	push hl
+	ld a, [wNamedObjectIndex]
+	call GetPokedexNumber
+	pop hl
+	ld de, wPokedexNumberBuffer
+	lb bc, PRINTNUM_LEADINGZEROS | 2, 3
 	call PrintNum
 	hlcoord 1, 9
 	ld de, PrintParty_OTString
@@ -216,7 +218,7 @@ PrintPartyMonPage1:
 	xor a
 	ld [hl], a
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr z, .got_alignment
 	inc [hl]
 .got_alignment

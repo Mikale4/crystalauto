@@ -33,6 +33,10 @@ FindNest:
 	ld bc, SCREEN_AREA
 	xor a
 	call ByteFill
+	ld a, [wNamedObjectIndex]
+	call GetPokemonIndexFromID
+	ld b, h
+	ld c, l ; (the species' index, for .SearchMapForMon)
 	ld a, e
 	and a
 	jr nz, .kanto
@@ -56,11 +60,12 @@ FindNest:
 	ld a, [hl]
 	cp -1
 	ret z
+	push bc
 	push hl
 	ld a, [hli]
-	ld b, a
+	ldh [hMathBuffer], a ; (the map, while bc is the species)
 	ld a, [hli]
-	ld c, a
+	ldh [hMathBuffer + 1], a
 	inc hl
 	inc hl
 	inc hl
@@ -74,17 +79,19 @@ FindNest:
 	pop hl
 	ld bc, GRASS_WILDDATA_LENGTH
 	add hl, bc
+	pop bc
 	jr .FindGrass
 
 .FindWater:
 	ld a, [hl]
 	cp -1
 	ret z
+	push bc
 	push hl
 	ld a, [hli]
-	ld b, a
+	ldh [hMathBuffer], a
 	ld a, [hli]
-	ld c, a
+	ldh [hMathBuffer + 1], a
 	inc hl
 	ld a, NUM_WATERMON
 	call .SearchMapForMon
@@ -96,16 +103,21 @@ FindNest:
 	pop hl
 	ld bc, WATER_WILDDATA_LENGTH
 	add hl, bc
+	pop bc
 	jr .FindWater
 
 .SearchMapForMon:
+; (species index bc, in a of hl's wild Pokémon)
 	inc hl
 .ScanMapLoop:
 	push af
-	ld a, [wNamedObjectIndex]
-	cp [hl]
+	ld a, [hli]
+	cp c
+	ld a, [hli]
+	jr nz, .next_mon
+	cp b
 	jr z, .found
-	inc hl
+.next_mon
 	inc hl
 	pop af
 	dec a
@@ -115,6 +127,10 @@ FindNest:
 
 .found
 	pop af
+	ldh a, [hMathBuffer]
+	ld b, a
+	ldh a, [hMathBuffer + 1]
+	ld c, a
 	jp .AppendNest
 
 .AppendNest:
@@ -264,7 +280,7 @@ ChooseWildEncounter:
 	inc hl
 	inc hl
 	ld a, [wTimeOfDay]
-	ld bc, NUM_GRASSMON * 2
+	ld bc, NUM_GRASSMON * WILDMON_LENGTH
 	call AddNTimes
 	ld de, GrassMonProbTable
 
@@ -313,31 +329,35 @@ ChooseWildEncounter:
 	inc b
 ; Store the level
 .ok
-; BUG: ChooseWildEncounter doesn't really validate the wild Pokemon species (see docs/bugs_and_glitches.md)
 	ld a, b
 	ld [wCurPartyLevel], a
-	ld b, [hl]
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a ; (the species' index)
 	call ValidateTempWildMonSpecies
 	jr c, .nowildbattle
 
-	ld a, b
-	cp UNOWN
+	call GetPokemonIDFromIndex
+	cpmon UNOWN
 	jr nz, .done
 
+	push af
 	ld a, [wUnlockedUnowns]
 	and a
-	jr z, .nowildbattle
+	jr z, .nowildbattle_pop
+	pop af
 
 .done
 	jr .loadwildmon
 
+.nowildbattle_pop
+	pop af
 .nowildbattle
 	ld a, 1
 	and a
 	ret
 
 .loadwildmon
-	ld a, b
 	ld [wTempWildMonSpecies], a
 
 .startwildbattle
@@ -738,12 +758,15 @@ _BackUpMapIndices:
 INCLUDE "data/wild/roammon_maps.asm"
 
 ValidateTempWildMonSpecies:
-; Due to a development oversight, this function is called with the wild Pokemon's level, not its species, in a.
-	and a
-	jr z, .nowildmon ; = 0
-	cp NUM_POKEMON + 1 ; 252
-	jr nc, .nowildmon ; >= 252
-	and a ; 1 <= Species <= 251
+; carry unless hl is a species' index (1 to NUM_POKEMON)
+	ld a, h
+	or l
+	jr z, .nowildmon
+	ld a, l
+	sub LOW(NUM_POKEMON + 1)
+	ld a, h
+	sbc HIGH(NUM_POKEMON + 1)
+	ccf
 	ret
 
 .nowildmon
@@ -765,13 +788,15 @@ RandomUnseenWildMon:
 	jr nc, .done
 
 .GetGrassmon:
-; BUG: RandomUnseenWildMon always picks a morning Pokémon species (see docs/bugs_and_glitches.md)
-	push hl
-	ld bc, 5 + 4 * 2 ; Location of the level of the 5th wild Pokemon in that map
+; (fixed: for the time of day, not always the morning)
+	ld bc, 5 ; past the map and the encounter rates
 	add hl, bc
 	ld a, [wTimeOfDay]
-	ld bc, NUM_GRASSMON * 2
+	ld bc, NUM_GRASSMON * WILDMON_LENGTH
 	call AddNTimes
+	push hl
+	ld bc, 4 * WILDMON_LENGTH + 1 ; the 5th wild Pokemon's species
+	add hl, bc
 .randloop1
 	call Random
 	and %11
@@ -781,32 +806,36 @@ RandomUnseenWildMon:
 	ld b, 0
 	add hl, bc
 	add hl, bc
+	add hl, bc
 ; We now have the pointer to one of the last (rarest) three wild Pokemon found in that area.
-	inc hl
-	ld c, [hl] ; Contains the species index of this rare Pokemon
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a ; Contains the species index of this rare Pokemon
 	pop hl
-	ld de, 5 + 0 * 2
-	add hl, de
 	inc hl ; Species index of the most common Pokemon on that route
 	ld b, 4
 .loop2
 	ld a, [hli]
-	cp c ; Compare this most common Pokemon with the rare one stored in c.
+	cp e ; Compare this most common Pokemon with the rare one stored in de.
+	ld a, [hli]
+	jr nz, .next
+	cp d
 	jr z, .done
+.next
 	inc hl
 	dec b
 	jr nz, .loop2
 ; This Pokemon truly is rare.
-	push bc
-	dec c
-	ld a, c
-	call CheckSeenMon
-	pop bc
+	push de
+	call CheckSeenMonIndex
+	pop hl
 	jr nz, .done
 ; Since we haven't seen it, have the caller tell us about it.
+	push hl
 	ld de, wStringBuffer1
 	call CopyName1
-	ld a, c
+	pop hl
+	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, .JustSawSomeRareMonText
@@ -836,11 +865,11 @@ RandomPhoneWildMon:
 	call LookUpWildmonsForMapDE
 
 .ok
-	ld bc, 5 + 0 * 2
+	ld bc, 5 + 0 * WILDMON_LENGTH
 	add hl, bc
 	ld a, [wTimeOfDay]
 	inc a
-	ld bc, NUM_GRASSMON * 2
+	ld bc, NUM_GRASSMON * WILDMON_LENGTH
 .loop
 	dec a
 	jr z, .done
@@ -854,8 +883,12 @@ RandomPhoneWildMon:
 	ld b, 0
 	add hl, bc
 	add hl, bc
+	add hl, bc
 	inc hl
-	ld a, [hl]
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
@@ -890,17 +923,17 @@ RandomPhoneMon:
 	ld a, BANK(Trainers)
 	call GetFarByte
 	inc hl
-	ld bc, 2 ; level, species
+	ld bc, 1 + 2 ; level, species (16-bit indexes, as the moves)
 	cp TRAINERTYPE_NORMAL
 	jr z, .got_mon_length
-	ld bc, 2 + NUM_MOVES * 2 ; level, species, moves (16-bit indexes)
+	ld bc, 1 + 2 + NUM_MOVES * 2 ; level, species, moves
 	cp TRAINERTYPE_MOVES
 	jr z, .got_mon_length
-	ld bc, 2 + 1 ; level, species, item
+	ld bc, 1 + 2 + 1 ; level, species, item
 	cp TRAINERTYPE_ITEM
 	jr z, .got_mon_length
 	; TRAINERTYPE_ITEM_MOVES
-	ld bc, 2 + 1 + NUM_MOVES * 2 ; level, species, item, moves
+	ld bc, 1 + 2 + 1 + NUM_MOVES * 2 ; level, species, item, moves
 .got_mon_length
 
 	ld e, 0
@@ -930,7 +963,8 @@ RandomPhoneMon:
 
 	inc hl ; species
 	ld a, BANK(Trainers)
-	call GetFarByte
+	call GetFarWord
+	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1

@@ -1,4 +1,4 @@
-	db DIGLETT ; 050
+	db 0 ; #050 (the species ID: see GetBaseData)
 
 	db  10,  55,  25,  95,  35,  45
 	;   hp  atk  def  spd  sat  sdf

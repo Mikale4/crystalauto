@@ -1,4 +1,4 @@
-	db SCYTHER ; 123
+	db 0 ; #123 (the species ID: see GetBaseData)
 
 	db  70, 110,  80, 105,  55,  80
 	;   hp  atk  def  spd  sat  sdf

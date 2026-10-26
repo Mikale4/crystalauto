@@ -437,11 +437,11 @@ HoldSwitchmonIcon:
 ReadMonMenuIcon:
 	cp EGG
 	jr z, .egg
-	dec a
+	push bc
 	ld hl, MonMenuIcons
-	ld e, a
-	ld d, 0
-	add hl, de
+	ld bc, 1
+	call GetSpeciesTableEntry
+	pop bc
 	ld a, [hl]
 	ret
 .egg

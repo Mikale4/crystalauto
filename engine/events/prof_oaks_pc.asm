@@ -33,14 +33,16 @@ ProfOaksPCRating:
 
 Rate:
 ; calculate Seen/Owned
-	ld hl, wPokedexSeen
-	ld b, wEndPokedexSeen - wPokedexSeen
-	call CountSetBits
+	call CountPokedexSeen
+	ld a, d
 	ld [wTempPokedexSeenCount], a
-	ld hl, wPokedexCaught
-	ld b, wEndPokedexCaught - wPokedexCaught
-	call CountSetBits
+	ld a, e
+	ld [wTempPokedexSeenCount + 1], a
+	call CountPokedexCaught
+	ld a, d
 	ld [wTempPokedexCaughtCount], a
+	ld a, e
+	ld [wTempPokedexCaughtCount + 1], a
 
 ; print appropriate rating
 	call .UpdateRatingBuffers
@@ -48,6 +50,9 @@ Rate:
 	call PrintText
 	call JoyWaitAorB
 	ld a, [wTempPokedexCaughtCount]
+	ld d, a
+	ld a, [wTempPokedexCaughtCount + 1]
+	ld e, a
 	ld hl, OakRatings
 	call FindOakRating
 	push de
@@ -70,18 +75,23 @@ Rate:
 	ld bc, ITEM_NAME_LENGTH
 	call ByteFill
 	pop hl
-	lb bc, PRINTNUM_LEFTALIGN | 1, 3
+	lb bc, PRINTNUM_LEFTALIGN | 2, 3
 	call PrintNum
 	ret
 
 FindOakRating:
+; in: de = how many caught
 ; return sound effect in de
 ; return text pointer in hl
-	nop
-	ld c, a
 .loop
 	ld a, [hli]
-	cp c
+	ld c, a
+	ld a, [hli]
+	ld b, a ; (the rating's count)
+	ld a, c
+	sub e
+	ld a, b
+	sbc d
 	jr nc, .match
 rept 4
 	inc hl

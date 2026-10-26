@@ -1,4 +1,4 @@
-	db PIDGEY ; 016
+	db 0 ; #016 (the species ID: see GetBaseData)
 
 	db  40,  45,  40,  56,  35,  35
 	;   hp  atk  def  spd  sat  sdf

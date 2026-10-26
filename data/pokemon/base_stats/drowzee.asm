@@ -1,4 +1,4 @@
-	db DROWZEE ; 096
+	db 0 ; #096 (the species ID: see GetBaseData)
 
 	db  60,  48,  45,  42,  43,  90
 	;   hp  atk  def  spd  sat  sdf

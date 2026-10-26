@@ -39,7 +39,7 @@ CeladonEusine:
 	opentext
 	writetext CeladonEusineText1
 	promptbutton
-	setval SUICUNE
+	setmonval SUICUNE
 	special MonCheck
 	iffalse .NoSuicune
 	special BeastsCheck

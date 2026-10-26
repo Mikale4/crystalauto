@@ -234,6 +234,8 @@ ScriptCommandTable:
 	dw Script_getname                    ; a7
 	dw Script_wait                       ; a8
 	dw Script_checksave                  ; a9
+	dw Script_setmonval                  ; aa
+	dw Script_checkmonval                ; ab
 	assert_table_length NUM_EVENT_COMMANDS
 
 StartScript:
@@ -409,11 +411,7 @@ Script_closewindow:
 	ret
 
 Script_pokepic:
-	call GetScriptByte
-	and a
-	jr nz, .ok
-	ld a, [wScriptVar]
-.ok
+	call LoadScriptPokemonID
 	ld [wCurPartySpecies], a
 	farcall Pokepic
 	ret
@@ -782,14 +780,7 @@ Script_warpsound:
 	ret
 
 Script_cry:
-	call GetScriptByte
-	push af
-	call GetScriptByte
-	pop af
-	and a
-	jr nz, .ok
-	ld a, [wScriptVar]
-.ok
+	call LoadScriptPokemonID
 	call PlayMonCry
 	ret
 
@@ -1119,7 +1110,7 @@ EarthquakeMovement:
 .End
 
 Script_loadpikachudata:
-	ld a, PIKACHU
+	ldmon PIKACHU
 	ld [wTempWildMonSpecies], a
 	ld a, 5
 	ld [wCurPartyLevel], a
@@ -1142,7 +1133,7 @@ Script_loadtemptrainer:
 Script_loadwildmon:
 	ld a, (1 << 7)
 	ld [wBattleScriptFlags], a
-	call GetScriptByte
+	call LoadScriptPokemonID
 	ld [wTempWildMonSpecies], a
 	call GetScriptByte
 	ld [wCurPartyLevel], a
@@ -1572,11 +1563,7 @@ Script_checkver:
 	db GS_VERSION
 
 Script_getmonname:
-	call GetScriptByte
-	and a
-	jr nz, .gotit
-	ld a, [wScriptVar]
-.gotit
+	call LoadScriptPokemonID
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld de, wStringBuffer1
@@ -1858,7 +1845,7 @@ Script_checktime:
 Script_checkpoke:
 	xor a
 	ld [wScriptVar], a
-	call GetScriptByte
+	call LoadScriptPokemonID
 	ld hl, wPartySpecies
 	ld de, 1
 	call IsInArray
@@ -1921,7 +1908,7 @@ Script_checkphonecall:
 	ret
 
 Script_givepoke:
-	call GetScriptByte
+	call LoadScriptPokemonID
 	ld [wCurPartySpecies], a
 	call GetScriptByte
 	ld [wCurPartyLevel], a
@@ -1951,7 +1938,7 @@ Script_giveegg:
 	xor a ; PARTYMON
 	ld [wScriptVar], a
 	ld [wMonType], a
-	call GetScriptByte
+	call LoadScriptPokemonID
 	ld [wCurPartySpecies], a
 	call GetScriptByte
 	ld [wCurPartyLevel], a
@@ -2360,3 +2347,42 @@ Script_checkver_duplicate: ; unreferenced
 
 .gs_version:
 	db GS_VERSION
+
+LoadScriptPokemonID:
+; a: the ID of the species whose 16-bit index is the next script word (0:
+; wScriptVar's)
+	call GetScriptByte
+	ld l, a
+	call GetScriptByte
+	ld h, a
+	or l
+	jp nz, GetPokemonIDFromIndex
+	ld a, [wScriptVar]
+	ret
+
+Script_setmonval:
+	call LoadScriptPokemonID
+	ld [wScriptVar], a
+	ret
+
+Script_checkmonval:
+	call GetScriptByte
+	ld e, a
+	call GetScriptByte
+	ld d, a
+	ld a, [wScriptVar]
+	call GetPokemonIndexFromID
+	ld a, l
+	cp e
+	jr nz, .no
+	ld a, h
+	cp d
+	jr nz, .no
+	ld a, TRUE
+	ld [wScriptVar], a
+	ret
+
+.no
+	xor a
+	ld [wScriptVar], a
+	ret

@@ -1,4 +1,4 @@
-	db SMEARGLE ; 235
+	db 0 ; #235 (the species ID: see GetBaseData)
 
 	db  55,  20,  35,  75,  20,  45
 	;   hp  atk  def  spd  sat  sdf

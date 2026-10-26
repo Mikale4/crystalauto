@@ -53,6 +53,11 @@ CheckForLuckyNumberWinners:
 	and $f
 	cp c
 	jr z, .SkipBox
+	push bc
+	ld b, c
+	inc b
+	farcall RefreshBoxSpecies ; (its species bytes: see engine/16/mon_table.asm)
+	pop bc
 	ld hl, .BoxBankAddresses
 	ld b, 0
 	add hl, bc

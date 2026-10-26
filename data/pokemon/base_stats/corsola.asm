@@ -1,4 +1,4 @@
-	db CORSOLA ; 222
+	db 0 ; #222 (the species ID: see GetBaseData)
 
 	db  55,  55,  85,  35,  65,  85
 	;   hp  atk  def  spd  sat  sdf

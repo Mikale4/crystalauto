@@ -1,5 +1,12 @@
 ; Pics are defined in gfx/pics.asm
 
+; by index (as GetSpeciesTableEntry's tables): EGG's, -2's, -1's and 0's are
+; before PokemonPicPointers
+	dba_pics EggPic ; Egg has no back sprite
+	dba_pics ; unused
+	dba_pics ; unused
+	dba_pics ; unused
+
 PokemonPicPointers::
 ; entries correspond to Pokémon species
 	table_width 3 * 2
@@ -255,6 +262,3 @@ PokemonPicPointers::
 	dba_pics HoOhFrontpic, HoOhBackpic
 	dba_pics CelebiFrontpic, CelebiBackpic
 	assert_table_length NUM_POKEMON
-	dba_pics ; unused
-	dba_pics EggPic ; Egg has no back sprite
-	assert_table_length EGG

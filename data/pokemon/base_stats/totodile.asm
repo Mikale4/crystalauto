@@ -1,4 +1,4 @@
-	db TOTODILE ; 158
+	db 0 ; #158 (the species ID: see GetBaseData)
 
 	db  50,  65,  64,  43,  44,  48
 	;   hp  atk  def  spd  sat  sdf

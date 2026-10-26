@@ -1,4 +1,4 @@
-	db HITMONCHAN ; 107
+	db 0 ; #107 (the species ID: see GetBaseData)
 
 	db  50, 105,  79,  76,  35, 110
 	;   hp  atk  def  spd  sat  sdf

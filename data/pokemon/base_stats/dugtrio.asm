@@ -1,4 +1,4 @@
-	db DUGTRIO ; 051
+	db 0 ; #051 (the species ID: see GetBaseData)
 
 	db  35,  80,  50, 120,  50,  70
 	;   hp  atk  def  spd  sat  sdf

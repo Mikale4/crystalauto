@@ -1,4 +1,4 @@
-	db TAUROS ; 128
+	db 0 ; #128 (the species ID: see GetBaseData)
 
 	db  75, 100,  95, 110,  40,  70
 	;   hp  atk  def  spd  sat  sdf

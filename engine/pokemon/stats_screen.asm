@@ -425,14 +425,15 @@ StatsScreen_InitUpperHalf:
 	ld a, [wBaseDexNo]
 	ld [wTextDecimalByte], a
 	ld [wCurSpecies], a
+	call GetPokedexNumber
 	hlcoord 8, 0
 	ld [hl], '№'
 	inc hl
 	ld [hl], '.'
 	inc hl
 	hlcoord 10, 0
-	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
-	ld de, wTextDecimalByte
+	lb bc, PRINTNUM_LEADINGZEROS | 2, 3
+	ld de, wPokedexNumberBuffer
 	call PrintNum
 	hlcoord 14, 0
 	call PrintLevel
@@ -1028,7 +1029,7 @@ StatsScreen_PlaceFrontpic:
 	ld hl, wStatsScreenFlags
 	set STATS_SCREEN_ANIMATE_MON, [hl]
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr z, .unown
 	hlcoord 0, 0
 	call PrepMonFrontpic
@@ -1043,7 +1044,7 @@ StatsScreen_PlaceFrontpic:
 
 .AnimateEgg:
 	ld a, [wCurPartySpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr z, .unownegg
 	ld a, TRUE
 	ld [wBoxAlignment], a

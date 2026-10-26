@@ -1,4 +1,4 @@
-	db MURKROW ; 198
+	db 0 ; #198 (the species ID: see GetBaseData)
 
 	db  60,  85,  42,  91,  85,  42
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db GEODUDE ; 074
+	db 0 ; #074 (the species ID: see GetBaseData)
 
 	db  40,  80, 100,  20,  30,  30
 	;   hp  atk  def  spd  sat  sdf

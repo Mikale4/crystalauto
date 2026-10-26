@@ -796,9 +796,9 @@ Link_PrepPartyData_Gen1:
 	ld [de], a
 	inc de
 	ld a, [bc]
-	cp MAGNEMITE
+	cpmon MAGNEMITE
 	jr z, .steel_type
-	cp MAGNETON
+	cpmon MAGNETON
 	jr nz, .skip_steel
 
 .steel_type
@@ -811,10 +811,9 @@ Link_PrepPartyData_Gen1:
 
 .skip_steel
 	push bc
-	dec a
 	ld hl, BaseData + BASE_TYPES
 	ld bc, BASE_DATA_SIZE
-	call AddNTimes
+	call GetSpeciesTableEntry
 	ld bc, BASE_CATCH_RATE - BASE_TYPES
 	ld a, BANK(BaseData)
 	call FarCopyBytes
@@ -2076,17 +2075,17 @@ LinkTrade:
 	ld b, 1
 	pop af
 	ld c, a
-	cp MEW
+	cpmon MEW
 	jr z, .send_checkbyte
 	ld a, [wCurPartySpecies]
-	cp MEW
+	cpmon MEW
 	jr z, .send_checkbyte
 	ld b, 2
 	ld a, c
-	cp CELEBI
+	cpmon CELEBI
 	jr z, .send_checkbyte
 	ld a, [wCurPartySpecies]
-	cp CELEBI
+	cpmon CELEBI
 	jr z, .send_checkbyte
 
 ; Send the byte in a loop until the desired byte has been received.

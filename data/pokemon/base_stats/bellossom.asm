@@ -1,4 +1,4 @@
-	db BELLOSSOM ; 182
+	db 0 ; #182 (the species ID: see GetBaseData)
 
 	db  75,  80,  85,  50,  90, 100
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db NIDOQUEEN ; 031
+	db 0 ; #031 (the species ID: see GetBaseData)
 
 	db  90,  82,  87,  76,  75,  85
 	;   hp  atk  def  spd  sat  sdf

@@ -770,14 +770,10 @@ CGBCopyTwoPredefObjectPals: ; unreferenced
 	ret
 
 _GetMonPalettePointer:
-	ld l, a
-	ld h, 0
-	add hl, hl
-	add hl, hl
-	add hl, hl
-	ld bc, PokemonPalettes
-	add hl, bc
-	ret
+; in: a = species ID (or 0); out: hl = its palettes; clobbers bc
+	ld hl, PokemonPalettes + 2 * 2 * COLOR_SIZE
+	ld bc, 2 * 2 * COLOR_SIZE
+	jp GetSpeciesTableEntry
 
 GetMonNormalOrShinyPalettePointer:
 	push bc

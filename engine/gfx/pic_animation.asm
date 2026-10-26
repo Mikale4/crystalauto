@@ -454,7 +454,25 @@ PokeAnim_StopWaitAnim:
 
 PokeAnim_IsUnown:
 	ld a, [wPokeAnimSpecies]
-	cp UNOWN
+	cpmon UNOWN
+	ret
+
+PokeAnim_SpeciesOrUnownNumber:
+; out: de = wPokeAnimSpecies' index - 1 (wPokeAnimUnownLetter - 1 for UNOWN);
+; preserves bc, hl
+	push hl
+	call PokeAnim_IsUnown
+	ld a, [wPokeAnimUnownLetter]
+	ld l, a
+	ld h, 0
+	jr z, .got_number
+	ld a, [wPokeAnimSpecies]
+	call GetPokemonIndexFromID
+.got_number
+	dec hl
+	ld d, h
+	ld e, l
+	pop hl
 	ret
 
 PokeAnim_IsEgg:
@@ -905,10 +923,7 @@ GetMonAnimPointer:
 	ld l, e
 .idles
 
-	ld a, [wPokeAnimSpeciesOrUnown]
-	dec a
-	ld e, a
-	ld d, 0
+	call PokeAnim_SpeciesOrUnownNumber
 	add hl, de
 	add hl, de
 	ld a, c
@@ -957,26 +972,25 @@ GetMonFramesPointer:
 	call PokeAnim_IsEgg
 	jr z, .egg
 
+	call PokeAnim_SpeciesOrUnownNumber
 	call PokeAnim_IsUnown
 	ld b, BANK(UnownFramesPointers)
 	ld c, BANK(UnownsFrames)
 	ld hl, UnownFramesPointers
 	jr z, .got_frames
-	ld a, [wPokeAnimSpecies]
-	cp JOHTO_POKEMON
 	ld b, BANK(FramesPointers)
 	ld c, BANK(KantoFrames)
 	ld hl, FramesPointers
+	ld a, e ; (index - 1)
+	sub LOW(JOHTO_POKEMON - 1)
+	ld a, d
+	sbc HIGH(JOHTO_POKEMON - 1)
 	jr c, .got_frames
 	ld c, BANK(JohtoFrames)
 .got_frames
 	ld a, c
 	ld [wPokeAnimFramesBank], a
 
-	ld a, [wPokeAnimSpeciesOrUnown]
-	dec a
-	ld e, a
-	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, b
@@ -1011,10 +1025,7 @@ GetMonBitmaskPointer:
 .unown
 	ld [wPokeAnimBitmaskBank], a
 
-	ld a, [wPokeAnimSpeciesOrUnown]
-	dec a
-	ld e, a
-	ld d, 0
+	call PokeAnim_SpeciesOrUnownNumber
 	add hl, de
 	add hl, de
 	ld a, [wPokeAnimBitmaskBank]

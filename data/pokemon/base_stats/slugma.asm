@@ -1,4 +1,4 @@
-	db SLUGMA ; 218
+	db 0 ; #218 (the species ID: see GetBaseData)
 
 	db  40,  40,  40,  20,  70,  40
 	;   hp  atk  def  spd  sat  sdf

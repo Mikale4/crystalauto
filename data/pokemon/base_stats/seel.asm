@@ -1,4 +1,4 @@
-	db SEEL ; 086
+	db 0 ; #086 (the species ID: see GetBaseData)
 
 	db  65,  45,  55,  45,  45,  70
 	;   hp  atk  def  spd  sat  sdf

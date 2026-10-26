@@ -35,9 +35,9 @@ OddEggProbabilities:
 	assert odd_egg_prob_total == 100, "OddEggProbabilities sum to {d:odd_egg_prob_total}%, not 100%!"
 
 OddEggs:
-	table_width ODD_EGG_LENGTH ; (as NICKNAMED_MON_STRUCT_LENGTH, but the moves' 16-bit indexes)
+	table_width ODD_EGG_LENGTH ; (as NICKNAMED_MON_STRUCT_LENGTH, but the species' and moves' 16-bit indexes)
 
-	db PICHU
+	dw PICHU
 	db NO_ITEM
 	dw THUNDERSHOCK, CHARM, DIZZY_PUNCH, 0
 	dw 02048 ; OT ID
@@ -63,7 +63,7 @@ OddEggs:
 	bigdw 8 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db PICHU
+	dw PICHU
 	db NO_ITEM
 	dw THUNDERSHOCK, CHARM, DIZZY_PUNCH, 0
 	dw 00256 ; OT ID
@@ -89,7 +89,7 @@ OddEggs:
 	bigdw 9 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db CLEFFA
+	dw CLEFFA
 	db NO_ITEM
 	dw POUND, CHARM, DIZZY_PUNCH, 0
 	dw 04096 ; OT ID
@@ -115,7 +115,7 @@ OddEggs:
 	bigdw 10 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db CLEFFA
+	dw CLEFFA
 	db NO_ITEM
 	dw POUND, CHARM, DIZZY_PUNCH, 0
 	dw 00768 ; OT ID
@@ -141,7 +141,7 @@ OddEggs:
 	bigdw 11 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db IGGLYBUFF
+	dw IGGLYBUFF
 	db NO_ITEM
 	dw SING, CHARM, DIZZY_PUNCH, 0
 	dw 04096 ; OT ID
@@ -167,7 +167,7 @@ OddEggs:
 	bigdw 7 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db IGGLYBUFF
+	dw IGGLYBUFF
 	db NO_ITEM
 	dw SING, CHARM, DIZZY_PUNCH, 0
 	dw 00768 ; OT ID
@@ -193,7 +193,7 @@ OddEggs:
 	bigdw 8 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db SMOOCHUM
+	dw SMOOCHUM
 	db NO_ITEM
 	dw POUND, LICK, DIZZY_PUNCH, 0
 	dw 03584 ; OT ID
@@ -219,7 +219,7 @@ OddEggs:
 	bigdw 11 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db SMOOCHUM
+	dw SMOOCHUM
 	db NO_ITEM
 	dw POUND, LICK, DIZZY_PUNCH, 0
 	dw 00512 ; OT ID
@@ -245,7 +245,7 @@ OddEggs:
 	bigdw 12 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db MAGBY
+	dw MAGBY
 	db NO_ITEM
 	dw EMBER, DIZZY_PUNCH, 0, 0
 	dw 02560 ; OT ID
@@ -271,7 +271,7 @@ OddEggs:
 	bigdw 10 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db MAGBY
+	dw MAGBY
 	db NO_ITEM
 	dw EMBER, DIZZY_PUNCH, 0, 0
 	dw 00512 ; OT ID
@@ -297,7 +297,7 @@ OddEggs:
 	bigdw 11 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db ELEKID
+	dw ELEKID
 	db NO_ITEM
 	dw QUICK_ATTACK, LEER, DIZZY_PUNCH, 0
 	dw 03072 ; OT ID
@@ -323,7 +323,7 @@ OddEggs:
 	bigdw 10 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db ELEKID
+	dw ELEKID
 	db NO_ITEM
 	dw QUICK_ATTACK, LEER, DIZZY_PUNCH, 0
 	dw 00512 ; OT ID
@@ -349,7 +349,7 @@ OddEggs:
 	bigdw 11 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db TYROGUE
+	dw TYROGUE
 	db NO_ITEM
 	dw TACKLE, DIZZY_PUNCH, 0, 0
 	dw 02560 ; OT ID
@@ -375,7 +375,7 @@ OddEggs:
 	bigdw 8 ; SDef
 	dname "EGG", MON_NAME_LENGTH
 
-	db TYROGUE
+	dw TYROGUE
 	db NO_ITEM
 	dw TACKLE, DIZZY_PUNCH, 0, 0
 	dw 00256 ; OT ID

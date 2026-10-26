@@ -1,4 +1,4 @@
-	db GYARADOS ; 130
+	db 0 ; #130 (the species ID: see GetBaseData)
 
 	db  95, 125,  79,  81,  60, 100
 	;   hp  atk  def  spd  sat  sdf

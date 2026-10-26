@@ -1,4 +1,4 @@
-	db PILOSWINE ; 221
+	db 0 ; #221 (the species ID: see GetBaseData)
 
 	db 100, 100,  80,  50,  60,  60
 	;   hp  atk  def  spd  sat  sdf

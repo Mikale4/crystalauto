@@ -1,4 +1,4 @@
-	db ARCANINE ; 059
+	db 0 ; #059 (the species ID: see GetBaseData)
 
 	db  90, 110,  80,  95, 100,  80
 	;   hp  atk  def  spd  sat  sdf

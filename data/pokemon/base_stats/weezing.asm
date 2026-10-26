@@ -1,4 +1,4 @@
-	db WEEZING ; 110
+	db 0 ; #110 (the species ID: see GetBaseData)
 
 	db  65,  90, 120,  60,  85,  70
 	;   hp  atk  def  spd  sat  sdf

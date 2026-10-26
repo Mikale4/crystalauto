@@ -1,4 +1,4 @@
-	db RAPIDASH ; 078
+	db 0 ; #078 (the species ID: see GetBaseData)
 
 	db  65, 100,  70, 105,  80,  80
 	;   hp  atk  def  spd  sat  sdf

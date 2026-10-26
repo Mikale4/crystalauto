@@ -1,4 +1,4 @@
-	db ELECTRODE ; 101
+	db 0 ; #101 (the species ID: see GetBaseData)
 
 	db  60,  50,  70, 140,  80,  80
 	;   hp  atk  def  spd  sat  sdf

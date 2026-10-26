@@ -1269,7 +1269,7 @@ PlaceMoveScreenLeftArrow:
 	jr z, .prev
 	cp EGG
 	jr z, .prev
-	cp NUM_POKEMON + 1
+	cp MON_TABLE_ENTRIES + 1 ; (an ID)
 	jr c, .legal
 
 .prev
@@ -1302,7 +1302,7 @@ PlaceMoveScreenRightArrow:
 	jr z, .next
 	cp EGG
 	jr z, .next
-	cp NUM_POKEMON + 1
+	cp MON_TABLE_ENTRIES + 1 ; (an ID)
 	jr c, .legal
 
 .next

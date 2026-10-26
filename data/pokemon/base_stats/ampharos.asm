@@ -1,4 +1,4 @@
-	db AMPHAROS ; 181
+	db 0 ; #181 (the species ID: see GetBaseData)
 
 	db  90,  75,  75,  55, 115,  90
 	;   hp  atk  def  spd  sat  sdf

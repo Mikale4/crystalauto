@@ -63,6 +63,14 @@ sMoveIndexTableMagic:: ds 3 ; MOVE_TABLE_MAGIC (or not there: a save from before
 sMoveIndexTable:: ds wMoveIndexTableEntriesEnd - wMoveIndexTable
 
 
+SECTION "Saved Pokemon Table", SRAM
+
+; wPokemonIndexTable's entries, kept the same as it changes (see
+; SyncMonTableToSRAM): the save's 8-bit species IDs' indexes
+sPokemonIndexTableMagic:: ds 3 ; MON_TABLE_MAGIC (or not there: a save from before 16-bit species)
+sPokemonIndexTable:: ds wPokemonIndexTableEntriesEnd - wPokemonIndexTable
+
+
 SECTION "Backup Save", SRAM
 
 sBackupOptions:: ds wOptionsEnd - wOptions
@@ -190,15 +198,27 @@ MACRO boxes
 	endr
 ENDM
 
+; Each box's Pokémon's 16-bit species indexes (their species bytes are IDs only
+; while the box is out: see SaveBox, LoadBox and engine/16/mon_table.asm)
+DEF box_indexes_n = 0
+MACRO box_indexes
+	rept \1
+		DEF box_indexes_n += 1
+	sBox{d:box_indexes_n}PokemonIndexes:: ds 2 * MONS_PER_BOX
+	endr
+ENDM
+
 SECTION "Boxes 1-7", SRAM
 
 ; sBox1 - sBox7
 	boxes 7
+	box_indexes 7
 
 SECTION "Boxes 8-14", SRAM
 
 ; sBox8 - sBox14
 	boxes 7
+	box_indexes 7
 
 ; All 14 boxes fit exactly within 2 SRAM banks
 	assert box_n == NUM_BOXES, \

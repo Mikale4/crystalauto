@@ -1,4 +1,5 @@
 ; Some functions are defined as macros so they can be reused for multiple 16-bit tables
+; (each table's garbage collection bitmap: ___conv_bitmap, a string symbol set before using them)
 ; (they are not parameterized due to performance constraints; loads and non-evicting stores should be as fast as possible)
 
 MACRO ___conversion_table_load
@@ -275,7 +276,7 @@ MACRO ___conversion_bitmap_initialize
 	; macro arguments: WRAM prefix, constant prefix, bit setting function (must preserve de; may be a local label)
 	; falls through; clobbers all registers (make sure to push de before invoking!)
 	xor a
-	ld hl, wConversionTableBitmap
+	ld hl, ___conv_bitmap
 	DEF ___unroll = 4
 	ld c, (\2_ENTRIES + 8 * ___unroll - 1) / (8 * ___unroll)
 .initialization_clear_loop
@@ -339,7 +340,7 @@ ENDM
 MACRO ___conversion_bitmap_free_unused
 	; macro arguments: WRAM prefix, constant prefix
 	ld bc, \2_ENTRIES >> 3
-	ld de, wConversionTableBitmap
+	ld de, ___conv_bitmap
 	ld a, [de]
 	inc e
 	ld hl, \1Entries
@@ -402,7 +403,7 @@ ENDM
 
 MACRO ___conversion_bitmap_set
 	; macro argument: constant prefix
-	; in: a: index - sets the corresponding bit in wConversionTableBitmap if the index is in range
+	; in: a: index - sets the corresponding bit in ___conv_bitmap if the index is in range
 	dec a
 	cp \1_ENTRIES
 	ret nc
@@ -411,10 +412,10 @@ MACRO ___conversion_bitmap_set
 	rlca
 	ld b, a
 	and $1f
-	add a, LOW(wConversionTableBitmap)
+	add a, LOW(___conv_bitmap)
 	ld l, a
 	ld a, b
-	ld h, HIGH(wConversionTableBitmap)
+	ld h, HIGH(___conv_bitmap)
 	ld c, [hl]
 	inc c
 	ret z

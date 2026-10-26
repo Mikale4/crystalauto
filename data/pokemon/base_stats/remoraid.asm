@@ -1,4 +1,4 @@
-	db REMORAID ; 223
+	db 0 ; #223 (the species ID: see GetBaseData)
 
 	db  35,  65,  35,  65,  65,  35
 	;   hp  atk  def  spd  sat  sdf

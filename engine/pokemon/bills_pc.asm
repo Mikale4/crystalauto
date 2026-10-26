@@ -1419,6 +1419,7 @@ CopyBoxmonSpecies:
 	cp NUM_BOXES + 1
 	jr z, .sBox
 	ld b, a
+	farcall RefreshBoxSpecies ; (its species bytes: see engine/16/mon_table.asm)
 	call GetBoxPointer
 	ld a, b
 	call OpenSRAM
@@ -1740,6 +1741,7 @@ BillsPC_CopyMon:
 
 .box
 	ld b, a
+	farcall RefreshBoxSpecies ; (its species bytes: see engine/16/mon_table.asm)
 	call GetBoxPointer
 	ld a, b
 	call OpenSRAM

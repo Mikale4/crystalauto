@@ -1,4 +1,4 @@
-	db QWILFISH ; 211
+	db 0 ; #211 (the species ID: see GetBaseData)
 
 	db  65,  95,  75,  85,  55,  55
 	;   hp  atk  def  spd  sat  sdf

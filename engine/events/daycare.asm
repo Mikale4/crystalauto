@@ -565,11 +565,11 @@ DayCare_InitBreeding:
 	ld a, TEMPMON
 	ld [wMonType], a
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	ld a, $1
 	jr z, .LoadWhichBreedmonIsTheMother
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	ld a, $0
 	jr z, .LoadWhichBreedmonIsTheMother
 	farcall GetGender
@@ -593,13 +593,15 @@ DayCare_InitBreeding:
 
 ; Nidoran♀ can give birth to either gender of Nidoran
 	ld a, [wCurPartySpecies]
-	cp NIDORAN_F
+	cpmon NIDORAN_F
 	jr nz, .GotEggSpecies
+	ld hl, NIDORAN_F
 	call Random
 	cp 50 percent + 1
-	ld a, NIDORAN_F
-	jr c, .GotEggSpecies
-	ld a, NIDORAN_M
+	jr c, .GotNidoran
+	ld hl, NIDORAN_M
+.GotNidoran:
+	call GetPokemonIDFromIndex
 .GotEggSpecies:
 	ld [wCurPartySpecies], a
 	ld [wCurSpecies], a
@@ -651,11 +653,11 @@ DayCare_InitBreeding:
 	ld [wTempMonDVs + 1], a
 	ld de, wBreedMon1DVs
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .GotDVs
 	ld de, wBreedMon2DVs
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .GotDVs
 	ld a, TEMPMON
 	ld [wMonType], a

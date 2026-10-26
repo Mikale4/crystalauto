@@ -1,4 +1,4 @@
-	db MACHAMP ; 068
+	db 0 ; #068 (the species ID: see GetBaseData)
 
 	db  90, 130,  80,  55,  65,  85
 	;   hp  atk  def  spd  sat  sdf

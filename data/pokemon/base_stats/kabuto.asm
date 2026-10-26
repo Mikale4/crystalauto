@@ -1,4 +1,4 @@
-	db KABUTO ; 140
+	db 0 ; #140 (the species ID: see GetBaseData)
 
 	db  30,  80,  90,  55,  55,  45
 	;   hp  atk  def  spd  sat  sdf

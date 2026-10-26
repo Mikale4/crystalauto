@@ -1,4 +1,4 @@
-	db STANTLER ; 234
+	db 0 ; #234 (the species ID: see GetBaseData)
 
 	db  73,  95,  62,  85,  85,  65
 	;   hp  atk  def  spd  sat  sdf

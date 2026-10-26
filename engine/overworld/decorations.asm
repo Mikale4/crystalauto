@@ -568,7 +568,11 @@ GetDecoName:
 	jr .getdeconame
 
 .getpokename:
+; (a: the species' index; see data/decorations/attributes.asm)
 	push bc
+	ld l, a
+	ld h, 0
+	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	pop bc

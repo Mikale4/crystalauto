@@ -1,4 +1,4 @@
-	db DEWGONG ; 087
+	db 0 ; #087 (the species ID: see GetBaseData)
 
 	db  90,  70,  80,  70,  70,  95
 	;   hp  atk  def  spd  sat  sdf

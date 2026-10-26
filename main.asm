@@ -66,7 +66,6 @@ INCLUDE "engine/events/std_collision.asm"
 INCLUDE "engine/events/bug_contest/judging.asm"
 INCLUDE "engine/events/pokerus/apply_pokerus_tick.asm"
 INCLUDE "engine/events/bug_contest/contest_2.asm"
-INCLUDE "engine/pokemon/correct_party_errors.asm"
 INCLUDE "engine/math/get_square_root.asm"
 
 
@@ -127,8 +126,12 @@ INCLUDE "engine/events/kurt_selectquantity_interpretjoypad.asm"
 SECTION "bankA", ROMX
 
 INCLUDE "engine/link/link.asm"
-INCLUDE "engine/overworld/wildmons.asm"
 INCLUDE "engine/battle/link_result.asm"
+
+
+SECTION "Wild Mons", ROMX
+
+INCLUDE "engine/overworld/wildmons.asm"
 
 
 SECTION "bankB", ROMX
@@ -148,6 +151,11 @@ INCLUDE "engine/gfx/place_graphic.asm"
 SECTION "Effect Commands", ROMX
 
 INCLUDE "engine/battle/effect_commands.asm"
+
+
+SECTION "Species Items", ROMX
+
+INCLUDE "engine/battle/species_items.asm"
 
 
 SECTION "Enemy Trainers", ROMX
@@ -170,8 +178,12 @@ INCLUDE "data/battle/effect_command_pointers.asm"
 
 SECTION "bank10", ROMX
 
-INCLUDE "engine/pokedex/pokedex.asm"
 INCLUDE "engine/pokemon/evolve.asm"
+
+
+SECTION "Pokedex", ROMX
+
+INCLUDE "engine/pokedex/pokedex.asm"
 
 
 SECTION "bank11", ROMX
@@ -267,9 +279,16 @@ INCLUDE "engine/pokemon/experience.asm"
 INCLUDE "engine/pokemon/switchpartymons.asm"
 INCLUDE "engine/gfx/load_pics.asm"
 INCLUDE "engine/pokemon/move_mon_wo_mail.asm"
+
+
+SECTION "Pokemon Base Stats", ROMX
+
 INCLUDE "data/pokemon/base_stats.asm"
+
+
+SECTION "Pokemon Names", ROMX
+
 INCLUDE "data/pokemon/names.asm"
-INCLUDE "data/pokemon/unused_pic_banks.asm"
 
 
 SECTION "Crystal Phone Text", ROMX
@@ -296,7 +315,9 @@ INCLUDE "engine/overworld/player_movement.asm"
 INCLUDE "engine/events/engine_flags.asm"
 INCLUDE "engine/overworld/variables.asm"
 INCLUDE "data/text/battle.asm"
+if DEF(_DEBUG)
 INCLUDE "engine/debug/color_picker.asm"
+endc
 
 
 SECTION "bank21", ROMX
@@ -774,5 +795,6 @@ INCLUDE "engine/demo/demo_nodes.asm"
 SECTION "Move Data", ROMX
 
 INCLUDE "engine/16/move_table.asm"
+INCLUDE "engine/16/mon_table.asm"
 INCLUDE "data/moves/moves.asm"
 INCLUDE "data/moves/names.asm"

@@ -1,4 +1,4 @@
-	db DODUO ; 084
+	db 0 ; #084 (the species ID: see GetBaseData)
 
 	db  35,  85,  45,  75,  35,  35
 	;   hp  atk  def  spd  sat  sdf

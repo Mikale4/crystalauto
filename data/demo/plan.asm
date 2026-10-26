@@ -60,7 +60,8 @@ MACRO dgrind ; MAP: battle in its grass until the team is at the level cap
 ENDM
 
 MACRO dcatch ; SPECIES, MAP: battle in the map's grass until one is caught
-	db DPLAN_CATCH, \1
+	db DPLAN_CATCH
+	dw \1 ; (its 16-bit index)
 	map_id \2
 ENDM
 
@@ -971,12 +972,12 @@ DemoPlan:
 DemoWantedMons:
 ; what the Demo throws its BALLS at (once each): a GEODUDE, and a team of POKéMON
 ; that can fight (not the cocoons, nor HOPPIP: no attack till level 10)
-	db GEODUDE
-	db SPEAROW
-	db PIDGEY
-	db SENTRET
-	db HOOTHOOT
-	db BELLSPROUT
-	db LEDYBA
-	db SPINARAK
-	db -1
+	dw GEODUDE
+	dw SPEAROW
+	dw PIDGEY
+	dw SENTRET
+	dw HOOTHOOT
+	dw BELLSPROUT
+	dw LEDYBA
+	dw SPINARAK
+	dw -1

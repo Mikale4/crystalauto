@@ -1,4 +1,4 @@
-	db ESPEON ; 196
+	db 0 ; #196 (the species ID: see GetBaseData)
 
 	db  65,  65,  60, 110, 130,  95
 	;   hp  atk  def  spd  sat  sdf

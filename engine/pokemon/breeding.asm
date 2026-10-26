@@ -40,16 +40,16 @@ CheckBreedmonCompatibility:
 .genderless
 	ld c, $0
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .ditto1
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr nz, .done
 	jr .compute
 
 .ditto1
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .done
 
 .compute
@@ -122,7 +122,7 @@ CheckBreedmonCompatibility:
 ; Ditto is automatically compatible with everything.
 ; If not Ditto, load the breeding groups into b/c and d/e.
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .Compatible
 	ld [wCurSpecies], a
 	call GetBaseData
@@ -136,7 +136,7 @@ CheckBreedmonCompatibility:
 	ld c, a
 
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .Compatible
 	ld [wCurSpecies], a
 	push bc
@@ -233,11 +233,10 @@ HatchEggs:
 	call AddNTimes
 	ld a, [hl]
 	ld [wCurPartySpecies], a
-	dec a
 	call SetSeenAndCaughtMon
 
 	ld a, [wCurPartySpecies]
-	cp TOGEPI
+	cpmon TOGEPI
 	jr nz, .nottogepi
 	; set the event flag for hatching togepi
 	ld de, EVENT_TOGEPI_HATCHED
@@ -431,12 +430,9 @@ GetEggMove:
 	ld d, h
 	ld e, l
 	ld a, [wEggMonSpecies]
-	dec a
-	ld c, a
-	ld b, 0
 	ld hl, EggMovePointers
-	add hl, bc
-	add hl, bc
+	ld bc, 2
+	call GetSpeciesTableEntry
 	ld a, BANK(EggMovePointers)
 	call GetFarWord
 	ld a, BANK("Egg Moves")
@@ -462,20 +458,8 @@ GetEggMove:
 	ld d, h
 	ld e, l
 	ld a, [wEggMonSpecies]
-	dec a
-	ld c, a
-	ld b, 0
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, BANK(EvosAttacksPointers)
-	call GetFarWord
-.loop3
-	ld a, BANK("Evolutions and Attacks")
-	call GetFarByte
-	inc hl
-	and a
-	jr nz, .loop3
+	ld b, a
+	farcall GetLearnsetPointer
 .loop4
 ; (level, then the move's 16-bit index)
 	ld a, BANK("Evolutions and Attacks")
@@ -555,10 +539,10 @@ LoadEggMove:
 GetHeritableMoves:
 	ld hl, wBreedMon2Moves
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .ditto1
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .ditto2
 	ld a, [wBreedMotherOrNonDitto]
 	and a
@@ -612,10 +596,10 @@ GetHeritableMoves:
 GetBreedmonMovePointer:
 	ld hl, wBreedMon1Moves
 	ld a, [wBreedMon1Species]
-	cp DITTO
+	cpmon DITTO
 	ret z
 	ld a, [wBreedMon2Species]
-	cp DITTO
+	cpmon DITTO
 	jr z, .ditto
 	ld a, [wBreedMotherOrNonDitto]
 	and a

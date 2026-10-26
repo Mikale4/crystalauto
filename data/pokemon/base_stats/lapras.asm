@@ -1,4 +1,4 @@
-	db LAPRAS ; 131
+	db 0 ; #131 (the species ID: see GetBaseData)
 
 	db 130,  85,  80,  60,  85,  95
 	;   hp  atk  def  spd  sat  sdf

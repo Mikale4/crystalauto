@@ -1,4 +1,4 @@
-	db DRAGONITE ; 149
+	db 0 ; #149 (the species ID: see GetBaseData)
 
 	db  91, 134,  95,  80, 100, 100
 	;   hp  atk  def  spd  sat  sdf

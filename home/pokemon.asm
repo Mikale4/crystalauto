@@ -4,7 +4,7 @@ IsAPokemon::
 	jr z, .NotAPokemon
 	cp EGG
 	jr z, .Pokemon
-	cp NUM_POKEMON + 1
+	cp MON_TABLE_ENTRIES + 1
 	jr c, .Pokemon
 
 .NotAPokemon:
@@ -190,14 +190,21 @@ endr
 	ret
 
 GetCryIndex::
+; in: a = species ID; out: bc = its index - 1, or carry if it has no cry
 	and a
 	jr z, .no
-	cp NUM_POKEMON + 1
+	cp MON_TABLE_ENTRIES + 1
 	jr nc, .no
 
-	dec a
-	ld c, a
-	ld b, 0
+	push hl
+	call GetPokemonIndexFromID
+	ld b, h
+	ld c, l
+	pop hl
+	ld a, b
+	or c
+	jr z, .no
+	dec bc
 	and a
 	ret
 
@@ -240,8 +247,6 @@ GetBaseData::
 	push hl
 	ldh a, [hROMBank]
 	push af
-	ld a, BANK(BaseData)
-	rst Bankswitch
 
 ; Egg doesn't have BaseData
 	ld a, [wCurSpecies]
@@ -249,10 +254,11 @@ GetBaseData::
 	jr z, .egg
 
 ; Get BaseData
-	dec a
 	ld bc, BASE_DATA_SIZE
 	ld hl, BaseData
-	call AddNTimes
+	call GetSpeciesTableEntry
+	ld a, BANK(BaseData)
+	rst Bankswitch
 	ld de, wCurBaseData
 	ld bc, BASE_DATA_SIZE
 	call CopyBytes
@@ -312,4 +318,38 @@ GetNickname::
 
 	pop bc
 	pop hl
+	ret
+
+GetSpeciesTableEntry::
+; in: a = a species ID, hl = a table by species (its first entry the index 1's;
+; the entries of indexes below 1 before it), bc = its entries' size
+; out: hl = the species' entry; preserves bc, de
+	push de
+	ld d, h
+	ld e, l
+	call GetPokemonIndexFromID
+	call GetSpeciesIndexTableEntry
+	pop de
+	ret
+
+GetSpeciesIndexTableEntry::
+; in: hl = a species index, de = a table by species (as GetSpeciesTableEntry's),
+; bc = its entries' size; out: hl = the index's entry; preserves bc, de
+	push de
+	dec hl
+	ld d, h
+	ld e, l
+	ld hl, 0
+	ld a, 16
+.multiply
+	add hl, hl
+	sla e
+	rl d
+	jr nc, .next
+	add hl, bc
+.next
+	dec a
+	jr nz, .multiply
+	pop de
+	add hl, de
 	ret

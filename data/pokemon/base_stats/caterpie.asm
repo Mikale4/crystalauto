@@ -1,4 +1,4 @@
-	db CATERPIE ; 010
+	db 0 ; #010 (the species ID: see GetBaseData)
 
 	db  45,  30,  35,  45,  20,  20
 	;   hp  atk  def  spd  sat  sdf

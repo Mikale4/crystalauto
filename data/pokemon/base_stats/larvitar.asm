@@ -1,4 +1,4 @@
-	db LARVITAR ; 246
+	db 0 ; #246 (the species ID: see GetBaseData)
 
 	db  50,  64,  50,  41,  45,  50
 	;   hp  atk  def  spd  sat  sdf

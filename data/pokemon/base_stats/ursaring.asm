@@ -1,4 +1,4 @@
-	db URSARING ; 217
+	db 0 ; #217 (the species ID: see GetBaseData)
 
 	db  90, 130,  75,  55,  75,  75
 	;   hp  atk  def  spd  sat  sdf

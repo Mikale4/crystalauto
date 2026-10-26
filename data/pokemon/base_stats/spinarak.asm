@@ -1,4 +1,4 @@
-	db SPINARAK ; 167
+	db 0 ; #167 (the species ID: see GetBaseData)
 
 	db  40,  60,  40,  30,  40,  40
 	;   hp  atk  def  spd  sat  sdf

@@ -1,4 +1,4 @@
-	db PSYDUCK ; 054
+	db 0 ; #054 (the species ID: see GetBaseData)
 
 	db  50,  52,  48,  55,  65,  50
 	;   hp  atk  def  spd  sat  sdf

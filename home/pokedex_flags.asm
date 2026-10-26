@@ -30,36 +30,90 @@ GetWeekday::
 	add 7
 	ret
 
+; The Pokédex flags are by species index: wPokedexCaught and wPokedexSeen have
+; indexes 1 to 256's, wPokedexCaughtExt and wPokedexSeenExt the ones after.
+
 SetSeenAndCaughtMon::
-	push af
-	ld c, a
+; species ID a
+	call GetPokemonFlagIndex
+	push de
+	call SetSeenMonIndex
+	pop de
+SetCaughtMonIndex::
+; species index de
 	ld hl, wPokedexCaught
-	ld b, SET_FLAG
-	call PokedexFlagAction
-	pop af
-	; fallthrough
+	ld bc, wPokedexCaughtExt
+	ld a, SET_FLAG
+	jr PokedexFlagAction
 
 SetSeenMon::
-	ld c, a
+	call GetPokemonFlagIndex
+SetSeenMonIndex::
 	ld hl, wPokedexSeen
-	ld b, SET_FLAG
+	ld bc, wPokedexSeenExt
+	ld a, SET_FLAG
 	jr PokedexFlagAction
 
 CheckCaughtMon::
-	ld c, a
+; nz if species ID a is caught
+	call GetPokemonFlagIndex
+CheckCaughtMonIndex::
+; nz if species index de is caught
 	ld hl, wPokedexCaught
-	ld b, CHECK_FLAG
+	ld bc, wPokedexCaughtExt
+	ld a, CHECK_FLAG
 	jr PokedexFlagAction
 
 CheckSeenMon::
-	ld c, a
+	call GetPokemonFlagIndex
+CheckSeenMonIndex::
 	ld hl, wPokedexSeen
-	ld b, CHECK_FLAG
+	ld bc, wPokedexSeenExt
+	ld a, CHECK_FLAG
 	; fallthrough
 
 PokedexFlagAction::
-	ld d, 0
-	predef SmallFarFlagAction
+; action a on species index de's flag (hl: the flags of indexes 1 to 256, bc:
+; the ones after); a = c = the flag (CHECK_FLAG), z if it's clear
+	dec de
+	inc d
+	dec d
+	jr z, .got_flags
+	dec d
+	ld h, b
+	ld l, c
+.got_flags
+	ld b, a
+	call FlagAction
 	ld a, c
 	and a
+	ret
+
+GetPokemonFlagIndex:
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
+	ret
+
+CountPokedexCaught::
+; out: de = how many species are caught (and big-endian in wPokedexNumberBuffer);
+; a = [wNumSetBits] = that, up to 255
+	farcall _CountPokedexCaught
+	ld a, [wNumSetBits]
+	ret
+
+CountPokedexSeen::
+; out: de = how many species are seen (as CountPokedexCaught's)
+	farcall _CountPokedexSeen
+	ld a, [wNumSetBits]
+	ret
+
+GetPokedexNumber::
+; in: a = species ID; out: hl = its Pokédex number (big-endian in
+; wPokedexNumberBuffer too); preserves bc, de
+	call GetPokemonIndexFromID
+	ld a, h
+	ld [wPokedexNumberBuffer], a
+	ld a, l
+	ld [wPokedexNumberBuffer + 1], a
 	ret

@@ -1,4 +1,4 @@
-	db UNOWN ; 201
+	db 0 ; #201 (the species ID: see GetBaseData)
 
 	db  48,  72,  48,  48,  72,  48
 	;   hp  atk  def  spd  sat  sdf

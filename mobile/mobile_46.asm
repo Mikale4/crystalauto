@@ -3948,14 +3948,16 @@ BattleTower_UbersCheck:
 .loop
 	push af
 	ld a, [de]
-	cp MEWTWO
+	cpmon MEWTWO
 	jr z, .uber
-	cp MEW
+	cpmon MEW
 	jr z, .uber
-	cp LUGIA
-	jr c, .next
-	cp NUM_POKEMON + 1
-	jr nc, .next
+	cpmon LUGIA
+	jr z, .uber
+	cpmon HO_OH
+	jr z, .uber
+	cpmon CELEBI
+	jr nz, .next
 .uber
 	ld a, [hl]
 	cp 70
@@ -6404,7 +6406,6 @@ CheckCaughtMemMon:
 	push de
 	push hl
 	ld a, [wTempSpecies]
-	dec a
 	call CheckCaughtMon
 	pop hl
 	pop de
@@ -6414,7 +6415,6 @@ CheckSeenMemMon:
 	push de
 	push hl
 	ld a, [wTempSpecies]
-	dec a
 	call CheckSeenMon
 	pop hl
 	pop de

@@ -311,27 +311,8 @@ BuildReminderList::
 	call AddNTimes
 	ld d, [hl]
 	ld a, [wCurPartySpecies]
-	dec a
-	ld c, a
-	ld b, 0
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, BANK(EvosAttacksPointers)
-	call GetFarWord
-.evolutions
-	ld a, BANK("Evolutions and Attacks")
-	call GetFarByte
-	inc hl
-	and a
-	jr z, .learnset
-	cp EVOLVE_STAT
-	jr nz, .no_extra
-	inc hl
-.no_extra
-	inc hl
-	inc hl
-	jr .evolutions
+	ld b, a
+	farcall GetLearnsetPointer
 
 .learnset
 ; (level, then the move's 16-bit index)
@@ -370,12 +351,9 @@ BuildTutorList::
 	farcall GetPreEvolution
 	jr c, .first_form
 	ld a, [wCurPartySpecies]
-	dec a
-	ld c, a
-	ld b, 0
 	ld hl, EggMovePointers
-	add hl, bc
-	add hl, bc
+	ld bc, 2
+	call GetSpeciesTableEntry
 	ld a, BANK(EggMovePointers)
 	call GetFarWord
 .egg_moves

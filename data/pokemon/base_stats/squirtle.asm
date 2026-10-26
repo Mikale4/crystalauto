@@ -1,4 +1,4 @@
-	db SQUIRTLE ; 007
+	db 0 ; #007 (the species ID: see GetBaseData)
 
 	db  44,  48,  65,  43,  50,  64
 	;   hp  atk  def  spd  sat  sdf

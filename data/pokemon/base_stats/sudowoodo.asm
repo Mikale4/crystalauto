@@ -1,4 +1,4 @@
-	db SUDOWOODO ; 185
+	db 0 ; #185 (the species ID: see GetBaseData)
 
 	db  70, 100, 115,  30,  30,  65
 	;   hp  atk  def  spd  sat  sdf

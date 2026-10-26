@@ -106,7 +106,7 @@ OlivineLighthouseAmphy:
 	checkevent EVENT_JASMINE_RETURNED_TO_GYM
 	iftrue .HealthyNow
 	writetext AmphyPalPalooText
-	setval AMPHAROS
+	setmonval AMPHAROS
 	special PlaySlowCry
 	promptbutton
 	writetext AmphyBreathingLaboredText

@@ -1,4 +1,4 @@
-	db BULBASAUR ; 001
+	db 0 ; #001 (the species ID: see GetBaseData)
 
 	db  45,  49,  49,  45,  65,  65
 	;   hp  atk  def  spd  sat  sdf

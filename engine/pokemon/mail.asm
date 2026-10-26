@@ -103,7 +103,9 @@ MoveMailFromPCToParty:
 	pop hl
 	ld de, MAIL_STRUCT_LENGTH - 1 ; message type
 	add hl, de
-	ld d, [hl]
+	ld a, [hl]
+	res MAIL_TYPE_SPECIES_HIGH_F, a
+	ld d, a
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMon1Item
 	ld bc, PARTYMON_STRUCT_LENGTH
@@ -229,10 +231,17 @@ GivePokeMail::
 	ld [de], a
 	inc de
 	ld a, [wCurPartySpecies]
+	call GetPokemonIndexFromID
+	ld a, l
 	ld [de], a
 	inc de
 	pop bc
+	ld a, h
+	and a
 	ld a, b
+	jr z, .got_type
+	set MAIL_TYPE_SPECIES_HIGH_F, a
+.got_type
 	ld [de], a
 	jp CloseSRAM
 
@@ -475,6 +484,7 @@ MailboxPC:
 	ld bc, MAIL_STRUCT_LENGTH
 	call AddNTimes
 	ld a, [hl]
+	res MAIL_TYPE_SPECIES_HIGH_F, a
 	ld [wCurItem], a
 	jp CloseSRAM
 

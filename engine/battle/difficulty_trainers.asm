@@ -221,10 +221,7 @@ FitEvolutionStages::
 	and a
 	jr z, .counted
 	inc c
-	cp EVOLVE_STAT
-	call z, .SkipByte
-	call .SkipByte
-	call .SkipByte
+	call .SkipEvolution
 	jr .count
 
 .counted
@@ -249,10 +246,7 @@ FitEvolutionStages::
 	dec b
 	jr z, .found
 	call .GetEvoByte
-	cp EVOLVE_STAT
-	call z, .SkipByte
-	call .SkipByte
-	call .SkipByte
+	call .SkipEvolution
 	jr .find
 
 .found
@@ -264,7 +258,12 @@ FitEvolutionStages::
 	cp EVOLVE_STAT
 	call z, .SkipByte
 	call .GetEvoByte
-	push af ; the species it evolves into
+	push af
+	call .GetEvoByte
+	ld h, a
+	pop af
+	ld l, a
+	push hl ; the species it evolves into (its index)
 ; the level it needs
 	ld a, b
 	cp EVOLVE_LEVEL
@@ -275,25 +274,24 @@ FitEvolutionStages::
 	ld a, c
 	jr z, .got_level
 ; (an item, a trade, friendship: by the line, see ItemEvolutionLevels)
-	push hl
 	push de
 	ld a, [wDifficultySpecies]
 	ld hl, ItemEvolutionLevels
-	ld de, 2
-	call IsInArray
+	ld de, 3
+	call FindSpeciesInArray
 	pop de
 	ld a, ITEM_EVO_LV
-	jr nc, .got_item_level
+	jr nc, .got_level
+	inc hl
 	inc hl
 	ld a, [hl]
-.got_item_level
-	pop hl
 .got_level
 	ld b, a
 	ld a, [wCurPartyLevel]
 	cp b
 	jr c, .too_low
-	pop af
+	pop hl
+	call GetPokemonIDFromIndex
 	ld [wDifficultySpecies], a
 	pop de
 	srl e ; (another way at the next branch)
@@ -302,7 +300,7 @@ FitEvolutionStages::
 	jr .done
 
 .too_low
-	pop af
+	pop hl
 .done_pop
 	pop de
 .done
@@ -315,6 +313,12 @@ FitEvolutionStages::
 	inc hl
 	ret
 
+.SkipEvolution:
+; (past the type a)
+	cp EVOLVE_STAT
+	call z, .SkipByte
+	inc hl ; (the parameter)
+	inc hl ; (the species: a 16-bit index)
 .SkipByte:
 	inc hl
 	ret
@@ -323,43 +327,37 @@ ItemEvolutionLevels:
 ; The level a trainer's Pokémon evolves at, by a stone or an item that took a
 ; trade (see FitEvolution): about where its line's level evolutions would put it.
 ; first evolutions
-	db SUNKERN,    20
-	db PIKACHU,    24
-	db STARYU,     24
-	db CLEFAIRY,   26
-	db JIGGLYPUFF, 26
-	db EEVEE,      26
-	db VULPIX,     28
-	db SHELLDER,   28
-	db GROWLITHE,  30
-	db ONIX,       30
-	db EXEGGCUTE,  30
-	db SCYTHER,    30
-	db PORYGON,    30
-	db SLOWPOKE,   37 ; (as SLOWBRO)
+	dwb SUNKERN,    20
+	dwb PIKACHU,    24
+	dwb STARYU,     24
+	dwb CLEFAIRY,   26
+	dwb JIGGLYPUFF, 26
+	dwb EEVEE,      26
+	dwb VULPIX,     28
+	dwb SHELLDER,   28
+	dwb GROWLITHE,  30
+	dwb ONIX,       30
+	dwb EXEGGCUTE,  30
+	dwb SCYTHER,    30
+	dwb PORYGON,    30
+	dwb SLOWPOKE,   37 ; (as SLOWBRO)
 ; to a third form
-	db GLOOM,      30
-	db WEEPINBELL, 30
-	db NIDORINA,   32
-	db NIDORINO,   32
-	db POLIWHIRL,  34
-	db KADABRA,    36
-	db MACHOKE,    36
-	db GRAVELER,   36
-	db HAUNTER,    36
-	db SEADRA,     40
-	db -1
+	dwb GLOOM,      30
+	dwb WEEPINBELL, 30
+	dwb NIDORINA,   32
+	dwb NIDORINO,   32
+	dwb POLIWHIRL,  34
+	dwb KADABRA,    36
+	dwb MACHOKE,    36
+	dwb GRAVELER,   36
+	dwb HAUNTER,    36
+	dwb SEADRA,     40
+	dw -1
 
 GetEvosPointer:
-; hl: species a's evolutions and moves
-	dec a
-	ld c, a
-	ld b, 0
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, BANK(EvosAttacksPointers)
-	call GetFarWord
+; hl: species a's evolutions and moves; preserves de
+	ld b, a
+	farcall GetEvolutionsPointer
 	ret
 
 UpdateOTPartyMon::

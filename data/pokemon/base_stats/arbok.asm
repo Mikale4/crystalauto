@@ -1,4 +1,4 @@
-	db ARBOK ; 024
+	db 0 ; #024 (the species ID: see GetBaseData)
 
 	db  60,  85,  69,  80,  65,  79
 	;   hp  atk  def  spd  sat  sdf

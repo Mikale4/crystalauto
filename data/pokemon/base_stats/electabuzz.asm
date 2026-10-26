@@ -1,4 +1,4 @@
-	db ELECTABUZZ ; 125
+	db 0 ; #125 (the species ID: see GetBaseData)
 
 	db  65,  83,  57, 105,  95,  85
 	;   hp  atk  def  spd  sat  sdf

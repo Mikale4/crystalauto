@@ -1,4 +1,4 @@
-	db TYPHLOSION ; 157
+	db 0 ; #157 (the species ID: see GetBaseData)
 
 	db  78,  84,  78, 100, 109,  85
 	;   hp  atk  def  spd  sat  sdf

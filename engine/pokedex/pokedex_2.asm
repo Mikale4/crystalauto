@@ -91,17 +91,18 @@ DisplayDexEntry:
 	ld l, c
 	push de
 ; Print dex number
+	ld a, [wTempSpecies]
+	call GetPokedexNumber
 	hlcoord 2, 8
 	ld a, $5c ; No
 	ld [hli], a
 	ld a, $5d ; .
 	ld [hli], a
-	ld de, wTempSpecies
-	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
+	ld de, wPokedexNumberBuffer
+	lb bc, PRINTNUM_LEADINGZEROS | 2, 3
 	call PrintNum
 ; Check to see if we caught it.  Get out of here if we haven't.
 	ld a, [wTempSpecies]
-	dec a
 	call CheckCaughtMon
 	pop hl
 	pop bc
@@ -217,37 +218,25 @@ DisplayDexEntry:
 POKeString: ; unreferenced
 	db "#@"
 
-GetDexEntryPointer:
-; return dex entry pointer b:de
+GetDexEntryPointer::
+; in: b = species ID; out: b:de = its dex entry; preserves c, hl
 	push hl
-	ld hl, PokedexDataPointerTable
+	push bc
 	ld a, b
-	dec a
-	ld d, 0
-	ld e, a
-	add hl, de
-	add hl, de
-	ld e, [hl]
+	ld hl, PokedexDataPointerTable
+	ld bc, 3
+	call GetSpeciesTableEntry
+	pop bc
+	ld a, BANK(PokedexDataPointerTable)
+	call GetFarByte
+	ld b, a
 	inc hl
-	ld d, [hl]
-	push de
-	rlca
-	rlca
-	maskbits NUM_DEX_ENTRY_BANKS
-	ld hl, .PokedexEntryBanks
-	ld d, 0
-	ld e, a
-	add hl, de
-	ld b, [hl]
-	pop de
+	ld a, BANK(PokedexDataPointerTable)
+	call GetFarWord
+	ld d, h
+	ld e, l
 	pop hl
 	ret
-
-.PokedexEntryBanks:
-	db BANK("Pokedex Entries 001-064")
-	db BANK("Pokedex Entries 065-128")
-	db BANK("Pokedex Entries 129-192")
-	db BANK("Pokedex Entries 193-251")
 
 GetDexEntryPagePointer:
 	call GetDexEntryPointer

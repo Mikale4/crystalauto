@@ -1,4 +1,4 @@
-	db LUGIA ; 249
+	db 0 ; #249 (the species ID: see GetBaseData)
 
 	db 106,  90, 130, 110,  90, 154
 	;   hp  atk  def  spd  sat  sdf

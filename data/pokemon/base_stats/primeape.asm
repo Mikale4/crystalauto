@@ -1,4 +1,4 @@
-	db PRIMEAPE ; 057
+	db 0 ; #057 (the species ID: see GetBaseData)
 
 	db  65, 105,  60,  95,  60,  70
 	;   hp  atk  def  spd  sat  sdf

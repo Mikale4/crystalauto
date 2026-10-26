@@ -1,6 +1,7 @@
 MACRO decoration
-	; type, name, action, event flag, tile/sprite
-	db \1, \2, \3
+	; type, name (a species' 16-bit index for a poster or a doll), action, event flag, tile/sprite
+	assert HIGH(\2) == 0, "a decoration's species must have an index below 256"
+	db \1, LOW(\2), \3
 	dw \4
 	db \5
 ENDM

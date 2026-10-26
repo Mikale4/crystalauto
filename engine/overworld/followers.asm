@@ -404,10 +404,9 @@ GetFollowerPalette:
 	ld a, [wFollowerSpecies]
 	and a
 	jr z, .done
-	dec a
 	ld hl, BaseData + BASE_TYPES
 	ld bc, BASE_DATA_SIZE
-	call AddNTimes
+	call GetSpeciesTableEntry
 	ld a, BANK(BaseData)
 	call GetFarByte
 	ld c, a

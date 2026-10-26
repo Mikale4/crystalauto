@@ -1,4 +1,4 @@
-	db KANGASKHAN ; 115
+	db 0 ; #115 (the species ID: see GetBaseData)
 
 	db 105,  95,  80,  90,  40,  80
 	;   hp  atk  def  spd  sat  sdf

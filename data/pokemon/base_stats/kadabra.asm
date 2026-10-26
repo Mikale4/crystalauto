@@ -1,4 +1,4 @@
-	db KADABRA ; 064
+	db 0 ; #064 (the species ID: see GetBaseData)
 
 	db  40,  35,  30, 105, 120,  70
 	;   hp  atk  def  spd  sat  sdf

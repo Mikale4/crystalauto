@@ -1,4 +1,4 @@
-	db TYROGUE ; 236
+	db 0 ; #236 (the species ID: see GetBaseData)
 
 	db  35,  35,  35,  35,  35,  35
 	;   hp  atk  def  spd  sat  sdf

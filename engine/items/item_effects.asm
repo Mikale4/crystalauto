@@ -455,7 +455,7 @@ PokeBallEffect:
 	jr .not_ditto
 
 .ditto
-	ld a, DITTO
+	ldmon DITTO
 	ld [wTempEnemyMonSpecies], a
 	jr .load_data
 
@@ -519,13 +519,11 @@ PokeBallEffect:
 	call ClearSprites
 
 	ld a, [wTempSpecies]
-	dec a
 	call CheckCaughtMon
 
 	ld a, c
 	push af
 	ld a, [wTempSpecies]
-	dec a
 	call SetSeenAndCaughtMon
 	pop af
 	and a
@@ -771,27 +769,17 @@ ParkBallMultiplier:
 	ret
 
 HeavyBall_GetDexEntryBank:
-; BUG: Heavy Ball uses wrong weight value for three Pokémon (see docs/bugs_and_glitches.md)
 	push hl
 	push de
+	push bc
 	ld a, [wEnemyMonSpecies]
-	rlca
-	rlca
-	maskbits NUM_DEX_ENTRY_BANKS
-	ld hl, .PokedexEntryBanks
-	ld d, 0
-	ld e, a
-	add hl, de
-	ld a, [hl]
+	ld b, a
+	farcall GetDexEntryPointer
+	ld a, b
+	pop bc
 	pop de
 	pop hl
 	ret
-
-.PokedexEntryBanks:
-	db BANK("Pokedex Entries 001-064")
-	db BANK("Pokedex Entries 065-128")
-	db BANK("Pokedex Entries 129-192")
-	db BANK("Pokedex Entries 193-251")
 
 HeavyBallMultiplier:
 ; subtract 20 from catch rate if weight < 102.4 kg
@@ -799,15 +787,13 @@ HeavyBallMultiplier:
 ; else add 20 to catch rate if weight < 307.2 kg
 ; else add 30 to catch rate if weight < 409.6 kg
 ; else add 40 to catch rate
+	push bc
 	ld a, [wEnemyMonSpecies]
-	ld hl, PokedexDataPointerTable
-	dec a
-	ld e, a
-	ld d, 0
-	add hl, de
-	add hl, de
-	ld a, BANK(PokedexDataPointerTable)
-	call GetFarWord
+	ld b, a
+	farcall GetDexEntryPointer
+	ld h, d
+	ld l, e
+	pop bc
 
 .SkipText:
 	call HeavyBall_GetDexEntryBank
@@ -914,14 +900,8 @@ LureBallMultiplier:
 MoonBallMultiplier:
 	push bc
 	ld a, [wTempEnemyMonSpecies]
-	dec a
-	ld c, a
-	ld b, 0
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, BANK(EvosAttacksPointers)
-	call GetFarWord
+	ld b, a
+	farcall GetEvolutionsPointer
 	pop bc
 
 	push bc
@@ -931,15 +911,13 @@ MoonBallMultiplier:
 	pop bc
 	ret nz
 
-; BUG: Moon Ball does not boost catch rate (see docs/bugs_and_glitches.md)
-	inc hl
-	inc hl
+; (fixed: its first evolution's item, which is MOON_STONE)
 	inc hl
 
 	push bc
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
-	cp MOON_STONE_RED ; BURN_HEAL
+	cp MOON_STONE
 	pop bc
 	ret nz
 
@@ -1017,20 +995,24 @@ LoveBallMultiplier:
 
 FastBallMultiplier:
 	ld a, [wTempEnemyMonSpecies]
-	ld c, a
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, FleeMons
-	ld d, 3
+	ld c, 3
 
 .loop
 ; BUG: Fast Ball only boosts catch rate for three Pokémon (see docs/bugs_and_glitches.md)
+	push hl
 	ld a, BANK(FleeMons)
-	call GetFarByte
-
-	inc hl
-	cp -1
-	jr z, .next
-	cp c
+	call GetFarWord
+	ld a, l
+	cp e
 	jr nz, .next
+	ld a, h
+	cp d
+	jr nz, .next
+	pop hl
 	sla b
 	jr c, .max
 
@@ -1042,7 +1024,10 @@ FastBallMultiplier:
 	ret
 
 .next
-	dec d
+	pop hl
+	inc hl
+	inc hl
+	dec c
 	jr nz, .loop
 	ret
 

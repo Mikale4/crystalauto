@@ -1,4 +1,4 @@
-	db VENOMOTH ; 049
+	db 0 ; #049 (the species ID: see GetBaseData)
 
 	db  70,  65,  60,  90,  90,  75
 	;   hp  atk  def  spd  sat  sdf

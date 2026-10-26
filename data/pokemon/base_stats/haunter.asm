@@ -1,4 +1,4 @@
-	db HAUNTER ; 093
+	db 0 ; #093 (the species ID: see GetBaseData)
 
 	db  45,  50,  45,  95, 115,  55
 	;   hp  atk  def  spd  sat  sdf

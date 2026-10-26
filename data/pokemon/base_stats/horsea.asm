@@ -1,4 +1,4 @@
-	db HORSEA ; 116
+	db 0 ; #116 (the species ID: see GetBaseData)
 
 	db  30,  40,  70,  60,  70,  25
 	;   hp  atk  def  spd  sat  sdf

@@ -42,15 +42,7 @@ EvolveAfterBattle_MasterLoop:
 	jp z, EvolveAfterBattle_MasterLoop
 
 	ld a, [wEvolutionOldSpecies]
-	dec a
-	ld b, 0
-	ld c, a
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
+	call GetEvosAttacksPointer
 
 	push hl
 	xor a
@@ -198,7 +190,10 @@ EvolveAfterBattle_MasterLoop:
 
 	push hl
 
-	ld a, [hl]
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetPokemonIDFromIndex
 	ld [wEvolutionNewSpecies], a
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
@@ -232,10 +227,9 @@ EvolveAfterBattle_MasterLoop:
 
 	pop hl
 
-	ld a, [hl]
+	ld a, [wEvolutionNewSpecies]
 	ld [wCurSpecies], a
 	ld [wTempMonSpecies], a
-	ld [wEvolutionNewSpecies], a
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
@@ -298,11 +292,10 @@ EvolveAfterBattle_MasterLoop:
 	ld [wMonType], a
 	call LearnLevelMoves
 	ld a, [wTempSpecies]
-	dec a
 	call SetSeenAndCaughtMon
 
 	ld a, [wTempSpecies]
-	cp UNOWN
+	cpmon UNOWN
 	jr nz, .skip_unown
 
 	ld hl, wTempMonDVs
@@ -324,6 +317,7 @@ EvolveAfterBattle_MasterLoop:
 .dont_evolve_2
 	inc hl
 .dont_evolve_3
+	inc hl ; (the species: a 16-bit index)
 	inc hl
 	jp .loop
 
@@ -413,20 +407,8 @@ EvolvingText:
 LearnLevelMoves:
 	ld a, [wTempSpecies]
 	ld [wCurPartySpecies], a
-	dec a
-	ld b, 0
-	ld c, a
-	ld hl, EvosAttacksPointers
-	add hl, bc
-	add hl, bc
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-
-.skip_evos
-	ld a, [hli]
-	and a
-	jr nz, .skip_evos
+	call GetEvosAttacksPointer
+	call SkipEvolutions
 
 .find_move
 ; (level, then the move's 16-bit index)
@@ -486,21 +468,9 @@ FillMoves:
 	push hl
 	push de
 	push bc
-	ld hl, EvosAttacksPointers
-	ld b, 0
 	ld a, [wCurPartySpecies]
-	dec a
-	add a
-	rl b
-	ld c, a
-	add hl, bc
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-.GoToAttacks:
-	ld a, [hli]
-	and a
-	jr nz, .GoToAttacks
+	call GetEvosAttacksPointer
+	call SkipEvolutions
 	jr .GetLevel
 
 .NextMove:
@@ -622,10 +592,13 @@ GetPreEvolution:
 ; Return carry and the new species in wCurPartySpecies
 ; if a pre-evolution is found.
 
-	ld c, 0
+	ld a, [wCurPartySpecies]
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
+	ld bc, 0 ; (each species' index - 1)
 .loop ; For each Pokemon...
 	ld hl, EvosAttacksPointers
-	ld b, 0
 	add hl, bc
 	add hl, bc
 	ld a, [hli]
@@ -641,25 +614,72 @@ GetPreEvolution:
 
 .not_tyrogue
 	inc hl
-	ld a, [wCurPartySpecies]
-	cp [hl]
-	jr z, .found_preevo
-	inc hl
+	ld a, [hli]
+	cp e
+	jr nz, .next
 	ld a, [hl]
-	and a
-	jr nz, .loop2
+	cp d
+	jr z, .found_preevo
+.next
+	inc hl
+	jr .loop2
 
 .no_evolve
-	inc c
+	inc bc
 	ld a, c
-	cp NUM_POKEMON
-	jr c, .loop
+	cp LOW(NUM_POKEMON)
+	jr nz, .loop
+	ld a, b
+	cp HIGH(NUM_POKEMON)
+	jr nz, .loop
 	and a
 	ret
 
 .found_preevo
-	inc c
-	ld a, c
+	ld h, b
+	ld l, c
+	inc hl
+	call GetPokemonIDFromIndex
 	ld [wCurPartySpecies], a
 	scf
 	ret
+
+GetEvolutionsPointer::
+; in: b = species ID; out: hl = its evolutions (BANK(EvosAttacksPointers));
+; preserves bc, de (for farcall)
+	ld a, b
+	; fallthrough
+
+GetEvosAttacksPointer::
+; in: a = species ID; out: hl = its evolutions and learnset (in this bank:
+; BANK(EvosAttacksPointers)); preserves bc, de
+	push bc
+	ld hl, EvosAttacksPointers
+	ld bc, 2
+	call GetSpeciesTableEntry
+	pop bc
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ret
+
+GetLearnsetPointer::
+; in: b = species ID; out: hl = its learnset (past its evolutions:
+; BANK(EvosAttacksPointers)); preserves bc, de (for farcall)
+	ld a, b
+	call GetEvosAttacksPointer
+	; fallthrough
+
+SkipEvolutions::
+; hl = evolutions (in this bank) -> past them, at the learnset; preserves bc, de
+	ld a, [hli]
+	and a
+	ret z
+	cp EVOLVE_STAT
+	jr nz, .no_extra
+	inc hl
+.no_extra
+	inc hl ; (the parameter)
+	inc hl ; (the species: a 16-bit index)
+	inc hl
+	jr SkipEvolutions

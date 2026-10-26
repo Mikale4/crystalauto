@@ -71,6 +71,7 @@ NewGameWithDemoState:
 	ld [wDebugFlags], a
 	call ResetWRAM
 	farcall InitMoveTable
+	farcall InitMonTable
 	pop af
 	ld [wDemoState], a
 	and a
@@ -352,6 +353,7 @@ LoadOrRegenerateLuckyIDNumber:
 
 Continue:
 	farcall InitMoveTable
+	farcall InitMonTable
 	farcall TryLoadSaveFile
 	jr c, .FailToLoad
 	farcall _LoadData
@@ -637,12 +639,10 @@ Continue_DisplayPokedexNumCaught:
 	bit STATUSFLAGS_POKEDEX_F, a
 	ret z
 	push hl
-	ld hl, wPokedexCaught
-	ld b, (NUM_POKEMON + 7) / 8
-	call CountSetBits
+	call CountPokedexCaught
 	pop hl
-	ld de, wNumSetBits
-	lb bc, 1, 3
+	ld de, wPokedexNumberBuffer
+	lb bc, 2, 3
 	jp PrintNum
 
 Continue_DisplayGameTime:
@@ -680,7 +680,7 @@ OakSpeech:
 	call RotateThreePalettesRight
 	call ClearTilemap
 
-	ld a, WOOPER
+	ldmon WOOPER
 	ld [wCurSpecies], a
 	ld [wCurPartySpecies], a
 	call GetBaseData
@@ -741,7 +741,7 @@ OakText1:
 OakText2:
 	text_far _OakText2
 	text_asm
-	ld a, WOOPER
+	ldmon WOOPER
 	call PlayMonCry
 	call WaitSFX
 	ld hl, OakText3

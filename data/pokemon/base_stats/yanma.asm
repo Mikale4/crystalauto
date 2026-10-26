@@ -1,4 +1,4 @@
-	db YANMA ; 193
+	db 0 ; #193 (the species ID: see GetBaseData)
 
 	db  65,  65,  45,  95,  75,  45
 	;   hp  atk  def  spd  sat  sdf
