@@ -39,6 +39,38 @@ FindBossTeam:
 	ld de, 2 * (1 + NUM_BOSS_ALLIES)
 	jp FindSpeciesInArray
 
+FindBattleBossTeam:
+; Return carry and hl at the team of the boss in battle, a: the team's own boss,
+; or the legendary RANDOMIZER mode put in its place (see BeginBossBattle).
+	call GetPokemonIndexFromID
+	ld b, h
+	ld c, l
+	ld hl, BossTeams
+.loop
+	ld a, [hli]
+	ld e, a
+	ld a, [hld]
+	ld d, a
+	and e
+	inc a
+	ret z ; (-1: nc)
+	push hl
+	farcall RandomizeLegendaryIndex
+	pop hl
+	ld a, e
+	cp c
+	jr nz, .next
+	ld a, d
+	cp b
+	jr nz, .next
+	scf
+	ret
+
+.next
+	ld de, 2 * (1 + NUM_BOSS_ALLIES)
+	add hl, de
+	jr .loop
+
 BeginBossBattle::
 ; Before the enemy is set up: is this a scripted wild battle with a boss?
 	xor a
@@ -52,7 +84,17 @@ BeginBossBattle::
 	ld a, [wTempWildMonSpecies]
 	call FindBossTeam
 	ret nc
+; RANDOMIZER mode can put another legendary in the boss's place (with the
+; team's own allies: FindBattleBossTeam finds them)
 	ld a, [wTempWildMonSpecies]
+	call GetPokemonIndexFromID
+	ld d, h
+	ld e, l
+	farcall RandomizeLegendaryIndex
+	ld h, d
+	ld l, e
+	call GetPokemonIDFromIndex
+	ld [wTempWildMonSpecies], a
 	ld [wBossBattle], a
 	ld a, [wCurPartyLevel]
 	ld [wBossBaseLevel], a
@@ -107,7 +149,7 @@ LoadBossParty::
 
 ; the allies
 	ld a, [wBossBattle]
-	call FindBossTeam
+	call FindBattleBossTeam
 	inc hl
 	inc hl
 	ld c, 0
@@ -365,8 +407,13 @@ BossJoins::
 	ld [wTempSpecies], a
 	ld a, [wEnemyMonLevel]
 	ld [wCurPartyLevel], a
-	ld a, [wBossBattle]
-	cpmon CELEBI
+	ld a, [wBossBattle] ; (ILEX FOREST's boss, whoever RANDOMIZER mode made it)
+	call FindBattleBossTeam
+	ld a, [hli]
+	cp LOW(CELEBI)
+	jr nz, .not_celebi
+	ld a, [hl]
+	cp HIGH(CELEBI)
 	jr nz, .not_celebi
 	ld hl, wBattleResult
 	set BATTLERESULT_CAUGHT_CELEBI, [hl]

@@ -731,6 +731,7 @@ OakSpeech:
 	call PrintText
 	call NamePlayer
 	farcall ChooseDifficulty
+	farcall ChooseRandomizer
 	ld hl, OakText7
 	call PrintText
 	ret

@@ -202,6 +202,15 @@ GetTrainerMonSeed:
 	xor b
 	ret
 
+FitStarterEvolution::
+; (for the rival's starter in RANDOMIZER mode) b: species b as evolved as
+; wCurPartyLevel allows, but no more than c (1-3) times; e picks the way.
+	ld a, b
+	ld d, c
+	call FitEvolutionStages
+	ld b, a
+	ret
+
 FitEvolution::
 ; Return in a the furthest that species a evolves to by level wCurPartyLevel;
 ; e picks the way at each branch.

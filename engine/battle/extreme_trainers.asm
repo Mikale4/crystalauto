@@ -251,8 +251,13 @@ FillExtremeTeam:
 	add hl, de
 	add hl, de
 	ld a, [hli]
-	ld h, [hl]
-	ld l, a
+	ld e, a
+	ld d, [hl]
+	ld a, [wOTPartyCount]
+	ldh [hRandomizerSlot], a
+	farcall RandomizeTrainerMon
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
 	ld [wXPoolMon], a
 	ld a, [wXPoolIndex]

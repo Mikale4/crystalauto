@@ -770,6 +770,11 @@ INCLUDE "engine/events/difficulty.asm"
 INCLUDE "engine/battle/difficulty_trainers.asm"
 
 
+SECTION "Randomizer", ROMX
+
+INCLUDE "engine/events/randomizer.asm"
+
+
 SECTION "Bosses", ROMX
 
 INCLUDE "engine/battle/bosses.asm"

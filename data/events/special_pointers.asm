@@ -187,3 +187,4 @@ SpecialsPointers::
 	add_special MoveReminder
 	add_special PokecenterMoveTutor
 	add_special Gen1TMShop
+	add_special GetStarterSpecies

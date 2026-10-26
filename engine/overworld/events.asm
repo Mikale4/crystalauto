@@ -1261,11 +1261,9 @@ ChooseWildEncounter_BugContest::
 	ld e, a
 	ld a, [hli]
 	push hl
-	ld h, a
-	ld l, e
-	call GetPokemonIDFromIndex
+	ld d, a
+	farcall LoadContestWildmon
 	pop hl
-	ld [wTempWildMonSpecies], a
 
 ; Min level
 	ld a, [hli]

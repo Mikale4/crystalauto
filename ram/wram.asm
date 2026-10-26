@@ -3298,7 +3298,11 @@ wDifficulty:: db ; DIFFICULTY_* in bits 0-1, DIFFICULTY_CHOSEN_F
 ; how many level cap steps are done (see engine/pokemon/level_caps.asm)
 wLevelCapStep:: db
 
-	ds 8
+; RANDOMIZER mode (see engine/events/randomizer.asm): 0 in saves from before it
+wRandomizer:: db ; RANDOMIZER_*_F, STARTERS_* in RANDOMIZER_STARTERS_MASK
+wRandomizerSeed:: dw
+
+	ds 5
 
 ; map scene ids
 wPokecenter2FSceneID::                            db

@@ -37,6 +37,7 @@ FindNest:
 	call GetPokemonIndexFromID
 	ld b, h
 	ld c, l ; (the species' index, for .SearchMapForMon)
+	call .TargetRank
 	ld a, e
 	and a
 	jr nz, .kanto
@@ -69,6 +70,8 @@ FindNest:
 	inc hl
 	inc hl
 	inc hl
+	xor a ; (the morning's first slot)
+	ldh [hRandomizerSlot], a
 	ld a, NUM_GRASSMON * 3
 	call .SearchMapForMon
 	jr nc, .next_grass
@@ -93,6 +96,8 @@ FindNest:
 	ld a, [hli]
 	ldh [hMathBuffer + 1], a
 	inc hl
+	ld a, WILDSLOT_WATER
+	ldh [hRandomizerSlot], a
 	ld a, NUM_WATERMON
 	call .SearchMapForMon
 	jr nc, .next_water
@@ -107,22 +112,97 @@ FindNest:
 	jr .FindWater
 
 .SearchMapForMon:
-; (species index bc, in a of hl's wild Pokémon)
+; (species index bc, in a of hl's wild Pokémon, the first in slot
+; hRandomizerSlot of the map in hMathBuffer)
 	inc hl
 .ScanMapLoop:
 	push af
+	push de ; (the nests found)
 	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	call .Randomized
+	ld a, e
 	cp c
-	ld a, [hli]
 	jr nz, .next_mon
+	ld a, d
 	cp b
-	jr z, .found
+	jr nz, .next_mon
+	pop de
+	jr .found
+
 .next_mon
+	pop de
+	ldh a, [hRandomizerSlot]
+	inc a
+	ldh [hRandomizerSlot], a
 	inc hl
 	pop af
 	dec a
 	jr nz, .ScanMapLoop
 	and a
+	ret
+
+.TargetRank:
+; RANDOMIZER mode: hMathBuffer + 2: species bc's place in RandomizerPool
+	ld a, [wRandomizer]
+	bit RANDOMIZER_ON_F, a
+	ret z
+	push bc
+	push de
+	ld d, b
+	ld e, c
+	farcall RandomizerRank
+	ld a, e
+	ldh [hMathBuffer + 2], a
+	ld a, d
+	ldh [hMathBuffer + 3], a
+	pop de
+	pop bc
+	ret
+
+.Randomized:
+; de: what wild Pokémon de is in RANDOMIZER mode, or 0 if it can't be species
+; bc: only one about as strong can (see SimilarSpecies), which saves time.
+	ld a, [wRandomizer]
+	bit RANDOMIZER_ON_F, a
+	ret z
+	push bc
+	push hl
+	push de
+	farcall RandomizerRank
+	ldh a, [hMathBuffer + 2]
+	sub e
+	ld l, a
+	ldh a, [hMathBuffer + 3]
+	sbc d
+	ld h, a
+	jr nc, .got_distance
+	ld a, l
+	cpl
+	ld l, a
+	ld a, h
+	cpl
+	ld h, a
+	inc hl
+.got_distance
+	pop de
+	ld a, h
+	and a
+	jr nz, .too_far
+	ld a, l
+	cp 2 * RANDOMIZER_WINDOW + 1
+	jr nc, .too_far
+	call RandomizeWildmonInMap
+	pop hl
+	pop bc
+	ret
+
+.too_far
+	ld de, 0
+	pop hl
+	pop bc
 	ret
 
 .found
@@ -336,6 +416,7 @@ ChooseWildEncounter:
 	ld l, a ; (the species' index)
 	call ValidateTempWildMonSpecies
 	jr c, .nowildbattle
+	call .Randomize
 
 	call GetPokemonIDFromIndex
 	cpmon UNOWN
@@ -362,6 +443,63 @@ ChooseWildEncounter:
 
 .startwildbattle
 	xor a
+	ret
+
+.Randomize:
+; hl: what it is in RANDOMIZER mode (c: its slot's offset in the table). Its
+; slot: the time of day x NUM_GRASSMON + the slot, or WILDSLOT_WATER + the slot.
+	push hl
+	call CheckOnWater
+	ld a, WILDSLOT_WATER
+	jr z, .got_slot_base
+	assert NUM_GRASSMON == 7
+	ld a, [wTimeOfDay]
+	ld e, a
+	add a
+	add a
+	add a
+	sub e
+.got_slot_base
+	ld e, a
+	ld a, c
+.slot_loop
+	sub WILDMON_LENGTH
+	jr c, .got_slot
+	inc e
+	jr .slot_loop
+
+.got_slot
+	ld a, e
+	pop hl
+	; fallthrough
+
+RandomizeWildmonHere:
+; hl: what the wild Pokémon hl (its index) in slot a of the player's map is in
+; RANDOMIZER mode (see RandomizeWildIndex)
+	ldh [hRandomizerSlot], a
+	push bc
+	push de
+	ld d, h
+	ld e, l
+	farcall RandomizeWildIndexHere
+	ld h, d
+	ld l, e
+	pop de
+	pop bc
+	ret
+
+RandomizeWildmonInMap:
+; de: what the wild Pokémon de (its index) in slot hRandomizerSlot of the map in
+; hMathBuffer (its group and number) is in RANDOMIZER mode
+	push bc
+	push hl
+	ldh a, [hMathBuffer]
+	ld b, a
+	ldh a, [hMathBuffer + 1]
+	ld c, a
+	farcall RandomizeWildIndex
+	pop hl
+	pop bc
 	ret
 
 INCLUDE "data/wild/probabilities.asm"
@@ -789,6 +927,10 @@ RandomUnseenWildMon:
 
 .GetGrassmon:
 ; (fixed: for the time of day, not always the morning)
+	ld a, [hli]
+	ldh [hMathBuffer], a ; (the map, for RANDOMIZER mode)
+	ld a, [hld]
+	ldh [hMathBuffer + 1], a
 	ld bc, 5 ; past the map and the encounter rates
 	add hl, bc
 	ld a, [wTimeOfDay]
@@ -808,6 +950,9 @@ RandomUnseenWildMon:
 	add hl, bc
 	add hl, bc
 ; We now have the pointer to one of the last (rarest) three wild Pokemon found in that area.
+	ld a, c
+	add 4 ; (its slot)
+	call SetPhoneWildmonSlot
 	ld a, [hli]
 	ld d, [hl]
 	ld e, a ; Contains the species index of this rare Pokemon
@@ -826,6 +971,7 @@ RandomUnseenWildMon:
 	dec b
 	jr nz, .loop2
 ; This Pokemon truly is rare.
+	call RandomizeWildmonInMap
 	push de
 	call CheckSeenMonIndex
 	pop hl
@@ -865,6 +1011,10 @@ RandomPhoneWildMon:
 	call LookUpWildmonsForMapDE
 
 .ok
+	ld a, [hli]
+	ldh [hMathBuffer], a ; (the map, for RANDOMIZER mode)
+	ld a, [hld]
+	ldh [hMathBuffer + 1], a
 	ld bc, 5 + 0 * WILDMON_LENGTH
 	add hl, bc
 	ld a, [wTimeOfDay]
@@ -880,14 +1030,18 @@ RandomPhoneWildMon:
 	call Random
 	and %11
 	ld c, a
+	call SetPhoneWildmonSlot
 	ld b, 0
 	add hl, bc
 	add hl, bc
 	add hl, bc
 	inc hl
 	ld a, [hli]
-	ld h, [hl]
-	ld l, a
+	ld d, [hl]
+	ld e, a
+	call RandomizeWildmonInMap
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
@@ -896,9 +1050,28 @@ RandomPhoneWildMon:
 	ld bc, MON_NAME_LENGTH
 	jp CopyBytes
 
+SetPhoneWildmonSlot:
+; hRandomizerSlot: grass slot a at this time of day
+	push bc
+	ld b, a
+	ld a, [wTimeOfDay]
+	ld c, a
+	add a
+	add a
+	add a
+	sub c ; x NUM_GRASSMON
+	add b
+	ldh [hRandomizerSlot], a
+	pop bc
+	ret
+
 RandomPhoneMon:
 ; Get a random monster owned by the trainer who's calling.
 	farcall GetCallerLocation
+	ld a, d
+	ldh [hMathBuffer], a ; (the trainer, for RANDOMIZER mode)
+	ld a, e
+	ldh [hMathBuffer + 1], a
 	ld hl, TrainerGroups
 	ld a, d
 	dec a
@@ -952,6 +1125,7 @@ RandomPhoneMon:
 	maskbits PARTY_LENGTH
 	cp e
 	jr nc, .rand
+	ldh [hRandomizerSlot], a
 
 	inc a
 .get_mon
@@ -964,6 +1138,15 @@ RandomPhoneMon:
 	inc hl ; species
 	ld a, BANK(Trainers)
 	call GetFarWord
+	ld d, h
+	ld e, l
+	ldh a, [hMathBuffer]
+	ld b, a
+	ldh a, [hMathBuffer + 1]
+	ld c, a
+	farcall RandomizeTrainerIndex
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	call GetPokemonName

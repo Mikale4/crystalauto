@@ -12,6 +12,8 @@ TreeMonEncounter:
 	call GetTreeMons
 	jr nc, .no_battle
 
+	ld a, WILDSLOT_TREE
+	ldh [hRandomizerSlot], a
 	call GetTreeMon
 	jr nc, .no_battle
 
@@ -44,6 +46,8 @@ RockMonEncounter:
 	cp 4
 	jr nc, .no_battle
 
+	ld a, WILDSLOT_ROCK
+	ldh [hRandomizerSlot], a
 	call SelectTreeMon
 	jr nc, .no_battle
 
@@ -191,13 +195,14 @@ SelectTreeMon:
 	jr z, NoTreeMon
 
 	ld a, [hli]
-	ld c, a
+	ld e, a
 	ld a, [hli]
-	ld b, a
+	ld d, a
 	ld a, [hl]
 	ld [wCurPartyLevel], a
-	ld h, b
-	ld l, c
+	farcall RandomizeWildIndexHere ; (in slot hRandomizerSlot)
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
 	ld [wTempWildMonSpecies], a
 	scf

@@ -161,8 +161,12 @@ CyndaquilPokeBallScript:
 	iftrue LookAtElmPokeBallScript
 	turnobject ELMSLAB_ELM, DOWN
 	reanchormap
-	pokepic CYNDAQUIL
-	cry CYNDAQUIL
+	setval STARTER_FIRE
+	special GetStarterSpecies
+	pokepic 0
+	setval STARTER_FIRE
+	special GetStarterSpecies
+	cry 0
 	waitbutton
 	closepokepic
 	opentext
@@ -174,12 +178,15 @@ CyndaquilPokeBallScript:
 	writetext ChoseStarterText
 	promptbutton
 	waitsfx
-	getmonname STRING_BUFFER_3, CYNDAQUIL
+	setval STARTER_FIRE
+	special GetStarterSpecies ; (its name in wStringBuffer3)
 	writetext ReceivedStarterText
 	playsound SFX_CAUGHT_MON
 	waitsfx
 	promptbutton
-	givepoke CYNDAQUIL, 5, BERRY
+	setval STARTER_FIRE
+	special GetStarterSpecies
+	givepoke 0, 5, BERRY
 	closetext
 	readvar VAR_FACING
 	ifequal RIGHT, ElmDirectionsScript
@@ -191,8 +198,12 @@ TotodilePokeBallScript:
 	iftrue LookAtElmPokeBallScript
 	turnobject ELMSLAB_ELM, DOWN
 	reanchormap
-	pokepic TOTODILE
-	cry TOTODILE
+	setval STARTER_WATER
+	special GetStarterSpecies
+	pokepic 0
+	setval STARTER_WATER
+	special GetStarterSpecies
+	cry 0
 	waitbutton
 	closepokepic
 	opentext
@@ -204,12 +215,15 @@ TotodilePokeBallScript:
 	writetext ChoseStarterText
 	promptbutton
 	waitsfx
-	getmonname STRING_BUFFER_3, TOTODILE
+	setval STARTER_WATER
+	special GetStarterSpecies ; (its name in wStringBuffer3)
 	writetext ReceivedStarterText
 	playsound SFX_CAUGHT_MON
 	waitsfx
 	promptbutton
-	givepoke TOTODILE, 5, BERRY
+	setval STARTER_WATER
+	special GetStarterSpecies
+	givepoke 0, 5, BERRY
 	closetext
 	applymovement PLAYER, AfterTotodileMovement
 	sjump ElmDirectionsScript
@@ -219,8 +233,12 @@ ChikoritaPokeBallScript:
 	iftrue LookAtElmPokeBallScript
 	turnobject ELMSLAB_ELM, DOWN
 	reanchormap
-	pokepic CHIKORITA
-	cry CHIKORITA
+	setval STARTER_GRASS
+	special GetStarterSpecies
+	pokepic 0
+	setval STARTER_GRASS
+	special GetStarterSpecies
+	cry 0
 	waitbutton
 	closepokepic
 	opentext
@@ -232,12 +250,15 @@ ChikoritaPokeBallScript:
 	writetext ChoseStarterText
 	promptbutton
 	waitsfx
-	getmonname STRING_BUFFER_3, CHIKORITA
+	setval STARTER_GRASS
+	special GetStarterSpecies ; (its name in wStringBuffer3)
 	writetext ReceivedStarterText
 	playsound SFX_CAUGHT_MON
 	waitsfx
 	promptbutton
-	givepoke CHIKORITA, 5, BERRY
+	setval STARTER_GRASS
+	special GetStarterSpecies
+	givepoke 0, 5, BERRY
 	closetext
 	applymovement PLAYER, AfterChikoritaMovement
 	sjump ElmDirectionsScript
@@ -858,20 +879,32 @@ LabWhereGoingText:
 
 TakeCyndaquilText:
 	text "ELM: You'll take"
-	line "CYNDAQUIL, the"
-	cont "fire #MON?"
+	line "@"
+	text_ram wStringBuffer3
+	text ", the"
+	cont "@"
+	text_ram wStringBuffer4
+	text " #MON?"
 	done
 
 TakeTotodileText:
 	text "ELM: Do you want"
-	line "TOTODILE, the"
-	cont "water #MON?"
+	line "@"
+	text_ram wStringBuffer3
+	text ", the"
+	cont "@"
+	text_ram wStringBuffer4
+	text " #MON?"
 	done
 
 TakeChikoritaText:
 	text "ELM: So, you like"
-	line "CHIKORITA, the"
-	cont "grass #MON?"
+	line "@"
+	text_ram wStringBuffer3
+	text ", the"
+	cont "@"
+	text_ram wStringBuffer4
+	text " #MON?"
 	done
 
 DidntChooseStarterText:

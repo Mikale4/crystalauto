@@ -216,7 +216,7 @@ OaksPKMNTalk4:
 	ld a, BANK(JohtoGrassWildMons)
 	call GetFarByte
 	cp -1
-	jr z, .overflow
+	jp z, .overflow
 	inc hl
 	cp b
 	jr nz, .next
@@ -241,6 +241,13 @@ endr
 	maskbits NUM_DAYTIMES
 	cp DARKNESS_F
 	jr z, .loop2
+	ld d, a ; (its slots: x NUM_GRASSMON, for RANDOMIZER mode)
+	add a
+	add a
+	add a
+	sub d
+	ldh [hRandomizerSlot], a
+	ld a, d
 
 	ld bc, WILDMON_LENGTH * NUM_GRASSMON
 	call AddNTimes
@@ -253,6 +260,9 @@ endr
 	cp 5
 	jr nc, .loop3
 	ld e, a
+	ldh a, [hRandomizerSlot]
+	add e
+	ldh [hRandomizerSlot], a
 	ld d, 0
 	add hl, de
 	add hl, de
@@ -260,6 +270,13 @@ endr
 	inc hl ; skip level
 	ld a, BANK(JohtoGrassWildMons)
 	call GetFarWord
+	ld d, h
+	ld e, l
+	pop bc ; (the map)
+	push bc
+	farcall RandomizeWildIndex
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
 	ld [wNamedObjectIndex], a
 	ld [wCurPartySpecies], a

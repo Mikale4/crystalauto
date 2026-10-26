@@ -118,11 +118,21 @@ TrainerType2:
 
 	ld [wCurPartyLevel], a
 	call ReadTrainerPartySpecies
+	push af ; (carry: another in RANDOMIZER mode, which keeps the moves it knows)
 	ld a, OTPARTYMON
 	ld [wMonType], a
 
 	push hl
 	predef TryAddMonToParty
+	pop hl
+	pop af
+	jr nc, .moves
+	ld bc, NUM_MOVES * 2
+	add hl, bc
+	jr .loop
+
+.moves
+	push hl
 	ld a, [wOTPartyCount]
 	dec a
 	ld hl, wOTPartyMon1Moves
@@ -225,6 +235,7 @@ TrainerType4:
 
 	ld [wCurPartyLevel], a
 	call ReadTrainerPartySpecies
+	push af ; (carry: another in RANDOMIZER mode, which keeps the moves it knows)
 
 	ld a, OTPARTYMON
 	ld [wMonType], a
@@ -243,6 +254,13 @@ TrainerType4:
 	ld a, [hli]
 	ld [de], a
 
+	pop af
+	jr nc, .moves
+	ld bc, NUM_MOVES * 2
+	add hl, bc
+	jr .loop
+
+.moves
 	push hl
 	ld a, [wOTPartyCount]
 	dec a
@@ -307,18 +325,26 @@ TrainerType4:
 .copied_pp
 
 	pop hl
-	jr .loop
+	jp .loop
 
 ReadTrainerPartySpecies:
-; wCurPartySpecies: the species at hl (its 16-bit index), which hl goes past
+; wCurPartySpecies: the species at hl (its 16-bit index), which hl goes past.
+; Return carry if RANDOMIZER mode makes it another (see RandomizeTrainerMon).
 	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
 	push hl
-	ld h, [hl]
-	ld l, a
+	ld a, [wOTPartyCount]
+	ldh [hRandomizerSlot], a
+	farcall RandomizeTrainerMon
+	push af
+	ld h, d
+	ld l, e
 	call GetPokemonIDFromIndex
-	pop hl
-	inc hl
 	ld [wCurPartySpecies], a
+	pop af
+	pop hl
 	ret
 
 ComputeTrainerReward:

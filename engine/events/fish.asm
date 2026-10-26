@@ -64,6 +64,13 @@ endr
 	or e
 	call z, .TimeEncounter
 
+	ld a, WILDSLOT_FISH
+	add b ; (the rod)
+	ldh [hRandomizerSlot], a
+	push hl
+	farcall RandomizeWildIndexHere
+	pop hl
+
 	ld a, [hl]
 	push af
 	ld h, d

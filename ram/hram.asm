@@ -44,7 +44,7 @@ hJoyLast::        db
 
 hInMenu:: db
 
-	ds 1
+hRandomizerSlot:: db ; WILDSLOT_* etc. (see engine/events/randomizer.asm)
 
 hPrinter:: db
 hGraphicStartTile:: db

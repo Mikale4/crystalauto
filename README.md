@@ -27,7 +27,9 @@ icons beside your party, where you pick Pokémon up and put them down anywhere.
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
 you the RATTATA he catches. PalletToPewter's **level caps**, **difficulties**
-(NORMAL, HARD and EXTREME) and **boss Pokémon** are here too.
+(NORMAL, HARD and EXTREME) and **boss Pokémon** are here too. A new game can also
+be a **RANDOMIZER** journey: random wild Pokémon, and if you like, random trainers'
+Pokémon, legendaries and starters.
 
 There are **66 new Pokémon**, all from GEN 1 and 2's families: their **regional
 forms** (ALOLAN, GALARIAN, HISUIAN and PALDEAN) and the **later evolutions and
@@ -798,6 +800,40 @@ in with +1), else the item that boosts that attack's type (CHARCOAL, MYSTIC WATE
 BRIGHTPOWDER, a berry, FOCUS BAND, X ACCURACY or GUARD SPEC.
 
 
+## Randomizer
+
+After the difficulty, PROF. OAK asks whether you want a **RANDOMIZER** journey (NO is
+first, and it can only be picked for a new game). Say YES and its options come up:
+UP and DOWN pick one, LEFT, RIGHT and A change it, and DONE (or START) sets off.
+
+- **WILD POKéMON** are always random: in the grass and caves (by the time of day), on
+  the water, on the end of a rod, in HEADBUTTed trees and smashed rocks, and in the
+  BUG-CATCHING CONTEST. Each slot of each place has its own, picked by your game's own
+  seed, so a route has the same Pokémon every time you walk it, and each is about as
+  strong as the one it replaces: one of the 31 Pokémon nearest it by base stat total
+  (never a legendary). The POKéDEX's AREA, OAK's POKéMON TALK and trainers who call
+  about a rare Pokémon all tell you where they really are. The RUINS OF ALPH's UNOWN
+  stay UNOWN: they're the only ones, and their letters are part of the puzzles.
+- **TRAINERS** (OFF or ON): trainers' Pokémon are random too, each about as strong as
+  the one it replaces, knowing the moves it learns by its level (EXTREME makes its
+  teams of six from them as usual). Your rival keeps the line of the Pokémon he took
+  from ELM.
+- **LEGENDARIES** (OFF or ON): each legendary you meet is another legendary, no two
+  the same: a shuffle of ARTICUNO, ZAPDOS, MOLTRES, MEWTWO, MEW, RAIKOU, ENTEI,
+  SUICUNE, LUGIA, HO-OH, CELEBI and the GALARIAN birds. It comes with the allies of
+  the place it's met (see [Boss Pokémon](#boss-pokémon)), and joins you when beaten.
+- **ELM'S POKéMON** (SAME, STARTERS or ANY): ELM's three POKé BALLs hold three
+  different Pokémon: starters from KANTO and JOHTO, PIKACHU and EEVEE (STARTERS), or
+  any three Pokémon at all, legendaries too (ANY). ELM names each one and its type.
+  Your rival takes the POKé BALL he always does (TOTODILE's if you take CYNDAQUIL's,
+  CHIKORITA's if you take TOTODILE's, CYNDAQUIL's if you take CHIKORITA's), and his
+  Pokémon from it evolves as that line does, as far as its level allows.
+
+The other Pokémon you meet only once (SUDOWOODO, the red GYARADOS, SNORLAX, …),
+gifts, EGGS and trades stay as they are. A swarm is random too, though the news of
+it still names the Pokémon that would have swarmed.
+
+
 ## Your Pokémon follows you
 
 The first Pokémon in your party that isn't fainted (or an egg) walks behind you,
@@ -1036,6 +1072,24 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   battle ends. RAIKOU and ENTEI wait in
   [`maps/BurnedTowerB1F.asm`](maps/BurnedTowerB1F.asm); `InitRoamMons` now stops
   roaming instead of starting it.
+- [`engine/events/randomizer.asm`](engine/events/randomizer.asm) has RANDOMIZER mode:
+  the question and its options (`ChooseRandomizer`, `RandomizerOptions`) and the
+  picks, each a hash of the game's seed and what the pick is for
+  (`RandomizerHashStart`, `RandomizerMix`: additions and a 16-bit xorshift).
+  `RandomizeWildIndex` (by map, `hRandomizerSlot` and species) and
+  `RandomizeTrainerIndex` pick from `RandomizerPool`, the species sorted by base stat
+  total ([`data/randomizer/pools.asm`](data/randomizer/pools.asm), made by
+  [`tools/randomizer_pools.py`](tools/randomizer_pools.py));
+  `RandomizeLegendaryIndex` shuffles `LegendaryPool`; `GetStarterSpecies` (a special
+  for [`maps/ElmsLab.asm`](maps/ElmsLab.asm)) picks ELM's three, and `RivalStarter`
+  (with `FitStarterEvolution`) the rival's. `wRandomizer` and `wRandomizerSeed` take
+  three spare bytes of the saved player data (0 in older saves: off), and
+  `hRandomizerSlot` a spare HRAM byte. The wild picks are made in `ChooseWildEncounter`,
+  `Fish`, `SelectTreeMon` and the CONTEST's `LoadContestWildmon`, and found again by
+  `FindNest`, `OaksPKMNTalk4` and the phone's `RandomUnseenWildMon`,
+  `RandomPhoneWildMon` and `RandomPhoneMon`. `ReadTrainerPartySpecies` and
+  `FillExtremeTeam` make the trainer picks (a random Pokémon skips its party's moves),
+  and `BeginBossBattle` the legendary one (`FindBattleBossTeam` finds its allies).
 - The rental's heals and POKéMON CENTER are kept in three spare bytes of the saved
   player data (`wRentalChanseyHeals`), and `EVENT_RENTAL_CHANSEY_FROM_HERE`, a
   formerly unused event flag, hides the counter CHANSEY in the POKéMON CENTER it
