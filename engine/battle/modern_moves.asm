@@ -1908,15 +1908,15 @@ CompareSpeeds::
 	ret
 
 WeatherSpeed::
-; bc: a battle struct. de: its speed, 1.5x (as one stage up) when the weather is
-; on its side (see WeatherFavors).
+; bc: a battle struct. de: its speed, 1.5x (as one stage up) when the weather
+; raises it (see WeatherBoosts).
 	ld hl, wBattleMonSpeed - wBattleMon
 	add hl, bc
 	ld a, [hli]
 	ld d, a
 	ld e, [hl]
 	push de
-	call WeatherFavors
+	call WeatherRaisesSpeed
 	pop de
 	ret nc
 	ld h, d
@@ -1928,39 +1928,67 @@ WeatherSpeed::
 	ld e, l
 	ret
 
-WeatherFavors::
-; Return carry if the weather is on the side of battle struct bc's types
-; (WeatherSpeedTypes).
+WeatherRaisesSpeed::
+; Return carry if the weather raises the SPEED of battle struct bc (WeatherBoosts).
+	ld a, SPEED
+	jr WeatherRaisesStat
+
+WeatherRaisesSpclDef::
+; Return carry if the weather raises the SPCL.DEF of battle struct bc: in a
+; sandstorm, a GROUND, ROCK or STEEL type's (see BattleCommand_DamageStats).
+	ld a, SP_DEFENSE
+	; fallthrough
+
+WeatherRaisesStat:
+; Return carry if the weather raises stat a of battle struct bc, as one stage up
+; (WeatherBoosts).
+	push af
 	ld a, [wBattleWeather]
 	and a
-	ret z
+	jr z, .no
 	ld hl, wBattleMonType1 - wBattleMon
 	add hl, bc
 	ld c, a
 	ld a, [hli]
 	ld d, a
 	ld e, [hl]
-	ld hl, WeatherSpeedTypes
+	pop af
+	ld b, a
+	ld hl, WeatherBoosts
 .loop
 	ld a, [hli]
 	cp -1
 	ret z ; (nc)
 	cp c
+	jr nz, .next
 	ld a, [hli]
-	jr nz, .loop
 	cp d
-	jr z, .yes
+	jr z, .type
 	cp e
+	jr nz, .next_stat
+.type
+	ld a, [hli]
+	cp b
 	jr nz, .loop
-.yes
 	scf
 	ret
 
-WeatherSpeedTypes:
-; the weather, and a type it makes faster
-	db WEATHER_SANDSTORM, GROUND
-	db WEATHER_SANDSTORM, ROCK
-	db WEATHER_SANDSTORM, STEEL
-	db WEATHER_RAIN,      WATER
-	db WEATHER_SUN,       GRASS
+.next
+	inc hl
+.next_stat
+	inc hl
+	jr .loop
+
+.no
+	pop af
+	and a
+	ret
+
+WeatherBoosts:
+; the weather, a type it favors, and the stat it raises for it (as one stage up)
+	db WEATHER_SANDSTORM, GROUND, SP_DEFENSE
+	db WEATHER_SANDSTORM, ROCK,   SP_DEFENSE
+	db WEATHER_SANDSTORM, STEEL,  SP_DEFENSE
+	db WEATHER_RAIN,      WATER,  SPEED
+	db WEATHER_SUN,       GRASS,  SPEED
 	db -1

@@ -240,9 +240,11 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
 - HIDDEN POWER is a special move with 60 power.
 - **Weather** favors some types, besides the rain's WATER and the sun's FIRE moves
   (1.5×): in a sandstorm, GROUND, ROCK and STEEL moves do 1.5× damage too, and
-  GROUND, ROCK and STEEL Pokémon (which the sandstorm doesn't hurt) are faster, as
-  one stage up (1.5× Speed); so are WATER Pokémon in the rain and GRASS Pokémon in
-  the sun. The battle info screen's field page says whose Speed is up.
+  GROUND, ROCK and STEEL Pokémon (which the sandstorm doesn't hurt) have their
+  Special Defense one stage up (1.5×, against special attacks, critical hits too);
+  WATER Pokémon in the rain and GRASS Pokémon in the sun have their Speed one stage
+  up (1.5×). These aren't stat changes: they last as long as the weather. The
+  battle info screen's field page says whose stat is up.
 - **TRANSFORM** works like the latest games' IMPOSTER: a Pokémon that knows it turns
   into the foe as soon as it comes in, before anything else happens (it takes no
   turn and no PP). A wild DITTO turns into your Pokémon right away. It doesn't when
@@ -737,7 +739,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 7231e1342023b1cf64e8b99f7bcf74e6c233be24`.
+The patched ROM has `sha1: 8c580a9c8b00f27fbcb0bd2b352df9c000772a09`.
 
 
 ## Building it
@@ -908,9 +910,10 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   RAZOR WIND is a plain hit (`EFFECT_NORMAL_HIT`); the `SkullBash`, `Solarbeam` and
   `SkyAttack` scripts no longer `charge` (SKULL BASH's DEFENSE is the
   `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`). The
-  weather's Speed is `WeatherSpeed` (`WeatherSpeedTypes`), for the turn order
-  (`CompareSpeeds`, from `DetermineMoveOrder`), the AI (`AICompareSpeed`) and auto
-  battle.
+  weather's stats are `WeatherBoosts`: its Speed is `WeatherSpeed`, for the turn
+  order (`CompareSpeeds`, from `DetermineMoveOrder`), the AI (`AICompareSpeed`) and
+  auto battle; its SPCL.DEF is `WeatherSpclDef`, in `PlayerAttackDamage` and
+  `EnemyAttackDamage`.
   `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
   SUBSTITUTE. MIRROR MOVE is `HandleAutoMirrorMove`: the turn's side gets a
   `NOT_ACTED` last move first (`AfterTurn`), so it's only taken up when one was used.

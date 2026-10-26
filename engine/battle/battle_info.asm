@@ -200,13 +200,13 @@ BattleInfo_Field:
 	call .Turns
 	ld de, SCREEN_WIDTH
 	add hl, de
-; (who's faster for it: see WeatherSpeed)
+; (whose stat it raises: see WeatherBoosts)
 	ld bc, wBattleMon
-	ld de, .YoursFasterText
-	call .WeatherSpeed
+	ld de, .YoursBoostText
+	call .WeatherBoost
 	ld bc, wEnemyMon
-	ld de, .FoesFasterText
-	call .WeatherSpeed
+	ld de, .FoesBoostText
+	call .WeatherBoost
 	ld de, SCREEN_WIDTH
 	add hl, de
 .no_weather
@@ -336,15 +336,29 @@ BattleInfo_Field:
 	add hl, de
 	ret
 
-.WeatherSpeed:
-; If the weather makes battle struct bc faster, say so (de) on row hl, and go to the
-; next.
+.WeatherBoost:
+; If the weather raises a stat of battle struct bc, say which (de: the texts for
+; SPEED, then for SPCL.DEF) on row hl, and go to the next.
+	push bc
 	push de
 	push hl
-	farcall WeatherFavors
+	farcall WeatherRaisesSpeed
+	pop hl
+	pop de
+	pop bc
+	jr c, .say
+.skip
+	ld a, [de]
+	inc de
+	cp "@"
+	jr nz, .skip
+	push de
+	push hl
+	farcall WeatherRaisesSpclDef
 	pop hl
 	pop de
 	ret nc
+.say
 	push hl
 	inc hl
 	call PlaceString
@@ -383,10 +397,12 @@ BattleInfo_Field:
 	db "FOE'S SIDE@"
 .NoneText:
 	db "none@"
-.YoursFasterText:
+.YoursBoostText:
 	db "YOURS: SPEED +1@"
-.FoesFasterText:
+	db "YOURS: SP.DEF +1@"
+.FoesBoostText:
 	db "FOE'S: SPEED +1@"
+	db "FOE'S: SP.DEF +1@"
 .FooterText:
 	db "START:close ←STATS@"
 

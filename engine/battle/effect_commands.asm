@@ -2277,6 +2277,7 @@ PlayerAttackDamage:
 .specialcrit
 	ld hl, wBattleMonSpclAtk
 	call ModernCriticalStats
+	call EnemyWeatherSpclDef
 
 .lightball
 ; Note: Returns player special attack at hl in hl.
@@ -2342,6 +2343,37 @@ TruncateHL_BC:
 
 .done
 	ld b, l
+	ret
+
+EnemyWeatherSpclDef:
+; (PlayerAttackDamage) bc: the foe's SPCL.DEF, 1.5x when the weather raises it (see
+; WeatherRaisesSpclDef; even after a critical hit, as it isn't a stat change).
+	push de
+	ld de, wEnemyMon
+	jr WeatherSpclDef
+
+PlayerWeatherSpclDef:
+; (EnemyAttackDamage) The same, for the player's POKéMON.
+	push de
+	ld de, wBattleMon
+WeatherSpclDef:
+	push hl
+	push bc
+	ld b, d
+	ld c, e
+	farcall WeatherRaisesSpclDef
+	pop bc
+	jr nc, .done
+	ld h, b
+	ld l, c
+	srl b
+	rr c
+	add hl, bc
+	ld b, h
+	ld c, l
+.done
+	pop hl
+	pop de
 	ret
 
 ModernCriticalStats:
@@ -2534,6 +2566,7 @@ EnemyAttackDamage:
 .specialcrit
 	ld hl, wEnemyMonSpclAtk
 	call ModernCriticalStats
+	call PlayerWeatherSpclDef
 
 .lightball
 	call LightBallBoost
