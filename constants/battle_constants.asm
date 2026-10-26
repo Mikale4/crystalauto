@@ -280,6 +280,8 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_MIRROR_COAT_F ; 2: its MIRROR COAT has
 	const FIELD_MIRROR_MOVE_F ; 3: its MIRROR MOVE has (see HandleAutoMirrorMove)
 
+DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
+
 DEF MAX_SPIKES EQU 3 ; layers on a side (see BattleCommand_Spikes)
 
 DEF NOT_ACTED EQU -1 ; wLast*CounterMove during a turn, until the POKéMON uses a move

@@ -2815,6 +2815,8 @@ DEF DAMAGE_CAP EQU MAX_DAMAGE - MIN_DAMAGE
 
 INCLUDE "data/types/type_boost_items.asm"
 
+INCLUDE "data/moves/fixed_damage.asm"
+
 BattleCommand_ConstantDamage:
 	ld hl, wBattleMonLevel
 	ldh a, [hBattleTurn]
@@ -2841,10 +2843,30 @@ BattleCommand_ConstantDamage:
 	cp EFFECT_REVERSAL
 	jr z, .reversal
 
+	cp EFFECT_STATIC_DAMAGE
+	jr z, .fixed_damage
+
 	ld a, BATTLE_VARS_MOVE_POWER
 	call GetBattleVar
 	ld b, a
 	ld a, $0
+	jr .got_power
+
+.fixed_damage
+; from 20 to 100, as MAGNITUDE's power goes (see FixedDamageRolls)
+	call BattleRandom
+	ld b, a
+	ld hl, FixedDamageRolls
+.fixed_damage_loop
+	ld a, [hli]
+	cp b
+	jr nc, .got_fixed_damage
+	inc hl
+	jr .fixed_damage_loop
+
+.got_fixed_damage
+	ld b, [hl]
+	xor a
 	jr .got_power
 
 .psywave

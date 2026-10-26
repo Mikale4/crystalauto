@@ -440,6 +440,10 @@ AutoBattle_EstimateDamage:
 	and a
 	ld hl, 0
 	ret z
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_STATIC_DAMAGE
+	ld hl, TYPICAL_FIXED_DAMAGE ; (it's rolled: see FixedDamageRolls)
+	jp z, .got_damage_hl
 	callfar BattleCommand_ConstantDamage
 	jr .got_damage
 
@@ -1615,9 +1619,7 @@ AutoBattle_MoveDamage:
 	ret
 
 .static
-	ld a, [wABMove + MOVE_POWER]
-	ld l, a
-	ld h, 0
+	ld hl, TYPICAL_FIXED_DAMAGE ; (it's rolled: see FixedDamageRolls)
 	ret
 
 .super_fang

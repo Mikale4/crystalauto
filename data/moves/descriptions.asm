@@ -457,8 +457,8 @@ SupersonicDescription:
 	next "cause confusion.@"
 
 SonicboomDescription:
-	db   "Always inflicts"
-	next "20HP damage.@"
+	db   "Fixed damage, from"
+	next "20 to 100 HP.@"
 
 DisableDescription:
 	db   "Disables the foe's"
@@ -537,8 +537,8 @@ CounterDescription:
 	next "hit x2 by itself.@"
 
 SeismicTossDescription:
-	db   "The user's level"
-	next "equals damage HP.@"
+	db   "Fixed damage, from"
+	next "20 to 100 HP.@"
 
 StrengthDescription:
 	db   "A powerful physi-"
@@ -589,8 +589,8 @@ StringShotDescription:
 	next "the foe's SPEED.@"
 
 DragonRageDescription:
-	db   "Always inflicts"
-	next "40HP damage.@"
+	db   "Fixed damage, from"
+	next "20 to 100 HP.@"
 
 FireSpinDescription:
 	db   "Traps foe in fire"
@@ -665,8 +665,8 @@ TeleportDescription:
 	next "from battle.@"
 
 NightShadeDescription:
-	db   "The user's level"
-	next "equals damage HP.@"
+	db   "Fixed damage, from"
+	next "20 to 100 HP.@"
 
 MimicDescription:
 	db   "Copies a move used"

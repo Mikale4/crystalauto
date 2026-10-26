@@ -273,6 +273,7 @@ Some moves work in new ways of their own:
 | BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate (and they still trap the foe) |
 | DOUBLE KICK, BONEMERANG, TWINEEDLE | 50 power, for each of the two hits |
 | LOW KICK | as in the first games (50 power, 90% accurate, 30% to flinch), and twice the power when the target's DEFENSE is higher than the user's ATTACK |
+| SONICBOOM, SEISMIC TOSS, DRAGON RAGE, NIGHT SHADE | fixed damage, whatever the levels and stats, rolled as MAGNITUDE's power is: 20 (5%), 35 (10%), 50 (20%), 60 (30%), 70 (20%), 85 (10%) or 100 (5%). SONICBOOM is an ELECTRIC move now |
 | TRIPLE KICK | as TRIPLE AXEL: up to three kicks, of 20, 40 and 60 power, each one 90% accurate on its own; the first that misses ends it |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
@@ -659,7 +660,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: dd17b0dcc8e6998ee4499f44d1843a94c596b0de`.
+The patched ROM has `sha1: e9b07217de2d47eb1b45f3dedb51af1a9d44e7b0`.
 
 
 ## Building it
@@ -837,7 +838,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   damage). FLAIL and REVERSAL's power is the `movedlast` command (`MovedLastPower`,
   with `wTurnActed`). TRIPLE KICK aims each kick after the first with
   `BattleCommand_CheckHit` (in `BattleCommand_EndLoop`), and LOW KICK's power is
-  `GetLowKickPower`.
+  `GetLowKickPower`. The fixed damage of SONICBOOM and the like is
+  rolled from `FixedDamageRolls` (auto battle counts on `TYPICAL_FIXED_DAMAGE`).
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
   don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
