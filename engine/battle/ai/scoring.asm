@@ -739,8 +739,7 @@ AI_Smart_MirrorMove:
 .usedmove
 	push hl
 	ld hl, UsefulMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 	pop hl
 
 ; ...do nothing if he didn't use a useful move.
@@ -1206,7 +1205,7 @@ AI_Smart_SpeedDownHit:
 ; Player is faster than enemy.
 
 	ld a, [wEnemyMoveStruct + MOVE_ANIM]
-	cp ICY_WIND
+	cpmove ICY_WIND
 	ret nz
 	call AICheckEnemyQuarterHP
 	ret nc
@@ -1322,8 +1321,7 @@ AI_Smart_Mimic:
 	ld a, [wLastPlayerCounterMove]
 	push hl
 	ld hl, UsefulMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 
 	pop hl
 	ret nc
@@ -1436,8 +1434,7 @@ AI_Smart_Encore:
 	push hl
 	ld a, [wLastPlayerCounterMove]
 	ld hl, EncoreMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 	pop hl
 	jr nc, .discourage
 
@@ -1687,13 +1684,9 @@ AI_Smart_Conversion2:
 	jr nz, .discourage
 
 	push hl
-	dec a
-	ld hl, Moves + MOVE_TYPE
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_TYPE
+	call GetMoveAttribute
 	ld [wPlayerMoveStruct + MOVE_TYPE], a
 
 	xor a
@@ -1727,8 +1720,7 @@ AI_Smart_Disable:
 	push hl
 	ld a, [wLastPlayerCounterMove]
 	ld hl, UsefulMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 
 	pop hl
 	jr nc, .notencourage
@@ -2236,7 +2228,7 @@ AI_Smart_Magnitude:
 AI_Smart_Earthquake:
 ; Greatly encourage this move if the player is underground and the enemy is faster.
 	ld a, [wLastPlayerCounterMove]
-	cp DIG
+	cpmove DIG
 	ret nz
 
 	ld a, [wPlayerSubStatus3]
@@ -2592,7 +2584,7 @@ AI_Smart_Twister:
 AI_Smart_Gust:
 ; Greatly encourage this move if the player is flying and the enemy is faster.
 	ld a, [wLastPlayerCounterMove]
-	cp FLY
+	cpmove FLY
 	ret nz
 
 	ld a, [wPlayerSubStatus3]
@@ -2852,36 +2844,26 @@ AIHasMoveEffect:
 	ret
 
 AIHasMoveInArray:
-; Return carry if the enemy has a move in array hl.
+; Return carry if the enemy has a move in array hl (dw, ending in -1).
 
-	push hl
 	push de
 	push bc
-
-.next
-	ld a, [hli]
-	cp -1
-	jr z, .done
-
-	ld b, a
-	ld c, NUM_MOVES + 1
 	ld de, wEnemyMonMoves
-
-.check
-	dec c
-	jr z, .next
-
+	ld b, NUM_MOVES
+.loop
 	ld a, [de]
 	inc de
-	cp b
-	jr nz, .check
-
-	scf
-
+	and a
+	jr z, .next
+	call CheckMoveInList
+	jr c, .done
+.next
+	dec b
+	jr nz, .loop
+	and a
 .done
 	pop bc
 	pop de
-	pop hl
 	ret
 
 INCLUDE "data/battle/ai/useful_moves.asm"
@@ -2919,8 +2901,7 @@ AI_Opportunist:
 	push de
 	push bc
 	ld hl, StallMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 
 	pop bc
 	pop de
@@ -3086,8 +3067,7 @@ AI_Cautious:
 	push de
 	push bc
 	ld hl, ResidualMoves
-	ld de, 1
-	call IsInArray
+	call CheckMoveInList
 
 	pop bc
 	pop de
@@ -3251,15 +3231,8 @@ AIGetEnemyMove:
 	push hl
 	push de
 	push bc
-	dec a
-	ld hl, Moves
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-
 	ld de, wEnemyMoveStruct
-	ld a, BANK(Moves)
-	call FarCopyBytes
-
+	call GetMoveData
 	pop bc
 	pop de
 	pop hl

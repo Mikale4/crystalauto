@@ -284,11 +284,6 @@ Serial_PlaceWaitingTextAndSyncAndExchangeNybble::
 	call WaitLinkTransfer
 	jp SafeLoadTempTilemapToTilemap
 
-Serial_SyncAndExchangeNybble:: ; unreferenced
-	call LoadTilemapToTempTilemap
-	callfar PlaceWaitingText
-	jp WaitLinkTransfer ; pointless
-
 WaitLinkTransfer::
 	vc_hook Wireless_WaitLinkTransfer
 	ld a, $ff
@@ -403,20 +398,5 @@ LinkDataReceived::
 	ld a, SC_INTERNAL
 	ldh [rSC], a
 	ld a, SC_START | SC_INTERNAL
-	ldh [rSC], a
-	ret
-
-SetBitsForTimeCapsuleRequestIfNotLinked:: ; unreferenced
-; Similar to SetBitsForTimeCapsuleRequest (see engine/link/link.asm).
-	ld a, [wLinkMode]
-	and a
-	ret nz
-	ld a, USING_INTERNAL_CLOCK
-	ldh [rSB], a
-	xor a
-	ldh [hSerialReceive], a
-	ld a, SC_EXTERNAL
-	ldh [rSC], a
-	ld a, SC_START | SC_EXTERNAL
 	ldh [rSC], a
 	ret

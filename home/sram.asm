@@ -22,6 +22,7 @@ endc
 
 .valid:
 ; switch to sram bank a
+	ldh [hSRAMBank], a ; (so code can put back what it found: see MoveTableGarbageCollection)
 	push af
 ; latch clock data
 	ld a, 1
@@ -36,6 +37,8 @@ endc
 
 CloseSRAM::
 	push af
+	ld a, -1
+	ldh [hSRAMBank], a
 	ld a, RAMG_SRAM_DISABLE
 ; reset clock latch for next time
 	ld [rRTCLATCH], a

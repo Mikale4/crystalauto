@@ -306,10 +306,16 @@ DemoFieldMoves:
 	ld hl, .Moves
 .loop
 	ld a, [hli]
-	and a
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	or e
 	jr z, .done
 	push hl
 	push bc
+	ld h, d
+	ld l, e
+	call GetMoveIDFromIndex
 	ld d, a
 	farcall CheckPartyMove
 	pop bc
@@ -350,18 +356,13 @@ DemoFieldMoves:
 	ret
 
 .Moves:
-; in DEMOFIELD_* order: the move, and the badge it needs
-	db CUT
-	dw ENGINE_HIVEBADGE
-	db SURF
-	dw ENGINE_FOGBADGE
-	db WHIRLPOOL
-	dw ENGINE_GLACIERBADGE
-	db WATERFALL
-	dw ENGINE_RISINGBADGE
-	db ROCK_SMASH
-	dw -1 ; (none)
-	db 0 ; end
+; in DEMOFIELD_* order: the move (its 16-bit index), and the badge it needs
+	dw CUT, ENGINE_HIVEBADGE
+	dw SURF, ENGINE_FOGBADGE
+	dw WHIRLPOOL, ENGINE_GLACIERBADGE
+	dw WATERFALL, ENGINE_RISINGBADGE
+	dw ROCK_SMASH, -1 ; (none)
+	dw 0 ; end
 
 DemoGrassThatWay:
 ; a: a direction. Return carry if the cell that way from the player is grass

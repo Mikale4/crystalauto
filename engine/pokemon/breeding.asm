@@ -421,7 +421,15 @@ InitEggMoves:
 	ret
 
 GetEggMove:
+; Return carry if the egg can have move [de] (an ID) from its father: one of its
+; egg moves; or one both parents know that it learns by level; or a TM or HM it
+; can learn.
 	push bc
+	push de
+	ld a, [de]
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
 	ld a, [wEggMonSpecies]
 	dec a
 	ld c, a
@@ -431,19 +439,12 @@ GetEggMove:
 	add hl, bc
 	ld a, BANK(EggMovePointers)
 	call GetFarWord
-.loop
 	ld a, BANK("Egg Moves")
-	call GetFarByte
-	cp -1
-	jr z, .reached_end
-	ld b, a
-	ld a, [de]
-	cp b
-	jr z, .done_carry
-	inc hl
-	jr .loop
+	call IsMoveInFarList
+	jr c, .done_carry
 
-.reached_end
+	pop de
+	push de
 	call GetBreedmonMovePointer
 	ld b, NUM_MOVES
 .loop2
@@ -456,6 +457,10 @@ GetEggMove:
 	jr .loop2
 
 .found_eggmove
+	ld a, [de]
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
 	ld a, [wEggMonSpecies]
 	dec a
 	ld c, a
@@ -472,6 +477,7 @@ GetEggMove:
 	and a
 	jr nz, .loop3
 .loop4
+; (level, then the move's 16-bit index)
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
 	and a
@@ -479,25 +485,21 @@ GetEggMove:
 	inc hl
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
-	ld b, a
-	ld a, [de]
-	cp b
+	inc hl
+	cp e
+	jr nz, .next_move
+	ld a, BANK("Evolutions and Attacks")
+	call GetFarByte
+	cp d
 	jr z, .done_carry
+.next_move
 	inc hl
 	jr .loop4
 
 .inherit_tmhm
-	ld hl, TMHMMoves
-.loop5
-	ld a, BANK(TMHMMoves)
-	call GetFarByte
-	inc hl
-	and a
-	jr z, .done
-	ld b, a
+	pop de
+	push de
 	ld a, [de]
-	cp b
-	jr nz, .loop5
 	ld [wPutativeTMHMMove], a
 	predef CanLearnTMHMMove
 	ld a, c
@@ -505,11 +507,13 @@ GetEggMove:
 	jr z, .done
 
 .done_carry
+	pop de
 	pop bc
 	scf
 	ret
 
 .done
+	pop de
 	pop bc
 	and a
 	ret

@@ -1551,9 +1551,17 @@ GetBuenasPassword:
 	ret
 
 .Move:
-	call .GetTheIndex
-	call GetMoveName
-	ret
+; (16-bit indexes)
+	ld h, 0
+	ld l, c
+	add hl, hl
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetMoveIDFromIndex
+	ld [wNamedObjectIndex], a
+	jp GetMoveName
 
 .GetTheIndex:
 	ld h, 0

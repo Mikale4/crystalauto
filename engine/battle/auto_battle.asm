@@ -205,9 +205,11 @@ AutoBattle_ChooseMove:
 
 	ld a, c
 	cp -1
-	ld a, STRUGGLE
-	jr z, .got_move
-	ld a, c
+	jr nz, .chosen
+	ldmove STRUGGLE
+	jr .got_move
+
+.chosen
 	ld [wCurMoveNum], a
 	ld hl, wBattleMonMoves
 	ld b, 0
@@ -1369,14 +1371,8 @@ AutoBattle_MoveDamage:
 ; hl = the damage move a does from the attacker to the defender (0 if none):
 ; the damage formula, the attacker's type, the defender's types, accuracy, and
 ; whether it hits more than once or takes two turns.
-	dec a
-	ld hl, Moves
-	ld bc, MOVE_LENGTH
-	call AddNTimes
 	ld de, wABMove
-	ld bc, MOVE_LENGTH
-	ld a, BANK(Moves)
-	call FarCopyBytes
+	call GetMoveData
 	ld a, [wABMove + MOVE_POWER]
 	and a
 	jp z, .none
@@ -1769,7 +1765,7 @@ AutoBattle_RateSupportMove:
 	ld e, l
 	add hl, hl
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
-	cp REST
+	cpmove REST
 	jr nz, .got_hp
 	add hl, de
 .got_hp
@@ -1790,7 +1786,7 @@ AutoBattle_RateSupportMove:
 	ld h, a
 	add hl, hl
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
-	cp REST
+	cpmove REST
 	jr nz, .got_damage
 	add hl, hl
 .got_damage

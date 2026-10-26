@@ -51,9 +51,10 @@ _PlayBattleAnim:
 	ret
 
 BattleAnimRunScript:
+; (an animation with a negative index plays even with the battle scene off)
 	ld a, [wFXAnimID + 1]
-	and a
-	jr nz, .not_move
+	add a
+	jr c, .not_move
 
 	farcall CheckBattleScene
 	jr c, .disabled
@@ -113,7 +114,8 @@ RunBattleAnimScript:
 	jr nz, .not_rollout
 
 	ld a, [wFXAnimID]
-	cp ROLLOUT
+	assert HIGH(ROLLOUT) == 0 ; (wFXAnimID: the move's index)
+	cp LOW(ROLLOUT)
 	jr nz, .not_rollout
 
 	ld a, BATTLE_BG_EFFECT_ROLLOUT

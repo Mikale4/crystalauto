@@ -21,7 +21,7 @@ BattleCommand_GetMagnitude:
 ; ("Magnitude 8!", or PSYWAVE's own: "Psywave 8!")
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
-	cp PSYWAVE
+	cpmove PSYWAVE
 	ld hl, MagnitudeText
 	jr nz, .got_text
 	ld hl, PsywaveText

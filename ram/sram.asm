@@ -55,6 +55,14 @@ sLuckyNumberDay:: db
 sLuckyIDNumber::  dw
 
 
+SECTION "Saved Move Table", SRAM
+
+; wMoveIndexTable's entries, kept the same as it changes (see SyncMoveTableToSRAM):
+; the save's 8-bit move IDs' indexes
+sMoveIndexTableMagic:: ds 3 ; MOVE_TABLE_MAGIC (or not there: a save from before 16-bit moves)
+sMoveIndexTable:: ds wMoveIndexTableEntriesEnd - wMoveIndexTable
+
+
 SECTION "Backup Save", SRAM
 
 sBackupOptions:: ds wOptionsEnd - wOptions

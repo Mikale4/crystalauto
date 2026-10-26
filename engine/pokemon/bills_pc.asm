@@ -1762,6 +1762,8 @@ BillsPC_CopyMon:
 	ld bc, BOXMON_STRUCT_LENGTH
 	call CopyMonToTemp
 	call CloseSRAM
+	ld hl, wBufferMon
+	call BillsPC_ConvertBoxMonToPartyMon ; (its moves' IDs)
 	farcall CalcBufferMonStats
 	ret
 
@@ -2507,4 +2509,163 @@ BillsPC_PlaceChangeBoxString:
 	call PlaceString
 	ld a, $1
 	ldh [hBGMapMode], a
+	ret
+
+BillsPC_ConvertBoxData::
+; Convert the moves of a whole box's POKéMON: c = 0, their IDs to their 16-bit
+; indexes (the boxes but the one out keep those: their IDs could be taken back,
+; see engine/16/move_table.asm); c = 1, back (with full PP). b:de: the box.
+	ld a, b
+	call OpenSRAM
+	ld a, [de]
+	and a
+	jr z, .done
+	cp MONS_PER_BOX + 1
+	jr nc, .done ; (don't make it any worse)
+	ld b, a
+	ld hl, sBoxMons - sBox
+	add hl, de
+.loop
+	ld a, c
+	and a
+	jr nz, .to_ids
+	call BillsPC_ConvertPartyMonToBoxMon
+	jr .next
+
+.to_ids
+	call BillsPC_ConvertBoxMonToPartyMon
+.next
+	push bc
+	ld bc, BOXMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	dec b
+	jr nz, .loop
+.done
+	jp CloseSRAM
+
+BillsPC_ConvertPartyMonToBoxMon:
+; The moves of the POKéMON at hl: their IDs become their 16-bit indexes, the low
+; byte in their place and the high bits in their PP (with the PP UPs'); keeps bc,
+; de, hl
+	push hl
+	push de
+	push bc
+	ld bc, MON_MOVES
+	add hl, bc
+	ld b, NUM_MOVES
+.loop
+	ld a, [hl]
+	push hl
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
+	pop hl
+	ld [hl], e
+	push hl
+	ld a, l
+	add MON_PP - MON_MOVES
+	ld l, a
+	adc h
+	sub l
+	ld h, a
+	ld a, d
+	and PP_MASK
+	ld d, a
+	ld a, [hl]
+	and PP_UP_MASK
+	or d
+	ld [hl], a
+	pop hl
+	inc hl
+	dec b
+	jr nz, .loop
+	pop bc
+	pop de
+	pop hl
+	ret
+
+BillsPC_ConvertBoxMonToPartyMon:
+; Undo BillsPC_ConvertPartyMonToBoxMon for the POKéMON at hl: its moves' IDs,
+; with full PP; keeps bc, de, hl
+	push hl
+	push de
+	push bc
+	ld bc, MON_MOVES
+	add hl, bc
+	ld d, h
+	ld e, l
+	ld bc, MON_PP - MON_MOVES
+	add hl, bc
+	ld b, NUM_MOVES
+.loop
+	push bc
+	push hl
+	ld a, [hl]
+	and PP_MASK
+	cp PP_MASK
+	jr nz, .got_high
+	ld a, $ff ; (-1: ID $ff's)
+.got_high
+	ld h, a
+	ld a, [de]
+	ld l, a
+	call GetMoveIDFromIndex
+	ld [de], a
+	pop hl
+	and a
+	jr z, .no_move
+	push hl
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
+	pop hl
+; max PP: its PP, + a fifth of it (at most 7) for each PP UP
+	ld c, a
+	ld b, 0
+.fifth
+	sub 5
+	jr c, .got_fifth
+	inc b
+	jr .fifth
+
+.got_fifth
+	ld a, b
+	cp 7 + 1
+	jr c, .fifth_ok
+	ld b, 7
+.fifth_ok
+	ld a, [hl]
+	and PP_UP_MASK
+	push af
+	rlca
+	rlca
+.pp_ups
+	and a
+	jr z, .got_pp
+	push af
+	ld a, c
+	add b
+	ld c, a
+	pop af
+	dec a
+	jr .pp_ups
+
+.got_pp
+	pop af
+	or c
+	ld [hl], a
+	jr .next
+
+.no_move
+	ld [hl], a ; (0)
+.next
+	inc hl
+	inc de
+	pop bc
+	dec b
+	jr nz, .loop
+	pop bc
+	pop de
+	pop hl
 	ret

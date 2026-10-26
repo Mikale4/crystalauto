@@ -155,6 +155,10 @@ SECTION "Enemy Trainers", ROMX
 INCLUDE "engine/battle/ai/items.asm"
 INCLUDE "engine/battle/ai/scoring.asm"
 INCLUDE "engine/battle/read_trainer_attributes.asm"
+
+
+SECTION "Trainer Parties", ROMX
+
 INCLUDE "engine/battle/read_trainer_party.asm"
 
 
@@ -167,7 +171,6 @@ INCLUDE "data/battle/effect_command_pointers.asm"
 SECTION "bank10", ROMX
 
 INCLUDE "engine/pokedex/pokedex.asm"
-INCLUDE "data/moves/moves.asm"
 INCLUDE "engine/pokemon/evolve.asm"
 
 
@@ -661,7 +664,6 @@ SECTION "Miscellaneous Text", ROMX
 
 INCLUDE "data/items/names.asm"
 INCLUDE "engine/items/print_item_description.asm"
-INCLUDE "data/moves/names.asm"
 INCLUDE "engine/overworld/landmarks.asm"
 
 
@@ -767,3 +769,10 @@ INCLUDE "engine/demo/demo_world.asm"
 SECTION "Demo Nodes", ROMX
 
 INCLUDE "engine/demo/demo_nodes.asm"
+
+
+SECTION "Move Data", ROMX
+
+INCLUDE "engine/16/move_table.asm"
+INCLUDE "data/moves/moves.asm"
+INCLUDE "data/moves/names.asm"

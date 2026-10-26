@@ -125,7 +125,7 @@ TeleportSwitch:
 ; user's stat changes or status (as with any switch).
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
-	cp TELEPORT
+	cpmove TELEPORT
 	ret nz
 	ldh a, [hBattleTurn]
 	and a

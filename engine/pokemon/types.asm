@@ -42,15 +42,9 @@ PrintMoveType:
 ; Print the type of move b at hl.
 
 	push hl
-	ld a, b
-	dec a
-	ld bc, MOVE_LENGTH
-	ld hl, Moves
-	call AddNTimes
-	ld de, wStringBuffer1
-	ld a, BANK(Moves)
-	call FarCopyBytes
-	ld a, [wStringBuffer1 + MOVE_TYPE]
+	ld l, b
+	ld a, MOVE_TYPE
+	call GetMoveAttribute
 	and TYPE_MASK
 	pop hl
 

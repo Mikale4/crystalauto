@@ -88,3 +88,37 @@ if _NARG == 0
 	sine_table 32
 endc
 ENDM
+
+MACRO cpmove
+; z if move ID a is move \1 (an index: see engine/16/move_table.asm); keeps a,
+; but not the carry flag
+	call IsMove
+	dw \1
+ENDM
+
+MACRO ld_anim
+; wFXAnimID = \1 (an animation's index: a move's constant, or an ANIM_* one)
+	ld a, LOW(\1)
+	ld [wFXAnimID], a
+	ld a, HIGH(\1)
+	ld [wFXAnimID + 1], a
+ENDM
+
+MACRO ldmove
+; a = move \1's ID (\1: its index); keeps bc, de, hl
+	push hl
+	ld hl, \1
+	call GetMoveIDFromIndex
+	pop hl
+ENDM
+
+MACRO ldbmove
+; b = move \1's ID (\1: its index); keeps af, c, de, hl
+	push af
+	push hl
+	ld hl, \1
+	call GetMoveIDFromIndex
+	ld b, a
+	pop hl
+	pop af
+ENDM

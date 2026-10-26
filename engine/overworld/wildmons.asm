@@ -875,18 +875,10 @@ RandomPhoneMon:
 	add hl, bc
 	ld a, BANK(TrainerGroups)
 	call GetFarWord
-
-.skip_trainer
-	dec e
-	jr z, .skipped
-.skip
-	ld a, BANK(Trainers)
-	call GetFarByte
-	inc hl
-	cp -1
-	jr nz, .skip
-	jr .skip_trainer
-.skipped
+	ld b, e
+	ld d, h
+	ld e, l
+	farcall SkipTrainersFar
 
 .skip_name
 	ld a, BANK(Trainers)
@@ -901,14 +893,14 @@ RandomPhoneMon:
 	ld bc, 2 ; level, species
 	cp TRAINERTYPE_NORMAL
 	jr z, .got_mon_length
-	ld bc, 2 + NUM_MOVES ; level, species, moves
+	ld bc, 2 + NUM_MOVES * 2 ; level, species, moves (16-bit indexes)
 	cp TRAINERTYPE_MOVES
 	jr z, .got_mon_length
 	ld bc, 2 + 1 ; level, species, item
 	cp TRAINERTYPE_ITEM
 	jr z, .got_mon_length
 	; TRAINERTYPE_ITEM_MOVES
-	ld bc, 2 + 1 + NUM_MOVES ; level, species, item, moves
+	ld bc, 2 + 1 + NUM_MOVES * 2 ; level, species, item, moves
 .got_mon_length
 
 	ld e, 0

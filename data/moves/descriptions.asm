@@ -1,5 +1,8 @@
+; entries correspond to move indexes (see constants/move_constants.asm and
+; PrintMoveDescription): first, ID $FF's (-1) and no move's (0)
+	dw MoveFFDescription
+	dw Move00Description
 MoveDescriptions::
-; entries correspond to move ids (see constants/move_constants.asm)
 	table_width 2
 	dw PoundDescription
 	dw KarateChopDescription
@@ -256,9 +259,6 @@ MoveDescriptions::
 	dw PlayRoughDescription
 	dw MoonblastDescription
 	assert_table_length NUM_ATTACKS
-	dw MoveFFDescription
-	dw Move00Description
-	assert_table_length $100
 
 MoveFFDescription:
 Move00Description:

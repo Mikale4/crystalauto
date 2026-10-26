@@ -104,14 +104,32 @@ CheckPartyMove:
 .no
 ; none knows it: its HM (or TM) in the PACK will do, for the first POKéMON that
 ; isn't an egg to use (as in PalletToPewter)
+	ld a, d
+	call GetMoveIndexFromID
+	ld b, h
+	ld c, l
 	ld hl, FieldMoveItems
 .find_item
 	ld a, [hli]
-	and a
-	jr z, .none
-	cp d
+	ld e, a
 	ld a, [hli]
-	jr nz, .find_item
+	ld d, a
+	or e
+	jr z, .none
+	ld a, [hli]
+	push af
+	ld a, e
+	cp c
+	jr nz, .not_it
+	ld a, d
+	cp b
+	jr z, .found_item
+.not_it
+	pop af
+	jr .find_item
+
+.found_item
+	pop af
 	ld b, a
 	ld a, [wCurItem]
 	push af
@@ -145,17 +163,18 @@ CheckPartyMove:
 	ret
 
 FieldMoveItems::
-; field moves, and the HM or TM that lets the team use them untaught
-	db CUT,        HM_CUT
-	db FLY,        HM_FLY
-	db SURF,       HM_SURF
-	db STRENGTH,   HM_STRENGTH
-	db FLASH,      HM_FLASH
-	db WHIRLPOOL,  HM_WHIRLPOOL
-	db WATERFALL,  HM_WATERFALL
-	db ROCK_SMASH, TM_ROCK_SMASH
-	db HEADBUTT,   TM_HEADBUTT
-	db 0
+; field moves (their 16-bit indexes), and the HM or TM that lets the team use
+; them untaught
+	dwb CUT,        HM_CUT
+	dwb FLY,        HM_FLY
+	dwb SURF,       HM_SURF
+	dwb STRENGTH,   HM_STRENGTH
+	dwb FLASH,      HM_FLASH
+	dwb WHIRLPOOL,  HM_WHIRLPOOL
+	dwb WATERFALL,  HM_WATERFALL
+	dwb ROCK_SMASH, TM_ROCK_SMASH
+	dwb HEADBUTT,   TM_HEADBUTT
+	dw 0
 
 FieldMoveFailed:
 	ld hl, .CantUseItemText
@@ -558,7 +577,8 @@ TrySurfOW::
 	call CheckEngineFlag
 	jr c, .quit
 
-	ld d, SURF
+	ldmove SURF
+	ld d, a
 	call CheckPartyMove
 	jr c, .quit
 
@@ -755,7 +775,8 @@ Script_UsedWaterfall:
 	text_end
 
 TryWaterfallOW::
-	ld d, WATERFALL
+	ldmove WATERFALL
+	ld d, a
 	call CheckPartyMove
 	jr c, .failed
 	ld de, ENGINE_RISINGBADGE
@@ -1106,7 +1127,8 @@ BouldersMayMoveText:
 	text_end
 
 TryStrengthOW:
-	ld d, STRENGTH
+	ldmove STRENGTH
+	ld d, a
 	call CheckPartyMove
 	jr c, .nope
 
@@ -1240,7 +1262,8 @@ DisappearWhirlpool:
 	ret
 
 TryWhirlpoolOW::
-	ld d, WHIRLPOOL
+	ldmove WHIRLPOOL
+	ld d, a
 	call CheckPartyMove
 	jr c, .failed
 	ld de, ENGINE_GLACIERBADGE
@@ -1335,7 +1358,8 @@ HeadbuttScript:
 	end
 
 TryHeadbuttOW::
-	ld d, HEADBUTT
+	ldmove HEADBUTT
+	ld d, a
 	call CheckPartyMove
 	jr c, .no
 
@@ -1461,7 +1485,8 @@ AskRockSmashText:
 	text_end
 
 HasRockSmash:
-	ld d, ROCK_SMASH
+	ldmove ROCK_SMASH
+	ld d, a
 	call CheckPartyMove
 	jr nc, .yes
 ; no
@@ -1813,7 +1838,8 @@ GotOffBikeText:
 	text_end
 
 TryCutOW::
-	ld d, CUT
+	ldmove CUT
+	ld d, a
 	call CheckPartyMove
 	jr c, .cant_cut
 

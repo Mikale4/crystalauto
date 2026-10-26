@@ -13,9 +13,9 @@ GetRecoilDamage::
 .got_hp
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .struggle
-	cp DOUBLE_EDGE
+	cpmove DOUBLE_EDGE
 	jr z, .third
 	ld a, [wCurDamage]
 	ld b, a
@@ -79,7 +79,7 @@ GetDrainAmount::
 	rr c
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
-	cp DRAINING_KISS
+	cpmove DRAINING_KISS
 	jr nz, .got_amount
 	ld h, b
 	ld l, c
@@ -545,7 +545,7 @@ HandleEntryTransform::
 	ld b, NUM_MOVES
 .find
 	ld a, [hli]
-	cp TRANSFORM
+	cpmove TRANSFORM
 	jr z, .knows
 	dec b
 	jr nz, .find
@@ -577,7 +577,8 @@ HandleEntryTransform::
 	ld a, [hl]
 	push hl
 	push af
-	ld [hl], TRANSFORM
+	ldmove TRANSFORM
+	ld [hl], a
 	farcall BattleCommand_Transform
 	pop af
 	pop hl
@@ -624,9 +625,16 @@ HandleEntryMoves:
 	ld hl, EntryMoves
 .loop
 	ld a, [hli]
-	cp -1
-	ret z
+	ld c, a
+	ld a, [hli]
+	ld b, a
+	and c
+	inc a
+	ret z ; (-1: the end)
 	push hl
+	ld h, b
+	ld l, c
+	call GetMoveIDFromIndex
 	ld b, a
 	call .Use
 	pop hl
@@ -634,17 +642,17 @@ HandleEntryMoves:
 
 .Use:
 	ld a, b
-	cp SPIKES
+	cpmove SPIKES
 	jr z, .spikes
-	cp MEAN_LOOK
+	cpmove MEAN_LOOK
 	jr z, .mean_look
-	cp SPIDER_WEB
+	cpmove SPIDER_WEB
 	jr z, .mean_look
-	cp SAFEGUARD
+	cpmove SAFEGUARD
 	jr z, .safeguard
-	cp PSYCH_UP
+	cpmove PSYCH_UP
 	jr z, .psych_up
-	cp FUTURE_SIGHT
+	cpmove FUTURE_SIGHT
 	jr nz, .use
 ; (not while one is on its way)
 	ld hl, wPlayerFutureSightCount
@@ -716,18 +724,18 @@ HandleEntryMoves:
 EntryMoves:
 ; in the order they're used (LOCK-ON last: the next attack's aim, see
 ; BattleCommand_CheckHit, is for an attack)
-	db SUNNY_DAY
-	db RAIN_DANCE
-	db SANDSTORM
-	db FORESIGHT
-	db FUTURE_SIGHT
-	db SPIKES
-	db SAFEGUARD
-	db PSYCH_UP
-	db MEAN_LOOK
-	db SPIDER_WEB
-	db LOCK_ON
-	db -1
+	dw SUNNY_DAY
+	dw RAIN_DANCE
+	dw SANDSTORM
+	dw FORESIGHT
+	dw FUTURE_SIGHT
+	dw SPIKES
+	dw SAFEGUARD
+	dw PSYCH_UP
+	dw MEAN_LOOK
+	dw SPIDER_WEB
+	dw LOCK_ON
+	dw -1
 
 CountHitTaken::
 ; The target of the user's attack (not its SUBSTITUTE) takes wCurDamage: for
@@ -881,7 +889,7 @@ HandleAutoEndOfTurn:
 	ret nz
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
-	ld b, SNORE
+	ldbmove SNORE
 	and SLP_MASK
 	jr nz, .use
 	ld a, BATTLE_VARS_STATUS
@@ -892,7 +900,7 @@ HandleAutoEndOfTurn:
 	call GetBattleVar
 	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
 	ret nz
-	ld b, SPLASH
+	ldbmove SPLASH
 .use
 	farcall AutoMove_Setup
 	ret c
@@ -947,7 +955,7 @@ HandleAutoSpite:
 	call GetBattleVar
 	and a
 	ret z
-	cp STRUGGLE
+	cpmove STRUGGLE
 	ret z
 	ld b, a
 ; its slot in the foe's moves (c), with PP left
@@ -995,7 +1003,7 @@ HandleAutoSpite:
 	ret nz ; (that move's had it, since they're out)
 	push de
 	push hl
-	ld b, SPITE
+	ldbmove SPITE
 	farcall AutoMove_Setup
 	pop hl
 	pop de
@@ -1046,7 +1054,7 @@ HandleAutoNightmare:
 	call GetBattleVar
 	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
 	ret nz
-	ld b, NIGHTMARE
+	ldbmove NIGHTMARE
 	farcall AutoMove_Setup
 	ret c
 	ld de, 0 ; (its own effect script)
@@ -1074,10 +1082,10 @@ HandleAutoCounter:
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
 	and ~TYPE_MASK
-	ld b, COUNTER
+	ldbmove COUNTER
 	cp PHYSICAL
 	jr z, .got_move
-	ld b, MIRROR_COAT
+	ldbmove MIRROR_COAT
 	cp SPECIAL
 	ret nz
 .got_move
@@ -1144,11 +1152,11 @@ AutoMoveFieldFlag:
 	ld hl, wEnemyFieldFlags
 .got_flags
 	ld a, b
-	cp COUNTER
+	cpmove COUNTER
 	ld a, 1 << FIELD_COUNTER_F
 	ret z
 	ld a, b
-	cp MIRROR_COAT
+	cpmove MIRROR_COAT
 	ld a, 1 << FIELD_MIRROR_COAT_F
 	ret z
 	ld a, 1 << FIELD_MIRROR_MOVE_F
@@ -1172,7 +1180,7 @@ HandleAutoMirrorMove:
 	ret
 
 .Mirror:
-	ld b, MIRROR_MOVE
+	ldbmove MIRROR_MOVE
 	call AutoMoveFieldFlag
 	and [hl]
 	ret nz ; (it has, since it came in)
@@ -1197,23 +1205,20 @@ HandleAutoMirrorMove:
 	call GetBattleVar
 	and a
 	ret z
-	cp STRUGGLE
+	cpmove STRUGGLE
 	ret z
-	dec a
-	ld hl, Moves + MOVE_EFFECT
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
 	ld hl, MirrorMoveCant
 	ld de, 1
 	call IsInArray
 	ret c
 ; then, MIRROR MOVE
-	ld b, MIRROR_MOVE
+	ldbmove MIRROR_MOVE
 	farcall AutoMove_Setup
 	ret c
-	ld b, MIRROR_MOVE
+	ldbmove MIRROR_MOVE
 	call AutoMoveFieldFlag
 	or [hl]
 	ld [hl], a
@@ -1267,13 +1272,13 @@ AutoPursuit::
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	push af
-	ld b, PURSUIT
+	ldbmove PURSUIT
 	farcall AutoMove_Setup
 	jr c, .none
 	ld de, 0 ; (its own effect script)
 	farcall AutoMove_Run
 	pop af
-	cp PURSUIT
+	cpmove PURSUIT
 	jr nz, .done
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVarAddr
@@ -1303,7 +1308,7 @@ PartyKnowsPayDay::
 	ld b, NUM_MOVES
 .move
 	ld a, [hli]
-	cp PAY_DAY
+	cpmove PAY_DAY
 	jr z, .found
 	dec b
 	jr nz, .move
@@ -1391,12 +1396,9 @@ CantChooseMove::
 ; b: a move; c: whose (0: the player's POKéMON, 1: the foe's). Return z if it can't
 ; be chosen: it works by itself (AutoMoves), or it can be used once while the
 ; POKéMON is out and has been (OnceOutMoves). b and c are kept.
-	push bc
 	ld a, b
 	ld hl, AutoMoves
-	ld de, 1
-	call IsInArray
-	pop bc
+	call CheckMoveInList
 	jr c, .cant
 	call OnceOutFlag
 	jr nc, .can
@@ -1419,17 +1421,40 @@ OnceOutFlag:
 ; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves):
 ; then hl is its side's field flags (c: 0, the player's; 1, the foe's) and a the
 ; flag for it.
+	push de
+	push bc
+	ld a, b
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, OnceOutMoves
 .loop
 	ld a, [hli]
-	cp -1
-	ret z ; (nc)
-	cp b
+	ld c, a
+	ld a, [hli]
+	ld b, a
+	and c
+	inc a
+	jr z, .none ; (-1: the end)
+	ld a, c
+	cp e
+	jr nz, .next
+	ld a, b
+	cp d
 	jr z, .found
+.next
 	inc hl
 	jr .loop
 
+.none
+	pop bc
+	pop de
+	and a
+	ret
+
 .found
+	pop bc
+	pop de
 	ld a, [hl]
 	ld hl, wPlayerFieldFlags
 	dec c
@@ -1443,28 +1468,28 @@ OnceOutFlag:
 AutoMoves:
 ; moves that work by themselves, so they can't be chosen (for the player, the foe
 ; and auto battle: see CantChooseMove)
-	db COUNTER      ; right after an attack: see HandleAutoCounter
-	db MIRROR_COAT
-	db MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
-	db SPITE        ; (see HandleAutoSpite)
-	db FUTURE_SIGHT ; as it comes in: see HandleEntryMoves
-	db SAFEGUARD
-	db MEAN_LOOK
-	db SPIDER_WEB
-	db SNORE        ; at the end of its turn: see HandleAutoEndOfTurn
-	db SPLASH
-	db NIGHTMARE    ; when the foe is asleep: see HandleAutoNightmare
-	db CONVERSION   ; just before an attack's damage: see HandleAutoConversion
-	db CONVERSION2
-	db -1
+	dw COUNTER      ; right after an attack: see HandleAutoCounter
+	dw MIRROR_COAT
+	dw MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
+	dw SPITE        ; (see HandleAutoSpite)
+	dw FUTURE_SIGHT ; as it comes in: see HandleEntryMoves
+	dw SAFEGUARD
+	dw MEAN_LOOK
+	dw SPIDER_WEB
+	dw SNORE        ; at the end of its turn: see HandleAutoEndOfTurn
+	dw SPLASH
+	dw NIGHTMARE    ; when the foe is asleep: see HandleAutoNightmare
+	dw CONVERSION   ; just before an attack's damage: see HandleAutoConversion
+	dw CONVERSION2
+	dw -1
 
 OnceOutMoves:
 ; moves that can be used once while the POKéMON is out (see MarkFirstAttack), and
 ; their FIELD_*_F flags
-	db SWORDS_DANCE, 1 << FIELD_SWORDS_DANCE_F
-	db GROWTH,       1 << FIELD_GROWTH_F
-	db AMNESIA,      1 << FIELD_AMNESIA_F
-	db -1
+	dwb SWORDS_DANCE, 1 << FIELD_SWORDS_DANCE_F
+	dwb GROWTH,       1 << FIELD_GROWTH_F
+	dwb AMNESIA,      1 << FIELD_AMNESIA_F
+	dw -1
 
 HandleAutoConversion::
 ; (the stab and resettypematchup commands) CONVERSION and CONVERSION 2 work by
@@ -1480,7 +1505,7 @@ HandleAutoConversion::
 	ret nz
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
-	cp STRUGGLE
+	cpmove STRUGGLE
 	ret z
 	ld a, BATTLE_VARS_MOVE_TYPE
 	call GetBattleVar
@@ -1510,10 +1535,10 @@ HandleAutoConversion::
 	or [hl]
 	ret z
 ; (does it know either?)
-	ld b, CONVERSION2
+	ldbmove CONVERSION2
 	call .Knows
 	jr nc, .knows_one
-	ld b, CONVERSION
+	ldbmove CONVERSION
 	call .Knows
 	ret c
 .knows_one
@@ -1535,7 +1560,7 @@ HandleAutoConversion::
 	ld a, [wConversionMatchup]
 	and a
 	jr z, .done ; (it doesn't already)
-	ld b, CONVERSION2
+	ldbmove CONVERSION2
 	call .Knows
 	jr nc, .convert
 .resist
@@ -1548,10 +1573,10 @@ HandleAutoConversion::
 	and a
 	jr z, .done
 	ld e, a
-	ld b, CONVERSION
+	ldbmove CONVERSION
 	call .Knows
 	jr nc, .convert
-	ld b, CONVERSION2
+	ldbmove CONVERSION2
 	call .Knows
 	jr nc, .convert
 .done
@@ -1842,9 +1867,9 @@ ChooseSketchMove::
 ; Return carry if the user can't sketch move a. a is kept.
 	and a
 	jr z, .cant
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .cant
-	cp SKETCH
+	cpmove SKETCH
 	jr z, .cant
 	push hl
 	push bc
@@ -1881,12 +1906,9 @@ ChooseSketchMove::
 	push hl
 	push bc
 	ld a, b
-	dec a
-	ld hl, Moves + MOVE_POWER
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_POWER
+	call GetMoveAttribute
 	pop bc
 	pop hl
 	ret

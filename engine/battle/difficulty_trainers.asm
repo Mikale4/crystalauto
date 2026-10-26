@@ -471,12 +471,9 @@ SetFullPP::
 	push hl
 	and a
 	jr z, .no_move
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 .no_move
 	pop hl
 	ld [hl], a

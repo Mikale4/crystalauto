@@ -289,16 +289,9 @@ ChooseRelearnerMove:
 
 .MoveAttribute:
 ; a: attribute a (MOVE_*) of the highlighted move
-	ld hl, Moves
-	ld c, a
-	ld b, 0
-	add hl, bc
-	ld a, [wMenuSelection]
-	dec a
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	jp GetFarByte
+	ld hl, wMenuSelection
+	ld l, [hl]
+	jp GetMoveAttribute
 
 .PPText:
 	db "PP/@"
@@ -341,6 +334,7 @@ BuildReminderList::
 	jr .evolutions
 
 .learnset
+; (level, then the move's 16-bit index)
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
 	and a
@@ -351,10 +345,18 @@ BuildReminderList::
 	call GetFarByte
 	inc hl
 	ld b, a
+	ld a, BANK("Evolutions and Attacks")
+	call GetFarByte
+	inc hl
+	ld c, a
 	ld a, d
 	cp e
 	jr c, .learnset ; (not at that level yet)
-	ld a, b
+	push hl
+	ld h, c
+	ld l, b
+	call GetMoveIDFromIndex
+	pop hl
 	call AddToMoveList
 	jr .learnset
 
@@ -377,11 +379,23 @@ BuildTutorList::
 	ld a, BANK(EggMovePointers)
 	call GetFarWord
 .egg_moves
+; (16-bit indexes)
 	ld a, BANK("Egg Moves")
 	call GetFarByte
-	cp -1
-	jr z, .tutor_moves
 	inc hl
+	ld c, a
+	ld a, BANK("Egg Moves")
+	call GetFarByte
+	inc hl
+	ld b, a
+	and c
+	inc a
+	jr z, .tutor_moves ; (-1: the end)
+	push hl
+	ld h, b
+	ld l, c
+	call GetMoveIDFromIndex
+	pop hl
 	call AddToMoveList
 	jr .egg_moves
 
@@ -391,10 +405,16 @@ BuildTutorList::
 	ld hl, .TutorMoves
 .tutor_loop
 	ld a, [hli]
-	and a
+	ld c, a
+	ld a, [hli]
+	ld b, a
+	or c
 	ret z
-	ld [wPutativeTMHMMove], a
 	push hl
+	ld h, b
+	ld l, c
+	call GetMoveIDFromIndex
+	ld [wPutativeTMHMMove], a
 	predef CanLearnTMHMMove
 	ld a, c
 	and a
@@ -406,8 +426,8 @@ BuildTutorList::
 	jr .tutor_loop
 
 .TutorMoves:
-	db MT01_MOVE, MT02_MOVE, MT03_MOVE
-	db 0 ; end
+	dw MT01_MOVE, MT02_MOVE, MT03_MOVE
+	dw 0 ; end
 
 ClearMoveList:
 	xor a

@@ -429,6 +429,7 @@ LearnLevelMoves:
 	jr nz, .skip_evos
 
 .find_move
+; (level, then the move's 16-bit index)
 	ld a, [hli]
 	and a
 	jr z, .done
@@ -437,9 +438,14 @@ LearnLevelMoves:
 	ld a, [wCurPartyLevel]
 	cp b
 	ld a, [hli]
+	ld c, a
+	ld a, [hli]
 	jr nz, .find_move
 
 	push hl
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
 	ld d, a
 	ld hl, wPartyMon1Moves
 	ld a, [wCurPartyMon]
@@ -500,6 +506,8 @@ FillMoves:
 .NextMove:
 	pop de
 .GetMove:
+; (level, then the move's 16-bit index)
+	inc hl
 	inc hl
 .GetLevel:
 	ld a, [hli]
@@ -517,12 +525,20 @@ FillMoves:
 	jr nc, .GetMove
 
 .CheckMove:
+; the move's ID in b (the level's done with)
+	push hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetMoveIDFromIndex
+	pop hl
+	ld b, a
 	push de
 	ld c, NUM_MOVES
 .CheckRepeat:
 	ld a, [de]
 	inc de
-	cp [hl]
+	cp b
 	jr z, .NextMove
 	dec c
 	jr nz, .CheckRepeat
@@ -546,33 +562,32 @@ FillMoves:
 	and a
 	jr z, .ShiftedMove
 	push de
+	push bc
 	ld bc, wPartyMon1PP - (wPartyMon1Moves + NUM_MOVES - 1)
 	add hl, bc
 	ld d, h
 	ld e, l
 	call ShiftMoves
+	pop bc
 	pop de
 
 .ShiftedMove:
 	pop hl
 
 .LearnMove:
-	ld a, [hl]
+	ld a, b
 	ld [de], a
 	ld a, [wEvolutionOldSpecies]
 	and a
 	jr z, .NextMove
 	push hl
-	ld a, [hl]
+	ld a, b
 	ld hl, MON_PP - MON_MOVES
 	add hl, de
 	push hl
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	pop hl
 	ld [hl], a
 	pop hl

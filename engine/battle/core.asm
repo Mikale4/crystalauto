@@ -572,7 +572,7 @@ ParsePlayerAction:
 .not_encored
 	ld a, [wBattlePlayerAction]
 	cp BATTLEPLAYERACTION_SWITCH
-	jr z, .reset_rage
+	jp z, .reset_rage
 	and a
 	jr nz, .reset_bide
 	ld a, [wPlayerSubStatus3]
@@ -588,7 +588,7 @@ ParsePlayerAction:
 	call SafeLoadTempTilemapToTilemap
 	call UpdateBattleHuds
 	ld a, [wCurPlayerMove]
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .struggle
 	call PlayClickSFX
 
@@ -825,32 +825,47 @@ CompareMovePriority:
 
 GetMovePriority:
 ; Return the priority of move a (as in the latest games, + BASE_PRIORITY).
-	ld b, a
+	push de
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, MovePriorities
 .loop
 	ld a, [hli]
-	cp -1
-	jr z, .none
-	cp b
+	ld c, a
 	ld a, [hli]
-	jr nz, .loop
+	ld b, a
+	and c
+	inc a
+	jr z, .none ; (-1: the end)
+	ld a, c
+	cp e
+	jr nz, .next
+	ld a, b
+	cp d
+	jr z, .found
+.next
+	inc hl
+	jr .loop
+
+.found
+	ld a, [hl]
 	add BASE_PRIORITY
+	pop de
 	ret
 
 .none
 	ld a, BASE_PRIORITY
+	pop de
 	ret
 
 INCLUDE "data/moves/priorities.asm"
 
 GetMoveEffect:
 	ld a, b
-	dec a
-	ld hl, Moves + MOVE_EFFECT
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
 	ld b, a
 	ret
 
@@ -1233,7 +1248,13 @@ HandleWrap:
 
 	ld a, [de]
 	ld [wNamedObjectIndex], a
+	push hl
+	call GetMoveIndexFromID
+	ld a, l
 	ld [wFXAnimID], a
+	ld a, h
+	ld [wFXAnimID + 1], a
+	pop hl
 	call GetMoveName
 	dec [hl]
 	jr z, .release_from_bounds
@@ -1246,7 +1267,6 @@ HandleWrap:
 	call SwitchTurnCore
 	xor a
 	ld [wBattleAfterAnim], a
-	ld [wFXAnimID + 1], a
 	predef PlayBattleAnim
 	call SwitchTurnCore
 
@@ -1383,7 +1403,7 @@ HandleMysteryberry:
 .restore
 	; lousy hack
 	ld a, [hl]
-	cp SKETCH
+	cpmove SKETCH
 	ld b, 1
 	jr z, .sketch
 	ld b, 5
@@ -1491,7 +1511,7 @@ HandleFutureSight:
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVarAddr
 	push af
-	ld a, FUTURE_SIGHT
+	ldmove FUTURE_SIGHT
 	ld [hl], a
 
 	callfar UpdateMoveData
@@ -3312,13 +3332,8 @@ LookUpTheEffectivenessOfEveryMove:
 	push hl
 	push de
 	push bc
-	dec a
-	ld hl, Moves
-	ld bc, MOVE_LENGTH
-	call AddNTimes
 	ld de, wEnemyMoveStruct
-	ld a, BANK(Moves)
-	call FarCopyBytes
+	call GetMoveData
 	call SetEnemyTurn
 	callfar BattleCheckTypeMatchup
 	pop bc
@@ -4368,12 +4383,10 @@ ItemRecoveryAnim:
 	push de
 	push bc
 	call EmptyBattleTextbox
-	ld a, RECOVER
-	ld [wFXAnimID], a
 	call SwitchTurnCore
 	xor a
 	ld [wBattleAfterAnim], a
-	ld [wFXAnimID + 1], a
+	ld_anim RECOVER
 	predef PlayBattleAnim
 	call SwitchTurnCore
 	pop bc
@@ -5800,7 +5813,7 @@ CantChooseMove_Far:
 CheckPlayerHasUsableMoves:
 ; Return nz if the player's POKéMON has a move to choose: one with PP left, not
 ; disabled, and not one that works by itself (see MoveWorksByItself).
-	ld a, STRUGGLE
+	ldmove STRUGGLE
 	ld [wCurPlayerMove], a
 	ld a, [wPlayerDisableCount]
 	swap a
@@ -5986,7 +5999,7 @@ ParseEnemyAction:
 	ret
 
 .struggle
-	ld a, STRUGGLE
+	ldmove STRUGGLE
 	jr .finish
 
 ResetVarsForSubstatusRage:
@@ -8301,12 +8314,9 @@ FillEnemyMovesFromMoveIndicesBuffer: ; unreferenced
 	push hl
 
 	push hl
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	pop hl
 
 	ld bc, wEnemyMonPP - (wEnemyMonMoves + 1)

@@ -48,7 +48,6 @@ ROMX $07
 ROMX $08
 	"Clock Reset"
 	"Tileset Data 3"
-	"Egg Moves"
 ROMX $09
 	"bank9"
 ROMX $0a
@@ -308,6 +307,7 @@ ROMX $77
 	"European Mail"
 ROMX $78
 	"Debug Room"
+	"Egg Moves"
 	"Tileset Data 8"
 ROMX $79
 	"Capture Rule"
@@ -320,6 +320,7 @@ ROMX $7a
 	"Demo"
 ROMX $7b
 	"Battle Tower Text"
+	"Trainer Parties"
 ROMX $7c
 	"Battle Tower Trainer Data"
 	"Demo World"
@@ -328,6 +329,7 @@ ROMX $7d
 ROMX $7e
 	"Crystal Events"
 ROMX $7f
+	"Move Data"
 	org $7de0
 	"Stadium 2 Checksums"
 WRAM0
@@ -359,6 +361,10 @@ WRAMX 1
 WRAMX 2
 	"Pic Animations"
 	"Demo RAM"
+	align 8
+	"16-bit WRAM tables"
+	align 5
+	"16-bit WRAM work"
 WRAMX 3
 	"Battle Tower RAM"
 WRAMX 4
@@ -382,6 +388,7 @@ SRAM $00
 	"Scratch"
 	org $a600
 	"SRAM Bank 0"
+	"Saved Move Table"
 	org $b200
 	"Backup Save"
 SRAM $01

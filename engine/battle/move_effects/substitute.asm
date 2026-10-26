@@ -59,10 +59,9 @@ BattleCommand_Substitute:
 
 	xor a
 	ld [wBattleAfterAnim], a
-	ld [wFXAnimID + 1], a
 	ld [wBattleAnimParam], a
-	ld a, SUBSTITUTE
-	call LoadAnim
+	ld_anim SUBSTITUTE
+	call PlayUserBattleAnim
 	jr .finish
 
 .no_anim

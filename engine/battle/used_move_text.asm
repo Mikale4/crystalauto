@@ -134,41 +134,11 @@ EndUsedMove5Text:
 	text_end
 
 GetMoveGrammar:
-; store move grammar type in wMoveGrammar
-
-	push bc
-; wMoveGrammar contains move id
-	ld a, [wMoveGrammar]
-	ld c, a ; move id
-	ld b, 0 ; grammar index
-
-; read grammar table
-	ld hl, MoveGrammar
-.loop
-	ld a, [hli]
-; end of table?
-	cp -1
-	jr z, .end
-; match?
-	cp c
-	jr z, .end
-; advance grammar type at 0
-	and a
-	jr nz, .loop
-; next grammar type
-	inc b
-	jr .loop
-
-.end
-; wMoveGrammar now contains move grammar
-	ld a, b
+; (Japanese had a grammar for each move; in English, all are "[mon]<LINE>used
+; [move]!")
+	xor a
 	ld [wMoveGrammar], a
-
-; we're done
-	pop bc
 	ret
-
-INCLUDE "data/moves/grammar.asm"
 
 UpdateUsedMoves:
 ; append move a to wPlayerUsedMoves unless it has already been used

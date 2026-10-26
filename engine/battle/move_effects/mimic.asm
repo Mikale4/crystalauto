@@ -16,7 +16,7 @@ BattleCommand_Mimic:
 	call GetBattleVar
 	and a
 	jr z, .fail
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .fail
 	ld b, a
 	ld c, NUM_MOVES
@@ -29,7 +29,7 @@ BattleCommand_Mimic:
 	dec hl
 .find_mimic
 	ld a, [hld]
-	cp MIMIC
+	cpmove MIMIC
 	jr nz, .find_mimic
 	inc hl
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP

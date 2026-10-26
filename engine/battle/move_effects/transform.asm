@@ -18,8 +18,8 @@ BattleCommand_Transform:
 	jr z, .mimic_substitute
 	call CheckUserIsCharging
 	jr nz, .mimic_substitute
-	ld a, SUBSTITUTE
-	call LoadAnim
+	ld_anim SUBSTITUTE
+	call PlayUserBattleAnim
 .mimic_substitute
 	ld a, BATTLE_VARS_SUBSTATUS5
 	call GetBattleVarAddr
@@ -87,7 +87,7 @@ BattleCommand_Transform:
 	inc de
 	and a
 	jr z, .done_move
-	cp SKETCH
+	cpmove SKETCH
 	ld a, 1
 	jr z, .done_move
 	ld a, 5
@@ -126,12 +126,13 @@ BattleCommand_Transform:
 .after_anim
 	xor a
 	ld [wBattleAfterAnim], a
-	ld [wFXAnimID + 1], a
 	ld a, $2
 	ld [wBattleAnimParam], a
 	pop af
-	ld a, SUBSTITUTE
-	call nz, LoadAnim
+	jr z, .no_substitute
+	ld_anim SUBSTITUTE
+	call PlayUserBattleAnim
+.no_substitute
 	ld hl, TransformedText
 	jp StdBattleTextbox
 

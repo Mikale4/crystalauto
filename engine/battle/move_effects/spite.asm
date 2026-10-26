@@ -13,7 +13,7 @@ BattleCommand_Spite:
 	call GetBattleVar
 	and a
 	jr z, .failed
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .failed
 	ld b, a
 	ld c, -1

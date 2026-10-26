@@ -1554,7 +1554,7 @@ _LinkBattleSendReceiveAction:
 	jr nz, .switch
 	ld a, [wCurPlayerMove]
 	ld b, BATTLEACTION_STRUGGLE
-	cp STRUGGLE
+	cpmove STRUGGLE
 	jr z, .struggle
 	ld b, BATTLEACTION_SKIPTURN
 	cp $ff

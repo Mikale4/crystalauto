@@ -1,3 +1,11 @@
+; (the lowest 2^n - 1 that's at least HIGH(NUM_ATTACKS))
+DEF METRONOME_HIGH_MASK = 0
+rept 8
+	if METRONOME_HIGH_MASK < HIGH(NUM_ATTACKS)
+		DEF METRONOME_HIGH_MASK = METRONOME_HIGH_MASK * 2 + 1
+	endc
+endr
+
 BattleCommand_Metronome:
 	call ClearLastMove
 	call CheckUserIsCharging
@@ -13,22 +21,42 @@ BattleCommand_Metronome:
 	call LoadMoveAnim
 
 .GetMove:
+; a random move (an index from 1 to NUM_ATTACKS)
 	call BattleRandom
-
-; No invalid moves.
-	cp NUM_ATTACKS + 1
+	and METRONOME_HIGH_MASK
+	ld h, a
+	call BattleRandom
+	ld l, a
+	ld a, l
+	sub LOW(NUM_ATTACKS)
+	ld a, h
+	sbc HIGH(NUM_ATTACKS)
 	jr nc, .GetMove
+	inc hl
 
 ; None of the moves in MetronomeExcepts.
-	push af
-	ld de, 1
-	ld hl, MetronomeExcepts
-	call IsInArray
-	pop bc
-	jr c, .GetMove
-
-; No moves the user already has.
+	ld de, MetronomeExcepts
+.excepts
+	ld a, [de]
+	inc de
+	ld c, a
+	ld a, [de]
+	inc de
+	ld b, a
+	and c
+	inc a
+	jr z, .allowed ; -1: the end
+	ld a, c
+	cp l
+	jr nz, .excepts
 	ld a, b
+	cp h
+	jr nz, .excepts
+	jr .GetMove
+
+.allowed
+; No moves the user already has.
+	call GetMoveIDFromIndex
 	call CheckUserMove
 	jr z, .GetMove
 

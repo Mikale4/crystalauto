@@ -255,17 +255,3 @@ GetTMHMName::
 
 INCLUDE "home/hm_moves.asm"
 
-GetMoveName::
-	push hl
-
-	ld a, MOVE_NAME
-	ld [wNamedObjectType], a
-
-	ld a, [wNamedObjectIndex] ; move id
-	ld [wCurSpecies], a
-
-	call GetName
-	ld de, wStringBuffer1
-
-	pop hl
-	ret

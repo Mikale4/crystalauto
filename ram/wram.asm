@@ -3753,6 +3753,27 @@ wDemoNoWay:: db ; the times in a row it's looked and found no way (see DemoWalk)
 wDemoCommandMap:: dw ; the map the command started on (group, number; see DemoOffCommandMap)
 
 
+SECTION "16-bit WRAM tables", WRAMX
+
+; the 8-bit move IDs' 16-bit indexes (see engine/16/move_table.asm); aligned to
+; $100 (see layout.link)
+	wram_conversion_table wMoveIndexTable, MOVE_TABLE
+
+
+SECTION "16-bit WRAM work", WRAMX
+
+; (aligned to $20: see layout.link)
+wConversionTableBitmap:: ds $20 ; the IDs in use (see MoveTableGarbageCollection)
+wMoveTableReady:: db ; wMoveIndexTable is this game's (see InitMoveTable): it's copied to SRAM as it changes
+wMoveTableChanged:: db ; set when garbage collection runs
+; MoveTableGarbageCollection's working space (see MoveIDPlaces)
+wMoveGCBank:: db
+wMoveGCGroups:: db
+wMoveGCGroupLength:: db
+wMoveGCSkip:: db
+wMoveGCCount:: db
+
+
 SECTION "Battle Tower RAM", WRAMX
 
 w3_d000:: ds 1

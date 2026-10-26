@@ -479,21 +479,27 @@ ForEachCandidateMove:
 	jr .skip_evos
 
 .learnset
+; (level, then the move's 16-bit index)
 	ld a, BANK(EvosAttacksPointers)
 	call GetFarByte
 	inc hl
 	and a
 	jr z, .tmhm
 	ld b, a
+	ld a, [wCurPartyLevel]
+	cp b
+	jr c, .tmhm ; (learnsets are in level order)
 	ld a, BANK(EvosAttacksPointers)
 	call GetFarByte
 	inc hl
 	ld c, a
-	ld a, [wCurPartyLevel]
-	cp b
-	jr c, .tmhm ; (learnsets are in level order)
+	ld a, BANK(EvosAttacksPointers)
+	call GetFarByte
+	inc hl
 	push hl
-	ld a, c
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
 	call ConsiderMove
 	pop hl
 	jr .learnset
@@ -522,8 +528,10 @@ ForEachCandidateMove:
 	ld hl, TMHMMoves
 	ld b, 0
 	add hl, bc
+	add hl, bc
 	ld a, BANK(TMHMMoves)
-	call GetFarByte
+	call GetFarWord
+	call GetMoveIDFromIndex
 	call ConsiderMove
 .tmhm_next
 	pop bc
@@ -619,16 +627,9 @@ ConsiderMove:
 
 GetXMoveAttr:
 ; a: attribute c of move a
-	dec a
-	ld hl, Moves
-	push bc
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	pop bc
-	ld b, 0
-	add hl, bc
-	ld a, BANK(Moves)
-	jp GetFarByte
+	ld l, a
+	ld a, c
+	jp GetMoveAttribute
 
 AttackScore:
 ; de: how good wXMove is as an attack for this Pokémon (0 if it isn't one):
@@ -782,10 +783,34 @@ SupportScore:
 ; de: how good wXMove is as a support move (0 if it isn't one): the earlier in
 ; ExtremeSupportMoves, the better.
 	ld a, [wXMove]
+	call GetMoveIndexFromID
+	ld d, h
+	ld e, l
 	ld hl, ExtremeSupportMoves
-	ld de, 2
-	call IsInArray
-	jr nc, .none
+	ld b, 0
+.find
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	cp HIGH(-1)
+	jr nz, .not_end
+	ld a, c
+	cp LOW(-1)
+	jr z, .none
+	ld a, HIGH(-1)
+.not_end
+	cp d
+	jr nz, .next
+	ld a, c
+	cp e
+	jr z, .found
+.next
+	inc hl
+	inc b
+	jr .find
+
+.found
+	dec hl ; (then inc hl: its flag)
 	ld a, 64
 	sub b ; (b: its place in the list)
 	ld e, a
@@ -815,39 +840,39 @@ SupportScore:
 
 ExtremeSupportMoves:
 ; best first
-	db SPORE,         0
-	db SLEEP_POWDER,  0
-	db HYPNOSIS,      0
-	db LOVELY_KISS,   0
-	db THUNDER_WAVE,  0
-	db STUN_SPORE,    0
-	db GLARE,         0
-	db SWORDS_DANCE,  SUPPORT_PHYSICAL
-	db BELLY_DRUM,    SUPPORT_PHYSICAL
-	db CURSE,         SUPPORT_PHYSICAL
-	db RECOVER,       0
-	db SOFTBOILED,    0
-	db MILK_DRINK,    0
-	db MOONLIGHT,     0
-	db MORNING_SUN,   0
-	db SYNTHESIS,     0
-	db AMNESIA,       SUPPORT_SPECIAL
-	db GROWTH,        SUPPORT_SPECIAL
-	db TOXIC,         0
-	db LEECH_SEED,    0
-	db CONFUSE_RAY,   0
-	db SPIKES,        0
-	db AGILITY,       0
-	db REST,          0
-	db REFLECT,       0
-	db LIGHT_SCREEN,  0
-	db BARRIER,       0
-	db SUBSTITUTE,    0
-	db SCARY_FACE,    0 ; (the foe's stats, two stages down)
-	db CHARM,         0
-	db SCREECH,       0
-	db COTTON_SPORE,  0
-	db -1
+	dwb SPORE,         0
+	dwb SLEEP_POWDER,  0
+	dwb HYPNOSIS,      0
+	dwb LOVELY_KISS,   0
+	dwb THUNDER_WAVE,  0
+	dwb STUN_SPORE,    0
+	dwb GLARE,         0
+	dwb SWORDS_DANCE,  SUPPORT_PHYSICAL
+	dwb BELLY_DRUM,    SUPPORT_PHYSICAL
+	dwb CURSE,         SUPPORT_PHYSICAL
+	dwb RECOVER,       0
+	dwb SOFTBOILED,    0
+	dwb MILK_DRINK,    0
+	dwb MOONLIGHT,     0
+	dwb MORNING_SUN,   0
+	dwb SYNTHESIS,     0
+	dwb AMNESIA,       SUPPORT_SPECIAL
+	dwb GROWTH,        SUPPORT_SPECIAL
+	dwb TOXIC,         0
+	dwb LEECH_SEED,    0
+	dwb CONFUSE_RAY,   0
+	dwb SPIKES,        0
+	dwb AGILITY,       0
+	dwb REST,          0
+	dwb REFLECT,       0
+	dwb LIGHT_SCREEN,  0
+	dwb BARRIER,       0
+	dwb SUBSTITUTE,    0
+	dwb SCARY_FACE,    0 ; (the foe's stats, two stages down)
+	dwb CHARM,         0
+	dwb SCREECH,       0
+	dwb COTTON_SPORE,  0
+	dw -1
 
 TMHMBadgesNeeded:
 ; how many badges a player would have by the time they could get each TM, HM and
@@ -944,12 +969,9 @@ AutoLearn_WouldLearn::
 	and a
 	jr nz, .full
 	ld a, [wPutativeTMHMMove]
-	dec a
-	ld hl, Moves + MOVE_POWER
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_POWER
+	call GetMoveAttribute
 	and a
 	ret z ; (nc)
 .full

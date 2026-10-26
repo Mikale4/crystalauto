@@ -186,6 +186,7 @@ endc
 	ld [de], a ; write terminator
 	ld hl, wTimeCapsulePatchedData
 	call Link_ConvertPartyStruct1to2
+	call Link_OTMovesToIDs
 
 	ld a, LOW(wOTPartyMonOTs)
 	ld [wUnusedNamesPointer], a
@@ -461,6 +462,7 @@ endc
 	ld de, wOTPartyMons
 	ld bc, wOTPartyDataEnd - wOTPartyMons
 	call CopyBytes
+	call Link_OTMovesToIDs
 
 	ld a, LOW(wOTPartyMonOTs)
 	ld [wUnusedNamesPointer], a
@@ -823,7 +825,13 @@ Link_PrepPartyData_Gen1:
 	ld hl, MON_ITEM
 	add hl, bc
 	ld bc, MON_HAPPINESS - MON_ITEM
+	push de
 	call CopyBytes
+	pop hl
+	push de
+	inc hl ; (the moves)
+	call Link_MovesToIndexes
+	pop de
 	pop bc
 
 	ld hl, MON_LEVEL
@@ -898,7 +906,22 @@ Link_PrepPartyData_Gen2:
 
 	ld hl, wPartyMon1Species
 	ld bc, PARTY_LENGTH * PARTYMON_STRUCT_LENGTH
+	push de
 	call CopyBytes
+	pop hl
+	push de
+	ld de, MON_MOVES
+	add hl, de
+	ld c, PARTY_LENGTH
+.moves_loop
+	push hl
+	call Link_MovesToIndexes
+	pop hl
+	ld de, PARTYMON_STRUCT_LENGTH
+	add hl, de
+	dec c
+	jr nz, .moves_loop
+	pop de
 
 	ld hl, wPartyMonOTs
 	ld bc, PARTY_LENGTH * NAME_LENGTH
@@ -1017,6 +1040,50 @@ Link_PrepPartyData_Gen2:
 	jr nz, .metadata_patch_loop
 	ld a, SERIAL_PATCH_LIST_PART_TERMINATOR
 	ld [de], a
+	ret
+
+Link_MovesToIndexes:
+; The NUM_MOVES moves at hl (in data to send): for the other game, their 16-bit
+; indexes' low bytes (0 for any past $ff). Keeps c.
+	ld b, NUM_MOVES
+.loop
+	ld a, [hl]
+	push hl
+	call GetMoveIndexFromID
+	ld a, h
+	and a
+	ld a, l
+	jr z, .got_index
+	xor a
+.got_index
+	pop hl
+	ld [hli], a
+	dec b
+	jr nz, .loop
+	ret
+
+Link_OTMovesToIDs:
+; wOTPartyMons' moves, from the other game, are indexes: their IDs instead
+	ld hl, wOTPartyMon1Moves
+	ld c, PARTY_LENGTH
+.mon
+	push hl
+	ld b, NUM_MOVES
+.move
+	ld a, [hl]
+	push hl
+	ld l, a
+	ld h, 0
+	call GetMoveIDFromIndex
+	pop hl
+	ld [hli], a
+	dec b
+	jr nz, .move
+	pop hl
+	ld de, PARTYMON_STRUCT_LENGTH
+	add hl, de
+	dec c
+	jr nz, .mon
 	ret
 
 Link_CopyMailPreamble:
@@ -2157,7 +2224,13 @@ CheckTimeCapsuleCompatibility:
 	ld c, NUM_MOVES
 .move_next
 	ld a, [hli]
-	cp STRUGGLE + 1
+	push hl
+	call GetMoveIndexFromID
+	ld a, l
+	sub LOW(STRUGGLE + 1)
+	ld a, h
+	sbc HIGH(STRUGGLE + 1)
+	pop hl
 	jr nc, .move_too_new
 	dec c
 	jr nz, .move_next

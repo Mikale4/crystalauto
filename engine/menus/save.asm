@@ -275,6 +275,7 @@ _SaveGameData:
 	farcall BackupMysteryGift
 	call ValidateSave
 	call SaveOptions
+	farcall SaveMoveTable
 	call SavePlayerData
 	call SavePokemonData
 	call SaveBox
@@ -526,6 +527,11 @@ SavePokemonData:
 SaveBox:
 	call GetBoxAddress
 	call SaveBoxAddress
+; (in the box's own place, its moves' 16-bit indexes: see BillsPC_ConvertBoxData)
+	call GetBoxAddress
+	ld b, a
+	ld c, 0
+	farcall BillsPC_ConvertBoxData
 	ret
 
 SaveChecksum:
@@ -771,6 +777,10 @@ LoadPokemonData:
 LoadBox:
 	call GetBoxAddress
 	call LoadBoxAddress
+; (out, its moves' IDs: see BillsPC_ConvertBoxData)
+	lb bc, BANK(sBox), 1
+	ld de, sBox
+	farcall BillsPC_ConvertBoxData
 	ret
 
 VerifyChecksum:

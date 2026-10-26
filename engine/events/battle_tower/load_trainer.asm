@@ -104,7 +104,7 @@ LoadRandomBattleTowerMon:
 	ld a, [wBTChoiceOfLvlGroup]
 	dec a
 	ld hl, BattleTowerMons
-	ld bc, BATTLETOWER_NUM_UNIQUE_MON * NICKNAMED_MON_STRUCT_LENGTH
+	ld bc, BATTLETOWER_NUM_UNIQUE_MON * BATTLETOWER_DATA_MON_LENGTH
 	call AddNTimes
 
 	ldh a, [hRandomAdd]
@@ -122,7 +122,7 @@ LoadRandomBattleTowerMon:
 	; Check if mon was already loaded before
 	; Check current and the 2 previous teams
 	; includes check if item is double at the current team
-	ld bc, NICKNAMED_MON_STRUCT_LENGTH
+	ld bc, BATTLETOWER_DATA_MON_LENGTH
 	call AddNTimes
 	ld a, [hli]
 	ld b, a
@@ -165,7 +165,26 @@ LoadRandomBattleTowerMon:
 	cp b
 	jr z, .FindARandomBattleTowerMon
 
-	ld bc, NICKNAMED_MON_STRUCT_LENGTH
+	; (the data has its moves' 16-bit indexes: the struct, their IDs)
+	ld bc, MON_MOVES
+	call CopyBytes
+	ld b, NUM_MOVES
+.moves
+	push bc
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	push hl
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
+	pop hl
+	ld [de], a
+	inc de
+	pop bc
+	dec b
+	jr nz, .moves
+	ld bc, NICKNAMED_MON_STRUCT_LENGTH - MON_MOVES - NUM_MOVES
 	call CopyBytes
 
 	ld a, [wNamedObjectIndex]

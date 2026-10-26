@@ -1,5 +1,33 @@
+; entries correspond to constants/move_constants.asm: the animations with
+; negative indexes first, so that BattleAnimations + 2 * index finds them too
+BattleAnimationsSpecial:
+	table_width 2
+	dw BattleAnim_RockThrow ; ANIM_DUDE_STONE
+	dw BattleAnim_ThrowPokeBall
+	dw BattleAnim_SendOutMon
+	dw BattleAnim_ReturnMon
+	dw BattleAnim_Confused
+	dw BattleAnim_Slp
+	dw BattleAnim_Brn
+	dw BattleAnim_Psn
+	dw BattleAnim_Sap
+	dw BattleAnim_Frz
+	dw BattleAnim_Par
+	dw BattleAnim_InLove
+	dw BattleAnim_InSandstorm
+	dw BattleAnim_InNightmare
+	dw BattleAnim_InWhirlpool
+	dw BattleAnim_Miss
+	dw BattleAnim_EnemyDamage
+	dw BattleAnim_EnemyStatDown
+	dw BattleAnim_PlayerStatDown
+	dw BattleAnim_PlayerDamage
+	dw BattleAnim_Wobble
+	dw BattleAnim_Shake
+	dw BattleAnim_HitConfusion
+	assert_table_length NUM_SPECIAL_BATTLE_ANIMS
+
 BattleAnimations::
-; entries correspond to constants/move_constants.asm
 	table_width 2
 	dw BattleAnim_Dummy
 	dw BattleAnim_Pound
@@ -258,32 +286,7 @@ BattleAnimations::
 	dw BattleAnim_Moonblast
 	assert_table_length NUM_ATTACKS + 1
 	dw BattleAnim_SweetScent2
-	assert_table_length $100
-; $100
-	dw BattleAnim_ThrowPokeBall
-	dw BattleAnim_SendOutMon
-	dw BattleAnim_ReturnMon
-	dw BattleAnim_Confused
-	dw BattleAnim_Slp
-	dw BattleAnim_Brn
-	dw BattleAnim_Psn
-	dw BattleAnim_Sap
-	dw BattleAnim_Frz
-	dw BattleAnim_Par
-	dw BattleAnim_InLove
-	dw BattleAnim_InSandstorm
-	dw BattleAnim_InNightmare
-	dw BattleAnim_InWhirlpool
-	dw BattleAnim_Miss
-	dw BattleAnim_EnemyDamage
-	dw BattleAnim_EnemyStatDown
-	dw BattleAnim_PlayerStatDown
-	dw BattleAnim_PlayerDamage
-	dw BattleAnim_Wobble
-	dw BattleAnim_Shake
-	dw BattleAnim_HitConfusion
-	dw BattleAnim_RockThrow ; ANIM_DUDE_STONE
-	assert_table_length NUM_BATTLE_ANIMS + 1
+	assert_table_length NUM_MOVE_ANIMS
 
 BattleAnim_Dummy:
 BattleAnim_MirrorMove:

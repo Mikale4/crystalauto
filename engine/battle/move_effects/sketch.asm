@@ -57,7 +57,7 @@ BattleCommand_Sketch:
 .find_sketch
 	dec c
 	ld a, [hld]
-	cp SKETCH
+	cpmove SKETCH
 	jr nz, .find_sketch
 	inc hl
 ; The Sketched move is loaded to that slot.
@@ -66,9 +66,9 @@ BattleCommand_Sketch:
 ; Copy the base PP from that move.
 	push bc
 	push hl
-	dec a
-	ld hl, Moves + MOVE_PP
-	call GetMoveAttr
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	pop hl
 	ld bc, wBattleMonPP - wBattleMonMoves
 	add hl, bc

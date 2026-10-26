@@ -70,6 +70,7 @@ NewGameWithDemoState:
 	xor a
 	ld [wDebugFlags], a
 	call ResetWRAM
+	farcall InitMoveTable
 	pop af
 	ld [wDemoState], a
 	and a
@@ -350,6 +351,7 @@ LoadOrRegenerateLuckyIDNumber:
 	jp CloseSRAM
 
 Continue:
+	farcall InitMoveTable
 	farcall TryLoadSaveFile
 	jr c, .FailToLoad
 	farcall _LoadData

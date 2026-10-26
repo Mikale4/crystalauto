@@ -1531,7 +1531,8 @@ Rollout_FillLYOverridesBackup:
 	or a
 	jr nz, .not_rollout
 	ld a, [wFXAnimID]
-	cp ROLLOUT
+	assert HIGH(ROLLOUT) == 0 ; (wFXAnimID: the move's index)
+	cp LOW(ROLLOUT)
 	jr z, .rollout
 .not_rollout
 	pop af

@@ -212,9 +212,9 @@ CheckBTMonMovesForErrors:
 .loop
 	push hl
 	ld a, [hl]
-	cp NUM_ATTACKS + 1
+	call CheckMoveIDValid
 	jr c, .okay
-	ld a, POUND
+	ldmove POUND
 	ld [hl], a
 
 .okay
@@ -224,7 +224,7 @@ CheckBTMonMovesForErrors:
 	ld a, [hl]
 	and a
 	jr z, .loop3
-	cp NUM_ATTACKS + 1
+	call CheckMoveIDValid
 	jr c, .next
 
 .loop3

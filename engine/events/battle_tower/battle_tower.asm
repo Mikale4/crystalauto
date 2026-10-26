@@ -426,13 +426,13 @@ endr
 	ld a, [hli]
 	and a
 	jr z, .not_move
-	cp NUM_ATTACKS + 1
+	call CheckMoveIDValid
 	jr nc, .not_move
 	jr .valid_move
 
 .not_move
 	dec hl
-	ld a, POUND
+	ldmove POUND
 	ld [hli], a
 	xor a
 	ld [hli], a
@@ -442,7 +442,7 @@ endr
 
 .valid_move
 	ld a, [hl]
-	cp NUM_ATTACKS + 1
+	call CheckMoveIDValid
 	jr c, .next
 	ld [hl], $0
 

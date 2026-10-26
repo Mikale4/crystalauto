@@ -262,11 +262,14 @@ InitBattleAnimBuffer:
 	or a
 	jr nz, .no_sub
 	ld a, [wFXAnimID]
-	cp KINESIS
+	assert HIGH(KINESIS) == 0 ; (wFXAnimID: the move's index)
+	cp LOW(KINESIS)
 	jr z, .do_sub
-	cp SOFTBOILED
+	assert HIGH(SOFTBOILED) == 0 ; (wFXAnimID: the move's index)
+	cp LOW(SOFTBOILED)
 	jr z, .do_sub
-	cp MILK_DRINK
+	assert HIGH(MILK_DRINK) == 0 ; (wFXAnimID: the move's index)
+	cp LOW(MILK_DRINK)
 	jr nz, .no_sub
 .do_sub
 	pop af

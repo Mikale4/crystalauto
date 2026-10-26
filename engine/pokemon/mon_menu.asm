@@ -1217,12 +1217,9 @@ PlaceMoveData:
 	inc hl
 	predef PrintMoveType
 	ld a, [wCurSpecies]
-	dec a
-	ld hl, Moves + MOVE_POWER
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_POWER
+	call GetMoveAttribute
 	hlcoord 16, 12
 	cp 2
 	jr c, .no_power

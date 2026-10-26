@@ -2,7 +2,9 @@
 ; effect chances), each with its category: PHYSICAL, SPECIAL or STATUS.
 
 MACRO move
-	db \1 ; animation
+; (no MOVE_ANIM: that's the move's 8-bit ID, which GetMoveData puts in)
+	assert \1 == ___move_index, "\1 is out of order"
+	DEF ___move_index += 1
 	db \2 ; effect
 	db \3 ; power
 	db \4 | \5 ; type and category
@@ -12,9 +14,12 @@ MACRO move
 	assert \7 <= 40, "PP must be 40 or less"
 ENDM
 
-Moves:
-; entries correspond to move ids (see constants/move_constants.asm)
-	table_width MOVE_LENGTH
+DEF ___move_index = NO_MOVE
+	move NO_MOVE, 0, 0, 0, 0, 0, 0, 0 ; (what a move ID with no index reads)
+Moves::
+; entries correspond to move indexes (see constants/move_constants.asm and
+; _GetMoveAddress)
+	table_width MOVE_LENGTH - 1
 	move POUND,         EFFECT_NORMAL_HIT,          40, NORMAL,       PHYSICAL, 100, 35,   0
 	move KARATE_CHOP,   EFFECT_NORMAL_HIT,          50, FIGHTING,     PHYSICAL, 100, 25,   0
 	move DOUBLESLAP,    EFFECT_MULTI_HIT,           25, NORMAL,       PHYSICAL,  85, 10,   0

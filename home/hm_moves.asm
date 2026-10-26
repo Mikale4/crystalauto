@@ -10,16 +10,16 @@ IsHM::
 	ret
 
 IsHMMove::
+; carry if move ID a is an HM's
 	ld hl, .HMMoves
-	ld de, 1
-	jp IsInArray
+	jp CheckMoveInList
 
 .HMMoves:
-	db CUT
-	db FLY
-	db SURF
-	db STRENGTH
-	db FLASH
-	db WATERFALL
-	db WHIRLPOOL
-	db -1 ; end
+	dw CUT
+	dw FLY
+	dw SURF
+	dw STRENGTH
+	dw FLASH
+	dw WATERFALL
+	dw WHIRLPOOL
+	dw -1 ; end

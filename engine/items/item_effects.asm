@@ -2372,7 +2372,7 @@ RestorePPEffect:
 	jp nz, Not_PP_Up
 
 	ld a, [hl]
-	cp SKETCH
+	cpmove SKETCH
 	jr z, .CantUsePPUpOnSketch
 
 	ld bc, MON_PP - MON_MOVES
@@ -2903,14 +2903,11 @@ GetMaxPPOfMove:
 
 .gotdatmove
 	ld a, [hl]
-	dec a
 
 	push hl
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	ld b, a
 	ld de, wStringBuffer1
 	ld [de], a

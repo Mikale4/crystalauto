@@ -410,3 +410,5 @@ MACRO battle_bg_effect
 \1BattleTurn::     db
 \1Param::          db
 ENDM
+
+INCLUDE "macros/wram_16bit.asm"

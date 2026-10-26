@@ -1,12 +1,12 @@
 PrintMoveDescription:
+; (wCurSpecies: the move's ID)
 	push hl
-	ld hl, MoveDescriptions
 	ld a, [wCurSpecies]
-	dec a
-	ld c, a
-	ld b, 0
-	add hl, bc
-	add hl, bc
+	call GetMoveIndexFromID
+	dec hl
+	add hl, hl
+	ld de, MoveDescriptions
+	add hl, de
 	ld a, [hli]
 	ld e, a
 	ld d, [hl]

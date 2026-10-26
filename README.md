@@ -741,6 +741,10 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
 
 The patched ROM has `sha1: 8c580a9c8b00f27fbcb0bd2b352df9c000772a09`.
 
+A save from an earlier version keeps working: copy it to the new ROM's name (the
+`.sav` beside it). On CONTINUE, its moves are taken over as they were (see
+[More than 255 moves](#more-than-255-moves)).
+
 
 ## Building it
 
@@ -982,6 +986,40 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   and `EVOLVE_LEVEL`), and the LINKING CORD is item `$19`, formerly unused.
 
 
+### More than 255 moves
+
+Moves have 16-bit indexes, as in [pokecrystal16][pokecrystal16] (by ax6; the
+version kept up at [vulcandth/pokecrystal16][pokecrystal16-vulcandth]), whose
+table code this uses. The constants in
+[`constants/move_constants.asm`](constants/move_constants.asm) are the indexes, and
+the moves' data, names, descriptions and animations, learnsets, egg moves, trainer
+parties and move lists are tables of them (`dw`). Memory and saves still keep one
+byte per move: an ID that stands for an index in `wMoveIndexTable`
+([`engine/16/move_table.asm`](engine/16/move_table.asm)).
+
+- A move gets an ID the first time the game needs one (`GetMoveIDFromIndex`). When
+  all 254 are taken, the ones nothing holds any more are taken back: `MoveIDPlaces`
+  lists every place a move is kept (the party, the battle, the game's save, the box
+  out...).
+- The table is saved in SRAM (`sMoveIndexTable`, in bank 0) and written
+  there as IDs are given, so the save and the box out always match it.
+- The other boxes keep the moves' indexes instead, the low byte where the move is
+  and the high bits in its PP, which comes back full when the box is loaded
+  (`BillsPC_ConvertBoxData`, called by `SaveBox` and `LoadBox`).
+- Code never compares a move with its constant: `cpmove`, `ldmove`, `ld_anim`
+  ([`macros/code.asm`](macros/code.asm)), `IsMove`, `CheckMoveInList` and
+  `GetMoveAttribute` ([`home/moves.asm`](home/moves.asm)) work with the indexes.
+  [`tools/check_move_ids.py`](tools/check_move_ids.py) lists any use of a move's
+  constant as an 8-bit ID.
+- Battle animations go by the move's index (`wFXAnimID`); the ones that aren't a
+  move's (`ANIM_HIT_CONFUSION`...) are negative, their table before
+  `BattleAnimations`.
+- A save from before (no table in SRAM) starts with each ID standing for the index
+  it was, and its boxes are given the new format (`InitMoveTable`).
+- A link battle or trade sends a move's index if it is below 256 (a Gold, Silver or
+  Crystal game knows only those), and none for the others.
+
+
 ## Other changes
 
 - The player's sprite (CHRIS) has black pixels instead of red ones beside his face.
@@ -998,6 +1036,8 @@ This is a disassembly of Pokémon Crystal by [pret][pret]. For the disassembly i
 - [**Tools**][tools]
 
 [pokecrystal]: https://github.com/pret/pokecrystal
+[pokecrystal16]: https://github.com/aaaaaa123456789/pokecrystal16
+[pokecrystal16-vulcandth]: https://github.com/vulcandth/pokecrystal16
 [pret]: https://pret.github.io/
 [rompatcher]: https://www.marcrobledo.com/RomPatcher.js/
 [docs]: https://pret.github.io/pokecrystal/

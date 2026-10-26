@@ -42,15 +42,7 @@ ReadTrainerParty:
 
 	ld a, [wOtherTrainerID]
 	ld b, a
-.skip_trainer
-	dec b
-	jr z, .got_trainer
-.loop
-	ld a, [hli]
-	cp -1
-	jr nz, .loop
-	jr .skip_trainer
-.got_trainer
+	call SkipTrainers
 
 .skip_name
 	ld a, [hli]
@@ -144,7 +136,15 @@ TrainerType2:
 
 	ld b, NUM_MOVES
 .copy_moves
+; (16-bit indexes)
 	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	push hl
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
+	pop hl
 	ld [de], a
 	inc de
 	dec b
@@ -174,12 +174,9 @@ TrainerType2:
 
 	push hl
 	push bc
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	pop bc
 	pop hl
 
@@ -262,7 +259,15 @@ TrainerType4:
 
 	ld b, NUM_MOVES
 .copy_moves
+; (16-bit indexes)
 	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	push hl
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
+	pop hl
 	ld [de], a
 	inc de
 	dec b
@@ -293,12 +298,9 @@ TrainerType4:
 
 	push hl
 	push bc
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_PP
+	call GetMoveAttribute
 	pop bc
 	pop hl
 
@@ -379,15 +381,8 @@ GetTrainerName::
 	ld l, a
 	pop bc
 
-.loop
-	dec b
-	jr z, CopyTrainerName
-
-.skip
-	ld a, [hli]
-	cp $ff
-	jr nz, .skip
-	jr .loop
+	call SkipTrainers
+	; fallthrough
 
 CopyTrainerName:
 	ld de, wStringBuffer1
@@ -396,6 +391,50 @@ CopyTrainerName:
 	call CopyBytes
 	pop de
 	ret
+
+SkipTrainersFar::
+; hl: trainer b (from 1) of the group at de
+	ld h, d
+	ld l, e
+	; fallthrough
+
+SkipTrainers:
+; hl: trainer b (from 1) of the group at hl. (Their moves' 16-bit indexes can
+; have $ff bytes, so a party's -1 end isn't searched for, but walked to.)
+.next
+	dec b
+	ret z
+.name
+	ld a, [hli]
+	cp '@'
+	jr nz, .name
+	ld a, [hli] ; TRAINERTYPE_*
+	ld c, 2 ; level, species
+	assert TRAINERTYPE_ITEM & TRAINERTYPE_ITEM_MOVES && !(TRAINERTYPE_MOVES & TRAINERTYPE_ITEM)
+	bit 1, a ; TRAINERTYPE_ITEM or TRAINERTYPE_ITEM_MOVES
+	jr z, .got_item
+	inc c ; item
+.got_item
+	bit 0, a ; TRAINERTYPE_MOVES or TRAINERTYPE_ITEM_MOVES
+	jr z, .mon
+	ld a, c
+	add NUM_MOVES * 2 ; moves
+	ld c, a
+.mon
+	ld a, [hl]
+	inc a
+	jr z, .party_end ; (level -1)
+	ld a, c
+	add l
+	ld l, a
+	adc h
+	sub l
+	ld h, a
+	jr .mon
+
+.party_end
+	inc hl
+	jr .next
 
 IncompleteCopyNameFunction: ; unreferenced
 ; Copy of CopyTrainerName but without "call CopyBytes"

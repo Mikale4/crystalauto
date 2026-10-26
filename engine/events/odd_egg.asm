@@ -38,13 +38,31 @@ _GiveOddEgg:
 .done
 
 	ld hl, OddEggs
-	ld a, NICKNAMED_MON_STRUCT_LENGTH
+	ld a, ODD_EGG_LENGTH
 	call AddNTimes
 
-	; Writes to wOddEgg, wOddEggName, and wOddEggOT,
-	; even though OddEggs does not have data for wOddEggOT
+	; Writes to wOddEgg and wOddEggName (the data has its moves' 16-bit
+	; indexes: the struct, their IDs)
 	ld de, wOddEgg
-	ld bc, NICKNAMED_MON_STRUCT_LENGTH + NAME_LENGTH
+	ld bc, MON_MOVES
+	call CopyBytes
+	ld b, NUM_MOVES
+.moves
+	push bc
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	push hl
+	ld h, a
+	ld l, c
+	call GetMoveIDFromIndex
+	pop hl
+	ld [de], a
+	inc de
+	pop bc
+	dec b
+	jr nz, .moves
+	ld bc, NICKNAMED_MON_STRUCT_LENGTH - MON_MOVES - NUM_MOVES
 	call CopyBytes
 
 	ld a, EGG_TICKET

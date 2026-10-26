@@ -1,12 +1,9 @@
 GetMoveCategoryName:
 ; Copy the category name of move b to wStringBuffer1.
 	ld a, b
-	dec a
-	ld bc, MOVE_LENGTH
-	ld hl, Moves + MOVE_TYPE
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
+	ld l, a
+	ld a, MOVE_TYPE
+	call GetMoveAttribute
 ; the category bits, as 0-2
 	and ~TYPE_MASK
 	rlca
