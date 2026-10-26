@@ -258,7 +258,7 @@ Some moves work in new ways of their own:
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
 | CONSTRICT | always lowers SPEED |
 | GUILLOTINE, HORN DRILL, FISSURE | as RUINATION: they halve the foe's HP, 90% accurate |
-| PSYWAVE | its power varies as MAGNITUDE's does |
+| PSYWAVE | its power varies as MAGNITUDE's does ("Psywave 8!") |
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
 | COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out (see below) |
 | WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
@@ -732,7 +732,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 0dde5ab1839937340727027d8aab28d2d3101253`.
+The patched ROM has `sha1: dda305a5cd3283cbe035753c282d9ef50170607f`.
 
 
 ## Building it

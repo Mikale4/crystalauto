@@ -18,7 +18,14 @@ BattleCommand_GetMagnitude:
 	ld a, [hl]
 	ld [wTextDecimalByte], a
 	call BattleCommand_MoveDelay
+; ("Magnitude 8!", or PSYWAVE's own: "Psywave 8!")
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVar
+	cp PSYWAVE
 	ld hl, MagnitudeText
+	jr nz, .got_text
+	ld hl, PsywaveText
+.got_text
 	call StdBattleTextbox
 	pop de
 	pop bc
