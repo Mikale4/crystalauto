@@ -238,6 +238,11 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   the max HP a turn. DISABLE lasts four turns, ENCORE three, SPITE takes 4 PP, and
   PROTECT, DETECT and ENDURE are a third as likely to work each time in a row.
 - HIDDEN POWER is a special move with 60 power.
+- **Weather** favors some types, besides the rain's WATER and the sun's FIRE moves
+  (1.5×): in a sandstorm, GROUND, ROCK and STEEL moves do 1.5× damage too, and
+  GROUND, ROCK and STEEL Pokémon (which the sandstorm doesn't hurt) are faster, as
+  one stage up (1.5× Speed); so are WATER Pokémon in the rain and GRASS Pokémon in
+  the sun. The battle info screen's field page says whose Speed is up.
 - **TRANSFORM** works like the latest games' IMPOSTER: a Pokémon that knows it turns
   into the foe as soon as it comes in, before anything else happens (it takes no
   turn and no PP). A wild DITTO turns into your Pokémon right away. It doesn't when
@@ -732,7 +737,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: dda305a5cd3283cbe035753c282d9ef50170607f`.
+The patched ROM has `sha1: 7231e1342023b1cf64e8b99f7bcf74e6c233be24`.
 
 
 ## Building it
@@ -902,7 +907,10 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   are in [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm).
   RAZOR WIND is a plain hit (`EFFECT_NORMAL_HIT`); the `SkullBash`, `Solarbeam` and
   `SkyAttack` scripts no longer `charge` (SKULL BASH's DEFENSE is the
-  `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`).
+  `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`). The
+  weather's Speed is `WeatherSpeed` (`WeatherSpeedTypes`), for the turn order
+  (`CompareSpeeds`, from `DetermineMoveOrder`), the AI (`AICompareSpeed`) and auto
+  battle.
   `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
   SUBSTITUTE. MIRROR MOVE is `HandleAutoMirrorMove`: the turn's side gets a
   `NOT_ACTED` last move first (`AfterTurn`), so it's only taken up when one was used.

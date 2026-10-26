@@ -490,10 +490,7 @@ DetermineMoveOrder:
 
 .equal_priority
 .speed_check
-	ld de, wBattleMonSpeed
-	ld hl, wEnemyMonSpeed
-	ld c, 2
-	call CompareBytes
+	farcall CompareSpeeds ; (with the weather's: see WeatherSpeed)
 	jr z, .speed_tie
 	jp nc, .player_first
 	jp .enemy_first

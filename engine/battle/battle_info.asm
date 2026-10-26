@@ -198,7 +198,16 @@ BattleInfo_Field:
 	pop hl
 	ld de, wWeatherCount
 	call .Turns
-	ld de, 2 * SCREEN_WIDTH
+	ld de, SCREEN_WIDTH
+	add hl, de
+; (who's faster for it: see WeatherSpeed)
+	ld bc, wBattleMon
+	ld de, .YoursFasterText
+	call .WeatherSpeed
+	ld bc, wEnemyMon
+	ld de, .FoesFasterText
+	call .WeatherSpeed
+	ld de, SCREEN_WIDTH
 	add hl, de
 .no_weather
 	ld de, .YourSideText
@@ -327,6 +336,23 @@ BattleInfo_Field:
 	add hl, de
 	ret
 
+.WeatherSpeed:
+; If the weather makes battle struct bc faster, say so (de) on row hl, and go to the
+; next.
+	push de
+	push hl
+	farcall WeatherFavors
+	pop hl
+	pop de
+	ret nc
+	push hl
+	inc hl
+	call PlaceString
+	pop hl
+	ld de, SCREEN_WIDTH
+	add hl, de
+	ret
+
 .Room:
 ; Return carry if row hl is above the footer.
 	ld a, l
@@ -357,6 +383,10 @@ BattleInfo_Field:
 	db "FOE'S SIDE@"
 .NoneText:
 	db "none@"
+.YoursFasterText:
+	db "YOURS: SPEED +1@"
+.FoesFasterText:
+	db "FOE'S: SPEED +1@"
 .FooterText:
 	db "START:close ←STATS@"
 

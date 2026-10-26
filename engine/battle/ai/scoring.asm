@@ -1572,15 +1572,15 @@ AI_Smart_Spite:
 AI_Smart_DestinyBond:
 AI_Smart_Reversal:
 ; Encourage this move if the enemy is slower: it moves last, for twice the power.
-	ld a, [wBattleMonSpeed + 1]
-	ld b, a
-	ld a, [wEnemyMonSpeed + 1]
-	sub b
-	ld a, [wBattleMonSpeed]
-	ld b, a
-	ld a, [wEnemyMonSpeed]
-	sbc b
-	ret nc
+	push bc
+	push de
+	push hl
+	farcall CompareSpeeds
+	pop hl
+	pop de
+	pop bc
+	ret z
+	ret c
 	dec [hl]
 	ret
 
@@ -2687,17 +2687,14 @@ AI_Smart_Thunder:
 	ret
 
 AICompareSpeed:
-; Return carry if enemy is faster than player.
-
+; Return carry if enemy is faster than player (with the weather's: see
+; WeatherSpeed).
 	push bc
-	ld a, [wEnemyMonSpeed + 1]
-	ld b, a
-	ld a, [wBattleMonSpeed + 1]
-	cp b
-	ld a, [wEnemyMonSpeed]
-	ld b, a
-	ld a, [wBattleMonSpeed]
-	sbc b
+	push de
+	push hl
+	farcall CompareSpeeds
+	pop hl
+	pop de
 	pop bc
 	ret
 

@@ -411,16 +411,15 @@ AutoBattle_EstimateDamage:
 	jr .damage_calc
 
 .reversal
-; twice the power when it moves after the foe: when the foe is faster
-	ld a, [wBattleMonSpeed + 1]
-	ld h, a
-	ld a, [wEnemyMonSpeed + 1]
-	sub h
-	ld a, [wBattleMonSpeed]
-	ld h, a
-	ld a, [wEnemyMonSpeed]
-	sbc h
-	jr c, .damage_calc
+; twice the power when it moves after the foe: when the foe is faster (or as fast)
+	push bc
+	push de
+	farcall CompareSpeeds
+	pop de
+	pop bc
+	jr z, .moves_last
+	jr nc, .damage_calc
+.moves_last
 	sla d
 	jr .damage_calc
 
@@ -1130,19 +1129,17 @@ AutoBattle_ScoreMatchup:
 	sub b
 .speed
 	ld b, a
-; + 1 if it's faster
+; + 1 if it's faster (with the weather's: see WeatherSpeed)
+	push bc
 	call AutoBattle_GetFoe
-	ld de, AB_SPD
-	add hl, de
-	push hl
-	ld hl, wABCandidate + AB_SPD
-	ld a, [hli]
-	ld e, [hl]
-	ld d, a
+	ld b, h
+	ld c, l
+	farcall WeatherSpeed
+	push de
+	ld bc, wABCandidate
+	farcall WeatherSpeed
 	pop hl
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
+	pop bc
 	ld a, l
 	sub e
 	ld a, h

@@ -1890,3 +1890,77 @@ ChooseSketchMove::
 	pop bc
 	pop hl
 	ret
+
+CompareSpeeds::
+; Compare the speed of the player's POKéMON with the foe's (see WeatherSpeed):
+; z if they're the same, carry if the player's is slower.
+	ld bc, wBattleMon
+	call WeatherSpeed
+	push de
+	ld bc, wEnemyMon
+	call WeatherSpeed
+	pop hl
+	ld a, h
+	cp d
+	ret nz
+	ld a, l
+	cp e
+	ret
+
+WeatherSpeed::
+; bc: a battle struct. de: its speed, 1.5x (as one stage up) when the weather is
+; on its side (see WeatherFavors).
+	ld hl, wBattleMonSpeed - wBattleMon
+	add hl, bc
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	push de
+	call WeatherFavors
+	pop de
+	ret nc
+	ld h, d
+	ld l, e
+	srl d
+	rr e
+	add hl, de
+	ld d, h
+	ld e, l
+	ret
+
+WeatherFavors::
+; Return carry if the weather is on the side of battle struct bc's types
+; (WeatherSpeedTypes).
+	ld a, [wBattleWeather]
+	and a
+	ret z
+	ld hl, wBattleMonType1 - wBattleMon
+	add hl, bc
+	ld c, a
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	ld hl, WeatherSpeedTypes
+.loop
+	ld a, [hli]
+	cp -1
+	ret z ; (nc)
+	cp c
+	ld a, [hli]
+	jr nz, .loop
+	cp d
+	jr z, .yes
+	cp e
+	jr nz, .loop
+.yes
+	scf
+	ret
+
+WeatherSpeedTypes:
+; the weather, and a type it makes faster
+	db WEATHER_SANDSTORM, GROUND
+	db WEATHER_SANDSTORM, ROCK
+	db WEATHER_SANDSTORM, STEEL
+	db WEATHER_RAIN,      WATER
+	db WEATHER_SUN,       GRASS
+	db -1
