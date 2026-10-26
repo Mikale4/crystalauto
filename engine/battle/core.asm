@@ -2422,6 +2422,8 @@ WinTrainerBattle:
 	ld a, [wAmuletCoin]
 	and a
 	call nz, .DoubleReward
+	farcall PartyKnowsPayDay
+	call c, .DoubleReward
 	call .CheckMaxedOutMomMoney
 	push af
 	ld a, FALSE
@@ -8386,20 +8388,9 @@ CheckPayDay:
 	ret z
 	ld a, [wAmuletCoin]
 	and a
-	jr z, .okay
-	ld hl, wPayDayMoney + 2
-	sla [hl]
-	dec hl
-	rl [hl]
-	dec hl
-	rl [hl]
-	jr nc, .okay
-	ld a, $ff
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
-
-.okay
+	call nz, .Double
+	farcall PartyKnowsPayDay
+	call c, .Double
 	ld hl, wPayDayMoney + 2
 	ld de, wMoney + 2
 	call AddBattleMoneyToAccount
@@ -8410,6 +8401,20 @@ CheckPayDay:
 	ret z
 	call ClearTilemap
 	call ClearBGPalettes
+	ret
+
+.Double:
+	ld hl, wPayDayMoney + 2
+	sla [hl]
+	dec hl
+	rl [hl]
+	dec hl
+	rl [hl]
+	ret nc
+	ld a, $ff
+	ld [hli], a
+	ld [hli], a
+	ld [hl], a
 	ret
 
 ShowLinkBattleParticipantsAfterEnd:

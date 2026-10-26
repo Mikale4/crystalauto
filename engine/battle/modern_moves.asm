@@ -951,3 +951,38 @@ AutoPursuit::
 	pop af
 	and a
 	ret
+
+PartyKnowsPayDay::
+; Return carry if a POKéMON in the party (not an EGG) knows PAY DAY: then the
+; battle's money is doubled (see WinTrainerBattle and CheckPayDay).
+	ld hl, wPartyMon1Moves
+	ld de, wPartySpecies
+.mon
+	ld a, [de]
+	cp -1
+	jr z, .none
+	inc de
+	cp EGG
+	jr z, .next
+	push hl
+	ld b, NUM_MOVES
+.move
+	ld a, [hli]
+	cp PAY_DAY
+	jr z, .found
+	dec b
+	jr nz, .move
+	pop hl
+.next
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	jr .mon
+
+.found
+	pop hl
+	scf
+	ret
+
+.none
+	and a
+	ret

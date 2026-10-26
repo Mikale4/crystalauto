@@ -749,10 +749,7 @@ AttackEffectScores:
 	db EFFECT_POISON_MULTI_HIT, 4
 	db EFFECT_TRIPLE_KICK,      4
 	db EFFECT_HYPER_BEAM,       1
-	db EFFECT_RAZOR_WIND,       1
 	db EFFECT_SKY_ATTACK,       1
-	db EFFECT_SKULL_BASH,       1
-	db EFFECT_SOLARBEAM,        1
 	db EFFECT_FLY,              1
 	db EFFECT_FUTURE_SIGHT,     1
 	db EFFECT_ROLLOUT,          1

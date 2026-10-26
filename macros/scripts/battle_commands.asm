@@ -182,6 +182,7 @@ ENDM
 	command curl                    ; af
 	command lowkick                 ; b0
 	command swipeagain              ; b1
+	command defenseupfirst          ; b2
 DEF NUM_EFFECT_COMMANDS EQU const_value - 1
 
 	const_def -1, -1

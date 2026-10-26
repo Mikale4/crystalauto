@@ -785,10 +785,6 @@ BattleCommand_DoTurn:
 	ret
 
 .continuousmoves
-	db EFFECT_RAZOR_WIND
-	db EFFECT_SKY_ATTACK
-	db EFFECT_SKULL_BASH
-	db EFFECT_SOLARBEAM
 	db EFFECT_FLY
 	db EFFECT_ROLLOUT
 	db EFFECT_BIDE
@@ -5689,9 +5685,41 @@ CheckMoveTypeMatchesTarget:
 INCLUDE "engine/battle/move_effects/substitute.asm"
 
 BattleCommand_RechargeNextTurn:
+; As in the first games, not after knocking the target out or breaking its
+; SUBSTITUTE (the attack hit that, not the POKéMON: no wHitDamage, and it's gone).
+; (A miss never gets here.)
+	ld hl, wEnemyMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wBattleMonHP
+.got_hp
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld a, [wHitDamage]
+	ld b, a
+	ld a, [wHitDamage + 1]
+	or b
+	jr nz, .recharge
+	ld a, BATTLE_VARS_SUBSTATUS4_OPP
+	call GetBattleVar
+	bit SUBSTATUS_SUBSTITUTE, a
+	ret z
+.recharge
 	ld a, BATTLE_VARS_SUBSTATUS4
 	call GetBattleVarAddr
 	set SUBSTATUS_RECHARGE, [hl]
+	ret
+
+BattleCommand_DefenseUpFirst:
+; SKULL BASH: the user's DEFENSE goes up before it attacks, and the attack goes on
+; even when it can't go any higher.
+	call BattleCommand_DefenseUp
+	call BattleCommand_StatUpMessage
+	xor a
+	ld [wAttackMissed], a
+	ld [wFailedMessage], a
 	ret
 
 EndRechargeOpp:

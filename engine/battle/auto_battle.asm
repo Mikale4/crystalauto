@@ -491,6 +491,19 @@ AutoBattle_EstimateDamage:
 	or l
 	ret z
 
+; (HYPER BEAM and SKY ATTACK don't recharge after knocking the foe out)
+	ld a, l
+	cp c
+	jr nz, .no_ko
+	ld a, h
+	cp b
+	jr nz, .no_ko
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_HYPER_BEAM
+	jr z, .ko
+	cp EFFECT_SKY_ATTACK
+	jr z, .ko
+.no_ko
 	call AutoBattle_ApplyAccuracy
 
 ; Two-turn moves deal their damage over two turns.
@@ -501,15 +514,12 @@ AutoBattle_EstimateDamage:
 	call IsInArray
 	pop hl
 	jr nc, .at_least_1
-	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_SOLARBEAM
-	jr nz, .halve
-	ld a, [wBattleWeather]
-	cp WEATHER_SUN
-	jr z, .at_least_1
-.halve
 	srl h
 	rr l
+	jr .at_least_1
+
+.ko
+	call AutoBattle_ApplyAccuracy
 
 .at_least_1
 ; Don't round a hit down to no damage.
@@ -667,12 +677,9 @@ AutoBattleConstantDamageEffects:
 	db -1
 
 AutoBattleTwoTurnEffects:
-	db EFFECT_RAZOR_WIND
-	db EFFECT_SKY_ATTACK
-	db EFFECT_SKULL_BASH
-	db EFFECT_SOLARBEAM
 	db EFFECT_FLY
-	db EFFECT_HYPER_BEAM ; must recharge
+	db EFFECT_SKY_ATTACK ; must recharge (unless it knocks the foe out)
+	db EFFECT_HYPER_BEAM
 	db -1
 
 ; ---------- Judging matchups: who to send out, when to switch ----------

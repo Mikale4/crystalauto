@@ -1081,11 +1081,11 @@ DoParalyze:
 	endmove
 
 SkyAttack:
-	checkcharge
+; no turn to charge: as HYPER BEAM, a turn to recharge after (see
+; BattleCommand_RechargeNextTurn)
 	checkobedience
-	doturn
-	charge
 	usedmovetext
+	doturn
 	critical
 	damagestats
 	damagecalc
@@ -1098,6 +1098,7 @@ SkyAttack:
 	applydamage
 	criticaltext
 	supereffectivetext
+	rechargenextturn
 	checkfaint
 	buildopponentrage
 	flinchtarget
@@ -1906,11 +1907,11 @@ MirrorCoat:
 	endmove
 
 SkullBash:
-	checkcharge
+; no turn to charge: the user's DEFENSE goes up, then it attacks
 	checkobedience
-	doturn
-	charge
 	usedmovetext
+	doturn
+	defenseupfirst
 	critical
 	damagestats
 	damagecalc
@@ -1925,9 +1926,6 @@ SkullBash:
 	checkfaint
 	buildopponentrage
 	kingsrock
-	endturn
-	defenseup
-	statupmessage
 	endmove
 
 Twister:
@@ -2033,12 +2031,11 @@ Stomp:
 	endmove
 
 Solarbeam:
-	checkcharge
+; no turn to charge (x1.5 in the sun, x0.5 in rain and sandstorms: see
+; WeatherMoveModifiers)
 	checkobedience
-	doturn
-	skipsuncharge
-	charge
 	usedmovetext
+	doturn
 	critical
 	damagestats
 	damagecalc

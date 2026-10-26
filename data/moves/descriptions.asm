@@ -285,8 +285,8 @@ MegaPunchDescription:
 	next "thrown very hard.@"
 
 PayDayDescription:
-	db   "Throws coins. Gets"
-	next "them back later.@"
+	db   "Throws coins. With"
+	next "it, battles pay x2@"
 
 FirePunchDescription:
 	db   "A fiery punch. May"
@@ -313,8 +313,8 @@ GuillotineDescription:
 	next "in half.@"
 
 RazorWindDescription:
-	db   "1st turn: Prepare"
-	next "2nd turn: Attack@"
+	db   "Has a high criti-"
+	next "cal hit ratio.@"
 
 SwordsDanceDescription:
 	db   "A dance that in-"
@@ -513,8 +513,8 @@ AuroraBeamDescription:
 	next "lower ATTACK.@"
 
 HyperBeamDescription:
-	db   "1st turn: Attack"
-	next "2nd turn: Rest@"
+	db   "Must rest after,"
+	next "unless it KOs.@"
 
 PeckDescription:
 	db   "Jabs the foe with"
@@ -565,8 +565,8 @@ RazorLeafDescription:
 	next "cal hit ratio.@"
 
 SolarbeamDescription:
-	db   "1st turn: Prepare"
-	next "2nd turn: Attack@"
+	db   "x1.5 in sunlight;"
+	next "x0.5 in rain, sand@"
 
 PoisonpowderDescription:
 	db   "A move that may"
@@ -781,8 +781,8 @@ SwiftDescription:
 	next "never misses.@"
 
 SkullBashDescription:
-	db   "1st turn: Prepare"
-	next "2nd turn: Attack@"
+	db   "Raises DEFENSE,"
+	next "then attacks.@"
 
 SpikeCannonDescription:
 	db   "Fires spikes to"
@@ -833,8 +833,8 @@ LovelyKissDescription:
 	next "to fall asleep.@"
 
 SkyAttackDescription:
-	db   "1st turn: Prepare"
-	next "2nd turn: Attack@"
+	db   "May flinch. Must"
+	next "rest unless it KOs@"
 
 TransformDescription:
 	db   "The user assumes"

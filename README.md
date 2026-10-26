@@ -262,6 +262,12 @@ Some moves work in new ways of their own:
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
 | COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out (see below) |
 | WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
+| PAY DAY | while a Pokémon in your party (not an EGG) knows it, a battle's money is doubled: a trainer's prize and PAY DAY's coins (with an AMULET COIN as well, 4×) |
+| RAZOR WIND | no turn to charge: it hits right away (still with a high critical-hit ratio) |
+| SKULL BASH | no turn to charge: the user's DEFENSE goes up a stage, then it attacks |
+| SOLARBEAM | no turn to charge; 1.5× damage in the sun, 0.5× in rain and sandstorms |
+| SKY ATTACK | no turn to charge; instead, as HYPER BEAM, a turn to recharge after (still with a high critical-hit ratio and a 30% chance to flinch) |
+| HYPER BEAM, SKY ATTACK | as in the first games: no turn to recharge after knocking the foe out or breaking its SUBSTITUTE (nor after a miss) |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
 FUTURE SIGHT or LOCK-ON uses each of them as it comes in, at the start of its first
@@ -640,7 +646,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 1d8ea1edac589cf2220983f18db231176e336ec5`.
+The patched ROM has `sha1: b8f2bc94a8eb15dc455ad6bf7c13f509bfe28039`.
 
 
 ## Building it
@@ -805,8 +811,14 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `FIELD_MIRROR_COAT_F`).
   `CountHitTaken` also counts each Pokémon's hits (`wPlayerTimesHit`,
   `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower` command). FALSE SWIPE's
-  miss is the `swipeagain` command (`FalseSwipeAgain`). All of these are in
-  [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm).
+  miss is the `swipeagain` command (`FalseSwipeAgain`). PAY DAY's doubling is
+  `PartyKnowsPayDay` (asked by `WinTrainerBattle` and `CheckPayDay`). All of these
+  are in [`engine/battle/modern_moves.asm`](engine/battle/modern_moves.asm).
+  RAZOR WIND is a plain hit (`EFFECT_NORMAL_HIT`); the `SkullBash`, `Solarbeam` and
+  `SkyAttack` scripts no longer `charge` (SKULL BASH's DEFENSE is the
+  `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`).
+  `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
+  SUBSTITUTE.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
   don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
