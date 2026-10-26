@@ -2,6 +2,8 @@ PrintItemDescription:
 ; Print the description for item [wCurSpecies] at de.
 
 	ld a, [wCurSpecies]
+	cp GEN1_TM
+	jr z, .gen1_tm
 	cp TM01
 	jr c, .not_a_tm
 
@@ -9,10 +11,20 @@ PrintItemDescription:
 	push de
 	farcall GetTMHMItemMove
 	pop hl
+.tm_move
 	ld a, [wTempTMHM]
 	ld [wCurSpecies], a
 	predef PrintMoveDescription
 	ret
+
+.gen1_tm
+; (which: wCurGen1TM)
+	push de
+	ld a, [wCurGen1TM]
+	ld [wTempTMHM], a
+	farcall GetGen1TMMove
+	pop hl
+	jr .tm_move
 
 .not_a_tm
 	push de

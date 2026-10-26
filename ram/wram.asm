@@ -2465,7 +2465,7 @@ wStringBuffer5:: ds STRING_BUFFER_LENGTH
 
 wBattleMenuCursorPosition:: db
 
-	ds 1
+wCurGen1TM:: db ; the GEN 1 TM (its number) item GEN1_TM is (see engine/items/tmhm.asm)
 
 wCurBattleMon::
 ; index of the player's mon currently in battle (0-5)
@@ -2896,8 +2896,6 @@ wBaseUnknown1:: db
 wBaseEggSteps:: db
 wBaseUnknown2:: db
 wBasePicSize:: db
-wBaseUnusedFrontpic:: dw
-wBaseUnusedBackpic:: dw
 wBaseGrowthRate:: db
 wBaseEggGroups:: db
 wBaseTMHM:: flag_array NUM_TM_HM_TUTOR
@@ -3363,7 +3361,10 @@ wMountMoonSquareSceneID::                         db
 wMobileTradeRoomSceneID::                         db
 wMobileBattleRoomSceneID::                        db
 
-	ds 49
+; GEN 1's TMs had, by number (see add_g1tm and engine/items/tmhm.asm)
+wGen1TMs:: flag_array NUM_TMS
+
+	ds 49 - (NUM_TMS + 7) / 8
 
 ; fight counts
 wJackFightCount::    db

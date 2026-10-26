@@ -363,6 +363,7 @@ INCLUDE "engine/games/slot_machine.asm"
 SECTION "Move Relearner", ROMX
 
 INCLUDE "engine/events/move_relearner.asm"
+INCLUDE "engine/events/gen1_tm_shop.asm"
 
 
 SECTION "Phone Trips", ROMX

@@ -16,6 +16,7 @@ BulbasaurEggMoves:
 	dw SAFEGUARD
 	dw RAZOR_WIND
 	dw PETAL_DANCE
+	dw CHARM
 	dw -1 ; end
 
 CharmanderEggMoves:
@@ -40,6 +41,7 @@ PidgeyEggMoves:
 	dw PURSUIT
 	dw FAINT_ATTACK
 	dw FORESIGHT
+	dw STEEL_WING
 	dw -1 ; end
 
 RattataEggMoves:
@@ -116,6 +118,7 @@ OddishEggMoves:
 	dw RAZOR_LEAF
 	dw FLAIL
 	dw SYNTHESIS
+	dw CHARM
 	dw -1 ; end
 
 ParasEggMoves:
@@ -126,6 +129,7 @@ ParasEggMoves:
 	dw FLAIL
 	dw LIGHT_SCREEN
 	dw PURSUIT
+	dw SWEET_SCENT
 	dw -1 ; end
 
 VenonatEggMoves:
@@ -241,6 +245,7 @@ FarfetchDEggMoves:
 	dw GUST
 	dw QUICK_ATTACK
 	dw FLAIL
+	dw STEEL_WING
 	dw -1 ; end
 
 DoduoEggMoves:
@@ -427,10 +432,12 @@ AerodactylEggMoves:
 	dw WHIRLWIND
 	dw PURSUIT
 	dw FORESIGHT
+	dw STEEL_WING
 	dw -1 ; end
 
 SnorlaxEggMoves:
 	dw LICK
+	dw CHARM
 	dw -1 ; end
 
 DratiniEggMoves:
@@ -773,6 +780,7 @@ TyrogueEggMoves:
 
 SmoochumEggMoves:
 	dw MEDITATE
+	dw LOVELY_KISS
 	dw -1 ; end
 
 ElekidEggMoves:

@@ -63,7 +63,7 @@ DEF MAIL_TYPE_SPECIES_HIGH_F EQU 6
 ; (the same for a Hall of Fame entry's species, in its level: see GetHallOfFameParty)
 DEF HOF_MON_LEVEL_SPECIES_HIGH_F EQU 7
 	assert MAX_LEVEL < 1 << HOF_MON_LEVEL_SPECIES_HIGH_F
-	assert (FLOWER_MAIL | MIRAGE_MAIL | ITEM_BE) & (1 << MAIL_TYPE_SPECIES_HIGH_F) == 0
+	assert (FLOWER_MAIL | MIRAGE_MAIL | GEN1_TM) & (1 << MAIL_TYPE_SPECIES_HIGH_F) == 0
 
 ; mail languages
 	const_def

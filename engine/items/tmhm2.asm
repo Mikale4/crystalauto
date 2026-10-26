@@ -61,4 +61,20 @@ GetTMHMMove:
 	ld [wTempTMHM], a
 	ret
 
+GetGen1TMMove:
+; wTempTMHM: GEN 1's TM wTempTMHM's move (its ID: see Gen1TMMoves)
+	ld a, [wTempTMHM]
+	dec a
+	ld hl, Gen1TMMoves
+	ld b, 0
+	ld c, a
+	add hl, bc
+	add hl, bc
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call GetMoveIDFromIndex
+	ld [wTempTMHM], a
+	ret
+
 INCLUDE "data/moves/tmhm_moves.asm"

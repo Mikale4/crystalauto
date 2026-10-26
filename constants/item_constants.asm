@@ -195,7 +195,7 @@
 	const BLUESKY_MAIL ; bb
 	const MUSIC_MAIL   ; bc
 	const MIRAGE_MAIL  ; bd
-	const ITEM_BE      ; be
+	const GEN1_TM      ; be (one of GEN 1's TMs: see wCurGen1TM)
 DEF NUM_ITEMS EQU const_value - 1
 
 DEF __tmhm_value__ = 1
@@ -307,7 +307,89 @@ DEF MT01 EQU const_value
 	add_mt ICE_BEAM
 DEF NUM_TUTORS = __tmhm_value__ - NUM_TMS - NUM_HMS - 1
 
-DEF NUM_TM_HM_TUTOR EQU NUM_TMS + NUM_HMS + NUM_TUTORS
+; GEN 1's TMs (RED, BLUE and YELLOW's TM01-TM50): the ones whose move isn't this
+; game's TM's of the same number are TMs of their own here, "(GEN 1)" (see
+; wGen1TMs and engine/items/tmhm.asm). Each defines G1TM##_MOVE; and, for a move
+; no TM, HM or tutor here teaches, its learnable flag \1_TMNUM (after the tutors')
+; and G1MV##_MOVE.
+DEF __g1tm_value__ = 1
+DEF NUM_GEN1_TM_MOVES = 0
+MACRO add_g1tm
+	DEF G1TM{02d:__g1tm_value__}_MOVE = \1
+	DEF __g1tm_value__ += 1
+	if !DEF(\1_TMNUM)
+		DEF NUM_GEN1_TM_MOVES += 1
+		DEF G1MV{02d:NUM_GEN1_TM_MOVES}_MOVE = \1
+		add_tmnum \1
+	endc
+ENDM
+
+	add_g1tm MEGA_PUNCH   ; TM01
+	add_g1tm RAZOR_WIND   ; TM02
+	add_g1tm SWORDS_DANCE ; TM03
+	add_g1tm WHIRLWIND    ; TM04
+	add_g1tm MEGA_KICK    ; TM05
+	add_g1tm TOXIC        ; TM06
+	add_g1tm HORN_DRILL   ; TM07
+	add_g1tm BODY_SLAM    ; TM08
+	add_g1tm TAKE_DOWN    ; TM09
+	add_g1tm DOUBLE_EDGE  ; TM10
+	add_g1tm BUBBLEBEAM   ; TM11
+	add_g1tm WATER_GUN    ; TM12
+	add_g1tm ICE_BEAM     ; TM13
+	add_g1tm BLIZZARD     ; TM14
+	add_g1tm HYPER_BEAM   ; TM15
+	add_g1tm PAY_DAY      ; TM16
+	add_g1tm SUBMISSION   ; TM17
+	add_g1tm COUNTER      ; TM18
+	add_g1tm SEISMIC_TOSS ; TM19
+	add_g1tm RAGE         ; TM20
+	add_g1tm MEGA_DRAIN   ; TM21
+	add_g1tm SOLARBEAM    ; TM22
+	add_g1tm DRAGON_RAGE  ; TM23
+	add_g1tm THUNDERBOLT  ; TM24
+	add_g1tm THUNDER      ; TM25
+	add_g1tm EARTHQUAKE   ; TM26
+	add_g1tm FISSURE      ; TM27
+	add_g1tm DIG          ; TM28
+	add_g1tm PSYCHIC_M    ; TM29
+	add_g1tm TELEPORT     ; TM30
+	add_g1tm MIMIC        ; TM31
+	add_g1tm DOUBLE_TEAM  ; TM32
+	add_g1tm REFLECT      ; TM33
+	add_g1tm BIDE         ; TM34
+	add_g1tm METRONOME    ; TM35
+	add_g1tm SELFDESTRUCT ; TM36
+	add_g1tm EGG_BOMB     ; TM37
+	add_g1tm FIRE_BLAST   ; TM38
+	add_g1tm SWIFT        ; TM39
+	add_g1tm SKULL_BASH   ; TM40
+	add_g1tm SOFTBOILED   ; TM41
+	add_g1tm DREAM_EATER  ; TM42
+	add_g1tm SKY_ATTACK   ; TM43
+	add_g1tm REST         ; TM44
+	add_g1tm THUNDER_WAVE ; TM45
+	add_g1tm PSYWAVE      ; TM46
+	add_g1tm EXPLOSION    ; TM47
+	add_g1tm ROCK_SLIDE   ; TM48
+	add_g1tm TRI_ATTACK   ; TM49
+	add_g1tm SUBSTITUTE   ; TM50
+	assert __g1tm_value__ - 1 == NUM_TMS
+
+; how many GEN 1 TMs are TMs of their own (their numbers' moves differ)
+DEF NUM_GEN1_ONLY_TMS = 0
+for n, 1, NUM_TMS + 1
+	if G1TM{02d:n}_MOVE != TM{02d:n}_MOVE
+		DEF NUM_GEN1_ONLY_TMS += 1
+	endc
+endr
+
+DEF NUM_TM_HM_TUTOR EQU NUM_TMS + NUM_HMS + NUM_TUTORS + NUM_GEN1_TM_MOVES
+
+; the TM pocket's entries (see TMHMPocketEntries): a TM or HM's number, or GEN 1's
+; TM's with GEN1_TM_ENTRY_F
+DEF NUM_TMHM_POCKET_ENTRIES EQU NUM_TMS + NUM_GEN1_ONLY_TMS + NUM_HMS
+DEF GEN1_TM_ENTRY_F EQU 7
 
 	const ITEM_FA       ; fa
 

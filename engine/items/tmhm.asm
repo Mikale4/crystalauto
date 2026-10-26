@@ -7,7 +7,12 @@ TMHMPocket:
 	ret nc
 	call PlaceHollowCursor
 	call WaitBGMap
-	ld a, [wCurItem]
+	ld a, [wCurItem] ; (the pocket's entry)
+	ld c, a
+	call TMHM_GetEntry
+	bit GEN1_TM_ENTRY_F, a
+	jr nz, .gen1
+	ld [wCurItem], a
 	dec a
 	ld [wCurItemQuantity], a
 	ld hl, wTMsHMs
@@ -17,6 +22,19 @@ TMHMPocket:
 	ld a, [hl]
 	ld [wItemQuantity], a
 	call .ConvertItemToTMHMNumber
+	scf
+	ret
+
+.gen1
+; item GEN1_TM, and which in wCurGen1TM
+	res GEN1_TM_ENTRY_F, a
+	ld [wCurGen1TM], a
+	ld a, 1
+	ld [wItemQuantity], a
+	xor a
+	ld [wCurItemQuantity], a
+	ld a, GEN1_TM
+	ld [wCurItem], a
 	scf
 	ret
 
@@ -47,10 +65,13 @@ AskTeachTMHM:
 	push af
 	res NO_TEXT_SCROLL, [hl]
 	ld a, [wCurItem]
+	cp GEN1_TM
+	jr z, .Gen1TM
 	cp TM01
 	jr c, .NotTMHM
 	call GetTMHMItemMove
 	ld a, [wTempTMHM]
+.GotMove:
 	ld [wPutativeTMHMMove], a
 	call GetMoveName
 	call CopyName1
@@ -69,6 +90,13 @@ AskTeachTMHM:
 	ld a, b
 	ld [wOptions], a
 	ret
+
+.Gen1TM:
+	ld a, [wCurGen1TM]
+	ld [wTempTMHM], a
+	farcall GetGen1TMMove
+	ld a, [wTempTMHM]
+	jr .GotMove
 
 ChooseMonToLearnTMHM:
 	ld hl, wStringBuffer2
@@ -245,11 +273,10 @@ TMHM_ShowTMMoveDescription:
 	ld c, SCREEN_WIDTH - 2
 	call Textbox
 	ld a, [wCurItem]
-	cp NUM_TMS + NUM_HMS + 1
+	cp NUM_TMHM_POCKET_ENTRIES + 1
 	jr nc, TMHM_JoypadLoop
-	ld [wTempTMHM], a
-	predef GetTMHMMove
-	ld a, [wTempTMHM]
+	ld c, a
+	call TMHM_GetEntryMove
 	ld [wCurSpecies], a
 	hlcoord 1, 14
 	call PrintMoveDescription
@@ -274,10 +301,9 @@ TMHM_CheckHoveringOverCancel:
 .loop
 	inc c
 	ld a, c
-	cp NUM_TMS + NUM_HMS + 1
+	cp NUM_TMHM_POCKET_ENTRIES + 1
 	jr nc, .okay
-	ld a, [hli]
-	and a
+	call TMHM_EntryQuantity
 	jr z, .loop
 	dec b
 	jr nz, .loop
@@ -317,10 +343,9 @@ TMHM_ScrollPocket:
 .loop
 	inc c
 	ld a, c
-	cp NUM_TMS + NUM_HMS + 1
+	cp NUM_TMHM_POCKET_ENTRIES + 1
 	jp nc, TMHM_JoypadLoop
-	ld a, [hli]
-	and a
+	call TMHM_EntryQuantity
 	jr z, .loop
 	dec b
 	jr nz, .loop
@@ -343,29 +368,29 @@ TMHM_DisplayPocketItems:
 .loop2
 	inc c
 	ld a, c
-	cp NUM_TMS + NUM_HMS + 1
-	jr nc, .NotTMHM
-	ld a, [hli]
-	and a
+	cp NUM_TMHM_POCKET_ENTRIES + 1
+	jp nc, .NotTMHM
+	call TMHM_EntryQuantity
 	jr z, .loop2
 	ld b, a
-	ld a, c
-	ld [wTempTMHM], a
-	push hl
 	push de
 	push bc
 	call TMHMPocket_GetCurrentLineCoord
+	pop bc
+	push bc
+; its number
 	push hl
-	ld a, [wTempTMHM]
+	call TMHM_GetEntry
+	res GEN1_TM_ENTRY_F, a
 	cp NUM_TMS + 1
 	jr nc, .HM
+	ld [wTempTMHM], a
 	ld de, wTempTMHM
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 2
 	call PrintNum
 	jr .okay
 
 .HM:
-	push af
 	sub NUM_TMS
 	ld [wTempTMHM], a
 	ld [hl], 'H'
@@ -373,42 +398,47 @@ TMHM_DisplayPocketItems:
 	ld de, wTempTMHM
 	lb bc, PRINTNUM_LEFTALIGN | 1, 2
 	call PrintNum
-	pop af
-	ld [wTempTMHM], a
 .okay
-	predef GetTMHMMove
-	ld a, [wNamedObjectIndex]
+; its move
+	pop hl
+	pop bc
+	push bc
+	push hl
+	call TMHM_GetEntryMove
+	ld [wNamedObjectIndex], a
 	ld [wPutativeTMHMMove], a
 	call GetMoveName
 	pop hl
+	push hl
 	ld bc, 3
 	add hl, bc
-	push hl
 	call PlaceString
 	pop hl
+; below: which GEN's (when both have a TM of its number), and how many
 	pop bc
-	ld a, c
 	push bc
+	ld de, SCREEN_WIDTH + 3
+	add hl, de
+	call TMHM_PlaceEntryGen
+	call TMHM_GetEntry
+	bit GEN1_TM_ENTRY_F, a
+	jr nz, .no_count ; (GEN 1's: one, or none)
 	cp NUM_TMS + 1
-	jr nc, .hm2
-	ld bc, SCREEN_WIDTH + 9
-	add hl, bc
+	jr nc, .no_count ; (an HM)
+	ld de, 9
+	add hl, de
 	ld [hl], '×'
 	inc hl
-	ld a, '0' ; why are we doing this?
-	pop bc
-	push bc
 	ld a, b
 	ld [wTempTMHM], a
 	ld de, wTempTMHM
 	lb bc, 1, 2
 	call PrintNum
-.hm2
+.no_count
 	pop bc
 	pop de
-	pop hl
 	dec d
-	jr nz, .loop2
+	jp nz, .loop2
 	jr .done
 
 .NotTMHM:
@@ -422,6 +452,126 @@ TMHM_DisplayPocketItems:
 	pop de
 .done
 	ret
+
+TMHM_PlaceEntryGen:
+; At hl, "GEN 1" or "GEN 2" if TM pocket entry c is a TM of a number both GENs have
+; TMs of; preserves bc, hl
+	call TMHM_GetEntry
+	ld de, .Gen1String
+	bit GEN1_TM_ENTRY_F, a
+	jr nz, .place
+; (GEN 1's TM of the number is the entry before)
+	set GEN1_TM_ENTRY_F, a
+	ld e, a
+	push bc
+	dec c
+	call TMHM_GetEntry
+	pop bc
+	cp e
+	ret nz
+	ld de, .Gen2String
+.place
+	push hl
+	push bc
+	call PlaceString
+	pop bc
+	pop hl
+	ret
+
+.Gen1String:
+	db "GEN 1@"
+.Gen2String:
+	db "GEN 2@"
+
+TMHM_GetEntry:
+; a: TM pocket entry c's (see TMHMPocketEntries); preserves bc, de, hl
+	push hl
+	push bc
+	ld b, 0
+	ld hl, TMHMPocketEntries - 1
+	add hl, bc
+	ld a, [hl]
+	pop bc
+	pop hl
+	ret
+
+TMHM_EntryQuantity:
+; a: how many of TM pocket entry c's TM or HM there are (of GEN 1's TM, 1 or 0); z
+; if none; preserves bc, de, hl
+	push hl
+	push de
+	push bc
+	call TMHM_GetEntry
+	bit GEN1_TM_ENTRY_F, a
+	jr nz, .gen1
+	ld hl, wTMsHMs - 1
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	jr .done
+
+.gen1
+	res GEN1_TM_ENTRY_F, a
+	call CheckGen1TM
+	ld a, c
+	and a
+	jr z, .done
+	ld a, 1
+.done
+	pop bc
+	pop de
+	pop hl
+	and a
+	ret
+
+TMHM_GetEntryMove:
+; a: TM pocket entry c's move (its ID); preserves bc, de, hl
+	push hl
+	push de
+	push bc
+	call TMHM_GetEntry
+	bit GEN1_TM_ENTRY_F, a
+	res GEN1_TM_ENTRY_F, a
+	ld [wTempTMHM], a
+	jr nz, .gen1
+	predef GetTMHMMove
+	jr .done
+
+.gen1
+	farcall GetGen1TMMove
+.done
+	pop bc
+	pop de
+	pop hl
+	ld a, [wTempTMHM]
+	ret
+
+CheckGen1TM::
+; c: nonzero if GEN 1's TM a is had (see wGen1TMs)
+	dec a
+	ld e, a
+	ld d, 0
+	ld hl, wGen1TMs
+	ld b, CHECK_FLAG
+	jp FlagAction
+
+	db 0 ; (entry 0: none)
+TMHMPocketEntries:
+; The TM pocket's order (from entry 1): by number, GEN 1's TM before this game's
+; when their moves differ; then the HMs. Each is a TM or HM's number (as wTMsHMs
+; has them), or with GEN1_TM_ENTRY_F, GEN 1's TM's.
+	table_width 1
+for n, 1, NUM_TMS + 1
+	if G1TM{02d:n}_MOVE != TM{02d:n}_MOVE
+		db 1 << GEN1_TM_ENTRY_F | n
+	endc
+	db n
+endr
+for n, NUM_TMS + 1, NUM_TMS + NUM_HMS + 1
+	db n
+endr
+	assert_table_length NUM_TMHM_POCKET_ENTRIES
 
 TMHMPocket_GetCurrentLineCoord:
 	hlcoord 5, 0
@@ -454,19 +604,22 @@ TMHM_CancelString:
 	db "CANCEL@"
 
 TMHM_GetCurrentPocketPosition:
-	ld hl, wTMsHMs
+; c: the pocket's entry before the first one shown (wTMHMPocketScrollPosition had
+; ones are scrolled past)
 	ld a, [wTMHMPocketScrollPosition]
 	ld b, a
 	inc b
 	ld c, 0
 .loop
 	inc c
-	ld a, [hli]
-	and a
+	ld a, c
+	cp NUM_TMHM_POCKET_ENTRIES + 1
+	jr nc, .done
+	call TMHM_EntryQuantity
 	jr z, .loop
 	dec b
 	jr nz, .loop
-	dec hl
+.done
 	dec c
 	ret
 
@@ -541,17 +694,20 @@ ConsumeTM:
 	ret
 
 CountTMsHMs:
+; wTempTMHM: how many of the pocket's entries are had
 	ld b, 0
-	ld c, NUM_TMS + NUM_HMS
-	ld hl, wTMsHMs
+	ld c, 0
 .loop
-	ld a, [hli]
-	and a
-	jr z, .skip
+	inc c
+	ld a, c
+	cp NUM_TMHM_POCKET_ENTRIES + 1
+	jr nc, .done
+	call TMHM_EntryQuantity
+	jr z, .loop
 	inc b
-.skip
-	dec c
-	jr nz, .loop
+	jr .loop
+
+.done
 	ld a, b
 	ld [wTempTMHM], a
 	ret

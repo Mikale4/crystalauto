@@ -189,7 +189,7 @@ ItemNames::
 	li "BLUESKY MAIL"
 	li "MUSIC MAIL"
 	li "MIRAGE MAIL"
-	li "TERU-SAMA"
+	li "TM (GEN 1)" ; GEN1_TM (see Gen1TMName)
 	assert_list_length NUM_ITEMS
 	li "TM01"
 	li "TM02"

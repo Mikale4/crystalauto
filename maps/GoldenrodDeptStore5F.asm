@@ -5,6 +5,7 @@
 	const GOLDENRODDEPTSTORE5F_POKEFAN_M
 	const GOLDENRODDEPTSTORE5F_CARRIE
 	const GOLDENRODDEPTSTORE5F_RECEPTIONIST
+	const GOLDENRODDEPTSTORE5F_GEN1_TM_CLERK
 
 GoldenrodDeptStore5F_MapScripts:
 	def_scene_scripts
@@ -21,6 +22,15 @@ GoldenrodDeptStore5FCheckIfSundayCallback:
 .yes
 	appear GOLDENRODDEPTSTORE5F_RECEPTIONIST
 	endcallback
+
+GoldenrodDeptStore5FGen1TMClerkScript:
+	faceplayer
+	opentext
+	setval GEN1TMSHOP_GOLDENROD
+	special Gen1TMShop
+	waitbutton
+	closetext
+	end
 
 GoldenrodDeptStore5FClerkScript:
 	faceplayer
@@ -236,3 +246,4 @@ GoldenrodDeptStore5F_MapEvents:
 	object_event 13,  5, SPRITE_POKEFAN_M, SPRITEMOVEDATA_WANDER, 2, 2, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, GoldenrodDeptStore5FPokefanMScript, -1
 	object_event  9,  1, SPRITE_TWIN, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, Carrie, -1
 	object_event  7,  5, SPRITE_RECEPTIONIST, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, GoldenrodDeptStore5FReceptionistScript, EVENT_GOLDENROD_DEPT_STORE_5F_HAPPINESS_EVENT_LADY
+	object_event  9,  5, SPRITE_CLERK, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, GoldenrodDeptStore5FGen1TMClerkScript, -1
