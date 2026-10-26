@@ -492,7 +492,9 @@ As in PalletToPewter, no Pokémon needs trading or friendship to evolve:
 
 The GOLDENROD DEPT. STORE sells them all: KING'S ROCK, METAL COAT, DRAGON SCALE and
 UP-GRADE on the 3rd floor, and the LINKING CORD and six evolution stones (FIRE,
-WATER, THUNDER, LEAF, MOON and SUN) on the 4th.
+WATER, THUNDER, LEAF, MOON and SUN) on the 4th. So does the CELADON DEPT. STORE, on
+its 5th floor: the stones and the LINKING CORD from the clerk with the vitamins, the
+other four from the one with the X items.
 
 
 ## Catching
@@ -730,7 +732,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 44cbf18680ffe3b244d417e6163c832914bcb877`.
+The patched ROM has `sha1: 0dde5ab1839937340727027d8aab28d2d3101253`.
 
 
 ## Building it
