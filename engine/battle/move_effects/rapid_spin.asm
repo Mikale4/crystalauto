@@ -19,6 +19,13 @@ BattleCommand_ClearHazards:
 	bit SCREENS_SPIKES, [hl]
 	jr z, .no_spikes
 	res SCREENS_SPIKES, [hl]
+	ld hl, wPlayerSpikes ; (all the layers on the user's side)
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_spikes
+	ld hl, wEnemySpikes
+.got_spikes
+	ld [hl], 0
 	ld hl, BlewSpikesText
 	push de
 	call StdBattleTextbox

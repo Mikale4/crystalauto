@@ -1276,15 +1276,22 @@ StaticDamage:
 	endmove
 
 Reversal:
+; (FLAIL, REVERSAL: twice the power when the user moves after the foe, see
+; MovedLastPower)
 	checkobedience
 	usedmovetext
 	doturn
-	constantdamage
+	critical
+	damagestats
+	movedlast
+	damagecalc
 	stab
+	damagevariation
 	checkhit
 	moveanim
 	failuretext
 	applydamage
+	criticaltext
 	supereffectivetext
 	checkfaint
 	buildopponentrage
@@ -1721,6 +1728,8 @@ SacredFire:
 	endmove
 
 LowKick:
+; (as in the first games, a chance to flinch; twice the power against a higher
+; DEFENSE, see GetLowKickPower)
 	checkobedience
 	usedmovetext
 	doturn
@@ -1731,6 +1740,7 @@ LowKick:
 	stab
 	damagevariation
 	checkhit
+	effectchance
 	moveanim
 	failuretext
 	applydamage
@@ -1738,7 +1748,7 @@ LowKick:
 	supereffectivetext
 	checkfaint
 	buildopponentrage
-	kingsrock
+	flinchtarget
 	endmove
 
 Magnitude:

@@ -59,71 +59,14 @@ GetRecoilDamage::
 	ret
 
 GetLowKickPower::
-; BattleCommand_LowKick: d = LOW KICK's power, by the target's weight (its
-; POKéDEX weight): from 20 for under 10 kg to 120 for 200 kg and over.
-; (Keeps bc, the attack and defense, and e, the level.)
-	ld hl, wEnemyMonSpecies
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .got_target
-	ld hl, wBattleMonSpecies
-.got_target
-	push bc
-	push de
-	ld b, [hl]
-	farcall GetDexEntryPointer
-; past the species name
-	ld h, d
-	ld l, e
-.skip_name
+; BattleCommand_LowKick: LOW KICK's power d (50, as in the first games) is twice
+; that when the target's DEFENSE c is higher than the user's ATTACK b, as they
+; are for this hit (stat levels and all). (Keeps bc and e, the level.)
 	ld a, b
-	call GetFarByte
-	inc hl
-	cp '@'
-	jr nz, .skip_name
-; past the height, to the weight (in tenths of a pound)
-	inc hl
-	inc hl
-	ld a, b
-	call GetFarWord
-	ld de, LowKickPowers
-.loop
-	ld a, [de]
-	inc de
-	cp -1
-	jr z, .got_power
-	ld c, a
-	ld a, [de]
-	inc de
-	ld b, a ; bc: this weight
-	ld a, l
-	sub c
-	ld a, h
-	sbc b
-	jr c, .got_power ; (lighter than this)
-	inc de
-	jr .loop
-
-.got_power
-	ld a, [de]
-	pop de
-	pop bc
-	ld d, a
+	cp c
+	ret nc
+	sla d
 	ret
-
-LowKickPowers:
-; weight (in tenths of a pound) it's lighter than, power
-	dw  221 ;  10 kg
-	db 20
-	dw  552 ;  25 kg
-	db 40
-	dw 1103 ;  50 kg
-	db 60
-	dw 2205 ; 100 kg
-	db 80
-	dw 4410 ; 200 kg
-	db 100
-	db -1, 120
 
 GetDrainAmount::
 ; SapHealth: hDividend (2 bytes) = how much a draining move heals: half the
@@ -557,6 +500,9 @@ HandleEntryTransform::
 ; foe as it comes in, before it does anything (each turn, see BattleTurn: one
 ; that hasn't moved since it came in). Not when it's already transformed, or the
 ; foe is, or is out of sight (FLY, DIG). Its entry moves come first.
+; (A new turn: no one has had theirs yet, see MovedLastPower.)
+	xor a
+	ld [wTurnActed], a
 	call HandleEntryMoves
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
@@ -626,8 +572,8 @@ HandleEntryTransform::
 	ret
 
 HandleEntryMoves:
-; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT and LOCK-ON work as a
-; POKéMON comes in: at the start of its first turn out, it uses each of them it
+; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES and LOCK-ON work
+; as a POKéMON comes in: at the start of its first turn out, it uses each of them it
 ; knows with PP left (taking their PP), before it does anything else.
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
@@ -674,6 +620,8 @@ HandleEntryMoves:
 
 .Use:
 	ld a, b
+	cp SPIKES
+	jr z, .spikes
 	cp FUTURE_SIGHT
 	jr nz, .use
 ; (not while one is on its way)
@@ -693,6 +641,19 @@ HandleEntryMoves:
 	farcall AutoMove_Run
 	ret
 
+.spikes
+; (not when the foe's side has as many layers as there can be)
+	ld hl, wEnemySpikes
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_spikes
+	ld hl, wPlayerSpikes
+.got_spikes
+	ld a, [hl]
+	cp MAX_SPIKES
+	ret nc
+	jr .use
+
 EntryMoves:
 ; in the order they're used (LOCK-ON last: the next attack's aim, see
 ; BattleCommand_CheckHit, is for an attack)
@@ -701,6 +662,7 @@ EntryMoves:
 	db SANDSTORM
 	db FORESIGHT
 	db FUTURE_SIGHT
+	db SPIKES
 	db LOCK_ON
 	db -1
 
@@ -802,16 +764,46 @@ FalseSwipeAgain::
 	ret
 
 DoPlayerTurnAndCounter::
-; The player's move, then the foe's COUNTER or MIRROR COAT (see HandleAutoCounter).
+; The player's move, then the foe's COUNTER, MIRROR COAT or MIRROR MOVE (see
+; HandleAutoCounter and HandleAutoMirrorMove).
 	call ClearHitDamage
+	ld hl, wTurnActed
+	set 0, [hl]
+	ld a, [wLastPlayerCounterMove]
+	push af
+	ld a, NOT_ACTED
+	ld [wLastPlayerCounterMove], a
 	farcall DoPlayerTurn
-	jr HandleAutoCounter
+	pop bc
+	ld hl, wLastPlayerCounterMove
+	jr AfterTurn
 
 DoEnemyTurnAndCounter::
-; The foe's move, then the player's COUNTER or MIRROR COAT (see HandleAutoCounter).
+; The foe's move, then the player's COUNTER, MIRROR COAT or MIRROR MOVE.
 	call ClearHitDamage
+	ld hl, wTurnActed
+	set 1, [hl]
+	ld a, [wLastEnemyCounterMove]
+	push af
+	ld a, NOT_ACTED
+	ld [wLastEnemyCounterMove], a
 	farcall DoEnemyTurn
+	pop bc
+	ld hl, wLastEnemyCounterMove
 	; fallthrough
+
+AfterTurn:
+; hl: the last move of the side whose turn it was (still NOT_ACTED if it didn't
+; use one: then it's back to b, as before)
+	ld a, [hl]
+	cp NOT_ACTED
+	jr nz, .acted
+	ld [hl], b
+	jr HandleAutoCounter
+
+.acted
+	call HandleAutoCounter
+	jp HandleAutoMirrorMove
 
 HandleAutoCounter:
 ; COUNTER and MIRROR COAT work by themselves: right after an attack hit (the
@@ -864,7 +856,7 @@ HandleAutoCounter:
 	ret
 
 .Counter:
-	call .Used
+	call AutoMoveFieldFlag
 	and [hl]
 	ret nz ; (it has, since it came in)
 	farcall AutoMove_Setup
@@ -876,7 +868,7 @@ HandleAutoCounter:
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	ld b, a
-	call .Used
+	call AutoMoveFieldFlag
 	or [hl]
 	ld [hl], a
 ; twice the damage
@@ -900,8 +892,9 @@ HandleAutoCounter:
 	farcall AutoMove_Restore
 	ret
 
-.Used:
+AutoMoveFieldFlag:
 ; hl: the user's wPlayerFieldFlags or wEnemyFieldFlags; a: the flag for move b
+; (COUNTER, MIRROR COAT or MIRROR MOVE: once each while it's out)
 	ld hl, wPlayerFieldFlags
 	ldh a, [hBattleTurn]
 	and a
@@ -912,8 +905,114 @@ HandleAutoCounter:
 	cp COUNTER
 	ld a, 1 << FIELD_COUNTER_F
 	ret z
+	ld a, b
+	cp MIRROR_COAT
 	ld a, 1 << FIELD_MIRROR_COAT_F
+	ret z
+	ld a, 1 << FIELD_MIRROR_MOVE_F
 	ret
+
+HandleAutoMirrorMove:
+; MIRROR MOVE works by itself: right after the foe used a move, a POKéMON that
+; knows MIRROR MOVE (with PP left) uses that move too, once while it's out. Not if
+; either fainted, it's asleep, frozen or busy (charging, recharging, locked into a
+; move), or the move is one it can't take up (MirrorMoveCant).
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+; (as the other side)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Mirror
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Mirror:
+	ld b, MIRROR_MOVE
+	call AutoMoveFieldFlag
+	and [hl]
+	ret nz ; (it has, since it came in)
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS3
+	call GetBattleVar
+	and 1 << SUBSTATUS_BIDE | 1 << SUBSTATUS_RAMPAGE | 1 << SUBSTATUS_CHARGED | 1 << SUBSTATUS_UNDERGROUND | 1 << SUBSTATUS_FLYING
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS1
+	call GetBattleVar
+	bit SUBSTATUS_ROLLOUT, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS4
+	call GetBattleVar
+	bit SUBSTATUS_RECHARGE, a
+	ret nz
+; the foe's move
+	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
+	call GetBattleVar
+	and a
+	ret z
+	cp STRUGGLE
+	ret z
+	dec a
+	ld hl, Moves + MOVE_EFFECT
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	ld hl, MirrorMoveCant
+	ld de, 1
+	call IsInArray
+	ret c
+; then, MIRROR MOVE
+	ld b, MIRROR_MOVE
+	farcall AutoMove_Setup
+	ret c
+	ld b, MIRROR_MOVE
+	call AutoMoveFieldFlag
+	or [hl]
+	ld [hl], a
+; (the move it takes up runs as if charged, so no PP of its own: see ResetTurn;
+; as it was after)
+	ld hl, wPlayerCharging
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_charging
+	ld hl, wEnemyCharging
+.got_charging
+	ld a, [hl]
+	push af
+	push hl
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	pop hl
+	pop af
+	ld [hl], a
+	ret
+
+MirrorMoveCant:
+; moves MIRROR MOVE doesn't take up: ones that go on for turns, or work by
+; themselves, or call another
+	db EFFECT_FLY
+	db EFFECT_ROLLOUT
+	db EFFECT_RAMPAGE
+	db EFFECT_BIDE
+	db EFFECT_COUNTER
+	db EFFECT_MIRROR_COAT
+	db EFFECT_MIRROR_MOVE
+	db EFFECT_FUTURE_SIGHT
+	db EFFECT_METRONOME
+	db EFFECT_SLEEP_TALK
+	db -1
 
 ClearHitDamage:
 	xor a
@@ -985,4 +1084,69 @@ PartyKnowsPayDay::
 
 .none
 	and a
+	ret
+
+SpikesFraction::
+; bc: max HP (of the POKéMON coming in on the hBattleTurn side) -> what SPIKES do
+; to it: 1/8 of it with one layer, 1/6 with two, 1/4 with three (at least 1)
+	ld hl, wPlayerSpikes
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_layers
+	ld hl, wEnemySpikes
+.got_layers
+	ld a, [hl]
+	cp 3
+	ld a, 4
+	jr nc, .divide
+	ld a, [hl]
+	cp 2
+	ld a, 6
+	jr z, .divide
+	ld a, 8
+.divide
+	ldh [hDivisor], a
+	xor a
+	ldh [hDividend + 0], a
+	ldh [hDividend + 1], a
+	ld a, b
+	ldh [hDividend + 2], a
+	ld a, c
+	ldh [hDividend + 3], a
+	ld b, 4
+	call Divide
+	ldh a, [hQuotient + 2]
+	ld b, a
+	ldh a, [hQuotient + 3]
+	ld c, a
+	or b
+	ret nz
+	inc c
+	ret
+
+MovedLastPower::
+; FLAIL and REVERSAL: twice the power d when the user moves after the foe this
+; turn (it's had its turn, or switched out: wTurnActed, wPlayerIsSwitching,
+; wEnemyIsSwitching)
+	push bc
+	ld a, [wTurnActed]
+	ld b, a
+	ld hl, wEnemyIsSwitching
+	ld c, 1 << 1 ; (the foe: the enemy)
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_foe
+	ld hl, wPlayerIsSwitching
+	ld c, 1 << 0
+.got_foe
+	ld a, b
+	and c
+	jr nz, .twice
+	ld a, [hl]
+	and a
+	jr z, .done
+.twice
+	sla d
+.done
+	pop bc
 	ret

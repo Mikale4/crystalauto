@@ -1571,6 +1571,19 @@ AI_Smart_Spite:
 
 AI_Smart_DestinyBond:
 AI_Smart_Reversal:
+; Encourage this move if the enemy is slower: it moves last, for twice the power.
+	ld a, [wBattleMonSpeed + 1]
+	ld b, a
+	ld a, [wEnemyMonSpeed + 1]
+	sub b
+	ld a, [wBattleMonSpeed]
+	ld b, a
+	ld a, [wEnemyMonSpeed]
+	sbc b
+	ret nc
+	dec [hl]
+	ret
+
 AI_Smart_HealBell:
 ; Dismiss this move if none of the opponent's Pokemon is statused.
 ; Encourage this move if the enemy is statused.

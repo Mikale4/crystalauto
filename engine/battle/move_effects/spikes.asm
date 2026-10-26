@@ -1,18 +1,23 @@
 BattleCommand_Spikes:
+; As in the latest games, the foe's side takes up to MAX_SPIKES layers (see
+; SpikesFraction).
 	ld hl, wEnemyScreens
+	ld de, wEnemySpikes
 	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_screens
 	ld hl, wPlayerScreens
+	ld de, wPlayerSpikes
 .got_screens
 
-; Fails if spikes are already down!
+; Fails if there are as many layers as there can be.
 
-	bit SCREENS_SPIKES, [hl]
-	jr nz, .failed
+	ld a, [de]
+	cp MAX_SPIKES
+	jr nc, .failed
 
-; Nothing else stops it from working.
-
+	inc a
+	ld [de], a
 	set SCREENS_SPIKES, [hl]
 
 	call AnimateCurrentMove

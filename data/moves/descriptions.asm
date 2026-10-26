@@ -529,8 +529,8 @@ SubmissionDescription:
 	next "so hurts the user.@"
 
 LowKickDescription:
-	db   "An attack that may"
-	next "cause flinching.@"
+	db   "x2 vs. higher DEF;"
+	next "may cause flinch.@"
 
 CounterDescription:
 	db   "Returns 1 physical"
@@ -737,8 +737,8 @@ MetronomeDescription:
 	next "#MON move.@"
 
 MirrorMoveDescription:
-	db   "Counters with the"
-	next "same move.@"
+	db   "Uses the foe's"
+	next "move back, once.@"
 
 SelfdestructDescription:
 	db   "Powerful but makes"
@@ -929,8 +929,8 @@ SketchDescription:
 	next "move permanently.@"
 
 TripleKickDescription:
-	db   "Hits three times"
-	next "with rising power.@"
+	db   "Up to 3 kicks, at"
+	next "20, 40, 60 power.@"
 
 ThiefDescription:
 	db   "An attack that may"
@@ -961,8 +961,8 @@ CurseDescription:
 	next "for ghost-types.@"
 
 FlailDescription:
-	db   "Stronger if the"
-	next "user's HP is low.@"
+	db   "Twice as strong if"
+	next "it moves last.@"
 
 Conversion2Description:
 	db   "The user's type is"
@@ -977,8 +977,8 @@ CottonSporeDescription:
 	next "the foe's SPEED.@"
 
 ReversalDescription:
-	db   "Stronger if the"
-	next "user's HP is low.@"
+	db   "Twice as strong if"
+	next "it moves last.@"
 
 SpiteDescription:
 	db   "Cuts the PP of the"
@@ -1025,8 +1025,8 @@ OctazookaDescription:
 	next "reduce accuracy.@"
 
 SpikesDescription:
-	db   "Hurts foes when"
-	next "they switch out.@"
+	db   "Lays SPIKES as it"
+	next "comes in. Up to 3.@"
 
 ZapCannonDescription:
 	db   "An attack that"

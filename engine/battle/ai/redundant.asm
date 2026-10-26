@@ -120,8 +120,11 @@ AI_Redundant:
 	ret
 
 .Spikes:
-	ld a, [wPlayerScreens]
-	bit SCREENS_SPIKES, a
+; (as many layers as there can be)
+	ld a, [wPlayerSpikes]
+	cp MAX_SPIKES
+	jr nc, .Redundant
+	xor a
 	ret
 
 .Foresight:

@@ -775,7 +775,6 @@ AttackEffectScores:
 	db EFFECT_FRUSTRATION,      0
 	db EFFECT_PRESENT,          0
 	db EFFECT_MAGNITUDE,        0
-	db EFFECT_REVERSAL,         0
 	db EFFECT_BEAT_UP,          0
 	db -1
 

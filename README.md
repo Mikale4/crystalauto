@@ -225,10 +225,9 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   of the user's max HP.
 - **Draining moves** heal half the damage they do; MORNING SUN, SYNTHESIS and
   MOONLIGHT heal 1/2 of the max HP, 2/3 in sunshine and 1/4 in rain or a sandstorm.
-- SELF-DESTRUCT and EXPLOSION no longer halve the foe's Defense. LOW KICK is
-  stronger the heavier the foe (20 to 120 power). FURY CUTTER stops growing at 160
-  power. SKY ATTACK is likely to land a
-  critical hit. RAPID SPIN raises the user's Speed.
+- SELF-DESTRUCT and EXPLOSION no longer halve the foe's Defense. FURY CUTTER stops
+  growing at 160 power. SKY ATTACK is likely to land a critical hit. RAPID SPIN
+  raises the user's Speed. (LOW KICK: see [Reworked moves](#reworked-moves).)
 - New added effects: ACID lowers Special Defense, CRUNCH lowers Defense, and
   WATERFALL can make the foe flinch.
 - **Status**: a burn takes 1/16 of the max HP a turn, paralysis halves Speed, a
@@ -252,7 +251,7 @@ Some moves work in new ways of their own:
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
 | BEAT UP | one of them now: 25 power, 2 to 5 hits |
 | DREAM EATER | works on a foe that's awake too |
-| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -268,9 +267,16 @@ Some moves work in new ways of their own:
 | SOLARBEAM | no turn to charge; 1.5× damage in the sun, 0.5× in rain and sandstorms |
 | SKY ATTACK | no turn to charge; instead, as HYPER BEAM, a turn to recharge after (still with a high critical-hit ratio and a 30% chance to flinch) |
 | HYPER BEAM, SKY ATTACK | as in the first games: no turn to recharge after knocking the foe out or breaking its SUBSTITUTE (nor after a miss) |
+| MIRROR MOVE | works by itself, like COUNTER: right after the foe uses a move, the Pokémon uses that move too (see below) |
+| SPIKES | used as the Pokémon comes in too; as in the latest games, up to three layers: a Pokémon coming in on that side (not a FLYING type) loses 1/8, 1/6 or 1/4 of its max HP |
+| FLAIL, REVERSAL | 60 power; twice that when the user moves after the foe that turn (or the foe switched out) |
+| BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate (and they still trap the foe) |
+| DOUBLE KICK, BONEMERANG, TWINEEDLE | 50 power, for each of the two hits |
+| LOW KICK | as in the first games (50 power, 90% accurate, 30% to flinch), and twice the power when the target's DEFENSE is higher than the user's ATTACK |
+| TRIPLE KICK | as TRIPLE AXEL: up to three kicks, of 20, 40 and 60 power, each one 90% accurate on its own; the first that misses ends it |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
-FUTURE SIGHT or LOCK-ON uses each of them as it comes in, at the start of its first
+FUTURE SIGHT, SPIKES or LOCK-ON uses each of them as it comes in, at the start of its first
 turn out, before anything else happens. Each takes 1 PP (none is used without PP
 left), and it doesn't count as the Pokémon's move (QUICK CLAW and KING'S ROCK still
 wait for that). LOCK-ON goes last, so its aim is for the next attack. They can still
@@ -289,6 +295,13 @@ hits back once while the Pokémon is out, and again only after it has gone back 
 come out again (or another one has come in by BATON PASS). They can't be chosen
 ("COUNTER works by itself!"); a Pokémon with nothing else left to choose STRUGGLEs.
 A Pokémon can know both, and attacks too.
+
+**MIRROR MOVE.** Right after the foe uses a move (not when it slept, flinched or
+couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back by itself
+(1 PP of MIRROR MOVE's), once each time it's out, unless it's asleep, frozen or busy
+with a move of its own. It doesn't take up moves that go on for turns (FLY, DIG,
+ROLLOUT, THRASH, BIDE), call another (METRONOME, SLEEP TALK) or work by themselves.
+Like COUNTER, it can't be chosen.
 
 ### Critical hits
 
@@ -646,7 +659,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: b8f2bc94a8eb15dc455ad6bf7c13f509bfe28039`.
+The patched ROM has `sha1: dd17b0dcc8e6998ee4499f44d1843a94c596b0de`.
 
 
 ## Building it
@@ -818,7 +831,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `SkyAttack` scripts no longer `charge` (SKULL BASH's DEFENSE is the
   `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`).
   `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
-  SUBSTITUTE.
+  SUBSTITUTE. MIRROR MOVE is `HandleAutoMirrorMove`: the turn's side gets a
+  `NOT_ACTED` last move first (`AfterTurn`), so it's only taken up when one was used.
+  SPIKES' layers are `wPlayerSpikes` and `wEnemySpikes` (`SpikesFraction` for the
+  damage). FLAIL and REVERSAL's power is the `movedlast` command (`MovedLastPower`,
+  with `wTurnActed`). TRIPLE KICK aims each kick after the first with
+  `BattleCommand_CheckHit` (in `BattleCommand_EndLoop`), and LOW KICK's power is
+  `GetLowKickPower`.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction` and `AIChooseMove`
   don't choose COUNTER, MIRROR COAT or FUTURE SIGHT (`MoveWorksByItself`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up

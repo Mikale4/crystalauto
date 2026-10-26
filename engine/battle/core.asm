@@ -4157,7 +4157,8 @@ SpikesDamage:
 	ld hl, BattleText_UserHurtBySpikes ; "hurt by SPIKES!"
 	call StdBattleTextbox
 
-	call GetEighthMaxHP
+	call GetMaxHP
+	farcall SpikesFraction
 	call SubtractHPFromTarget
 
 	pop hl
@@ -5771,12 +5772,15 @@ MoveInfoBox:
 
 MoveWorksByItself:
 ; Return z for a move that works by itself, so it can't be chosen: COUNTER and
-; MIRROR COAT (see HandleAutoCounter), FUTURE SIGHT (see HandleEntryMoves).
+; MIRROR COAT (see HandleAutoCounter), FUTURE SIGHT (see HandleEntryMoves),
+; MIRROR MOVE (see HandleAutoMirrorMove).
 	cp COUNTER
 	ret z
 	cp MIRROR_COAT
 	ret z
 	cp FUTURE_SIGHT
+	ret z
+	cp MIRROR_MOVE
 	ret
 
 CheckPlayerHasUsableMoves:

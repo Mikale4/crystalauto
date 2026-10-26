@@ -656,6 +656,9 @@ wAutoMove:: db ; a move used by itself (see AutoMove): its PP, but not a turn
 wAutoMoveBackup:: ds 2 + MOVE_LENGTH ; the move the user chose (its number, the move, its struct)
 wPlayerFieldFlags:: db ; FIELD_*_F: since the POKéMON out came in
 wEnemyFieldFlags:: db
+wPlayerSpikes:: db ; layers of SPIKES on the player's side (with SCREENS_SPIKES)
+wEnemySpikes:: db
+wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
 wHitDamage:: dw ; what the last attack did to its target (not to a SUBSTITUTE): see HandleAutoCounter
 wPlayerTimesHit:: ds PARTY_LENGTH ; how many times each POKéMON was hit this battle (RAGE)
 wEnemyTimesHit:: ds PARTY_LENGTH

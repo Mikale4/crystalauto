@@ -255,6 +255,8 @@ AutoBattle_RateMove:
 	jr z, .cant_select
 	cp FUTURE_SIGHT ; (as the POKéMON comes in)
 	jr z, .cant_select
+	cp MIRROR_MOVE ; (after the foe's move)
+	jr z, .cant_select
 	ld [wCurPlayerMove], a
 	callfar UpdateMoveData
 
@@ -371,8 +373,6 @@ AutoBattle_EstimateDamage:
 	jr c, .constant_damage
 
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
-	cp EFFECT_REVERSAL
-	jr z, .reversal
 	cp EFFECT_HIDDEN_POWER
 	jr z, .hidden_power
 
@@ -380,6 +380,8 @@ AutoBattle_EstimateDamage:
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
 	cp EFFECT_RAGE
 	jr z, .rage
+	cp EFFECT_REVERSAL
+	jr z, .reversal
 	cp EFFECT_LOW_KICK
 	jr z, .low_kick
 ; Magnitude and Present have random power; use a typical value.
@@ -402,6 +404,20 @@ AutoBattle_EstimateDamage:
 	callfar GetRagePower
 	jr .damage_calc
 
+.reversal
+; twice the power when it moves after the foe: when the foe is faster
+	ld a, [wBattleMonSpeed + 1]
+	ld h, a
+	ld a, [wEnemyMonSpeed + 1]
+	sub h
+	ld a, [wBattleMonSpeed]
+	ld h, a
+	ld a, [wEnemyMonSpeed]
+	sbc h
+	jr c, .damage_calc
+	sla d
+	jr .damage_calc
+
 .hidden_power
 	callfar HiddenPowerDamage
 .damage_calc
@@ -416,11 +432,6 @@ AutoBattle_EstimateDamage:
 	ld a, 85 percent
 	call AutoBattle_MultiplyHL
 	jr .got_damage_hl
-
-.reversal
-	callfar BattleCommand_ConstantDamage
-	callfar BattleCommand_Stab
-	jr .got_damage
 
 .constant_damage
 ; These ignore type effectiveness, but not immunities.
@@ -1694,10 +1705,8 @@ AutoBattleNeverDamagingEffects:
 
 AutoBattleTypicalPowers:
 ; moves whose power varies, and a typical power
-	db EFFECT_REVERSAL,    40
 	db EFFECT_PRESENT,     40
 	db EFFECT_MAGNITUDE,   70 ; (and PSYWAVE)
-	db EFFECT_LOW_KICK,    60
 	db -1
 
 ; ---------- Healing, status and stat-raising moves, when they're worth it ----------

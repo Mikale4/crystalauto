@@ -6,11 +6,9 @@ BattleCommand_MirrorMove:
 
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
 	call GetBattleVar
+	ld b, a
 	and a
-	jr z, .failed
-
-	call CheckUserMove
-	jr nz, .use
+	jr nz, .use ; (a move the user knows too)
 
 .failed
 	call AnimateFailedMove

@@ -218,7 +218,7 @@ DEF ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP_MASK
 
 ; wPlayerScreens or wEnemyScreens bit flags
 	const_def
-	const SCREENS_SPIKES
+	const SCREENS_SPIKES ; (as many layers as wPlayerSpikes or wEnemySpikes)
 	const_skip
 	const SCREENS_SAFEGUARD
 	const SCREENS_LIGHT_SCREEN
@@ -278,6 +278,11 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_ENTRY_DONE_F  ; 0: it has used its entry moves (see HandleEntryMoves)
 	const FIELD_COUNTER_F     ; 1: its COUNTER has hit back (see HandleAutoCounter)
 	const FIELD_MIRROR_COAT_F ; 2: its MIRROR COAT has
+	const FIELD_MIRROR_MOVE_F ; 3: its MIRROR MOVE has (see HandleAutoMirrorMove)
+
+DEF MAX_SPIKES EQU 3 ; layers on a side (see BattleCommand_Spikes)
+
+DEF NOT_ACTED EQU -1 ; wLast*CounterMove during a turn, until the POKéMON uses a move
 
 ; link_battle_record struct
 DEF LINK_BATTLE_RECORD_LENGTH EQU 2 + (NAME_LENGTH - 1) + 2 * 3

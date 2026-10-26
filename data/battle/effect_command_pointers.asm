@@ -183,4 +183,5 @@ BattleCommandPointers:
 	dw BattleCommand_LowKick
 	dw BattleCommand_SwipeAgain
 	dw BattleCommand_DefenseUpFirst
+	dw BattleCommand_MovedLast
 	assert_table_length NUM_EFFECT_COMMANDS

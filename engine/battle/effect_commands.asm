@@ -5018,15 +5018,13 @@ BattleCommand_EndLoop:
 	jr z, .beat_up
 	cp EFFECT_TRIPLE_KICK
 	jr nz, .not_triple_kick
-.reject_triple_kick_sample
-	call BattleRandom
-	and $3
-	jr z, .reject_triple_kick_sample
-	dec a
-	jr nz, .double_hit
-	ld a, 1
+; As TRIPLE AXEL: three kicks (20, 40, 60 power: see BattleCommand_TripleKick), each
+; one aimed on its own; the first one that misses ends it (see .next_kick).
+	ld a, 2
+	ld [de], a
+	inc a
 	ld [bc], a
-	jr .done_loop
+	jr .next_kick
 
 .beat_up
 	ldh a, [hBattleTurn]
@@ -5079,7 +5077,24 @@ BattleCommand_EndLoop:
 	ld a, [de]
 	dec a
 	ld [de], a
+	jr z, .done_loop
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	cp EFFECT_TRIPLE_KICK
 	jr nz, .loop_back_to_critical
+.next_kick
+	push bc
+	push de
+	call BattleCommand_CheckHit
+	pop de
+	pop bc
+	ld a, [wAttackMissed]
+	and a
+	jr z, .loop_back_to_critical
+	xor a
+	ld [wAttackMissed], a
+	ld a, [wBattleAnimParam] ; (the kicks that hit)
+	ld [bc], a
 .done_loop
 	ld a, BATTLE_VARS_SUBSTATUS3
 	call GetBattleVarAddr
@@ -5710,6 +5725,10 @@ BattleCommand_RechargeNextTurn:
 	ld a, BATTLE_VARS_SUBSTATUS4
 	call GetBattleVarAddr
 	set SUBSTATUS_RECHARGE, [hl]
+	ret
+
+BattleCommand_MovedLast:
+	farcall MovedLastPower
 	ret
 
 BattleCommand_DefenseUpFirst:
