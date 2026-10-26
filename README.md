@@ -240,10 +240,10 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
 - HIDDEN POWER is a special move with 60 power.
 - **Weather** favors some types, besides the rain's WATER and the sun's FIRE moves
   (1.5×): in a sandstorm, GROUND, ROCK and STEEL moves do 1.5× damage too, and
-  GROUND, ROCK and STEEL Pokémon (which the sandstorm doesn't hurt) have their
-  Special Defense one stage up (1.5×, against special attacks, critical hits too);
-  WATER Pokémon in the rain and GRASS Pokémon in the sun have their Speed one stage
-  up (1.5×). These aren't stat changes: they last as long as the weather. The
+  GROUND, ROCK and STEEL Pokémon (which the sandstorm doesn't hurt) have their Speed
+  and their Special Defense one stage up (1.5× each; the Special Defense against
+  special attacks, critical hits too); WATER Pokémon in the rain and GRASS Pokémon
+  in the sun have their Speed one stage up (1.5×). These aren't stat changes: they last as long as the weather. The
   battle info screen's field page says whose stat is up.
 - **TRANSFORM** works like the latest games' IMPOSTER: a Pokémon that knows it turns
   into the foe as soon as it comes in, before anything else happens (it takes no

@@ -337,8 +337,8 @@ BattleInfo_Field:
 	ret
 
 .WeatherBoost:
-; If the weather raises a stat of battle struct bc, say which (de: the texts for
-; SPEED, then for SPCL.DEF) on row hl, and go to the next.
+; Each stat the weather raises for battle struct bc, said (de: the texts for SPEED,
+; then for SPCL.DEF) a row each from row hl. hl: the row after.
 	push bc
 	push de
 	push hl
@@ -346,7 +346,7 @@ BattleInfo_Field:
 	pop hl
 	pop de
 	pop bc
-	jr c, .say
+	call c, .Say
 .skip
 	ld a, [de]
 	inc de
@@ -358,13 +358,17 @@ BattleInfo_Field:
 	pop hl
 	pop de
 	ret nc
-.say
+	; fallthrough
+
+.Say:
+	push de
 	push hl
 	inc hl
 	call PlaceString
 	pop hl
 	ld de, SCREEN_WIDTH
 	add hl, de
+	pop de
 	ret
 
 .Room:

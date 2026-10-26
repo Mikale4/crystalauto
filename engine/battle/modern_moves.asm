@@ -1935,7 +1935,7 @@ WeatherRaisesSpeed::
 
 WeatherRaisesSpclDef::
 ; Return carry if the weather raises the SPCL.DEF of battle struct bc: in a
-; sandstorm, a GROUND, ROCK or STEEL type's (see BattleCommand_DamageStats).
+; sandstorm, a GROUND, ROCK or STEEL type's (see WeatherSpclDef).
 	ld a, SP_DEFENSE
 	; fallthrough
 
@@ -1989,6 +1989,9 @@ WeatherBoosts:
 	db WEATHER_SANDSTORM, GROUND, SP_DEFENSE
 	db WEATHER_SANDSTORM, ROCK,   SP_DEFENSE
 	db WEATHER_SANDSTORM, STEEL,  SP_DEFENSE
+	db WEATHER_SANDSTORM, GROUND, SPEED
+	db WEATHER_SANDSTORM, ROCK,   SPEED
+	db WEATHER_SANDSTORM, STEEL,  SPEED
 	db WEATHER_RAIN,      WATER,  SPEED
 	db WEATHER_SUN,       GRASS,  SPEED
 	db -1
