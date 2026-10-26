@@ -3,15 +3,13 @@
 ; - NORMAL: a leader's whole team stands at its ace's level.
 ; - HARD and EXTREME: every Pokémon is at least at the level cap (a leader's at
 ;   least two above it, and at its ace's level), as evolved as that level
-;   allows: level evolutions at their level, stone ones from STONE_EVO_LV,
-;   trade ones from TRADE_EVO_LV and friendship ones from FRIENDSHIP_EVO_LV.
+;   allows: level evolutions at their level, the others (stones and the items
+;   that took a trade) at the level ItemEvolutionLevels gives for the line.
 ;   Where a line branches, each trainer's Pokémon goes its own way.
 ; - EXTREME: see engine/battle/extreme_trainers.asm.
 ; Leaders are the GYM LEADERS, the ELITE FOUR, the CHAMPION and RED.
 
-DEF STONE_EVO_LV EQU 20
-DEF TRADE_EVO_LV EQU 34
-DEF FRIENDSHIP_EVO_LV EQU 30
+DEF ITEM_EVO_LV EQU 30 ; (for a line ItemEvolutionLevels doesn't have)
 
 DifficultyAdjustTrainerParty::
 	ld a, [wOTPartyCount]
@@ -276,30 +274,20 @@ FitEvolutionStages::
 	cp EVOLVE_STAT
 	ld a, c
 	jr z, .got_level
-	ld a, b
-	cp EVOLVE_ITEM
-	jr z, .item
-	ld a, b
-	cp EVOLVE_TRADE
-	ld a, TRADE_EVO_LV
-	jr z, .got_level
-	ld a, FRIENDSHIP_EVO_LV
-	jr .got_level
-
-.item
-; the items that took a trade (the LINKING CORD and the old trade items): from
-; TRADE_EVO_LV, the stones from STONE_EVO_LV
+; (an item, a trade, friendship: by the line, see ItemEvolutionLevels)
 	push hl
-	ld a, c
-	ld hl, TradeEvolutionItems
 	push de
-	ld de, 1
+	ld a, [wDifficultySpecies]
+	ld hl, ItemEvolutionLevels
+	ld de, 2
 	call IsInArray
 	pop de
+	ld a, ITEM_EVO_LV
+	jr nc, .got_item_level
+	inc hl
+	ld a, [hl]
+.got_item_level
 	pop hl
-	ld a, TRADE_EVO_LV
-	jr c, .got_level
-	ld a, STONE_EVO_LV
 .got_level
 	ld b, a
 	ld a, [wCurPartyLevel]
@@ -331,8 +319,35 @@ FitEvolutionStages::
 	inc hl
 	ret
 
-TradeEvolutionItems:
-	db LINKING_CORD, METAL_COAT, DRAGON_SCALE, KINGS_ROCK, UP_GRADE
+ItemEvolutionLevels:
+; The level a trainer's Pokémon evolves at, by a stone or an item that took a
+; trade (see FitEvolution): about where its line's level evolutions would put it.
+; first evolutions
+	db SUNKERN,    20
+	db PIKACHU,    24
+	db STARYU,     24
+	db CLEFAIRY,   26
+	db JIGGLYPUFF, 26
+	db EEVEE,      26
+	db VULPIX,     28
+	db SHELLDER,   28
+	db GROWLITHE,  30
+	db ONIX,       30
+	db EXEGGCUTE,  30
+	db SCYTHER,    30
+	db PORYGON,    30
+	db SLOWPOKE,   37 ; (as SLOWBRO)
+; to a third form
+	db GLOOM,      30
+	db WEEPINBELL, 30
+	db NIDORINA,   32
+	db NIDORINO,   32
+	db POLIWHIRL,  34
+	db KADABRA,    36
+	db MACHOKE,    36
+	db GRAVELER,   36
+	db HAUNTER,    36
+	db SEADRA,     40
 	db -1
 
 GetEvosPointer:

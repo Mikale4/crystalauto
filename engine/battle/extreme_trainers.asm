@@ -279,40 +279,26 @@ FillExtremeTeam:
 	jr .lap
 
 ChooseExtremeForm:
-; wCurPartySpecies: wXPoolMon as evolved as wDifficultyFloor allows, but no
-; stronger than is fair (the first time round). Return carry if it can join.
+; wCurPartySpecies: wXPoolMon as evolved as wDifficultyFloor allows. Return carry
+; if it can join: the first time round, only when its first form (wXPoolMon) is
+; no stronger than is fair for the level, so a SNORLAX waits; then it's as evolved
+; as the level allows, whatever that makes it (no level 14 KAKUNA).
 	ld a, [wDifficultyFloor]
 	ld [wCurPartyLevel], a
-	ld b, 3 ; evolutions, at most
-.try_form
-	push bc
+	ld a, [wXLap]
+	and a
+	jr nz, .fair
+	ld a, [wXPoolMon]
+	call IsFairForLevel
+	ret nc
+.fair
 	ld a, [wOTPartyCount]
 	ld c, a
 	call GetTrainerMonSeed
 	ld e, a
-	pop bc
-	push bc
-	ld d, b
 	ld a, [wXPoolMon]
-	call FitEvolutionStages
+	call FitEvolution
 	ld [wCurPartySpecies], a
-	pop bc
-	ld a, [wXLap]
-	and a
-	jr nz, .ok
-	push bc
-	ld a, [wCurPartySpecies]
-	call IsFairForLevel
-	pop bc
-	ret c
-	dec b
-	jr nz, .try_form
-; its first form, then
-	ld a, [wXPoolMon]
-	ld [wCurPartySpecies], a
-	jp IsFairForLevel
-
-.ok
 	scf
 	ret
 

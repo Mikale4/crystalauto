@@ -642,8 +642,14 @@ shows it.
   and its strongest Pokémon holds an item.
 - **HARD**: every trainer's Pokémon are at least at the level cap, and the leaders'
   whole teams at least two levels above it. They're as evolved as their level allows:
-  level evolutions at their level, stone evolutions from Lv 20, and the ones that were
-  trade evolutions from Lv 34, each trainer going its own way where a line branches.
+  level evolutions at their level, and each line that evolves by a stone (or an item
+  that took a trade) at a level that suits it, about where level evolutions would put
+  it: SUNKERN at 20; PIKACHU and STARYU at 24; CLEFAIRY, JIGGLYPUFF and EEVEE at 26;
+  VULPIX and SHELLDER at 28; GROWLITHE, ONIX, EXEGGCUTE, SCYTHER and PORYGON at 30;
+  SLOWPOKE (into SLOWKING) at 37, as SLOWBRO; and to a third form, GLOOM and
+  WEEPINBELL at 30, NIDORINA and NIDORINO at 32, POLIWHIRL at 34, KADABRA, MACHOKE,
+  GRAVELER and HAUNTER at 36, SEADRA at 40. Each trainer goes its own way where a line
+  branches.
   Every leader's Pokémon holds an item, and every other trainer's strongest one does.
 - **EXTREME**: as HARD, and you get the **ENDLESSCANDY**, a RARE CANDY that never
   runs out, right up to the level cap (use it and you stay on the party screen,
@@ -653,9 +659,10 @@ shows it.
   FALKNER and the BIRD KEEPERS, ice for PRYCE and the SKIERS, water for MISTY and the
   SWIMMERS, and so on, with a few that cover the theme's weaknesses (SKARMORY for the
   birds, a water Pokémon for the fire trainers). They join at the trainer's level, as
-  evolved as that allows, but no stronger than is fair for it (their base stats add
-  up to no more than 300 + 6 × the level; otherwise they join as an earlier form), so
-  a SNORLAX or a LAPRAS waits until the late game. Then every one of them gets:
+  evolved as that allows (as HARD's: no level 14 KAKUNA, but a BEEDRILL), when their
+  line's first form is no stronger than is fair for it (its base stats add up to no
+  more than 300 + 6 × the level), so a SNORLAX or a LAPRAS waits until the late game.
+  Then every one of them gets:
   - **its best moveset**, from the moves it has learned by its level and the TMs, HMs
     and tutor moves a player could have by then (by your badges): its three strongest
     attacks of different types (power, the attack stat that move type uses, its own
