@@ -285,8 +285,6 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 
-DEF STAT_LINE_LENGTH EQU 12 ; tiles, for DrawStatStages
-DEF MAX_STAT_STAGES_SHOWN EQU (STAT_LINE_LENGTH + 1) / 3 ; ("AT+2 ": two tiles and a space)
 
 DEF MAX_SPIKES EQU 3 ; layers on a side (see BattleCommand_Spikes)
 

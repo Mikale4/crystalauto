@@ -165,7 +165,6 @@
 	charmap "ä",         $c3
 	charmap "ö",         $c4
 	charmap "ü",         $c5
-; ($ba, $c6-$cf and $d7-$de: the battle screen's small stat changes, see StatStageTiles)
 
 	charmap "'d",        $d0
 	charmap "'l",        $d1

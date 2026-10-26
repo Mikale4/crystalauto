@@ -4596,7 +4596,6 @@ UpdatePlayerHUD::
 DrawPlayerHUD:
 	xor a
 	ldh [hBGMapMode], a
-	farcall DrawStatStages
 
 	; Clear the area
 	hlcoord 9, 7
@@ -4735,7 +4734,6 @@ UpdateEnemyHUD::
 DrawEnemyHUD:
 	xor a
 	ldh [hBGMapMode], a
-	farcall DrawStatStages
 
 	hlcoord 1, 0
 	lb bc, 4, 11
@@ -5482,7 +5480,12 @@ MoveSelectionScreen:
 .interpret_joypad
 	ld a, $1
 	ldh [hBGMapMode], a
+	ld [wBattleInfoOK], a ; (START: the battle info screen)
 	call ScrollingMenuJoypad
+	push af
+	xor a
+	ld [wBattleInfoOK], a
+	pop af
 	bit B_PAD_UP, a
 	jp nz, .pressed_up
 	bit B_PAD_DOWN, a

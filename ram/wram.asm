@@ -662,8 +662,8 @@ wPlayerSpikes:: db ; layers of SPIKES on the player's side (with SCREENS_SPIKES)
 wEnemySpikes:: db
 wConversionMatchup:: db ; (HandleAutoConversion: the attack against the target as it is)
 wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
-wStatStagesShown:: db ; which stat lines are on the screen: bit 0 the foe's, bit 1 the player's
-wStatStagesLeft:: db ; (DrawStatStages: how many more there's room for)
+wBattleInfoOK:: db ; whether START opens the battle info screen from the menu waiting now (see BattleInfoScreen)
+wBattleInfoPage:: db ; (BattleInfoScreen: 0, the stat changes; 1, the field)
 wHitDamage:: dw ; what the last attack did to its target (not to a SUBSTITUTE): see HandleAutoCounter
 wPlayerTimesHit:: ds PARTY_LENGTH ; how many times each POKéMON was hit this battle (RAGE)
 wEnemyTimesHit:: ds PARTY_LENGTH

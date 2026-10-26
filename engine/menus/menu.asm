@@ -364,6 +364,9 @@ Menu_WasButtonPressed:
 	ld [hl], DEMOCTX_MENU
 .demo_held
 	call JoyTextDelay
+	ld a, [wBattleInfoOK] ; (the battle menu, or the move menu)
+	and a
+	call nz, BattleInfoButton
 	call GetMenuJoypad
 	and a
 	ret z

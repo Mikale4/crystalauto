@@ -35,7 +35,8 @@ carry over.
 
 ## How to use it
 
-1. In a battle, the menu shows **SELECT →AUTO** next to FIGHT / PKMN / PACK / RUN.
+1. In a battle, the menu shows **SELECT →AUTO** (and **START →INFO**, see [The battle
+   info screen](#the-battle-info-screen)) next to FIGHT / PKMN / PACK / RUN.
 2. Press **SELECT**. Your Pokémon attacks right away, and every following turn
    is automatic. The text box shows **AUTO BATTLE / SELECT to stop** for half a
    second at the start of each turn.
@@ -358,12 +359,20 @@ battle the Pokémon switches out (yours: you choose who comes in, or auto battle
 even when it's trapped; the one coming in starts afresh, with nothing passed on, as
 with any switch. In the wild, it flees the battle as before.
 
-### Stat changes on the battle screen
+### The battle info screen
 
-The stat levels a Pokémon has raised or lowered are shown on the battle screen, in a
-small font: the foe's under its HP box, yours (to the right) over your Pokémon, as
-`AT+2 AC-1`: AT ATTACK, DF DEFENSE, SP SPEED, SA SPCL.ATK, SD SPCL.DEF, AC ACCURACY,
-EV EVASION, and how many stages up (+) or down (-). Up to four show for each side.
+In a battle, press **START** to see how things stand, and **START** again (or B) to
+go back. The first page shows both Pokémon's stat changes: each stat (ATTACK,
+DEFENSE, SPEED, SPCL.ATK, SPCL.DEF, ACCURACY, EVASION), yours and the foe's, as how
+many stages up (+2) or down (-1), or 0 as it was. **LEFT** or **RIGHT** turns to the
+field: the weather, and on each side REFLECT, LIGHT SCREEN, SAFEGUARD, MIST, SPIKES
+(how many layers), a FUTURE SIGHT on its way and PERISH SONG, with the turns each has
+left. (The Game Boy Color has no L or R buttons, so START it is.)
+
+It opens whenever the battle waits: at the battle menu or the move menu, at any text
+waiting for A or B, and between auto battle's turns and texts (START pressed during
+an attack opens it as soon as that's done). The battle waits while it's up. Not
+while the Demo plays, where START stops the Demo.
 
 ### Critical hits
 
@@ -721,7 +730,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 86526614c9b544cf83b2ef36fd16e2585d968a56`.
+The patched ROM has `sha1: 44cbf18680ffe3b244d417e6163c832914bcb877`.
 
 
 ## Building it
@@ -913,9 +922,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   the `secondstatup` command; SWORDS DANCE, GROWTH and AMNESIA set their field flag as
   they're used (`OnceOutMoves`, in `MarkFirstAttack`). TELEPORT goes on to
   `BattleCommand_BatonPass` in a trainer battle (`TeleportSwitch` resets what comes in).
-  The stat changes are drawn by `DrawStatStages` (from `BattleTextbox` and the HUDs),
-  with the small font's tiles (`StatStageTiles`: `$ba`, `$c6`-`$cf` and `$d7`-`$de` in
-  [`gfx/font/font.png`](gfx/font/font.png), unused before).
+  The battle info screen is
+  [`engine/battle/battle_info.asm`](engine/battle/battle_info.asm) (`BattleInfoScreen`,
+  with a `+` added to the font: `$e4` in [`gfx/font/font.png`](gfx/font/font.png));
+  `BattleInfoButton` opens it on START (`hJoypadSum`, reset as the battle starts in
+  `InitAutoBattle`), from the text waits (`PromptButton`, `WaitPressAorB_BlinkCursor`),
+  auto battle's waits, and the 2D menus' (`Menu_WasButtonPressed`) while
+  `wBattleInfoOK` says it's the battle menu or the move menu.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction`, `AIChooseMove` and
   auto battle don't choose the moves that work by themselves (`AutoMoves`), nor those
   used once while out (`CantChooseMove`).

@@ -385,6 +385,7 @@ WaitPressAorB_BlinkCursor::
 	pop hl
 
 	call JoyTextDelay
+	call BattleInfoButton
 	ldh a, [hJoyLast]
 	and PAD_A | PAD_B
 	jr z, .loop
@@ -438,6 +439,7 @@ PromptButton::
 .input_wait_loop
 	call .blink_cursor
 	call JoyTextDelay
+	call BattleInfoButton
 	ldh a, [hJoyPressed]
 	and PAD_A | PAD_B
 	jr nz, .received_input
@@ -464,6 +466,27 @@ PromptButton::
 
 .load_cursor_state
 	ldcoord_a 18, 17
+	ret
+
+BattleInfoButton::
+; In battle, START (pressed since: hJoypadSum) opens the battle info screen (see
+; BattleInfoScreen). All registers are kept.
+	push af
+	ldh a, [hJoypadSum]
+	bit B_PAD_START, a
+	jr z, .done
+	ld a, [wBattleMode]
+	and a
+	jr z, .done
+	push bc
+	push de
+	push hl
+	farcall BattleInfoScreen
+	pop hl
+	pop de
+	pop bc
+.done
+	pop af
 	ret
 
 BlinkCursor::

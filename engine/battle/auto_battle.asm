@@ -16,7 +16,10 @@ DEF AUTO_BATTLE_SLEEP_TALK    EQU $8000 ; can use other moves while asleep
 
 InitAutoBattle:
 ; With AUTO BATTLE set to CONTINUOUS in the options, battles start with it on.
-; Called after ClearBattleRAM has turned it off.
+; Called after ClearBattleRAM has turned it off. (And only START from now on opens
+; the battle info screen: see BattleInfoButton.)
+	ld hl, hJoypadSum
+	res B_PAD_START, [hl]
 	call CheckContinuousAutoBattle
 	ret z
 	ld a, [wBattleType]
@@ -58,6 +61,7 @@ AutoBattleTextDelay::
 .wait
 	call DelayFrame
 	call JoyTextDelay
+	call BattleInfoButton
 	ldh a, [hJoyPressed]
 	and PAD_A | PAD_B
 	jr nz, .done
@@ -101,6 +105,7 @@ AutoBattleTurn:
 	ld c, AUTO_BATTLE_DELAY
 .wait
 	call DelayFrame
+	call BattleInfoButton
 	ldh a, [hJoypadSum]
 	bit B_PAD_SELECT, a
 	jr nz, .stop
@@ -130,6 +135,8 @@ AutoBattleTurn:
 AutoBattleText:
 	db   "AUTO BATTLE"
 	next "SELECT to stop@"
+
+INCLUDE "engine/battle/battle_info.asm"
 
 AutoBattle_ChooseMove:
 ; Pick the player's move like MoveSelectionScreen does,

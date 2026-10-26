@@ -3,7 +3,13 @@ LoadBattleMenu:
 	call LoadMenuHeader
 	ld a, [wBattleMenuCursorPosition]
 	ld [wMenuCursorPosition], a
+	ld a, TRUE ; (START: the battle info screen)
+	ld [wBattleInfoOK], a
 	call InterpretBattleMenu
+	push af
+	xor a
+	ld [wBattleInfoOK], a
+	pop af
 	call c, EnableAutoBattle
 	ld a, [wMenuCursorPosition]
 	ld [wBattleMenuCursorPosition], a
@@ -62,17 +68,25 @@ BattleMenuHeader:
 	db "RUN@"
 
 .PrintAutoBattleHint:
-; Fill the empty space left of the menu.
+; Fill the empty space left of the menu: SELECT for auto battle, START for the
+; battle info screen (see BattleInfoScreen).
 	ld a, [wBattleType]
 	cp BATTLETYPE_TUTORIAL
 	ret z
+	hlcoord 1, 13
+	ld de, .ButtonsText
+	call PlaceString
 	hlcoord 1, 14
-	ld de, .AutoBattleHintText
+	ld de, .WhatForText
 	jp PlaceString
 
-.AutoBattleHintText:
+.ButtonsText:
 	db   "SELECT"
-	next "→AUTO@"
+	next "START@"
+
+.WhatForText:
+	db   "→AUTO"
+	next "→INFO@"
 
 SafariBattleMenuHeader:
 	db MENU_BACKUP_TILES ; flags

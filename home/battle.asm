@@ -193,7 +193,6 @@ MobileTextBorder::
 BattleTextbox::
 ; Open a textbox and print text at hl.
 	push hl
-	farcall DrawStatStages ; (as it may say they changed)
 	call SpeechTextbox
 	call MobileTextBorder
 	call UpdateSprites
