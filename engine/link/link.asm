@@ -2186,14 +2186,20 @@ CheckTimeCapsuleCompatibility:
 ; 3: At least one Pokémon is holding mail
 
 ; If any party Pokémon was introduced in the Gen 2 games, don't let it in.
-	ld hl, wPartySpecies
+	ld de, wPartySpecies
 	ld b, PARTY_LENGTH
 .loop
-	ld a, [hli]
+	ld a, [de]
+	inc de
 	cp -1
 	jr z, .checkitem
+	call GetPokemonIndexFromID ; (by index: GEN 1's are before JOHTO_POKEMON)
+	ld a, h
+	and a
+	jr nz, .species_too_new
+	ld a, l
 	cp JOHTO_POKEMON
-	jr nc, .mon_too_new
+	jr nc, .species_too_new
 	dec b
 	jr nz, .loop
 
@@ -2240,6 +2246,9 @@ CheckTimeCapsuleCompatibility:
 	xor a
 	jr .done
 
+.species_too_new
+	dec de
+	ld a, [de] ; (its ID)
 .mon_too_new
 	ld [wNamedObjectIndex], a
 	call GetPokemonName

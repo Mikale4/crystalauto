@@ -1,0 +1,20 @@
+	db 0 ; #291 (the species ID: see GetBaseData)
+
+	db 135,  85,  40,   5,  40,  85
+	;   hp  atk  def  spd  sat  sdf
+
+	db NORMAL, NORMAL ; type
+	db 50 ; catch rate
+	db 78 ; base exp
+	db NO_ITEM, LEFTOVERS ; items
+	db GENDER_F50 ; gender ratio
+	db 100 ; unknown 1
+	db 40 ; step cycles to hatch
+	db 5 ; unknown 2
+	INCBIN "gfx/pokemon/munchlax/front.dimensions"
+	db GROWTH_SLOW ; growth rate
+	dn EGG_NONE, EGG_NONE ; egg groups
+
+	; tm/hm learnset
+	tmhm MEGA_PUNCH, PAY_DAY, FIRE_PUNCH, ICE_PUNCH, THUNDERPUNCH, MEGA_KICK, HEADBUTT, BODY_SLAM, TAKE_DOWN, DOUBLE_EDGE, FLAMETHROWER, SURF, ICE_BEAM, BLIZZARD, STRENGTH, SOLARBEAM, THUNDERBOLT, THUNDER, EARTHQUAKE, DIG, TOXIC, PSYCHIC_M, DOUBLE_TEAM, METRONOME, SELFDESTRUCT, FIRE_BLAST, REST, ROCK_SLIDE, SUBSTITUTE, SNORE, CURSE, PROTECT, MUD_SLAP, ICY_WIND, SANDSTORM, ENDURE, ROLLOUT, SWAGGER, ATTRACT, SLEEP_TALK, RETURN, FRUSTRATION, HIDDEN_POWER, RAIN_DANCE, SUNNY_DAY, SHADOW_BALL, ROCK_SMASH, WHIRLPOOL
+	; end

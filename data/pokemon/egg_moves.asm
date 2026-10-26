@@ -815,3 +815,182 @@ LarvitarEggMoves:
 
 NoEggMoves:
 	dw -1 ; end
+
+; the Pokémon after CELEBI (see FIRST_NEW_POKEMON)
+
+RattataAEggMoves:
+	dw COUNTER
+	dw FURY_SWIPES
+	dw REVERSAL
+	dw -1 ; end
+
+SandshrewAEggMoves:
+	dw COUNTER
+	dw AMNESIA
+	dw CURSE
+	dw FLAIL
+	dw ENDURE
+	dw METAL_CLAW
+	dw MIRROR_COAT
+	dw -1 ; end
+
+VulpixAEggMoves:
+	dw ROAR
+	dw DISABLE
+	dw HYPNOSIS
+	dw AGILITY
+	dw FLAIL
+	dw SPITE
+	dw CHARM
+	dw ENCORE
+	dw MOONBLAST
+	dw -1 ; end
+
+MeowthAEggMoves:
+	dw HYPNOSIS
+	dw AMNESIA
+	dw FLAIL
+	dw SPITE
+	dw CHARM
+	dw -1 ; end
+
+MeowthGEggMoves:
+	dw DOUBLE_EDGE
+	dw CURSE
+	dw FLAIL
+	dw SPITE
+	dw -1 ; end
+
+GrowlitheHEggMoves:
+	dw DOUBLE_KICK
+	dw THRASH
+	dw DOUBLE_EDGE
+	dw MORNING_SUN
+	dw -1 ; end
+
+GeodudeAEggMoves:
+	dw COUNTER
+	dw SCREECH
+	dw CURSE
+	dw FLAIL
+	dw ZAP_CANNON
+	dw ENDURE
+	dw -1 ; end
+
+PonytaGEggMoves:
+	dw DOUBLE_KICK
+	dw HORN_DRILL
+	dw THRASH
+	dw DOUBLE_EDGE
+	dw HYPNOSIS
+	dw MORNING_SUN
+	dw -1 ; end
+
+SlowpokeGEggMoves:
+	dw STOMP
+	dw BELLY_DRUM
+	dw -1 ; end
+
+FarfetchDGEggMoves:
+	dw DOUBLE_EDGE
+	dw COUNTER
+	dw QUICK_ATTACK
+	dw SKY_ATTACK
+	dw CURSE
+	dw FLAIL
+	dw -1 ; end
+
+WooperPEggMoves:
+	dw DOUBLE_KICK
+	dw MIST
+	dw COUNTER
+	dw RECOVER
+	dw HAZE
+	dw CURSE
+	dw ANCIENTPOWER
+	dw -1 ; end
+
+QwilfishHEggMoves:
+	dw SUPERSONIC
+	dw BUBBLEBEAM
+	dw HAZE
+	dw SELFDESTRUCT
+	dw FLAIL
+	dw -1 ; end
+
+CorsolaGEggMoves:
+	dw CONFUSE_RAY
+	dw HAZE
+	dw DESTINY_BOND
+	dw -1 ; end
+
+AzurillEggMoves:
+	dw LIGHT_SCREEN
+	dw PRESENT
+	dw AMNESIA
+	dw FUTURE_SIGHT
+	dw BELLY_DRUM
+	dw PERISH_SONG
+	dw SUPERSONIC
+	dw FORESIGHT
+	dw SLAM
+	dw BODY_SLAM
+	dw SING
+	dw ENCORE
+	dw -1 ; end
+
+BonslyEggMoves:
+	dw SELFDESTRUCT
+	dw HEADBUTT
+	dw HARDEN
+	dw DEFENSE_CURL
+	dw CURSE
+	dw ENDURE
+	dw ROLLOUT
+	dw -1 ; end
+
+MimeJrEggMoves:
+	dw FUTURE_SIGHT
+	dw HYPNOSIS
+	dw MIMIC
+	dw CONFUSE_RAY
+	dw ICY_WIND
+	dw CHARM
+	dw PSYCH_UP
+	dw PSYCHIC_TERRAIN
+	dw -1 ; end
+
+HappinyEggMoves:
+	dw PRESENT
+	dw METRONOME
+	dw HEAL_BELL
+	dw COUNTER
+	dw SEISMIC_TOSS
+	dw SUBSTITUTE
+	dw ENDURE
+	dw -1 ; end
+
+MunchlaxEggMoves:
+	dw LICK
+	dw CHARM
+	dw WHIRLWIND
+	dw DOUBLE_EDGE
+	dw COUNTER
+	dw FISSURE
+	dw SELFDESTRUCT
+	dw SUBSTITUTE
+	dw CURSE
+	dw PURSUIT
+	dw -1 ; end
+
+MantykeEggMoves:
+	dw TWISTER
+	dw HYDRO_PUMP
+	dw HAZE
+	dw SLAM
+	dw CONFUSE_RAY
+	dw AMNESIA
+	dw SPLASH
+	dw ROCK_SLIDE
+	dw MIRROR_COAT
+	dw -1 ; end

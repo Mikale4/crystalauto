@@ -341,7 +341,28 @@ ItemEvolutionLevels:
 	dwb SCYTHER,    30
 	dwb PORYGON,    30
 	dwb SLOWPOKE,   37 ; (as SLOWBRO)
+	dwb MIME_JR,     18 ; (as MR. MIME)
+	dwb SANDSHREW_A, 22 ; (as SANDSHREW)
+	dwb VULPIX_A,    28
+	dwb CUBONE,      28 ; (as MAROWAK)
+	dwb GROWLITHE_H, 30
+	dwb QWILFISH_H,  30
+	dwb SNEASEL,     30
+	dwb GLIGAR,      30
+	dwb MISDREAVUS,  30
+	dwb MURKROW,     30
+	dwb KOFFING,     35 ; (as WEEZING)
+	dwb SLOWPOKE_G,  37 ; (as SLOWBRO)
 ; to a third form
+	dwb TOGETIC,    36
+	dwb QUILAVA,    36 ; (as TYPHLOSION)
+	dwb GRAVELER_A, 36
+	dwb URSARING,   40
+	dwb MAGNETON,   40
+	dwb ELECTABUZZ, 45
+	dwb MAGMAR,     45
+	dwb PORYGON2,   45
+	dwb RHYDON,     55
 	dwb GLOOM,      30
 	dwb WEEPINBELL, 30
 	dwb NIDORINA,   32

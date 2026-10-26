@@ -1,0 +1,20 @@
+	db 0 ; #317 (the species ID: see GetBaseData)
+
+	db 120,  90,  70,  60, 110,  70
+	;   hp  atk  def  spd  sat  sdf
+
+	db NORMAL, PSYCHIC_TYPE ; type
+	db 45 ; catch rate
+	db 255 ; base exp
+	db NO_ITEM, BITTER_BERRY ; items
+	db GENDER_F50 ; gender ratio
+	db 100 ; unknown 1
+	db 20 ; step cycles to hatch
+	db 5 ; unknown 2
+	INCBIN "gfx/pokemon/farigiraf/front.dimensions"
+	db GROWTH_MEDIUM_FAST ; growth rate
+	dn EGG_GROUND, EGG_GROUND ; egg groups
+
+	; tm/hm learnset
+	tmhm BODY_SLAM, TAKE_DOWN, DOUBLE_EDGE, ROAR, HYPER_BEAM, THUNDERBOLT, THUNDER_WAVE, THUNDER, EARTHQUAKE, PSYCHIC_M, REFLECT, SWIFT, REST, SUBSTITUTE, THIEF, CURSE, PROTECT, ENDURE, SLEEP_TALK, RAIN_DANCE, SUNNY_DAY, PSYCH_UP, SHADOW_BALL
+	; end

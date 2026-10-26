@@ -271,6 +271,75 @@ DEF JOHTO_POKEMON EQU const_value
 	const LUGIA      ; f9
 	const HO_OH      ; fa
 	const CELEBI     ; fb
+; the Pokémon after CELEBI: GEN 1 and 2's regional forms, then the later
+; evolutions and babies of their lines (see FIRST_NEW_POKEMON)
+DEF FIRST_NEW_POKEMON EQU const_value
+	const RATTATA_A    ; 252
+	const RATICATE_A   ; 253
+	const RAICHU_A     ; 254
+	const SANDSHREW_A  ; 255
+	const SANDSLASH_A  ; 256
+	const VULPIX_A     ; 257
+	const NINETALES_A  ; 258
+	const MEOWTH_A     ; 259
+	const MEOWTH_G     ; 260
+	const PERSIAN_A    ; 261
+	const GROWLITHE_H  ; 262
+	const ARCANINE_H   ; 263
+	const GEODUDE_A    ; 264
+	const GRAVELER_A   ; 265
+	const GOLEM_A      ; 266
+	const PONYTA_G     ; 267
+	const RAPIDASH_G   ; 268
+	const SLOWPOKE_G   ; 269
+	const SLOWBRO_G    ; 270
+	const FARFETCH_D_G ; 271
+	const EXEGGUTOR_A  ; 272
+	const MAROWAK_A    ; 273
+	const WEEZING_G    ; 274
+	const MR__MIME_G   ; 275
+	const ARTICUNO_G   ; 276
+	const ZAPDOS_G     ; 277
+	const MOLTRES_G    ; 278
+	const TYPHLOSION_H ; 279
+	const WOOPER_P     ; 280
+	const SLOWKING_G   ; 281
+	const QWILFISH_H   ; 282
+	const CORSOLA_G    ; 283
+	const AZURILL      ; 284
+	const WYNAUT       ; 285
+	const MISMAGIUS    ; 286
+	const HONCHKROW    ; 287
+	const BONSLY       ; 288
+	const MIME_JR      ; 289
+	const HAPPINY      ; 290
+	const MUNCHLAX     ; 291
+	const MANTYKE      ; 292
+	const WEAVILE      ; 293
+	const MAGNEZONE    ; 294
+	const LICKILICKY   ; 295
+	const RHYPERIOR    ; 296
+	const TANGROWTH    ; 297
+	const ELECTIVIRE   ; 298
+	const MAGMORTAR    ; 299
+	const TOGEKISS     ; 300
+	const YANMEGA      ; 301
+	const LEAFEON      ; 302
+	const GLACEON      ; 303
+	const GLISCOR      ; 304
+	const MAMOSWINE    ; 305
+	const PORYGON_Z    ; 306
+	const SYLVEON      ; 307
+	const PERRSERKER   ; 308
+	const CURSOLA      ; 309
+	const SIRFETCH_D   ; 310
+	const MR__RIME     ; 311
+	const WYRDEER      ; 312
+	const KLEAVOR      ; 313
+	const URSALUNA     ; 314
+	const OVERQWIL     ; 315
+	const CLODSIRE     ; 316
+	const FARIGIRAF    ; 317
 DEF NUM_POKEMON EQU const_value - 1
 ; (an index: its 8-bit ID is $FD, which the species table keeps for it, see
 ; engine/16/mon_table.asm)

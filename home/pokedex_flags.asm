@@ -110,8 +110,13 @@ CountPokedexSeen::
 
 GetPokedexNumber::
 ; in: a = species ID; out: hl = its Pokédex number (big-endian in
-; wPokedexNumberBuffer too); preserves bc, de
+; wPokedexNumberBuffer too: see _GetPokedexNumber); preserves bc, de
 	call GetPokemonIndexFromID
+	push de
+	ld d, h
+	ld e, l
+	farcall _GetPokedexNumber
+	pop de
 	ld a, h
 	ld [wPokedexNumberBuffer], a
 	ld a, l

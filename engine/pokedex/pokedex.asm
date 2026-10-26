@@ -1666,11 +1666,17 @@ Pokedex_PrintListing:
 	jp PlaceString
 
 Pokedex_PrintNumberIfOldMode:
+; (species index de's Pokédex number: see GetPokedexNumber)
 	ld a, [wCurDexMode]
 	cp DEXMODE_OLD
 	ret nz
 	push hl
 	push de
+	push hl
+	call _GetPokedexNumber
+	ld d, h
+	ld e, l
+	pop hl
 	ld bc, -SCREEN_WIDTH
 	add hl, bc
 	ld a, e
@@ -1809,36 +1815,23 @@ Pokedex_OrderMonsByMode:
 	dw Pokedex_ABCMode
 
 .OldMode:
-; (de: the last seen index)
-	ld hl, wPokedexOrder
-	ld bc, 0
-.old_mode_loop
-	inc bc
-	ld a, c
-	ld [hli], a
-	ld a, b
-	ld [hli], a
-	ld a, c
-	cp e
-	jr nz, .old_mode_loop
-	ld a, b
-	cp d
-	jr nz, .old_mode_loop
-	ld hl, wDexListingEnd
-	ld a, e
-	ld [hli], a
-	ld [hl], d
-	ret
+	ld hl, OldPokedexOrder
+	jr .ListByOrder
 
 .NewMode:
 	ld hl, NewPokedexOrder
+.ListByOrder:
+; the order hl's species, up to the last seen
+	push hl
 	ld de, wPokedexOrder
 	ld bc, NUM_POKEMON * 2
 	call CopyBytes
+	pop hl
+	ld bc, (2 * NUM_POKEMON) - 1
+	add hl, bc
 	ld a, BANK(wPokedexSeen)
 	ldh [rSVBK], a
 	ld bc, NUM_POKEMON
-	ld hl, NewPokedexOrder + (2 * NUM_POKEMON) - 1
 .new_mode_last_seen_loop
 	ld a, [hld]
 	ld d, a
@@ -1950,6 +1943,8 @@ Pokedex_ABCMode:
 INCLUDE "data/pokemon/dex_order_alpha.asm"
 
 INCLUDE "data/pokemon/dex_order_new.asm"
+
+INCLUDE "data/pokemon/dex_order_old.asm"
 
 Pokedex_DisplayModeDescription:
 	xor a
@@ -2754,15 +2749,52 @@ Pokedex_LoadAnyFootprint:
 	ret
 
 GetFootprintNumber:
-; a: species ID a's footprint, 0-255 (in Footprints: indexes 1 to 256's)
+; a: species ID a's footprint, 0-255 (in Footprints: indexes 1 to 256's; the
+; Pokémon after CELEBI have their family's, see NewPokemonFootprints)
 	call GetPokemonIndexFromID
-	dec hl
 	ld a, h
 	and a
+	jr nz, .new
 	ld a, l
-	ret z
-	ld a, 256 - 1 ; (a blank one)
+	cp FIRST_NEW_POKEMON
+	jr nc, .new
+	dec a
 	ret
+
+.new
+	ld de, -FIRST_NEW_POKEMON
+	add hl, de
+	ld de, NewPokemonFootprints
+	add hl, de
+	ld a, [hl]
+	ret
+
+_GetPokedexNumber::
+; in: de = a species index; out: hl = its Pokédex number: its index, or for the
+; Pokémon after CELEBI, the national number (see NewPokemonDexNumbers);
+; preserves bc
+	ld h, d
+	ld l, e
+	ld a, d
+	and a
+	jr nz, .new
+	ld a, e
+	cp FIRST_NEW_POKEMON
+	ret c
+.new
+	push bc
+	ld bc, -FIRST_NEW_POKEMON
+	add hl, bc
+	add hl, hl
+	ld bc, NewPokemonDexNumbers
+	add hl, bc
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	pop bc
+	ret
+
+INCLUDE "data/pokemon/new_pokemon.asm"
 
 Pokedex_LoadGFX:
 	call DisableLCD

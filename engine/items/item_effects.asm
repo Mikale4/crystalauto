@@ -94,7 +94,7 @@ ItemEffects:
 	dw StatusHealingEffect ; PRZCUREBERRY
 	dw StatusHealingEffect ; BURNT_BERRY
 	dw StatusHealingEffect ; ICE_BERRY
-	dw NoEffect            ; POISON_BARB
+	dw EvoStoneEffect      ; POISON_BARB
 	dw EvoStoneEffect      ; KINGS_ROCK
 	dw BitterBerryEffect   ; BITTER_BERRY
 	dw StatusHealingEffect ; MINT_BERRY
@@ -109,7 +109,7 @@ ItemEffects:
 	dw NoEffect            ; GRN_APRICORN
 	dw NoEffect            ; CLEANSE_TAG
 	dw NoEffect            ; MYSTIC_WATER
-	dw NoEffect            ; TWISTEDSPOON
+	dw EvoStoneEffect      ; TWISTEDSPOON
 	dw NoEffect            ; WHT_APRICORN
 	dw NoEffect            ; BLACKBELT_I
 	dw NoEffect            ; BLK_APRICORN
@@ -120,13 +120,13 @@ ItemEffects:
 	dw NoEffect            ; PINK_BOW
 	dw NoEffect            ; STICK
 	dw NoEffect            ; SMOKE_BALL
-	dw NoEffect            ; NEVERMELTICE
+	dw EvoStoneEffect      ; NEVERMELTICE
 	dw NoEffect            ; MAGNET
 	dw StatusHealingEffect ; MIRACLEBERRY
 	dw NoEffect            ; PEARL
 	dw NoEffect            ; BIG_PEARL
 	dw NoEffect            ; EVERSTONE
-	dw NoEffect            ; SPELL_TAG
+	dw EvoStoneEffect      ; SPELL_TAG
 	dw RestoreHPEffect     ; RAGECANDYBAR
 	dw NoEffect            ; GS_BALL
 	dw BlueCardEffect      ; BLUE_CARD
@@ -138,7 +138,7 @@ ItemEffects:
 	dw EnergyRootEffect    ; ENERGY_ROOT
 	dw HealPowderEffect    ; HEAL_POWDER
 	dw RevivalHerbEffect   ; REVIVAL_HERB
-	dw NoEffect            ; HARD_STONE
+	dw EvoStoneEffect      ; HARD_STONE
 	dw NoEffect            ; LUCKY_EGG
 	dw CardKeyEffect       ; CARD_KEY
 	dw NoEffect            ; MACHINE_PART
@@ -157,7 +157,7 @@ ItemEffects:
 	dw NoEffect            ; ITEM_8D
 	dw NoEffect            ; ITEM_8E
 	dw EvoStoneEffect      ; METAL_COAT
-	dw NoEffect            ; DRAGON_FANG
+	dw EvoStoneEffect      ; DRAGON_FANG
 	dw NoEffect            ; ITEM_91
 	dw NoEffect            ; LEFTOVERS
 	dw NoEffect            ; ITEM_93
@@ -183,7 +183,7 @@ ItemEffects:
 	dw NormalBoxEffect     ; NORMAL_BOX
 	dw GorgeousBoxEffect   ; GORGEOUS_BOX
 	dw EvoStoneEffect      ; SUN_STONE
-	dw NoEffect            ; POLKADOT_BOW
+	dw EvoStoneEffect      ; POLKADOT_BOW
 	dw NoEffect            ; ITEM_AB
 	dw EvoStoneEffect      ; UP_GRADE
 	dw RestoreHPEffect     ; BERRY

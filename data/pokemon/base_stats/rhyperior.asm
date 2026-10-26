@@ -1,0 +1,20 @@
+	db 0 ; #296 (the species ID: see GetBaseData)
+
+	db 115, 140, 130,  40,  55,  55
+	;   hp  atk  def  spd  sat  sdf
+
+	db GROUND, ROCK ; type
+	db 30 ; catch rate
+	db 241 ; base exp
+	db NO_ITEM, NO_ITEM ; items
+	db GENDER_F50 ; gender ratio
+	db 100 ; unknown 1
+	db 20 ; step cycles to hatch
+	db 5 ; unknown 2
+	INCBIN "gfx/pokemon/rhyperior/front.dimensions"
+	db GROWTH_SLOW ; growth rate
+	dn EGG_MONSTER, EGG_GROUND ; egg groups
+
+	; tm/hm learnset
+	tmhm MEGA_PUNCH, PAY_DAY, FIRE_PUNCH, ICE_PUNCH, THUNDERPUNCH, SWORDS_DANCE, CUT, MEGA_KICK, HEADBUTT, BODY_SLAM, TAKE_DOWN, DOUBLE_EDGE, ROAR, FLAMETHROWER, SURF, ICE_BEAM, BLIZZARD, HYPER_BEAM, STRENGTH, THUNDERBOLT, THUNDER, EARTHQUAKE, DIG, TOXIC, DOUBLE_TEAM, FIRE_BLAST, REST, ROCK_SLIDE, SUBSTITUTE, THIEF, SNORE, CURSE, PROTECT, MUD_SLAP, ICY_WIND, SANDSTORM, ENDURE, ROLLOUT, SWAGGER, FURY_CUTTER, ATTRACT, SLEEP_TALK, RETURN, FRUSTRATION, IRON_TAIL, HIDDEN_POWER, RAIN_DANCE, SUNNY_DAY, ROCK_SMASH, WHIRLPOOL
+	; end
