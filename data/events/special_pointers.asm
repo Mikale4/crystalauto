@@ -186,5 +186,4 @@ SpecialsPointers::
 
 	add_special MoveReminder
 	add_special PokecenterMoveTutor
-	add_special PokecenterEggMoveTutor
 	add_special Gen1TMShop

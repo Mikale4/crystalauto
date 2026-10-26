@@ -20,8 +20,8 @@ Outside of battle, **your lead Pokémon follows you around**, and every POKéMON
 CENTER has a **CHANSEY you can rent**: it walks along with you and heals your team
 whenever you ask. As in PalletToPewter, **TMs never run out**, **HMs work without
 the move** (and HM moves can be forgotten), and every POKéMON CENTER has a **MOVE
-REMINDER**, a **MOVE TUTOR** and an **EGG MOVE TUTOR**. When a trainer calls for a
-rematch, you can **go there right away**.
+REMINDER** and a **MOVE TUTOR**. When a trainer calls for a rematch, you can **go
+there right away**.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
@@ -626,7 +626,8 @@ Their pics aren't animated.
   BLUE, YELLOW, and GOLD and SILVER teach it that CRYSTAL doesn't (at the lowest
   level any of them does). SNORLAX learns HARDEN and DOUBLE-EDGE again; RAICHU,
   THUNDER WAVE.
-- **EGG moves**: GOLD and SILVER's are added to CRYSTAL's (SNORLAX's CHARM...).
+- **EGG moves**: GOLD and SILVER's are added to CRYSTAL's (SNORLAX's CHARM...), for
+  breeding and for the [MOVE TUTOR](#the-move-reminder-and-the-move-tutor).
 - **GEN 1's TMs**: where a TM's number taught another move in RED and BLUE (TM01 MEGA
   PUNCH, TM08 BODY SLAM, ...), that GEN 1 TM is here too. The TM pocket lists it just
   before this game's TM of the number, the two marked **GEN 1** and **GEN 2**; a
@@ -847,17 +848,16 @@ As in PalletToPewter:
 - **HM moves can be forgotten** like any other move, to make room for a new one.
 
 
-## The MOVE REMINDER and the MOVE TUTORS
+## The MOVE REMINDER and the MOVE TUTOR
 
-Every POKéMON CENTER has three more people, by the left wall of the lobby (at the
-INDIGO PLATEAU, by the right wall). All are free:
+Every POKéMON CENTER has two more people, by the left wall of the lobby (at the
+INDIGO PLATEAU, by the right wall). Both are free:
 
 - The **MOVE REMINDER** (the old woman) teaches a Pokémon any move it learns by
   leveling up, up to its level, that it doesn't know.
-- The **MOVE TUTOR** (the old man) teaches a Pokémon whichever of the moves
-  GOLDENROD's tutor teaches it can learn (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
-- The **EGG MOVE TUTOR** (the teacher) teaches a Pokémon its EGG moves (those of its
-  first form, GOLD and SILVER's with CRYSTAL's).
+- The **MOVE TUTOR** (the old man) teaches a Pokémon its EGG moves (those of its first
+  form, GOLD and SILVER's with CRYSTAL's), and whichever of the moves GOLDENROD's
+  tutor teaches it can learn (FLAMETHROWER, THUNDERBOLT and ICE BEAM).
 
 Pick a Pokémon, then the move from the list (each with its type; the box below it
 shows the move's category, PP, power and accuracy). A Pokémon that already knows
@@ -883,7 +883,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 07e8c9dc541e42fb979aae6d74f618a62085f142`.
+The patched ROM has `sha1: e5efe53ffbf3e009421d79ccaf2c9cdfddf3ebeb`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1116,10 +1116,9 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   FLASH to the menu (`GetMonSubmenuItems.OwnedFieldMove`). `ForgetMove` in
   [`engine/pokemon/learn.asm`](engine/pokemon/learn.asm) no longer keeps HM moves.
 - [`engine/events/move_relearner.asm`](engine/events/move_relearner.asm) has the
-  MOVE REMINDER, MOVE TUTOR and EGG MOVE TUTOR (`MoveReminderScript`,
-  `MoveTutorScript` and `EggMoveTutorScript`, standard scripts every POKéMON CENTER's
-  map uses; the specials `MoveReminder`, `PokecenterMoveTutor` and
-  `PokecenterEggMoveTutor`). They list the moves in `wMoveRelearnerMoves` (in the
+  MOVE REMINDER and MOVE TUTOR (`MoveReminderScript` and `MoveTutorScript`, standard
+  scripts every POKéMON CENTER's map uses; the specials `MoveReminder` and
+  `PokecenterMoveTutor`). They list the moves in `wMoveRelearnerMoves` (in the
   POKéDEX's RAM, which nothing else uses then), show them in a scrolling menu, and
   teach them with the game's own `LearnMove`.
 - [`engine/phone/phone_trip.asm`](engine/phone/phone_trip.asm) has the trip.
