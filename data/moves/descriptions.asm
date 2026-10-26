@@ -467,7 +467,7 @@ SonicboomDescription:
 
 DisableDescription:
 	db   "Disables the foe's"
-	next "most recent move.@"
+	next "hit by itself.@"
 
 AcidDescription:
 	db   "An attack that may"

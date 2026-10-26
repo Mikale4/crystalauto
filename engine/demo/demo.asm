@@ -880,7 +880,7 @@ DemoBallMenu:
 	cp PARTY_LENGTH
 	ld a, PAD_B
 	jp nc, DemoTap
-	ld a, [wEnemyMonSpecies]
+	ld a, [wTempEnemyMonSpecies] ; (its own: a DITTO that TRANSFORMed is still one)
 	call CheckCaughtMon
 	ld a, PAD_B
 	jp nz, DemoTap
@@ -892,7 +892,7 @@ DemoBallMenu:
 	call CheckCaughtMonIndex
 	pop de
 	jr nz, .any_wanted
-	ld a, [wEnemyMonSpecies]
+	ld a, [wTempEnemyMonSpecies]
 	call GetPokemonIndexFromID
 	ld a, l
 	cp e

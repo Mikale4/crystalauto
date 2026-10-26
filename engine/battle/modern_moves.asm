@@ -916,6 +916,7 @@ AfterTurn:
 
 .acted
 	call HandleAutoCounter
+	call HandleAutoDisable
 	call HandleAutoMirrorMove
 	call HandleAutoSpite
 	call HandleAutoNightmare
@@ -1180,6 +1181,89 @@ HandleAutoCounter:
 
 .immune
 	farcall AutoMove_Restore
+	ret
+
+HandleAutoDisable:
+; DISABLE works by itself: right after an attack hit a POKéMON (not its SUBSTITUTE:
+; wHitDamage), one that knows DISABLE (with PP left) disables that attack (for four
+; turns: see BattleCommand_Disable), once while it's out. Not if either fainted,
+; it's asleep or frozen, or the attacker has a move disabled already, or the
+; attack isn't one of its own moves (METRONOME's, MIRROR MOVE's) with PP left.
+	ld a, [wHitDamage]
+	ld b, a
+	ld a, [wHitDamage + 1]
+	or b
+	ret z
+	call CantGoOn
+	ret nz
+; (as the one hit)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Disable
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Disable:
+	ld hl, wPlayerFieldFlags
+	ld de, wEnemyDisableCount
+	ld bc, wEnemyMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_sides
+	ld hl, wEnemyFieldFlags
+	ld de, wPlayerDisableCount
+	ld bc, wBattleMonMoves
+.got_sides
+	bit FIELD_DISABLE_F, [hl]
+	ret nz ; (it has, since it came in)
+	ld a, [de]
+	and a
+	ret nz ; (the attacker has one disabled already)
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+; the attack: one of the attacker's moves, with PP left
+	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
+	call GetBattleVar
+	and a
+	ret z
+	cpmove STRUGGLE
+	ret z
+	ld d, a
+	ld h, b
+	ld l, c
+	ld e, NUM_MOVES
+.find
+	ld a, [hli]
+	cp d
+	jr z, .found
+	dec e
+	jr nz, .find
+	ret
+
+.found
+	dec hl
+	ld bc, wBattleMonPP - wBattleMonMoves
+	add hl, bc
+	ld a, [hl]
+	and PP_MASK
+	ret z
+	ldbmove DISABLE
+	farcall AutoMove_Setup
+	ret c
+	ld hl, wPlayerFieldFlags
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_flags
+	ld hl, wEnemyFieldFlags
+.got_flags
+	set FIELD_DISABLE_F, [hl]
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
 	ret
 
 AutoMoveFieldFlag:
@@ -1510,6 +1594,7 @@ AutoMoves:
 ; and auto battle: see CantChooseMove)
 	dw COUNTER      ; right after an attack: see HandleAutoCounter
 	dw MIRROR_COAT
+	dw DISABLE      ; (see HandleAutoDisable)
 	dw MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
 	dw SPITE        ; (see HandleAutoSpite)
 	dw FUTURE_SIGHT ; as it comes in: see HandleEntryMoves

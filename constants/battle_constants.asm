@@ -292,6 +292,7 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_SWORDS_DANCE_F ; 4: it has used SWORDS DANCE (see OnceOutMoves)
 	const FIELD_GROWTH_F       ; 5: GROWTH
 	const FIELD_AMNESIA_F      ; 6: AMNESIA
+	const FIELD_DISABLE_F      ; 7: its DISABLE has disabled an attack (see HandleAutoDisable)
 
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 

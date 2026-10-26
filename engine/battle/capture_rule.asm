@@ -51,11 +51,11 @@ WildMonWornOut::
 	jp c, .no_room
 
 ; With continuous auto battle running, only stop for a Pokémon that
-; isn't caught yet.
+; isn't caught yet (its own species: a DITTO that TRANSFORMed is still one).
 	ld a, [wAutoBattle]
 	and a
 	jr z, .worn_out
-	ld a, [wEnemyMonSpecies]
+	ld a, [wTempEnemyMonSpecies]
 	call CheckCaughtMon
 	ret nz
 

@@ -83,8 +83,9 @@ its second page (choose **NEXT** at the bottom of the first page):
 
 The catching demonstration on Route 29 is never automatic. When auto battle beats a
 wild Pokémon you've already caught, the battle just ends; one you haven't caught yet
-still stops and asks whether to throw a BALL (see [Catching](#catching)). The setting
-is saved with your game.
+still stops and asks whether to throw a BALL (see [Catching](#catching)). It goes by
+the wild Pokémon's own species: a DITTO that TRANSFORMed into one you have is still a
+DITTO. The setting is saved with your game.
 
 
 ## How it battles
@@ -314,6 +315,7 @@ Some moves work in new ways of their own:
 | PSYWAVE | its power varies as MAGNITUDE's does ("Psywave 8!") |
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
 | COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out (see below) |
+| DISABLE | works by itself: right after the foe's attack hits, that attack is disabled; once each time the Pokémon is out (see below) |
 | WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
 | PAY DAY | while a Pokémon in your party (not an EGG) knows it, a battle's money is doubled: a trainer's prize and PAY DAY's coins (with an AMULET COIN as well, 4×) |
 | RAZOR WIND | no turn to charge: it hits right away (still with a high critical-hit ratio) |
@@ -367,6 +369,13 @@ hits back once while the Pokémon is out, and again only after it has gone back 
 come out again (or another one has come in by BATON PASS). They can't be chosen
 ("COUNTER works by itself!"); a Pokémon with nothing else left to choose STRUGGLEs.
 A Pokémon can know both, and attacks too.
+
+**DISABLE.** Right after an attack hits a Pokémon that knows DISABLE (not its
+SUBSTITUTE), it disables that attack by itself (1 PP): the foe can't use it for four
+turns. Once while the Pokémon is out, and again only after it has gone back and come
+out again. Not when it fainted, is asleep or frozen, the foe has a move disabled
+already, or the attack isn't one of the foe's own moves with PP left (METRONOME's).
+A status move (GROWL) doesn't set it off. Like COUNTER, it can't be chosen.
 
 **MIRROR MOVE.** Right after the foe uses a move (not when it slept, flinched or
 couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back by itself
@@ -917,7 +926,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 697828bc80266c9f76ba7d34fd2cff85f02d8a43`.
+The patched ROM has `sha1: 360150355b41d3a9a8d990bcadb255672eb63fe6`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
