@@ -512,6 +512,11 @@ INCLUDE "engine/games/memory_game.asm"
 INCLUDE "engine/pokemon/bills_pc.asm"
 
 
+SECTION "Box Screen", ROMX
+
+INCLUDE "engine/pokemon/box_screen.asm"
+
+
 SECTION "bank39", ROMX
 
 INCLUDE "engine/menus/options_menu.asm"

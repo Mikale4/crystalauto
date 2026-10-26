@@ -21,7 +21,8 @@ CENTER has a **CHANSEY you can rent**: it walks along with you and heals your te
 whenever you ask. As in PalletToPewter, **TMs never run out**, **HMs work without
 the move** (and HM moves can be forgotten), and every POKéMON CENTER has a **MOVE
 REMINDER** and a **MOVE TUTOR**. When a trainer calls for a rematch, you can **go
-there right away**.
+there right away**. **BILL's PC is one screen like today's**: your box as a grid of
+icons beside your party, where you pick Pokémon up and put them down anywhere.
 
 Catching follows **PalletToPewter's rule**: beat a wild Pokémon first, then throw
 your BALLS at it before it gets away. The DUDE on ROUTE 29 shows you how, and gives
@@ -864,6 +865,32 @@ shows the move's category, PP, power and accuracy). A Pokémon that already know
 four moves forgets one to learn it.
 
 
+## BILL's PC
+
+BILL's PC is one screen, as in the latest games, instead of WITHDRAW, DEPOSIT, CHANGE
+BOX and MOVE PKMN W/O MAIL:
+
+- The box's Pokémon are icons in a 5-by-4 grid, each in its color, on the box's own
+  wallpaper; your party is beside it. Above them is the Pokémon under the cursor:
+  its pic, name, level, gender, types, held item and nature.
+- **Pick a Pokémon up** with SELECT (or A, then MOVE) and **put it down** anywhere
+  with SELECT or A: elsewhere in the box, in your party, or in another box. Put it on
+  another Pokémon and the two change places; on an empty spot, it goes after the
+  last. B puts it back where it was. While you carry it, the panel shows it.
+- **Other boxes**: move off the grid's left edge, or right past the party, or go up
+  to the box's name and press left or right. Put a Pokémon down on the box's name to
+  put it in that box.
+- **A on a Pokémon**: MOVE, SUMMARY (its stats screen; up and down go through the
+  box or party), ITEM (puts what it holds in your PACK), RELEASE.
+- **A on the box's name**: RENAME.
+- The rules are the old ones: your last Pokémon that can battle stays in the party,
+  a Pokémon holding MAIL stays in the party (take the MAIL from the party menu), a
+  box holds 20, and EGGS can't be released.
+- **Leaving the PC saves the game** if you changed anything (*SAVING... DON'T TURN
+  OFF THE POWER.*), since the boxes are kept on the cartridge. Before your first
+  save, only the first box is there.
+
+
 ## Going to a rematch
 
 When a trainer on your POKéGEAR calls to ask for a rematch, the game asks, once the
@@ -883,7 +910,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: e5efe53ffbf3e009421d79ccaf2c9cdfddf3ebeb`.
+The patched ROM has `sha1: 08c8abbcc333942cc464201e31f7c8b904df2c78`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1236,6 +1263,27 @@ IDs nothing holds any more to be taken back.
   number; the `GEN1_TM` item (`wCurGen1TM`) stands for the one picked.
 - [`engine/events/gen1_tm_shop.asm`](engine/events/gen1_tm_shop.asm) has the two
   clerks (`Gen1TMShop`), with their lists and RED and BLUE's prices.
+
+
+### BILL's PC
+
+- [`engine/pokemon/box_screen.asm`](engine/pokemon/box_screen.asm) is the box
+  screen (`BoxScreen`, from `_BillsPC` in
+  [`engine/pokemon/bills_pc_top.asm`](engine/pokemon/bills_pc_top.asm), which saves
+  the game afterwards if it says something changed, with `BoxScreenSaveGame`). Its
+  state is in `wBillsPCData` (`wBoxScreen*`); its constants are in
+  [`constants/box_screen_constants.asm`](constants/box_screen_constants.asm).
+- The grid and the party are a 20-by-10-tile canvas drawn in WRAM (bank 6, in
+  `wDecompressScratch`) with the menu icons 20 pixels apart, and sent to VRAM bank 1
+  by HBlank DMA (`BoxScreen_TransferCanvas`); each icon's tiles get its color's
+  palette. The colors are in
+  [`data/pokemon/icon_colors.asm`](data/pokemon/icon_colors.asm) (`BoxIconColors`,
+  a species table). The cursor and the Pokémon carried are sprites.
+- Pokémon move with the game's own pieces: `RemoveMonFromPartyOrBox`,
+  `InsertPokemonIntoBox`, `InsertPokemonIntoParty`, and `_SwitchPartyMons` (so a
+  party Pokémon's MAIL moves with it). A box other than the box out is made the box
+  out first (`MoveMonWOMail_SaveGame`); one carried across boxes waits in
+  `wBoxScreenStash1` by its species' and moves' indexes.
 
 
 ## Other changes

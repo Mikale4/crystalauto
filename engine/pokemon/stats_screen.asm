@@ -991,6 +991,17 @@ LoadOrangePage:
 	db "SPEED@"
 	db "SPECIAL@"
 
+GetNatureName:
+; de: the DVs; their nature's name to wStringBuffer1
+	farcall GetDVsNature
+	ld a, c
+	ld hl, NatureNames
+	call GetNthString
+	ld d, h
+	ld e, l
+	ld hl, wStringBuffer1
+	jp CopyName2
+
 INCLUDE "data/pokemon/nature_names.asm"
 
 IDNoString:

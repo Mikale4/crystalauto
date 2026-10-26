@@ -60,6 +60,13 @@ ChangeBoxSaveGame:
 	pop de
 	ret
 
+BoxScreenSaveGame:
+; after BILL's PC changed the boxes or the party (see _BillsPC)
+	call PauseGameLogic
+	call _SavingDontTurnOffThePower
+	call ResumeGameLogic
+	ret
+
 Link_SaveGame:
 	call AskOverwriteSaveFile
 	jr c, .refused

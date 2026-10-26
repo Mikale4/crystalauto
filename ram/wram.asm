@@ -1014,7 +1014,27 @@ SECTION UNION "Overworld Map", WRAM0
 ; bill's pc data
 wBillsPCData::
 wBillsPCPokemonList:: ds BOXLIST_SIZE * MONS_PER_BOX_JP
-	ds 720
+; the box screen (see engine/pokemon/box_screen.asm)
+wBoxScreenBox:: db ; the box shown (1 to NUM_BOXES)
+wBoxScreenCount:: db ; its POKéMON
+wBoxScreenZone:: db ; where the cursor is (BOXZONE_*)
+wBoxScreenRow:: db
+wBoxScreenCol:: db
+wBoxScreenBoxCol:: db ; (the box's column, to come back to from the header)
+wBoxScreenHeld:: db ; the zone of the POKéMON held, or 0
+wBoxScreenHeldBox:: db
+wBoxScreenHeldIndex:: db
+wBoxScreenHeldColor:: db
+wBoxScreenShown:: ds 3 ; the zone, box and index of the POKéMON shown
+wBoxScreenFrame:: db
+wBoxScreenChanged:: db ; (the boxes or the party: then the game's saved, see _BillsPC)
+wBoxScreenRowBytes:: ds 4
+wBoxScreenTarget:: ds 4 ; (where the POKéMON held goes: its zone, box and index, and TRUE if one's there)
+wBoxScreenIconBuffer:: ds 4 tiles
+wBoxScreenStash1:: ds 2 + BOXMON_STRUCT_LENGTH + 2 + MON_NAME_LENGTH + NAME_LENGTH
+wBoxScreenStash2:: ds 2 + BOXMON_STRUCT_LENGTH + 2 + MON_NAME_LENGTH + NAME_LENGTH
+wBoxScreenEnd::
+	ds 720 - (wBoxScreenEnd - wBoxScreenBox)
 wBillsPC_ScrollPosition:: db
 wBillsPC_CursorPosition:: db
 wBillsPC_NumMonsInBox:: db

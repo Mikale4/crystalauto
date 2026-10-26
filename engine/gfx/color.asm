@@ -652,6 +652,15 @@ CGB_ApplyPartyMenuHPPals:
 	call FillBoxCGB
 	ret
 
+LoadBoxScreenMonPalette:
+; the PC's box screen's POKéMON (BG palette 1): [wCurPartySpecies], its DVs
+; wTempMonDVs
+	ld de, wBGPals1 palette 1
+	ld a, [wCurPartySpecies]
+	ld bc, wTempMonDVs
+	call GetPlayerOrMonPalettePointer
+	jp LoadPalette_White_Col1_Col2_Black
+
 InitPartyMenuOBPals:
 	ld hl, PartyMenuOBPals
 	ld de, wOBPals1

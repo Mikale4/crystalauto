@@ -434,6 +434,29 @@ HoldSwitchmonIcon:
 	jr nz, .loop
 	ret
 
+LoadBoxScreenIcon:
+; [wTempIconSpecies]'s icon's first frame (4 tiles) to wBoxScreenIconBuffer, and
+; the icon in wCurIcon (for the PC's box screen)
+	ld a, [wTempIconSpecies]
+	call ReadMonMenuIcon
+	ld [wCurIcon], a
+	ld l, a
+	ld h, 0
+	add hl, hl
+	ld de, IconPointers
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld de, wBoxScreenIconBuffer
+	ld bc, 4 tiles
+	jp CopyBytes
+
+LoadBoxScreenHeldIcon:
+; [wCurIcon]'s two frames to vTiles0, for the box screen's POKéMON held
+	ld a, BOXSCREEN_HELD_TILE
+	jp GetIcon_a
+
 ReadMonMenuIcon:
 	cp EGG
 	jr z, .egg

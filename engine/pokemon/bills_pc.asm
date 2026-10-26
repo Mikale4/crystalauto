@@ -2546,6 +2546,18 @@ BillsPC_ConvertBoxData::
 .done
 	jp CloseSRAM
 
+BillsPC_ConvertMonAtDEToBoxMon:
+; (BillsPC_ConvertPartyMonToBoxMon for farcall: the POKéMON at de)
+	ld h, d
+	ld l, e
+	jr BillsPC_ConvertPartyMonToBoxMon
+
+BillsPC_ConvertMonAtDEToPartyMon:
+; (BillsPC_ConvertBoxMonToPartyMon for farcall)
+	ld h, d
+	ld l, e
+	jr BillsPC_ConvertBoxMonToPartyMon
+
 BillsPC_ConvertPartyMonToBoxMon:
 ; The moves of the POKéMON at hl: their IDs become their 16-bit indexes, the low
 ; byte in their place and the high bits in their PP (with the PP UPs'); keeps bc,
