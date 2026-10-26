@@ -225,7 +225,7 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   STRUGGLE 1/4 of the user's max HP. A missed JUMP KICK or HI JUMP KICK costs half
   of the user's max HP.
 - **Draining moves** heal half the damage they do; MORNING SUN, SYNTHESIS and
-  MOONLIGHT heal 1/2 of the max HP, 2/3 in sunshine and 1/4 in rain or a sandstorm.
+  MOONLIGHT heal 1/2 of the max HP, 2/3 in sunshine and 1/4 in rain, a sandstorm or HAIL.
 - SELF-DESTRUCT and EXPLOSION no longer halve the foe's Defense. FURY CUTTER stops
   growing at 160 power. SKY ATTACK is likely to land a critical hit. RAPID SPIN
   raises the user's Speed. (LOW KICK: see [Reworked moves](#reworked-moves).)
@@ -244,11 +244,49 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   and their Special Defense one stage up (1.5× each; the Special Defense against
   special attacks, critical hits too); WATER Pokémon in the rain and GRASS Pokémon
   in the sun have their Speed one stage up (1.5×). These aren't stat changes: they last as long as the weather. The
-  battle info screen's field page says whose stat is up.
+  battle info screen's field page says whose stat is up. HAIL does the same for ICE:
+  see [HAIL and the terrains](#hail-and-the-terrains).
 - **TRANSFORM** works like the latest games' IMPOSTER: a Pokémon that knows it turns
   into the foe as soon as it comes in, before anything else happens (it takes no
   turn and no PP). A wild DITTO turns into your Pokémon right away. It doesn't when
   the foe has transformed too, or is out of sight (FLY, DIG).
+
+### HAIL and the terrains
+
+Five new moves, past the 255 the game could have before (see
+[More than 255 moves](#more-than-255-moves)): HAIL, and the latest games' four
+terrains, ELECTRIC TERRAIN, GRASSY TERRAIN, MISTY TERRAIN and PSYCHIC TERRAIN
+(ELECTERRAIN, GRASSTERRAIN, MISTYTERRAIN and PSYCHTERRAIN in the game). Like SUNNY
+DAY, RAIN DANCE and SANDSTORM, a Pokémon that knows one uses it as it comes in (see
+**Entry moves** below), and it can still be chosen too. Each lasts five turns, and
+fails when it's up already.
+
+- **HAIL** hurts every Pokémon but ICE types at the end of each turn (1/16 of its max
+  HP; not one underground). ICE moves do 1.5× damage, and ICE Pokémon have their
+  Speed and, as with the latest games' SNOW, their Defense one stage up (1.5× each;
+  the Defense against physical attacks). BLIZZARD never misses in it, and SOLARBEAM
+  does half its damage.
+- **The terrains** stay beside the weather: a terrain takes another terrain's place,
+  never the weather's. They work for Pokémon on the ground: not a FLYING type, nor
+  one up in the air (FLY). Their power-ups are 1.5×.
+  - ELECTRIC TERRAIN: ELECTRIC moves from a Pokémon on the ground do 1.5× damage. A
+    Pokémon on the ground can't fall asleep (nor use REST). ELECTRIC Pokémon have
+    their Speed one stage up (FLYING ones too).
+  - GRASSY TERRAIN: GRASS moves 1.5×. At the end of each turn, each Pokémon on the
+    ground heals 1/16 of its max HP. EARTHQUAKE and MAGNITUDE do half their damage
+    against a Pokémon on the ground.
+  - MISTY TERRAIN: a Pokémon on the ground can't get a status problem or be
+    confused (nor use REST), and DRAGON moves do half their damage against it.
+  - PSYCHIC TERRAIN: PSYCHIC moves 1.5×. QUICK ATTACK, MACH PUNCH and EXTREMESPEED
+    can't touch a Pokémon on the ground.
+- Their animations don't color the screen.
+- At level 20, every ICE type learns HAIL, ELECTRIC types ELECTRIC TERRAIN, GRASS
+  types GRASSY TERRAIN, FAIRY types MISTY TERRAIN and PSYCHIC types PSYCHIC TERRAIN
+  (a Pokémon of two of those types, both; not WOBBUFFET, whose four moves are what
+  it is). The MOVE REMINDER teaches them to a Pokémon past level 20.
+- The battle info screen shows the terrain under the weather, with its turns, and
+  whose stat either of them raises. Auto battle and the foe don't use a status move
+  the terrain would stop.
 
 ### Reworked moves
 
@@ -259,7 +297,7 @@ Some moves work in new ways of their own:
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
 | BEAT UP | one of them now: 25 power, 2 to 5 hits |
 | DREAM EATER | works on a foe that's awake too |
-| SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -272,7 +310,7 @@ Some moves work in new ways of their own:
 | PAY DAY | while a Pokémon in your party (not an EGG) knows it, a battle's money is doubled: a trainer's prize and PAY DAY's coins (with an AMULET COIN as well, 4×) |
 | RAZOR WIND | no turn to charge: it hits right away (still with a high critical-hit ratio) |
 | SKULL BASH | no turn to charge: the user's DEFENSE goes up a stage, then it attacks |
-| SOLARBEAM | no turn to charge; 1.5× damage in the sun, 0.5× in rain and sandstorms |
+| SOLARBEAM | no turn to charge; 1.5× damage in the sun, 0.5× in rain, sandstorms and HAIL |
 | SKY ATTACK | no turn to charge; instead, as HYPER BEAM, a turn to recharge after (still with a high critical-hit ratio and a 30% chance to flinch) |
 | HYPER BEAM, SKY ATTACK | as in the first games: no turn to recharge after knocking the foe out or breaking its SUBSTITUTE (nor after a miss) |
 | MIRROR MOVE | works by itself, like COUNTER: right after the foe uses a move, the Pokémon uses that move too (see below) |
@@ -296,13 +334,14 @@ Some moves work in new ways of their own:
 | SWORDS DANCE | once while it's out |
 | TELEPORT | as in the latest games: moves last, and in a trainer battle, the Pokémon switches out (in the wild, it still flees) (see below) |
 
-**Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT,
-FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB or LOCK-ON uses each
-of them as it comes in,
+**Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, a
+terrain, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB or
+LOCK-ON uses each of them as it comes in,
 at the start of its first turn out, before anything else happens. Each takes 1 PP
 (none is used without PP left), and it doesn't count as the Pokémon's move (QUICK
 CLAW and KING'S ROCK still wait for that). LOCK-ON goes last, so its aim is for the
-next attack. None is used when it would do nothing: FUTURE SIGHT while one is on its
+next attack. None is used when it would do nothing: SANDSTORM, HAIL or a terrain
+while it's up already, FUTURE SIGHT while one is on its
 way, SPIKES with three layers down, SAFEGUARD while it's up, PSYCH UP when none of the
 foe's stats have gone up, MEAN LOOK and SPIDER WEB when the foe's trapped already. They
 can still be chosen as usual too, but FUTURE SIGHT, SAFEGUARD, MEAN LOOK and SPIDER
@@ -372,7 +411,7 @@ In a battle, press **START** to see how things stand, and **START** again (or B)
 go back. The first page shows both Pokémon's stat changes: each stat (ATTACK,
 DEFENSE, SPEED, SPCL.ATK, SPCL.DEF, ACCURACY, EVASION), yours and the foe's, as how
 many stages up (+2) or down (-1), or 0 as it was. **LEFT** or **RIGHT** turns to the
-field: the weather, and on each side REFLECT, LIGHT SCREEN, SAFEGUARD, MIST, SPIKES
+field: the weather, the terrain, and on each side REFLECT, LIGHT SCREEN, SAFEGUARD, MIST, SPIKES
 (how many layers), a FUTURE SIGHT on its way and PERISH SONG, with the turns each has
 left. (The Game Boy Color has no L or R buttons, so START it is.)
 
@@ -916,8 +955,22 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `defenseupfirst` command; SOLARBEAM's weather is in `WeatherMoveModifiers`). The
   weather's stats are `WeatherBoosts`: its Speed is `WeatherSpeed`, for the turn
   order (`CompareSpeeds`, from `DetermineMoveOrder`), the AI (`AICompareSpeed`) and
-  auto battle; its SPCL.DEF is `WeatherSpclDef`, in `PlayerAttackDamage` and
-  `EnemyAttackDamage`.
+  auto battle; its DEFENSE or SPCL.DEF is `WeatherSpclDef`, in `PlayerAttackDamage`
+  and `EnemyAttackDamage` (`WeatherRaisesDefendingStat`: the one the attack's
+  category goes against).
+  HAIL and the terrains are the `startfield` command (`StartFieldMove`; a terrain
+  move's type says which terrain: `TypeTerrain`), with the terrain in
+  `wBattleTerrain` and `wTerrainCount` (spare bytes of battle RAM). `HandleWeather`
+  runs `WeatherDamage` (SANDSTORM's and HAIL's) and then `HandleTerrain` (GRASSY
+  TERRAIN's healing, and the terrain's turns). `WeatherBoosts` has the terrains'
+  stats too (`BOOST_TERRAIN`). The terrains' power is `DoTerrainModifiers`, after
+  `DoWeatherModifiers` in [`engine/battle/misc.asm`](engine/battle/misc.asm). What
+  they stop: `TerrainProtectsTarget` (from `BattleCommand_CheckSafeguard`, before a
+  status move; `TerrainProtectsSide` for the AI and auto battle),
+  `MistyTerrainProtects` (from `SafeCheckSafeguard`, before an added status or
+  confusion), `PsychicTerrainBlocks` (from `BattleCommand_CheckHit`, as PROTECT is)
+  and `RestFailsForTerrain` (REST, in `BattleCommand_Heal`). `IsGrounded` says who's
+  on the ground. THUNDER in the rain and BLIZZARD in HAIL are `WeatherSureHit`.
   `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
   SUBSTITUTE. MIRROR MOVE is `HandleAutoMirrorMove`: the turn's side gets a
   `NOT_ACTED` last move first (`AfterTurn`), so it's only taken up when one was used.

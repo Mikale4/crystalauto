@@ -185,4 +185,5 @@ BattleCommandPointers:
 	dw BattleCommand_DefenseUpFirst
 	dw BattleCommand_MovedLast
 	dw BattleCommand_SecondStatUp
+	dw BattleCommand_StartField
 	assert_table_length NUM_EFFECT_COMMANDS

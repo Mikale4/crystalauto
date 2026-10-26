@@ -105,6 +105,16 @@ SandstormHitsText:
 	line "<USER>!"
 	prompt
 
+HailHitsText:
+	text "<USER> is"
+	line "pelted by HAIL!"
+	prompt
+
+GrassyTerrainHealText:
+	text "The grass healed"
+	line "<TARGET>!"
+	prompt
+
 PerishCountText:
 	text "<USER>'s"
 	line "PERISH count is @"
@@ -166,6 +176,11 @@ BattleText_TheSandstormRages:
 	line "rages."
 	prompt
 
+BattleText_HailContinuesToFall:
+	text "HAIL continues to"
+	line "fall."
+	prompt
+
 BattleText_TheRainStopped:
 	text "The rain stopped."
 	prompt
@@ -178,6 +193,30 @@ BattleText_TheSunlightFaded:
 BattleText_TheSandstormSubsided:
 	text "The SANDSTORM"
 	line "subsided."
+	prompt
+
+BattleText_TheHailStopped:
+	text "The HAIL stopped."
+	prompt
+
+BattleText_ElectricTerrainEnded:
+	text "The electricity"
+	line "disappeared."
+	prompt
+
+BattleText_GrassyTerrainEnded:
+	text "The grass"
+	line "disappeared."
+	prompt
+
+BattleText_MistyTerrainEnded:
+	text "The mist"
+	line "disappeared."
+	prompt
+
+BattleText_PsychicTerrainEnded:
+	text "The weirdness"
+	line "disappeared."
 	prompt
 
 BattleText_EnemyMonFainted:
@@ -1046,6 +1085,32 @@ SandstormBrewedText:
 	line "brewed!"
 	prompt
 
+HailStartedText:
+	text "It started to"
+	line "HAIL!"
+	prompt
+
+ElectricTerrainText:
+	text "An electric"
+	line "current runs"
+	cont "across the field!"
+	prompt
+
+GrassyTerrainText:
+	text "Grass grew to"
+	line "cover the field!"
+	prompt
+
+MistyTerrainText:
+	text "Mist swirled"
+	line "about the field!"
+	prompt
+
+PsychicTerrainText:
+	text "The field got"
+	line "weird!"
+	prompt
+
 BracedItselfText:
 	text "<USER>"
 	line "braced itself!"
@@ -1066,6 +1131,27 @@ SafeguardProtectText:
 	line "is protected by"
 	cont "SAFEGUARD!"
 	prompt
+
+ElectricTerrainProtectsText:
+	text "<TARGET>"
+	line "surrounds itself"
+	cont "with electrified"
+	cont "terrain!"
+	prompt
+
+MistyTerrainProtectsText:
+	text "<TARGET>"
+	line "surrounds itself"
+	cont "with a protective"
+	cont "mist!"
+	prompt
+
+PsychicTerrainProtectsText:
+	text "<TARGET>"
+	line "surrounds itself"
+	cont "with psychic"
+	cont "terrain!"
+	done
 
 MagnitudeText:
 	text "Magnitude @"

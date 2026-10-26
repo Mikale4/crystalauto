@@ -258,6 +258,11 @@ MoveDescriptions::
 	dw DrainingKissDescription
 	dw PlayRoughDescription
 	dw MoonblastDescription
+	dw HailDescription
+	dw ElectricTerrainDescription
+	dw GrassyTerrainDescription
+	dw MistyTerrainDescription
+	dw PsychicTerrainDescription
 	assert_table_length NUM_ATTACKS
 
 MoveFFDescription:
@@ -1279,3 +1284,23 @@ PlayRoughDescription:
 MoonblastDescription:
 	db   "An attack that may"
 	next "lower SPCL.ATK.@"
+
+HailDescription:
+	db   "Hail as the user"
+	next "comes in.@"
+
+ElectricTerrainDescription:
+	db   "Electric terrain"
+	next "as it comes in.@"
+
+GrassyTerrainDescription:
+	db   "Grassy terrain as"
+	next "the user comes in.@"
+
+MistyTerrainDescription:
+	db   "Misty terrain as"
+	next "the user comes in.@"
+
+PsychicTerrainDescription:
+	db   "Psychic terrain as"
+	next "the user comes in.@"

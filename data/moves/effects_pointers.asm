@@ -159,4 +159,6 @@ MoveEffectsPointers:
 	dw Fly
 	dw DefenseCurl
 	dw LowKick
+	dw Hail
+	dw Terrain
 	assert_table_length NUM_MOVE_EFFECTS

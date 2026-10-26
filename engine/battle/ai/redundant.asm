@@ -43,6 +43,8 @@ AI_Redundant:
 	dbw EFFECT_MOONLIGHT,    .Moonlight
 	dbw EFFECT_SWAGGER,      .Swagger
 	dbw EFFECT_FUTURE_SIGHT, .FutureSight
+	dbw EFFECT_HAIL,         .Hail
+	dbw EFFECT_TERRAIN,      .Terrain
 	db -1
 
 .LightScreen:
@@ -66,6 +68,9 @@ AI_Redundant:
 	ret nz
 	ld a, [wPlayerScreens]
 	bit SCREENS_SAFEGUARD, a
+	ret nz
+	ld b, 0 ; (the player's side; MISTY TERRAIN: see TerrainProtectsSide)
+	farcall TerrainProtectsSide
 	ret
 
 .Transform:
@@ -169,6 +174,10 @@ AI_Redundant:
 .Swagger:
 	ld a, [wPlayerSubStatus3]
 	bit SUBSTATUS_CONFUSED, a
+	ret nz
+	ld b, 0 ; (the player's side; MISTY TERRAIN: see TerrainProtectsSide)
+	ld c, EFFECT_CONFUSE
+	farcall TerrainProtectsSide
 	ret
 
 .FutureSight:
@@ -193,3 +202,20 @@ AI_Redundant:
 .NotRedundant:
 	xor a
 	ret
+
+.Hail:
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	jr z, .Redundant
+	jr .NotRedundant
+
+.Terrain:
+; (the one that's up already: see TypeTerrain)
+	ld a, [wEnemyMoveStruct + MOVE_TYPE]
+	and TYPE_MASK
+	ld b, a
+	farcall AITypeTerrain
+	ld a, [wBattleTerrain]
+	cp c
+	jr z, .Redundant
+	jr .NotRedundant

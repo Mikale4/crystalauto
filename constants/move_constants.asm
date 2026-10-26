@@ -262,6 +262,11 @@
 	const DRAINING_KISS ; fc
 	const PLAY_ROUGH    ; fd
 	const MOONBLAST     ; fe
+	const HAIL             ; ff
+	const ELECTRIC_TERRAIN ; 100
+	const GRASSY_TERRAIN   ; 101
+	const MISTY_TERRAIN    ; 102
+	const PSYCHIC_TERRAIN  ; 103
 DEF NUM_ATTACKS EQU const_value - 1
 
 	assert NUM_ATTACKS < $3f00, "too many moves (boxes keep 14 bits of a move's index)"
@@ -300,4 +305,5 @@ DEF BATTLE_AFTERANIMS EQU ANIM_MISS
 	const ANIM_SEND_OUT_MON      ; -21
 	const ANIM_THROW_POKE_BALL   ; -22
 	const ANIM_DUDE_STONE        ; -23 (the catching tutorial's stone: no HUDs to redraw)
+	const ANIM_IN_HAIL           ; -24
 DEF NUM_SPECIAL_BATTLE_ANIMS EQU -const_value - 1

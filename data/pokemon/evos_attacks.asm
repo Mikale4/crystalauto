@@ -27,6 +27,7 @@ BulbasaurEvosAttacks:
 	dbw 15, POISONPOWDER
 	dbw 15, SLEEP_POWDER
 	dbw 20, RAZOR_LEAF
+	dbw 20, GRASSY_TERRAIN
 	dbw 25, SWEET_SCENT
 	dbw 32, GROWTH
 	dbw 39, SYNTHESIS
@@ -44,6 +45,7 @@ IvysaurEvosAttacks:
 	dbw 10, VINE_WHIP
 	dbw 15, POISONPOWDER
 	dbw 15, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 22, RAZOR_LEAF
 	dbw 29, SWEET_SCENT
 	dbw 38, GROWTH
@@ -62,6 +64,7 @@ VenusaurEvosAttacks:
 	dbw 10, VINE_WHIP
 	dbw 15, POISONPOWDER
 	dbw 15, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 22, RAZOR_LEAF
 	dbw 29, SWEET_SCENT
 	dbw 41, GROWTH
@@ -354,6 +357,7 @@ PikachuEvosAttacks:
 	dbw 11, QUICK_ATTACK
 	dbw 15, DOUBLE_TEAM
 	dbw 20, SLAM
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 26, THUNDERBOLT
 	dbw 33, AGILITY
 	dbw 41, THUNDER
@@ -366,6 +370,7 @@ RaichuEvosAttacks:
 	dbw 1, TAIL_WHIP
 	dbw 1, QUICK_ATTACK
 	dbw 1, THUNDERBOLT
+	dbw 20, ELECTRIC_TERRAIN
 	db 0 ; no more level-up moves
 
 SandshrewEvosAttacks:
@@ -475,6 +480,7 @@ ClefairyEvosAttacks:
 	dbw 13, DOUBLESLAP
 	dbw 16, DRAINING_KISS
 	dbw 19, MINIMIZE
+	dbw 20, MISTY_TERRAIN
 	dbw 26, DEFENSE_CURL
 	dbw 34, METRONOME
 	dbw 38, MOONBLAST
@@ -488,6 +494,7 @@ ClefableEvosAttacks:
 	dbw 1, DOUBLESLAP
 	dbw 1, METRONOME
 	dbw 1, MOONLIGHT
+	dbw 20, MISTY_TERRAIN
 	dbw 30, MOONBLAST
 	db 0 ; no more level-up moves
 
@@ -522,6 +529,7 @@ JigglypuffEvosAttacks:
 	dbw 14, DISABLE
 	dbw 17, DRAINING_KISS
 	dbw 19, ROLLOUT
+	dbw 20, MISTY_TERRAIN
 	dbw 24, DOUBLESLAP
 	dbw 29, REST
 	dbw 34, BODY_SLAM
@@ -535,6 +543,7 @@ WigglytuffEvosAttacks:
 	dbw 1, DISABLE
 	dbw 1, DEFENSE_CURL
 	dbw 1, DOUBLESLAP
+	dbw 20, MISTY_TERRAIN
 	dbw 30, PLAY_ROUGH
 	db 0 ; no more level-up moves
 
@@ -572,6 +581,7 @@ OddishEvosAttacks:
 	dbw 14, POISONPOWDER
 	dbw 16, STUN_SPORE
 	dbw 18, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 23, ACID
 	dbw 32, MOONLIGHT
 	dbw 39, PETAL_DANCE
@@ -588,6 +598,7 @@ GloomEvosAttacks:
 	dbw 14, POISONPOWDER
 	dbw 16, STUN_SPORE
 	dbw 18, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 24, ACID
 	dbw 35, MOONLIGHT
 	dbw 44, PETAL_DANCE
@@ -599,6 +610,7 @@ VileplumeEvosAttacks:
 	dbw 1, SWEET_SCENT
 	dbw 1, STUN_SPORE
 	dbw 1, PETAL_DANCE
+	dbw 20, GRASSY_TERRAIN
 	db 0 ; no more level-up moves
 
 ParasEvosAttacks:
@@ -608,6 +620,7 @@ ParasEvosAttacks:
 	dbw 7, STUN_SPORE
 	dbw 13, POISONPOWDER
 	dbw 19, LEECH_LIFE
+	dbw 20, GRASSY_TERRAIN
 	dbw 25, SPORE
 	dbw 31, SLASH
 	dbw 37, GROWTH
@@ -622,6 +635,7 @@ ParasectEvosAttacks:
 	dbw 7, STUN_SPORE
 	dbw 13, POISONPOWDER
 	dbw 19, LEECH_LIFE
+	dbw 20, GRASSY_TERRAIN
 	dbw 28, SPORE
 	dbw 37, SLASH
 	dbw 46, GROWTH
@@ -840,6 +854,7 @@ AbraEvosAttacks:
 	db EVOLVE_LEVEL, 16, KADABRA
 	db 0 ; no more evolutions
 	dbw 1, TELEPORT
+	dbw 20, PSYCHIC_TERRAIN
 	db 0 ; no more level-up moves
 
 KadabraEvosAttacks:
@@ -850,6 +865,7 @@ KadabraEvosAttacks:
 	dbw 1, CONFUSION
 	dbw 16, CONFUSION
 	dbw 18, DISABLE
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 21, PSYBEAM
 	dbw 26, RECOVER
 	dbw 31, FUTURE_SIGHT
@@ -864,6 +880,7 @@ AlakazamEvosAttacks:
 	dbw 1, CONFUSION
 	dbw 16, CONFUSION
 	dbw 18, DISABLE
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 21, PSYBEAM
 	dbw 26, RECOVER
 	dbw 31, FUTURE_SIGHT
@@ -926,6 +943,7 @@ BellsproutEvosAttacks:
 	dbw 15, SLEEP_POWDER
 	dbw 17, POISONPOWDER
 	dbw 19, STUN_SPORE
+	dbw 20, GRASSY_TERRAIN
 	dbw 23, ACID
 	dbw 30, SWEET_SCENT
 	dbw 37, RAZOR_LEAF
@@ -943,6 +961,7 @@ WeepinbellEvosAttacks:
 	dbw 15, SLEEP_POWDER
 	dbw 17, POISONPOWDER
 	dbw 19, STUN_SPORE
+	dbw 20, GRASSY_TERRAIN
 	dbw 24, ACID
 	dbw 33, SWEET_SCENT
 	dbw 42, RAZOR_LEAF
@@ -955,6 +974,7 @@ VictreebelEvosAttacks:
 	dbw 1, SLEEP_POWDER
 	dbw 1, SWEET_SCENT
 	dbw 1, RAZOR_LEAF
+	dbw 20, GRASSY_TERRAIN
 	db 0 ; no more level-up moves
 
 TentacoolEvosAttacks:
@@ -1072,6 +1092,7 @@ SlowpokeEvosAttacks:
 	dbw 6, GROWL
 	dbw 15, WATER_GUN
 	dbw 20, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 29, DISABLE
 	dbw 34, HEADBUTT
 	dbw 43, AMNESIA
@@ -1087,6 +1108,7 @@ SlowbroEvosAttacks:
 	dbw 6, GROWL
 	dbw 15, WATER_GUN
 	dbw 20, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 29, DISABLE
 	dbw 34, HEADBUTT
 	dbw 37, WITHDRAW
@@ -1101,6 +1123,7 @@ MagnemiteEvosAttacks:
 	dbw 6, THUNDERSHOCK
 	dbw 11, SUPERSONIC
 	dbw 16, SONICBOOM
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 21, THUNDER_WAVE
 	dbw 27, LOCK_ON
 	dbw 33, SWIFT
@@ -1117,6 +1140,7 @@ MagnetonEvosAttacks:
 	dbw 6, THUNDERSHOCK
 	dbw 11, SUPERSONIC
 	dbw 16, SONICBOOM
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 21, THUNDER_WAVE
 	dbw 27, LOCK_ON
 	dbw 35, TRI_ATTACK
@@ -1182,6 +1206,7 @@ DewgongEvosAttacks:
 	dbw 1, AURORA_BEAM
 	dbw 5, GROWL
 	dbw 16, AURORA_BEAM
+	dbw 20, HAIL
 	dbw 21, REST
 	dbw 32, TAKE_DOWN
 	dbw 43, ICE_BEAM
@@ -1236,6 +1261,7 @@ CloysterEvosAttacks:
 	dbw 1, SUPERSONIC
 	dbw 1, AURORA_BEAM
 	dbw 1, PROTECT
+	dbw 20, HAIL
 	dbw 33, SPIKES
 	dbw 41, SPIKE_CANNON
 	db 0 ; no more level-up moves
@@ -1303,6 +1329,7 @@ DrowzeeEvosAttacks:
 	dbw 1, HYPNOSIS
 	dbw 10, DISABLE
 	dbw 18, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 25, HEADBUTT
 	dbw 31, POISON_GAS
 	dbw 36, MEDITATE
@@ -1319,6 +1346,7 @@ HypnoEvosAttacks:
 	dbw 1, CONFUSION
 	dbw 10, DISABLE
 	dbw 18, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 25, HEADBUTT
 	dbw 33, POISON_GAS
 	dbw 40, MEDITATE
@@ -1360,6 +1388,7 @@ VoltorbEvosAttacks:
 	dbw 1, TACKLE
 	dbw 9, SCREECH
 	dbw 17, SONICBOOM
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 23, SELFDESTRUCT
 	dbw 29, ROLLOUT
 	dbw 33, LIGHT_SCREEN
@@ -1376,6 +1405,7 @@ ElectrodeEvosAttacks:
 	dbw 1, SELFDESTRUCT
 	dbw 9, SCREECH
 	dbw 17, SONICBOOM
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 23, SELFDESTRUCT
 	dbw 29, ROLLOUT
 	dbw 34, LIGHT_SCREEN
@@ -1392,6 +1422,8 @@ ExeggcuteEvosAttacks:
 	dbw 7, REFLECT
 	dbw 13, LEECH_SEED
 	dbw 19, CONFUSION
+	dbw 20, GRASSY_TERRAIN
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 25, STUN_SPORE
 	dbw 31, POISONPOWDER
 	dbw 37, SLEEP_POWDER
@@ -1404,6 +1436,8 @@ ExeggutorEvosAttacks:
 	dbw 1, HYPNOSIS
 	dbw 1, CONFUSION
 	dbw 19, STOMP
+	dbw 20, GRASSY_TERRAIN
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 31, EGG_BOMB
 	db 0 ; no more level-up moves
 
@@ -1561,6 +1595,7 @@ TangelaEvosAttacks:
 	dbw 10, ABSORB
 	dbw 13, POISONPOWDER
 	dbw 19, VINE_WHIP
+	dbw 20, GRASSY_TERRAIN
 	dbw 25, BIND
 	dbw 31, MEGA_DRAIN
 	dbw 34, STUN_SPORE
@@ -1657,6 +1692,7 @@ StarmieEvosAttacks:
 	dbw 1, RAPID_SPIN
 	dbw 1, RECOVER
 	dbw 1, BUBBLEBEAM
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 37, CONFUSE_RAY
 	db 0 ; no more level-up moves
 
@@ -1666,6 +1702,8 @@ MrMimeEvosAttacks:
 	dbw 6, CONFUSION
 	dbw 11, SUBSTITUTE
 	dbw 16, MEDITATE
+	dbw 20, MISTY_TERRAIN
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 21, DOUBLESLAP
 	dbw 24, DRAINING_KISS
 	dbw 26, LIGHT_SCREEN
@@ -1700,6 +1738,8 @@ JynxEvosAttacks:
 	dbw 1, POWDER_SNOW
 	dbw 9, LOVELY_KISS
 	dbw 13, POWDER_SNOW
+	dbw 20, HAIL
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 21, DOUBLESLAP
 	dbw 25, ICE_PUNCH
 	dbw 35, MEAN_LOOK
@@ -1715,6 +1755,7 @@ ElectabuzzEvosAttacks:
 	dbw 1, THUNDERPUNCH
 	dbw 9, THUNDERPUNCH
 	dbw 17, LIGHT_SCREEN
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 25, SWIFT
 	dbw 36, SCREECH
 	dbw 47, THUNDERBOLT
@@ -1789,6 +1830,7 @@ LaprasEvosAttacks:
 	dbw 1, SING
 	dbw 8, MIST
 	dbw 15, BODY_SLAM
+	dbw 20, HAIL
 	dbw 22, CONFUSE_RAY
 	dbw 29, PERISH_SONG
 	dbw 36, ICE_BEAM
@@ -1839,6 +1881,7 @@ JolteonEvosAttacks:
 	dbw 1, TAIL_WHIP
 	dbw 8, SAND_ATTACK
 	dbw 16, THUNDERSHOCK
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 23, QUICK_ATTACK
 	dbw 30, DOUBLE_KICK
 	dbw 36, PIN_MISSILE
@@ -1961,6 +2004,7 @@ ArticunoEvosAttacks:
 	dbw 1, GUST
 	dbw 1, POWDER_SNOW
 	dbw 13, MIST
+	dbw 20, HAIL
 	dbw 25, AGILITY
 	dbw 37, MIND_READER
 	dbw 49, ICE_BEAM
@@ -1973,6 +2017,7 @@ ZapdosEvosAttacks:
 	dbw 1, PECK
 	dbw 1, THUNDERSHOCK
 	dbw 13, THUNDER_WAVE
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 25, AGILITY
 	dbw 37, DETECT
 	dbw 49, DRILL_PECK
@@ -2046,6 +2091,7 @@ MewtwoEvosAttacks:
 	dbw 1, CONFUSION
 	dbw 1, DISABLE
 	dbw 11, BARRIER
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 22, SWIFT
 	dbw 33, PSYCH_UP
 	dbw 44, FUTURE_SIGHT
@@ -2061,6 +2107,7 @@ MewEvosAttacks:
 	dbw 1, POUND
 	dbw 10, TRANSFORM
 	dbw 20, MEGA_PUNCH
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 30, METRONOME
 	dbw 40, PSYCHIC_M
 	dbw 50, ANCIENTPOWER
@@ -2074,6 +2121,7 @@ ChikoritaEvosAttacks:
 	dbw 8, RAZOR_LEAF
 	dbw 12, REFLECT
 	dbw 15, POISONPOWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 22, SYNTHESIS
 	dbw 29, BODY_SLAM
 	dbw 36, LIGHT_SCREEN
@@ -2091,6 +2139,7 @@ BayleefEvosAttacks:
 	dbw 8, RAZOR_LEAF
 	dbw 12, REFLECT
 	dbw 15, POISONPOWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 23, SYNTHESIS
 	dbw 31, BODY_SLAM
 	dbw 39, LIGHT_SCREEN
@@ -2107,6 +2156,7 @@ MeganiumEvosAttacks:
 	dbw 8, RAZOR_LEAF
 	dbw 12, REFLECT
 	dbw 15, POISONPOWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 23, SYNTHESIS
 	dbw 31, BODY_SLAM
 	dbw 41, LIGHT_SCREEN
@@ -2335,6 +2385,7 @@ ChinchouEvosAttacks:
 	dbw 5, SUPERSONIC
 	dbw 13, FLAIL
 	dbw 17, WATER_GUN
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 25, SPARK
 	dbw 29, CONFUSE_RAY
 	dbw 37, TAKE_DOWN
@@ -2349,6 +2400,7 @@ LanturnEvosAttacks:
 	dbw 5, SUPERSONIC
 	dbw 13, FLAIL
 	dbw 17, WATER_GUN
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 25, SPARK
 	dbw 33, CONFUSE_RAY
 	dbw 45, TAKE_DOWN
@@ -2363,6 +2415,7 @@ PichuEvosAttacks:
 	dbw 6, TAIL_WHIP
 	dbw 8, THUNDER_WAVE
 	dbw 11, SWEET_KISS
+	dbw 20, ELECTRIC_TERRAIN
 	db 0 ; no more level-up moves
 
 CleffaEvosAttacks:
@@ -2374,6 +2427,7 @@ CleffaEvosAttacks:
 	dbw 8, SING
 	dbw 10, DRAINING_KISS
 	dbw 13, SWEET_KISS
+	dbw 20, MISTY_TERRAIN
 	db 0 ; no more level-up moves
 
 IgglybuffEvosAttacks:
@@ -2385,6 +2439,7 @@ IgglybuffEvosAttacks:
 	dbw 9, POUND
 	dbw 11, DRAINING_KISS
 	dbw 14, SWEET_KISS
+	dbw 20, MISTY_TERRAIN
 	db 0 ; no more level-up moves
 
 TogepiEvosAttacks:
@@ -2395,6 +2450,7 @@ TogepiEvosAttacks:
 	dbw 7, METRONOME
 	dbw 12, DRAINING_KISS
 	dbw 18, SWEET_KISS
+	dbw 20, MISTY_TERRAIN
 	dbw 25, ENCORE
 	dbw 31, SAFEGUARD
 	dbw 38, DOUBLE_EDGE
@@ -2407,6 +2463,7 @@ TogeticEvosAttacks:
 	dbw 7, METRONOME
 	dbw 12, DRAINING_KISS
 	dbw 18, SWEET_KISS
+	dbw 20, MISTY_TERRAIN
 	dbw 25, ENCORE
 	dbw 31, SAFEGUARD
 	dbw 34, MOONBLAST
@@ -2420,6 +2477,7 @@ NatuEvosAttacks:
 	dbw 1, LEER
 	dbw 10, NIGHT_SHADE
 	dbw 20, TELEPORT
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 30, FUTURE_SIGHT
 	dbw 40, CONFUSE_RAY
 	dbw 50, PSYCHIC_M
@@ -2432,6 +2490,7 @@ XatuEvosAttacks:
 	dbw 1, NIGHT_SHADE
 	dbw 10, NIGHT_SHADE
 	dbw 20, TELEPORT
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 35, FUTURE_SIGHT
 	dbw 50, CONFUSE_RAY
 	dbw 65, PSYCHIC_M
@@ -2444,6 +2503,7 @@ MareepEvosAttacks:
 	dbw 1, GROWL
 	dbw 9, THUNDERSHOCK
 	dbw 16, THUNDER_WAVE
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 23, COTTON_SPORE
 	dbw 30, LIGHT_SCREEN
 	dbw 37, THUNDER
@@ -2457,6 +2517,7 @@ FlaaffyEvosAttacks:
 	dbw 1, THUNDERSHOCK
 	dbw 9, THUNDERSHOCK
 	dbw 18, THUNDER_WAVE
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 27, COTTON_SPORE
 	dbw 36, LIGHT_SCREEN
 	dbw 45, THUNDER
@@ -2470,6 +2531,7 @@ AmpharosEvosAttacks:
 	dbw 1, THUNDER_WAVE
 	dbw 9, THUNDERSHOCK
 	dbw 18, THUNDER_WAVE
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 27, COTTON_SPORE
 	dbw 30, THUNDERPUNCH
 	dbw 42, LIGHT_SCREEN
@@ -2482,6 +2544,7 @@ BellossomEvosAttacks:
 	dbw 1, SWEET_SCENT
 	dbw 1, STUN_SPORE
 	dbw 1, PETAL_DANCE
+	dbw 20, GRASSY_TERRAIN
 	dbw 55, SOLARBEAM
 	db 0 ; no more level-up moves
 
@@ -2493,6 +2556,7 @@ MarillEvosAttacks:
 	dbw 6, TAIL_WHIP
 	dbw 10, WATER_GUN
 	dbw 15, ROLLOUT
+	dbw 20, MISTY_TERRAIN
 	dbw 21, BUBBLEBEAM
 	dbw 25, PLAY_ROUGH
 	dbw 28, DOUBLE_EDGE
@@ -2509,6 +2573,7 @@ AzumarillEvosAttacks:
 	dbw 6, TAIL_WHIP
 	dbw 10, WATER_GUN
 	dbw 15, ROLLOUT
+	dbw 20, MISTY_TERRAIN
 	dbw 25, BUBBLEBEAM
 	dbw 30, PLAY_ROUGH
 	dbw 36, DOUBLE_EDGE
@@ -2547,6 +2612,7 @@ HoppipEvosAttacks:
 	dbw 15, STUN_SPORE
 	dbw 17, SLEEP_POWDER
 	dbw 20, LEECH_SEED
+	dbw 20, GRASSY_TERRAIN
 	dbw 25, COTTON_SPORE
 	dbw 30, MEGA_DRAIN
 	db 0 ; no more level-up moves
@@ -2564,6 +2630,7 @@ SkiploomEvosAttacks:
 	dbw 13, POISONPOWDER
 	dbw 15, STUN_SPORE
 	dbw 17, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 22, LEECH_SEED
 	dbw 29, COTTON_SPORE
 	dbw 36, MEGA_DRAIN
@@ -2581,6 +2648,7 @@ JumpluffEvosAttacks:
 	dbw 13, POISONPOWDER
 	dbw 15, STUN_SPORE
 	dbw 17, SLEEP_POWDER
+	dbw 20, GRASSY_TERRAIN
 	dbw 22, LEECH_SEED
 	dbw 33, COTTON_SPORE
 	dbw 44, MEGA_DRAIN
@@ -2605,6 +2673,7 @@ SunkernEvosAttacks:
 	dbw 4, GROWTH
 	dbw 10, MEGA_DRAIN
 	dbw 19, SUNNY_DAY
+	dbw 20, GRASSY_TERRAIN
 	dbw 31, SYNTHESIS
 	dbw 46, GIGA_DRAIN
 	db 0 ; no more level-up moves
@@ -2616,6 +2685,7 @@ SunfloraEvosAttacks:
 	dbw 4, GROWTH
 	dbw 10, RAZOR_LEAF
 	dbw 19, SUNNY_DAY
+	dbw 20, GRASSY_TERRAIN
 	dbw 31, PETAL_DANCE
 	dbw 46, SOLARBEAM
 	db 0 ; no more level-up moves
@@ -2664,6 +2734,7 @@ EspeonEvosAttacks:
 	dbw 1, TAIL_WHIP
 	dbw 8, SAND_ATTACK
 	dbw 16, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 23, QUICK_ATTACK
 	dbw 30, SWIFT
 	dbw 36, PSYBEAM
@@ -2703,6 +2774,7 @@ SlowkingEvosAttacks:
 	dbw 6, GROWL
 	dbw 15, WATER_GUN
 	dbw 20, CONFUSION
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 29, DISABLE
 	dbw 34, HEADBUTT
 	dbw 43, SWAGGER
@@ -2724,6 +2796,7 @@ MisdreavusEvosAttacks:
 UnownEvosAttacks:
 	db 0 ; no more evolutions
 	dbw 1, HIDDEN_POWER
+	dbw 20, PSYCHIC_TERRAIN
 	db 0 ; no more level-up moves
 
 WobbuffetEvosAttacks:
@@ -2743,6 +2816,7 @@ GirafarigEvosAttacks:
 	dbw 7, CONFUSION
 	dbw 13, STOMP
 	dbw 20, AGILITY
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 30, BATON_PASS
 	dbw 41, PSYBEAM
 	dbw 54, CRUNCH
@@ -2821,6 +2895,7 @@ SnubbullEvosAttacks:
 	dbw 8, CHARM
 	dbw 13, BITE
 	dbw 19, LICK
+	dbw 20, MISTY_TERRAIN
 	dbw 23, PLAY_ROUGH
 	dbw 26, ROAR
 	dbw 34, RAGE
@@ -2835,6 +2910,7 @@ GranbullEvosAttacks:
 	dbw 8, CHARM
 	dbw 13, BITE
 	dbw 19, LICK
+	dbw 20, MISTY_TERRAIN
 	dbw 23, PLAY_ROUGH
 	dbw 28, ROAR
 	dbw 38, RAGE
@@ -2898,6 +2974,7 @@ SneaselEvosAttacks:
 	dbw 1, LEER
 	dbw 9, QUICK_ATTACK
 	dbw 17, SCREECH
+	dbw 20, HAIL
 	dbw 25, FAINT_ATTACK
 	dbw 33, FURY_SWIPES
 	dbw 41, AGILITY
@@ -2968,6 +3045,7 @@ SwinubEvosAttacks:
 	dbw 1, TACKLE
 	dbw 10, POWDER_SNOW
 	dbw 19, ENDURE
+	dbw 20, HAIL
 	dbw 28, TAKE_DOWN
 	dbw 37, MIST
 	dbw 46, BLIZZARD
@@ -2981,6 +3059,7 @@ PiloswineEvosAttacks:
 	dbw 1, ENDURE
 	dbw 10, POWDER_SNOW
 	dbw 19, ENDURE
+	dbw 20, HAIL
 	dbw 28, TAKE_DOWN
 	dbw 33, FURY_ATTACK
 	dbw 42, MIST
@@ -3029,6 +3108,7 @@ OctilleryEvosAttacks:
 DelibirdEvosAttacks:
 	db 0 ; no more evolutions
 	dbw 1, PRESENT
+	dbw 20, HAIL
 	db 0 ; no more level-up moves
 
 MantineEvosAttacks:
@@ -3185,6 +3265,8 @@ SmoochumEvosAttacks:
 	dbw 1, LICK
 	dbw 9, SWEET_KISS
 	dbw 13, POWDER_SNOW
+	dbw 20, HAIL
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 21, CONFUSION
 	dbw 25, SING
 	dbw 33, MEAN_LOOK
@@ -3200,6 +3282,7 @@ ElekidEvosAttacks:
 	dbw 1, LEER
 	dbw 9, THUNDERPUNCH
 	dbw 17, LIGHT_SCREEN
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 25, SWIFT
 	dbw 33, SCREECH
 	dbw 41, THUNDERBOLT
@@ -3253,6 +3336,7 @@ RaikouEvosAttacks:
 	dbw 1, BITE
 	dbw 1, LEER
 	dbw 11, THUNDERSHOCK
+	dbw 20, ELECTRIC_TERRAIN
 	dbw 21, ROAR
 	dbw 31, QUICK_ATTACK
 	dbw 41, SPARK
@@ -3339,6 +3423,7 @@ LugiaEvosAttacks:
 	db 0 ; no more evolutions
 	dbw 1, AEROBLAST
 	dbw 11, SAFEGUARD
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 22, GUST
 	dbw 33, RECOVER
 	dbw 44, HYDRO_PUMP
@@ -3371,6 +3456,8 @@ CelebiEvosAttacks:
 	dbw 1, HEAL_BELL
 	dbw 10, SAFEGUARD
 	dbw 20, ANCIENTPOWER
+	dbw 20, GRASSY_TERRAIN
+	dbw 20, PSYCHIC_TERRAIN
 	dbw 30, FUTURE_SIGHT
 	dbw 40, BATON_PASS
 	dbw 50, PERISH_SONG

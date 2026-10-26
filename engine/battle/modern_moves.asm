@@ -586,10 +586,10 @@ HandleEntryTransform::
 	ret
 
 HandleEntryMoves:
-; SUNNY DAY, RAIN DANCE, SANDSTORM, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD,
-; PSYCH UP, MEAN LOOK, SPIDER WEB and LOCK-ON work as a POKéMON comes in: at the
-; start of its first turn out, it uses each of them it knows with PP left (taking
-; their PP), before it does anything else.
+; SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT,
+; SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB and LOCK-ON work as a POKéMON
+; comes in: at the start of its first turn out, it uses each of them it knows with
+; PP left (taking their PP), before it does anything else.
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -642,6 +642,22 @@ HandleEntryMoves:
 
 .Use:
 	ld a, b
+	cpmove SANDSTORM
+	jp z, .sandstorm
+	cpmove HAIL
+	jp z, .hail
+	ld c, TERRAIN_ELECTRIC
+	cpmove ELECTRIC_TERRAIN
+	jp z, .terrain
+	inc c
+	cpmove GRASSY_TERRAIN
+	jp z, .terrain
+	inc c
+	cpmove MISTY_TERRAIN
+	jp z, .terrain
+	inc c
+	cpmove PSYCHIC_TERRAIN
+	jp z, .terrain
 	cpmove SPIKES
 	jr z, .spikes
 	cpmove MEAN_LOOK
@@ -721,12 +737,36 @@ HandleEntryMoves:
 	ret nc
 	jr .use
 
+.sandstorm
+; (not when it's up already: it would fail; nor HAIL, nor a terrain, c)
+	ld c, WEATHER_SANDSTORM
+	jr .weather
+
+.hail
+	ld c, WEATHER_HAIL
+.weather
+	ld a, [wBattleWeather]
+	cp c
+	ret z
+	jr .use
+
+.terrain
+	ld a, [wBattleTerrain]
+	cp c
+	ret z
+	jr .use
+
 EntryMoves:
 ; in the order they're used (LOCK-ON last: the next attack's aim, see
 ; BattleCommand_CheckHit, is for an attack)
 	dw SUNNY_DAY
 	dw RAIN_DANCE
 	dw SANDSTORM
+	dw HAIL
+	dw ELECTRIC_TERRAIN
+	dw GRASSY_TERRAIN
+	dw MISTY_TERRAIN
+	dw PSYCHIC_TERRAIN
 	dw FORESIGHT
 	dw FUTURE_SIGHT
 	dw SPIKES
@@ -1930,8 +1970,8 @@ CompareSpeeds::
 	ret
 
 WeatherSpeed::
-; bc: a battle struct. de: its speed, 1.5x (as one stage up) when the weather
-; raises it (see WeatherBoosts).
+; bc: a battle struct. de: its speed, 1.5x (as one stage up) when the weather or
+; the terrain raises it (see WeatherBoosts).
 	ld hl, wBattleMonSpeed - wBattleMon
 	add hl, bc
 	ld a, [hli]
@@ -1950,27 +1990,49 @@ WeatherSpeed::
 	ld e, l
 	ret
 
+; (WeatherBoosts: a terrain's entries)
+DEF BOOST_TERRAIN_F EQU 7
+DEF BOOST_TERRAIN EQU 1 << BOOST_TERRAIN_F
+	assert NUM_WEATHERS < BOOST_TERRAIN && NUM_TERRAINS < BOOST_TERRAIN
+
 WeatherRaisesSpeed::
-; Return carry if the weather raises the SPEED of battle struct bc (WeatherBoosts).
+; Return carry if the weather or the terrain raises the SPEED of battle struct bc
+; (WeatherBoosts).
 	ld a, SPEED
 	jr WeatherRaisesStat
 
+WeatherRaisesDefense::
+; The same, for the DEFENSE: in HAIL, an ICE type's.
+	ld a, DEFENSE
+	jr WeatherRaisesStat
+
+WeatherRaisesDefendingStat::
+; The same, for the stat battle struct bc defends with against the user's attack:
+; its DEFENSE against a physical one, its SPCL.DEF against a special one (see
+; WeatherSpclDef).
+	ld hl, wPlayerMoveStructType
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_move
+	ld hl, wEnemyMoveStructType
+.got_move
+	ld a, [hl]
+	cp SPECIAL
+	ld a, DEFENSE
+	jr c, WeatherRaisesStat
+	; fallthrough
+
 WeatherRaisesSpclDef::
-; Return carry if the weather raises the SPCL.DEF of battle struct bc: in a
-; sandstorm, a GROUND, ROCK or STEEL type's (see WeatherSpclDef).
+; The same, for the SPCL.DEF: in a sandstorm, a GROUND, ROCK or STEEL type's.
 	ld a, SP_DEFENSE
 	; fallthrough
 
 WeatherRaisesStat:
-; Return carry if the weather raises stat a of battle struct bc, as one stage up
-; (WeatherBoosts).
+; Return carry if the weather or the terrain raises stat a of battle struct bc, as
+; one stage up (WeatherBoosts; one stage, even when both do).
 	push af
-	ld a, [wBattleWeather]
-	and a
-	jr z, .no
 	ld hl, wBattleMonType1 - wBattleMon
 	add hl, bc
-	ld c, a
 	ld a, [hli]
 	ld d, a
 	ld e, [hl]
@@ -1981,6 +2043,14 @@ WeatherRaisesStat:
 	ld a, [hli]
 	cp -1
 	ret z ; (nc)
+; (a weather, or a terrain: BOOST_TERRAIN | it)
+	ld c, a
+	ld a, [wBattleWeather]
+	bit BOOST_TERRAIN_F, c
+	jr z, .got_field
+	res BOOST_TERRAIN_F, c
+	ld a, [wBattleTerrain]
+.got_field
 	cp c
 	jr nz, .next
 	ld a, [hli]
@@ -2001,13 +2071,9 @@ WeatherRaisesStat:
 	inc hl
 	jr .loop
 
-.no
-	pop af
-	and a
-	ret
-
 WeatherBoosts:
-; the weather, a type it favors, and the stat it raises for it (as one stage up)
+; the weather or the terrain, a type it favors, and the stat it raises for it (as
+; one stage up)
 	db WEATHER_SANDSTORM, GROUND, SP_DEFENSE
 	db WEATHER_SANDSTORM, ROCK,   SP_DEFENSE
 	db WEATHER_SANDSTORM, STEEL,  SP_DEFENSE
@@ -2016,4 +2082,426 @@ WeatherBoosts:
 	db WEATHER_SANDSTORM, STEEL,  SPEED
 	db WEATHER_RAIN,      WATER,  SPEED
 	db WEATHER_SUN,       GRASS,  SPEED
+	db WEATHER_HAIL,      ICE,    DEFENSE
+	db WEATHER_HAIL,      ICE,    SPEED
+	db BOOST_TERRAIN | TERRAIN_ELECTRIC, ELECTRIC, SPEED
 	db -1
+
+StartFieldMove::
+; (the startfield command) HAIL, or a terrain (which one: the move's type, see
+; TypeTerrain), for five turns. A terrain takes another's place, and leaves the
+; weather be. It fails when that one's up already.
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	cp EFFECT_HAIL
+	jr nz, .terrain
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	jr z, .failed
+	ld a, WEATHER_HAIL
+	ld [wBattleWeather], a
+	ld a, 5
+	ld [wWeatherCount], a
+	ld hl, HailStartedText
+	jr .started
+
+.terrain
+	ld a, BATTLE_VARS_MOVE_TYPE
+	call GetBattleVar
+	and TYPE_MASK
+	call TypeTerrain
+	ld hl, wBattleTerrain
+	cp [hl]
+	jr z, .failed
+	ld [hl], a
+	ld a, 5
+	ld [wTerrainCount], a
+	ld hl, TerrainStartedTexts
+	call TerrainText
+.started
+	push hl
+	farcall AnimateCurrentMove
+	pop hl
+	jp StdBattleTextbox
+
+.failed
+	farcall AnimateFailedMove
+	ld hl, ButItFailedText
+	jp StdBattleTextbox
+
+TerrainText:
+; hl: the text for wBattleTerrain in table hl
+	ld a, [wBattleTerrain]
+	dec a
+	ld e, a
+	ld d, 0
+	add hl, de
+	add hl, de
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ret
+
+TerrainStartedTexts:
+; entries correspond to TERRAIN_* constants
+	table_width 2
+	dw ElectricTerrainText
+	dw GrassyTerrainText
+	dw MistyTerrainText
+	dw PsychicTerrainText
+	assert_table_length NUM_TERRAINS
+
+TerrainEndedTexts:
+	table_width 2
+	dw BattleText_ElectricTerrainEnded
+	dw BattleText_GrassyTerrainEnded
+	dw BattleText_MistyTerrainEnded
+	dw BattleText_PsychicTerrainEnded
+	assert_table_length NUM_TERRAINS
+
+AITypeTerrain::
+; (AI_Redundant) c: the terrain a terrain move of type b makes
+	ld a, b
+	; fallthrough
+
+TypeTerrain::
+; a = c = the terrain a terrain move of type a makes (TERRAIN_NONE: none)
+	ld c, TERRAIN_ELECTRIC
+	cp ELECTRIC
+	jr z, .got_terrain
+	inc c
+	cp GRASS
+	jr z, .got_terrain
+	inc c
+	cp FAIRY
+	jr z, .got_terrain
+	inc c
+	cp PSYCHIC_TYPE
+	jr z, .got_terrain
+	ld c, TERRAIN_NONE
+.got_terrain
+	ld a, c
+	ret
+
+TerrainTypes:
+; the type each terrain powers up (MISTY TERRAIN: none, see DoTerrainModifiers)
+	table_width 1
+	db ELECTRIC
+	db GRASS
+	db -1
+	db PSYCHIC_TYPE
+	assert_table_length NUM_TERRAINS
+
+TerrainType::
+; c: the type wBattleTerrain powers up (-1: none)
+	ld a, [wBattleTerrain]
+	dec a
+	ld c, a
+	ld b, 0
+	ld hl, TerrainTypes
+	add hl, bc
+	ld c, [hl]
+	ret
+
+WeatherDamage::
+; (HandleWeather) A SANDSTORM hurts each POKéMON but a GROUND, ROCK or STEEL type
+; (1/8 of its max HP), HAIL each but an ICE type (1/16); not one underground (DIG).
+	ld a, [wBattleWeather]
+	cp WEATHER_SANDSTORM
+	jr z, .go
+	cp WEATHER_HAIL
+	ret nz
+.go
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .enemy_first
+	call SetPlayerTurn
+	call .Damage
+	call SetEnemyTurn
+	jr .Damage
+
+.enemy_first
+	call SetEnemyTurn
+	call .Damage
+	call SetPlayerTurn
+	; fallthrough
+
+.Damage:
+	ld a, BATTLE_VARS_SUBSTATUS3
+	call GetBattleVar
+	bit SUBSTATUS_UNDERGROUND, a
+	ret nz
+	ld hl, wBattleMonType1
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_types
+	ld hl, wEnemyMonType1
+.got_types
+	ld de, .SandstormSpares
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	jr nz, .spares
+	ld de, .HailSpares
+.spares
+	ld a, [de]
+	inc de
+	cp -1
+	jr z, .hurt
+	cp [hl]
+	ret z
+	inc hl
+	cp [hl]
+	dec hl
+	ret z
+	jr .spares
+
+.hurt
+	call .SwitchTurn
+	xor a
+	ld [wBattleAfterAnim], a
+	ld de, ANIM_IN_SANDSTORM
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	jr nz, .got_anim
+	ld de, ANIM_IN_HAIL
+.got_anim
+	farcall Call_PlayBattleAnim
+	call .SwitchTurn
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	jr z, .hail
+	farcall GetEighthMaxHP
+	farcall SubtractHPFromUser
+	ld hl, SandstormHitsText
+	jp StdBattleTextbox
+
+.hail
+	farcall GetSixteenthMaxHP
+	farcall SubtractHPFromUser
+	ld hl, HailHitsText
+	jp StdBattleTextbox
+
+.SwitchTurn:
+	ldh a, [hBattleTurn]
+	xor 1
+	ldh [hBattleTurn], a
+	ret
+
+.SandstormSpares:
+	db ROCK, GROUND, STEEL, -1
+.HailSpares:
+	db ICE, -1
+
+HandleTerrain::
+; (HandleWeather, after the weather) GRASSY TERRAIN heals each POKéMON on the
+; ground 1/16 of its max HP; then the terrain's turns run down.
+	ld a, [wBattleTerrain]
+	and a
+	ret z
+	cp TERRAIN_GRASSY
+	jr nz, .count
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .enemy_first
+	call SetPlayerTurn
+	call .Heal
+	call SetEnemyTurn
+	call .Heal
+	jr .count
+
+.enemy_first
+	call SetEnemyTurn
+	call .Heal
+	call SetPlayerTurn
+	call .Heal
+.count
+	ld hl, wTerrainCount
+	dec [hl]
+	ret nz
+	ld hl, TerrainEndedTexts
+	call TerrainText
+	xor a ; TERRAIN_NONE
+	ld [wBattleTerrain], a
+	jp StdBattleTextbox
+
+.Heal:
+	call IsUserGrounded
+	ret nz
+	ld hl, wBattleMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wEnemyMonHP
+.got_hp
+	ld a, [hli]
+	ld b, a
+	ld a, [hli]
+	ld c, a
+	or b
+	ret z ; (fainted)
+	ld a, [hli]
+	cp b
+	jr nz, .heal
+	ld a, [hl]
+	cp c
+	ret z ; (full)
+.heal
+	farcall GetSixteenthMaxHP
+	ldh a, [hBattleTurn]
+	xor 1
+	ldh [hBattleTurn], a
+	farcall RestoreHP
+	ld hl, GrassyTerrainHealText
+	jp StdBattleTextbox
+
+IsTargetGrounded::
+; Return z if the target is on the ground (see IsGrounded).
+	ldh a, [hBattleTurn]
+	xor 1
+	jr IsGrounded
+
+IsUserGrounded::
+; Return z if the user is on the ground (see IsGrounded).
+	ldh a, [hBattleTurn]
+	; fallthrough
+
+IsGrounded:
+; Return z if the POKéMON out on side a (0: the player's) is on the ground, where
+; the terrains work: not a FLYING type, and not up in the air (FLY).
+	and a
+	ld hl, wBattleMonType1
+	ld a, [wPlayerSubStatus3]
+	jr z, .got_side
+	ld hl, wEnemyMonType1
+	ld a, [wEnemySubStatus3]
+.got_side
+	bit SUBSTATUS_FLYING, a
+	ret nz
+	ld a, [hli]
+	cp FLYING
+	jr z, .in_the_air
+	ld a, [hl]
+	cp FLYING
+	jr z, .in_the_air
+	xor a
+	ret
+
+.in_the_air
+	or 1
+	ret
+
+TerrainProtectsTarget::
+; (BattleCommand_CheckSafeguard) Return nz, with its text in hl, if the terrain
+; keeps the target from the user's status move (see TerrainProtectsSide).
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	ld c, a
+	ldh a, [hBattleTurn]
+	xor 1
+	ld b, a
+	; fallthrough
+
+TerrainProtectsSide::
+; Return nz, with its text in hl, if the terrain keeps the POKéMON out on side b
+; (0: the player's), on the ground, from the status a move of effect c brings:
+; MISTY TERRAIN from any (sleep, poison, paralysis, confusion), ELECTRIC TERRAIN
+; from sleep. bc are kept.
+	ld a, [wBattleTerrain]
+	cp TERRAIN_MISTY
+	ld hl, MistyTerrainProtectsText
+	jr z, .grounded
+	cp TERRAIN_ELECTRIC
+	jr nz, .no
+	ld a, c
+	cp EFFECT_SLEEP
+	jr nz, .no
+	ld hl, ElectricTerrainProtectsText
+.grounded
+	push hl
+	ld a, b
+	call IsGrounded
+	pop hl
+	jr nz, .no
+	or 1
+	ret
+
+.no
+	xor a
+	ret
+
+MistyTerrainProtects::
+; (SafeCheckSafeguard) Return nz if MISTY TERRAIN keeps the target, on the ground,
+; from a status (an attack's added one, or confusion).
+	ld a, [wBattleTerrain]
+	cp TERRAIN_MISTY
+	jr nz, .no
+	call IsTargetGrounded
+	jr nz, .no
+	or 1
+	ret
+
+.no
+	xor a
+	ret
+
+RestFailsForTerrain::
+; (BattleCommand_Heal) Return carry if REST fails ("But it failed!") as ELECTRIC
+; or MISTY TERRAIN keeps the user, on the ground, awake; else z and nc.
+	ld a, [wBattleTerrain]
+	cp TERRAIN_MISTY
+	jr z, .terrain
+	cp TERRAIN_ELECTRIC
+	jr nz, .no
+.terrain
+	call IsUserGrounded
+	jr nz, .no
+	farcall AnimateFailedMove
+	ld hl, ButItFailedText
+	call StdBattleTextbox
+	scf
+	ret
+
+.no
+	xor a
+	ret
+
+PsychicTerrainBlocks::
+; (BattleCommand_CheckHit) Return nz, with its text in hl, if PSYCHIC TERRAIN
+; keeps the user's attack off the target, on the ground: an attack that goes first
+; (QUICK ATTACK, MACH PUNCH, EXTREMESPEED).
+	ld a, [wBattleTerrain]
+	cp TERRAIN_PSYCHIC
+	jr nz, .no
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	cp EFFECT_PRIORITY_HIT
+	jr nz, .no
+	call IsTargetGrounded
+	jr nz, .no
+	ld hl, PsychicTerrainProtectsText
+	or 1
+	ret
+
+.no
+	xor a
+	ret
+
+WeatherSureHit::
+; (BattleCommand_CheckHit) Return z if the weather makes the user's move hit for
+; sure: THUNDER in the rain, BLIZZARD in HAIL.
+	ld a, BATTLE_VARS_MOVE_EFFECT
+	call GetBattleVar
+	cp EFFECT_THUNDER
+	jr nz, .blizzard
+	ld a, [wBattleWeather]
+	cp WEATHER_RAIN
+	ret
+
+.blizzard
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVar
+	cpmove BLIZZARD
+	ret nz
+	ld a, [wBattleWeather]
+	cp WEATHER_HAIL
+	ret

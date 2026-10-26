@@ -167,8 +167,8 @@ BattleInfo_Stats:
 	db "EVASION@"
 
 BattleInfo_Field:
-; the weather, then what's on each side (BattleInfoFieldEffects), with the turns
-; each has left; as many as there's room for
+; the weather and the terrain, then what's on each side (BattleInfoFieldEffects),
+; with the turns each has left; as many as there's room for
 	hlcoord 1, 1
 	ld de, .TitleText
 	call PlaceString
@@ -180,27 +180,19 @@ BattleInfo_Field:
 	call PlaceString
 	hlcoord 1, 3
 	ld a, [wBattleWeather]
-	and a
-	jr z, .no_weather
-	dec a
-	push hl
-	ld e, a
-	ld d, 0
-	ld hl, .WeatherNames
-	add hl, de
-	add hl, de
-	ld a, [hli]
-	ld d, [hl]
-	ld e, a
-	pop hl
-	push hl
-	call PlaceString
-	pop hl
+	ld bc, .WeatherNames
 	ld de, wWeatherCount
-	call .Turns
-	ld de, SCREEN_WIDTH
-	add hl, de
-; (whose stat it raises: see WeatherBoosts)
+	call .Field
+	ld a, [wBattleTerrain]
+	ld bc, .TerrainNames
+	ld de, wTerrainCount
+	call .Field
+	ld a, [wBattleWeather]
+	ld b, a
+	ld a, [wBattleTerrain]
+	or b
+	jr z, .no_field
+; (whose stat they raise: see WeatherBoosts)
 	ld bc, wBattleMon
 	ld de, .YoursBoostText
 	call .WeatherBoost
@@ -209,7 +201,7 @@ BattleInfo_Field:
 	call .WeatherBoost
 	ld de, SCREEN_WIDTH
 	add hl, de
-.no_weather
+.no_field
 	ld de, .YourSideText
 	ld bc, BattleInfoFieldEffects.Player
 	call .Side
@@ -336,9 +328,37 @@ BattleInfo_Field:
 	add hl, de
 	ret
 
+.Field:
+; Weather or terrain a (0: none), its name from table bc, and the turns it has
+; left (de), at row hl. hl: the row after (the same, for none).
+	and a
+	ret z
+	dec a
+	push hl
+	push de
+	ld l, a
+	ld h, 0
+	add hl, hl
+	add hl, bc
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	pop bc
+	pop hl
+	push hl
+	push bc
+	call PlaceString
+	pop de
+	pop hl
+	call .Turns
+	ld de, SCREEN_WIDTH
+	add hl, de
+	ret
+
 .WeatherBoost:
-; Each stat the weather raises for battle struct bc, said (de: the texts for SPEED,
-; then for SPCL.DEF) a row each from row hl. hl: the row after.
+; Each stat the weather or the terrain raises for battle struct bc, said (de: the
+; texts for SPEED, DEFENSE, then SPCL.DEF) a row each from row hl. hl: the row
+; after.
 	push bc
 	push de
 	push hl
@@ -347,18 +367,31 @@ BattleInfo_Field:
 	pop de
 	pop bc
 	call c, .Say
-.skip
-	ld a, [de]
-	inc de
-	cp "@"
-	jr nz, .skip
+	call .Next
+	push bc
+	push de
+	push hl
+	farcall WeatherRaisesDefense
+	pop hl
+	pop de
+	pop bc
+	call c, .Say
+	call .Next
 	push de
 	push hl
 	farcall WeatherRaisesSpclDef
 	pop hl
 	pop de
 	ret nc
-	; fallthrough
+	jr .Say
+
+.Next:
+; de: the text after de's
+	ld a, [de]
+	inc de
+	cp '@'
+	jr nz, .Next
+	ret
 
 .Say:
 	push bc
@@ -405,18 +438,23 @@ BattleInfo_Field:
 	db "none@"
 .YoursBoostText:
 	db "YOURS: SPEED +1@"
+	db "YOURS: DEFENSE +1@"
 	db "YOURS: SP.DEF +1@"
 .FoesBoostText:
 	db "FOE'S: SPEED +1@"
+	db "FOE'S: DEFENSE +1@"
 	db "FOE'S: SP.DEF +1@"
 .FooterText:
 	db "START:close ←STATS@"
 
 .WeatherNames:
-; WEATHER_RAIN, WEATHER_SUN, WEATHER_SANDSTORM
+; entries correspond to WEATHER_* constants
+	table_width 2
 	dw .RainText
 	dw .SunText
 	dw .SandstormText
+	dw .HailText
+	assert_table_length NUM_WEATHERS
 
 .RainText:
 	db "RAIN@"
@@ -424,6 +462,26 @@ BattleInfo_Field:
 	db "SUN@"
 .SandstormText:
 	db "SANDSTORM@"
+.HailText:
+	db "HAIL@"
+
+.TerrainNames:
+; entries correspond to TERRAIN_* constants
+	table_width 2
+	dw .ElectricTerrainText
+	dw .GrassyTerrainText
+	dw .MistyTerrainText
+	dw .PsychicTerrainText
+	assert_table_length NUM_TERRAINS
+
+.ElectricTerrainText:
+	db "ELECTRIC TERRAIN@"
+.GrassyTerrainText:
+	db "GRASSY TERRAIN@"
+.MistyTerrainText:
+	db "MISTY TERRAIN@"
+.PsychicTerrainText:
+	db "PSYCHIC TERRAIN@"
 
 MACRO battle_info_effect
 ; where it's kept, its bit (0: any but 0), its kind, its count, its name

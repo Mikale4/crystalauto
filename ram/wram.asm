@@ -546,18 +546,16 @@ wPlayerReflectCount:: db
 wEnemySafeguardCount:: db
 wEnemyLightScreenCount:: db
 wEnemyReflectCount:: db
-	ds 1
+wTerrainCount:: db ; # turns remaining
 
-	ds 1
+wBattleTerrain:: db ; TERRAIN_* (see StartFieldMove)
 
 wBattleWeather::
 ; 00 normal
 ; 01 rain
 ; 02 sun
 ; 03 sandstorm
-; 04 rain stopped
-; 05 sunliight faded
-; 06 sandstorm subsided
+; 04 hail
 	db
 
 wWeatherCount::

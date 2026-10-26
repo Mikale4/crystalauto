@@ -254,4 +254,9 @@ MoveNames::
 	li "DRAININGKISS"
 	li "PLAY ROUGH"
 	li "MOONBLAST"
+	li "HAIL"
+	li "ELECTERRAIN"
+	li "GRASSTERRAIN"
+	li "MISTYTERRAIN"
+	li "PSYCHTERRAIN"
 	assert_list_length NUM_ATTACKS

@@ -50,6 +50,11 @@ GetPlayerBackpicCoords:
 	ret
 
 DoWeatherModifiers:
+; (then the terrain's: DoTerrainModifiers)
+	call .Weather
+	jp DoTerrainModifiers
+
+.Weather:
 	ld de, WeatherTypeModifiers
 	ld a, [wBattleWeather]
 	ld b, a
@@ -85,7 +90,7 @@ DoWeatherModifiers:
 	ld a, [de]
 	inc de
 	cp -1
-	jr z, .done
+	ret z
 
 	cp b
 	jr nz, .NextWeatherMove
@@ -100,6 +105,13 @@ DoWeatherModifiers:
 	jr .CheckWeatherMove
 
 .ApplyModifier:
+	inc de
+	ld a, [de]
+	; fallthrough
+
+ApplyDamageModifier:
+; wCurDamage = wCurDamage * a / 10 (at least 1)
+	ldh [hMultiplier], a
 	xor a
 	ldh [hMultiplicand + 0], a
 	ld hl, wCurDamage
@@ -107,10 +119,6 @@ DoWeatherModifiers:
 	ldh [hMultiplicand + 1], a
 	ld a, [hl]
 	ldh [hMultiplicand + 2], a
-
-	inc de
-	ld a, [de]
-	ldh [hMultiplier], a
 
 	call Multiply
 
@@ -143,6 +151,44 @@ DoWeatherModifiers:
 	ret
 
 INCLUDE "data/battle/weather_modifiers.asm"
+
+DoTerrainModifiers:
+; As in the latest games, but 1.5x: ELECTRIC, GRASSY and PSYCHIC TERRAIN power up
+; their type's moves (TerrainType) from a POKéMON on the ground. MISTY TERRAIN
+; halves DRAGON moves against a POKéMON on the ground, and GRASSY TERRAIN halves
+; EARTHQUAKE and MAGNITUDE.
+	ld a, [wBattleTerrain]
+	and a
+	ret z
+	cp TERRAIN_MISTY
+	jr z, .misty
+	cp TERRAIN_GRASSY
+	jr nz, .power_up
+	ld a, BATTLE_VARS_MOVE_ANIM
+	call GetBattleVar
+	cpmove EARTHQUAKE
+	jr z, .halve
+	cpmove MAGNITUDE
+	jr z, .halve
+.power_up
+	farcall TerrainType
+	ld a, [wCurType]
+	cp c
+	ret nz
+	farcall IsUserGrounded
+	ret nz
+	ld a, MORE_EFFECTIVE
+	jp ApplyDamageModifier
+
+.misty
+	ld a, [wCurType]
+	cp DRAGON
+	ret nz
+.halve
+	farcall IsTargetGrounded
+	ret nz
+	ld a, NOT_VERY_EFFECTIVE
+	jp ApplyDamageModifier
 
 DoBadgeTypeBoosts:
 	ld a, [wLinkMode]

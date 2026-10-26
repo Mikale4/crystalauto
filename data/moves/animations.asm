@@ -2,6 +2,7 @@
 ; negative indexes first, so that BattleAnimations + 2 * index finds them too
 BattleAnimationsSpecial:
 	table_width 2
+	dw BattleAnim_InHail
 	dw BattleAnim_RockThrow ; ANIM_DUDE_STONE
 	dw BattleAnim_ThrowPokeBall
 	dw BattleAnim_SendOutMon
@@ -284,6 +285,11 @@ BattleAnimations::
 	dw BattleAnim_SweetKiss ; DRAINING_KISS
 	dw BattleAnim_DizzyPunch ; PLAY_ROUGH
 	dw BattleAnim_Moonblast
+	dw BattleAnim_Hail
+	dw BattleAnim_ElectricTerrain
+	dw BattleAnim_GrassyTerrain
+	dw BattleAnim_MistyTerrain
+	dw BattleAnim_PsychicTerrain
 	assert_table_length NUM_ATTACKS + 1
 	dw BattleAnim_SweetScent2
 	assert_table_length NUM_MOVE_ANIMS
@@ -580,6 +586,20 @@ BattleAnim_InSandstorm:
 	anim_obj BATTLE_ANIM_OBJ_SANDSTORM, 56, 0, $2
 .loop
 	anim_sound 0, 1, SFX_MENU
+	anim_wait 8
+	anim_loop 6, .loop
+	anim_wait 8
+	anim_ret
+
+BattleAnim_InHail:
+	anim_1gfx BATTLE_ANIM_GFX_ICE
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 88, 0, $0
+	anim_wait 8
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 72, 0, $1
+	anim_wait 8
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 56, 0, $2
+.loop
+	anim_sound 0, 1, SFX_SHINE
 	anim_wait 8
 	anim_loop 6, .loop
 	anim_wait 8
@@ -4338,6 +4358,78 @@ BattleAnim_Moonblast:
 	anim_wait 4
 	anim_obj BATTLE_ANIM_OBJ_SWIFT, 64, 76, $4
 	anim_wait 64
+	anim_ret
+
+BattleAnim_Hail:
+; as SANDSTORM, in ice (no tint: the weather and the terrains don't color the screen)
+	anim_1gfx BATTLE_ANIM_GFX_ICE
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 88, 0, $0
+	anim_wait 8
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 72, 0, $1
+	anim_wait 8
+	anim_obj BATTLE_ANIM_OBJ_HAIL, 56, 0, $2
+.loop
+	anim_sound 0, 1, SFX_SHINE
+	anim_wait 8
+	anim_loop 16, .loop
+	anim_wait 8
+	anim_ret
+
+BattleAnim_ElectricTerrain:
+; sparks around both POKéMON
+	anim_1gfx BATTLE_ANIM_GFX_LIGHTNING
+	anim_sound 0, 1, SFX_THUNDERSHOCK
+	anim_obj BATTLE_ANIM_OBJ_SPARKS_CIRCLE, 48, 96, $0
+	anim_obj BATTLE_ANIM_OBJ_SPARKS_CIRCLE, 136, 56, $0
+	anim_wait 32
+	anim_sound 0, 0, SFX_THUNDERSHOCK
+	anim_obj BATTLE_ANIM_OBJ_SPARKS_CIRCLE, 48, 96, $0
+	anim_obj BATTLE_ANIM_OBJ_SPARKS_CIRCLE, 136, 56, $0
+	anim_wait 48
+	anim_ret
+
+BattleAnim_GrassyTerrain:
+; leaves around both POKéMON
+	anim_1gfx BATTLE_ANIM_GFX_PLANT
+	anim_sound 0, 0, SFX_VINE_WHIP
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 48, 80, $28
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 48, 80, $9c
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 48, 80, $e8
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 136, 40, $28
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 136, 40, $9c
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 136, 40, $e8
+	anim_wait 6
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 48, 80, $5c
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 48, 80, $d0
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 136, 40, $5c
+	anim_obj BATTLE_ANIM_OBJ_RAZOR_LEAF, 136, 40, $d0
+	anim_sound 0, 1, SFX_VINE_WHIP
+	anim_wait 80
+	anim_ret
+
+BattleAnim_MistyTerrain:
+; mist over both POKéMON
+	anim_1gfx BATTLE_ANIM_GFX_HAZE
+	anim_sound 0, 0, SFX_SURF
+.loop
+	anim_obj BATTLE_ANIM_OBJ_MIST, 48, 56, $0
+	anim_obj BATTLE_ANIM_OBJ_MIST, 132, 16, $0
+	anim_wait 12
+	anim_loop 5, .loop
+	anim_wait 64
+	anim_ret
+
+BattleAnim_PsychicTerrain:
+; the battlefield wavers
+	anim_1gfx BATTLE_ANIM_GFX_PSYCHIC
+	anim_bgeffect BATTLE_BG_EFFECT_PSYCHIC, $0, $0, $0
+.loop
+	anim_sound 6, 2, SFX_PSYCHIC
+	anim_wait 8
+	anim_loop 8, .loop
+	anim_wait 32
+	anim_incbgeffect BATTLE_BG_EFFECT_PSYCHIC
+	anim_wait 4
 	anim_ret
 
 BattleAnim_HiddenPower:

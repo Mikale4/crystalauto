@@ -158,4 +158,6 @@
 	const EFFECT_FLY
 	const EFFECT_DEFENSE_CURL
 	const EFFECT_LOW_KICK
+	const EFFECT_HAIL
+	const EFFECT_TERRAIN ; (which one: the move's type, see StartFieldMove)
 DEF NUM_MOVE_EFFECTS EQU const_value

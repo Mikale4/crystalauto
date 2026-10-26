@@ -1881,6 +1881,15 @@ RainDance:
 	startrain
 	endmove
 
+Hail:
+Terrain:
+; (see StartFieldMove)
+	checkobedience
+	usedmovetext
+	doturn
+	startfield
+	endmove
+
 SunnyDay:
 	checkobedience
 	usedmovetext

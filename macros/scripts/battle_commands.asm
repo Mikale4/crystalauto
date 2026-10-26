@@ -185,6 +185,7 @@ ENDM
 	command defenseupfirst          ; b2
 	command movedlast               ; b3
 	command secondstatup            ; b4
+	command startfield              ; b5
 DEF NUM_EFFECT_COMMANDS EQU const_value - 1
 
 	const_def -1, -1

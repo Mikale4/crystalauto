@@ -1344,17 +1344,21 @@ BattleCommand_CheckHit:
 	ret
 
 .Protect:
-; Return nz if the opponent is protected.
+; Return nz if the opponent is protected (or PSYCHIC TERRAIN keeps the attack off
+; it: see PsychicTerrainBlocks).
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVar
 	bit SUBSTATUS_PROTECT, a
-	ret z
-
-	ld c, 40
-	call DelayFrames
-
 ; 'protecting itself!'
 	ld hl, ProtectingItselfText
+	jr nz, .protected
+	farcall PsychicTerrainBlocks
+	ret z
+.protected
+	push hl
+	ld c, 40
+	call DelayFrames
+	pop hl
 	call StdBattleTextbox
 
 	ld c, 40
@@ -1447,14 +1451,9 @@ BattleCommand_CheckHit:
 	ret
 
 .ThunderRain:
-; Return z if the current move always hits in rain, and it is raining.
-	ld a, BATTLE_VARS_MOVE_EFFECT
-	call GetBattleVar
-	cp EFFECT_THUNDER
-	ret nz
-
-	ld a, [wBattleWeather]
-	cp WEATHER_RAIN
+; Return z if the current move always hits in this weather (THUNDER in the rain,
+; BLIZZARD in HAIL: see WeatherSureHit).
+	farcall WeatherSureHit
 	ret
 
 .XAccuracy:
@@ -2251,6 +2250,7 @@ PlayerAttackDamage:
 .physicalcrit
 	ld hl, wBattleMonAttack
 	call ModernCriticalStats
+	call EnemyWeatherSpclDef
 	jr .thickclub
 
 .special
@@ -2337,8 +2337,9 @@ TruncateHL_BC:
 	ret
 
 EnemyWeatherSpclDef:
-; (PlayerAttackDamage) bc: the foe's SPCL.DEF, 1.5x when the weather raises it (see
-; WeatherRaisesSpclDef; even after a critical hit, as it isn't a stat change).
+; (PlayerAttackDamage) bc: the foe's DEFENSE or SPCL.DEF, 1.5x when the weather
+; raises it (see WeatherRaisesDefendingStat; even after a critical hit, as it isn't
+; a stat change).
 	push de
 	ld de, wEnemyMon
 	jr WeatherSpclDef
@@ -2352,7 +2353,7 @@ WeatherSpclDef:
 	push bc
 	ld b, d
 	ld c, e
-	farcall WeatherRaisesSpclDef
+	farcall WeatherRaisesDefendingStat
 	pop bc
 	jr nc, .done
 	ld h, b
@@ -2540,6 +2541,7 @@ EnemyAttackDamage:
 .physicalcrit
 	ld hl, wEnemyMonAttack
 	call ModernCriticalStats
+	call PlayerWeatherSpclDef
 	jr .thickclub
 
 .special
@@ -5801,6 +5803,10 @@ BattleCommand_MovedLast:
 	farcall MovedLastPower
 	ret
 
+BattleCommand_StartField:
+	farcall StartFieldMove
+	ret
+
 BattleCommand_DefenseUpFirst:
 ; SKULL BASH: the user's DEFENSE goes up before it attacks, and the attack goes on
 ; even when it can't go any higher.
@@ -5942,6 +5948,10 @@ BattleCommand_Heal:
 	ld a, b
 	cpmove REST
 	jr nz, .not_rest
+	push hl
+	farcall RestFailsForTerrain ; (z, if it doesn't)
+	pop hl
+	ret c
 
 	push hl
 	push de
@@ -6258,6 +6268,7 @@ INCLUDE "engine/battle/move_effects/frustration.asm"
 INCLUDE "engine/battle/move_effects/safeguard.asm"
 
 SafeCheckSafeguard:
+; (and MISTY TERRAIN: see MistyTerrainProtects)
 	push hl
 	ld hl, wEnemyScreens
 	ldh a, [hBattleTurn]
@@ -6267,10 +6278,14 @@ SafeCheckSafeguard:
 
 .got_turn
 	bit SCREENS_SAFEGUARD, [hl]
+	jr nz, .done
+	farcall MistyTerrainProtects
+.done
 	pop hl
 	ret
 
 BattleCommand_CheckSafeguard:
+; (and the terrains: see TerrainProtectsTarget)
 	ld hl, wEnemyScreens
 	ldh a, [hBattleTurn]
 	and a
@@ -6278,11 +6293,16 @@ BattleCommand_CheckSafeguard:
 	ld hl, wPlayerScreens
 .got_turn
 	bit SCREENS_SAFEGUARD, [hl]
+	ld hl, SafeguardProtectText
+	jr nz, .protected
+	farcall TerrainProtectsTarget
 	ret z
+.protected
 	ld a, 1
 	ld [wAttackMissed], a
+	push hl
 	call BattleCommand_MoveDelay
-	ld hl, SafeguardProtectText
+	pop hl
 	call StdBattleTextbox
 	jp EndMoveEffect
 

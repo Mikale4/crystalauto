@@ -1695,6 +1695,12 @@ HandleScreens:
 	jp StdBattleTextbox
 
 HandleWeather:
+; the weather, then the terrain (HandleTerrain)
+	call .Weather
+	farcall HandleTerrain
+	ret
+
+.Weather:
 	ld a, [wBattleWeather]
 	cp WEATHER_NONE
 	ret z
@@ -1706,64 +1712,9 @@ HandleWeather:
 	ld hl, .WeatherMessages
 	call .PrintWeatherMessage
 
-	ld a, [wBattleWeather]
-	cp WEATHER_SANDSTORM
-	ret nz
-
-	ldh a, [hSerialConnectionStatus]
-	cp USING_EXTERNAL_CLOCK
-	jr z, .enemy_first
-
-; player first
-	call SetPlayerTurn
-	call .SandstormDamage
-	call SetEnemyTurn
-	jr .SandstormDamage
-
-.enemy_first
-	call SetEnemyTurn
-	call .SandstormDamage
-	call SetPlayerTurn
-
-.SandstormDamage:
-	ld a, BATTLE_VARS_SUBSTATUS3
-	call GetBattleVar
-	bit SUBSTATUS_UNDERGROUND, a
-	ret nz
-
-	ld hl, wBattleMonType1
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .ok
-	ld hl, wEnemyMonType1
-.ok
-	ld a, [hli]
-	cp ROCK
-	ret z
-	cp GROUND
-	ret z
-	cp STEEL
-	ret z
-
-	ld a, [hl]
-	cp ROCK
-	ret z
-	cp GROUND
-	ret z
-	cp STEEL
-	ret z
-
-	call SwitchTurnCore
-	xor a
-	ld [wBattleAfterAnim], a
-	ld de, ANIM_IN_SANDSTORM
-	call Call_PlayBattleAnim
-	call SwitchTurnCore
-	call GetEighthMaxHP
-	call SubtractHPFromUser
-
-	ld hl, SandstormHitsText
-	jp StdBattleTextbox
+; the SANDSTORM's and HAIL's damage
+	farcall WeatherDamage
+	ret
 
 .ended
 	ld hl, .WeatherEndedMessages
@@ -1790,6 +1741,7 @@ HandleWeather:
 	dw BattleText_RainContinuesToFall
 	dw BattleText_TheSunlightIsStrong
 	dw BattleText_TheSandstormRages
+	dw BattleText_HailContinuesToFall
 	assert_table_length NUM_WEATHERS
 
 .WeatherEndedMessages:
@@ -1798,6 +1750,7 @@ HandleWeather:
 	dw BattleText_TheRainStopped
 	dw BattleText_TheSunlightFaded
 	dw BattleText_TheSandstormSubsided
+	dw BattleText_TheHailStopped
 	assert_table_length NUM_WEATHERS
 
 SubtractHPFromTarget:

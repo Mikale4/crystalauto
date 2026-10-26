@@ -2136,8 +2136,9 @@ AutoBattle_RateSupportMove:
 	ret
 
 .CanAffectFoe:
-; Return carry if the foe has no status, substitute or SAFEGUARD, and the move's
-; type can affect it.
+; Return carry if the foe has no status, substitute or SAFEGUARD (nor a terrain
+; that keeps the status off it: see TerrainProtectsSide), and the move's type can
+; affect it.
 	ld a, [wEnemyMonStatus]
 	and a
 	ret nz ; (nc)
@@ -2146,6 +2147,11 @@ AutoBattle_RateSupportMove:
 	jr nz, .cant
 	ld a, [wEnemyScreens]
 	bit SCREENS_SAFEGUARD, a
+	jr nz, .cant
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld c, a
+	ld b, 1 ; (the foe's side)
+	farcall TerrainProtectsSide
 	jr nz, .cant
 	callfar BattleCheckTypeMatchup
 	ld a, [wTypeMatchup]

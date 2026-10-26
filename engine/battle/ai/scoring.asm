@@ -54,9 +54,19 @@ AI_Basic:
 	and a
 	jr nz, .discourage
 
-; Dismiss status moves if the player is Safeguarded.
+; Dismiss status moves if the player is Safeguarded (or the terrain keeps the
+; status off it: see TerrainProtectsSide).
 	ld a, [wPlayerScreens]
 	bit SCREENS_SAFEGUARD, a
+	jr nz, .discourage
+	push hl
+	push de
+	push bc
+	ld b, 0 ; (the player's side)
+	farcall TerrainProtectsSide
+	pop bc
+	pop de
+	pop hl
 	jr z, .checkmove
 
 .discourage
