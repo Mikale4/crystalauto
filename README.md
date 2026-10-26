@@ -910,12 +910,15 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 08c8abbcc333942cc464201e31f7c8b904df2c78`.
+The patched ROM has `sha1: 3c1ef4e407492c2b108e1d99df0bf4b7754193da`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
 (see [More than 255 moves](#more-than-255-moves) and [More than 255
-Pokémon](#more-than-255-pokémon)).
+Pokémon](#more-than-255-pokémon)). In earlier versions with the new Pokémon, a
+Pokémon in a box could turn into another species (a boxed RATTATA into the
+MANTYKE an EXTREME trainer brought); on CONTINUE, every one that wasn't given a
+nickname gets its own species back.
 
 
 ## Building it
@@ -1226,6 +1229,13 @@ IDs nothing holds any more to be taken back.
   its own SRAM bank (`SaveBox` writes it; `LoadBox` and BILL's PC rebuild the
   box's IDs from it with `RefreshBoxSpecies`). An old save gets the identity table
   and every box's array on CONTINUE.
+- The table's save has a version (`MON_TABLE_VERSION`). Version 1's garbage
+  collection stopped at the first place in WRAM0, so the box out's Pokémon (and
+  the saves') could lose their IDs to other species and turn into them; a version 1
+  save is repaired once, on CONTINUE
+  ([`engine/16/repair_fused.asm`](engine/16/repair_fused.asm)): a Pokémon that
+  still has its own species' name (never nicknamed) gets that species back, in its
+  box's index array, or in the party with its stats worked out again.
 - The Pokédex keeps its flags for indexes 1-256 where they were and the new ones
   after them (`wPokedexSeenExt`, `wPokedexCaughtExt`); the HALL OF FAME and mail
   keep their layouts, with the index's 9th bit in a spare bit.

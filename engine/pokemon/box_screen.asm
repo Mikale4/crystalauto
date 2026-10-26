@@ -48,6 +48,7 @@ BoxScreen:
 
 .done
 	call ClearSprites
+	call BoxScreen_ClearCanvas ; (the map's tileset doesn't have all of its tiles)
 	pop af
 	ldh [hInMenu], a
 	pop af
@@ -144,9 +145,12 @@ BoxScreen_LoadBoxList:
 	ld [wBoxScreenCount], a
 	ret
 
-BoxScreen_DrawIcons:
-; The shown box's and the party's icons, but the POKéMON held's
-	call BoxScreen_LoadBoxList
+BoxScreen_ClearCanvas:
+; (its tiles in VRAM bank 1 too)
+	call BoxScreen_ClearCanvasBuffer
+	jp BoxScreen_TransferCanvas
+
+BoxScreen_ClearCanvasBuffer:
 	ldh a, [rWBK]
 	push af
 	ld a, BANK(wDecompressScratch)
@@ -157,6 +161,12 @@ BoxScreen_DrawIcons:
 	call ByteFill
 	pop af
 	ldh [rWBK], a
+	ret
+
+BoxScreen_DrawIcons:
+; The shown box's and the party's icons, but the POKéMON held's
+	call BoxScreen_LoadBoxList
+	call BoxScreen_ClearCanvasBuffer
 	hlcoord 0, BOXSCREEN_CANVAS_Y, wAttrmap
 	ld bc, BOXSCREEN_CANVAS_TILES
 	ld a, OAM_BANK1 | BOXPAL_GRAY
@@ -933,8 +943,18 @@ BoxScreen_ShowCursorMon:
 	hlcoord 13, 1
 	ld [hl], a
 .no_gender
+; its types, one under the other (not by PrintMonTypes, which blanks places left
+; of them, in the pic here)
+	ld a, [wBaseType1]
 	hlcoord 8, 2
-	predef PrintMonTypes
+	call BoxScreen_PrintType
+	ld a, [wBaseType2]
+	ld hl, wBaseType1
+	cp [hl]
+	jr z, .one_type
+	hlcoord 8, 3
+	call BoxScreen_PrintType
+.one_type
 	ld a, [wTempMonItem]
 	and a
 	jr z, .no_item
@@ -996,6 +1016,15 @@ BoxScreen_ShowCursorMon:
 	db ": BOXES@"
 .OptionsString:
 	db "A: OPTIONS@"
+
+BoxScreen_PrintType:
+; type a's name at hl
+	push hl
+	ld [wNamedObjectIndex], a
+	farcall GetTypeName
+	pop hl
+	ld de, wStringBuffer1
+	jp PlaceString
 
 BoxScreen_ClearPanel:
 	hlcoord 0, 0

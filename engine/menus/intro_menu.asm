@@ -355,7 +355,8 @@ Continue:
 	farcall InitMoveTable
 	farcall InitMonTable
 	farcall TryLoadSaveFile
-	jr c, .FailToLoad
+	jp c, .FailToLoad
+	farcall RepairFusedParty
 	farcall _LoadData
 	call LoadStandardMenuHeader
 	call DisplaySaveInfoOnContinue

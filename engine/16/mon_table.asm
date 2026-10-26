@@ -193,7 +193,7 @@ MACRO mon_id_place
 	elif STRFIND("\1", "s") == 0
 		db MON_IN_SRAM | BANK(\1)
 	else
-		db BANK(\1) ; (0 for WRAM0, which is any bank's)
+		db BANK(\1) + (BANK(\1) == 0) ; (WRAM0's 0: any WRAMX bank will do, but not 0, which ends the list)
 	endc
 	dw \1
 	db \2, \3, (\4) - (\3)
@@ -356,8 +356,12 @@ SyncMonTableEntry:
 	pop de
 	ret
 
+; (1: from before MonTableGarbageCollection saw all of MonIDPlaces, see
+; engine/16/repair_fused.asm)
+DEF MON_TABLE_VERSION EQU 2
+
 MonTableMagic:
-	db "MN", 1
+	db "MN", MON_TABLE_VERSION
 	assert @ - MonTableMagic == MON_TABLE_MAGIC_LENGTH
 
 InitMonTable::
@@ -374,12 +378,13 @@ InitMonTable::
 	xor a
 	ld [wMonTableReady], a
 	ld [wMonProtectedBox], a
+	ld [wMonRepairParty], a
 	call ByteFill
 	ld a, BANK(sPokemonIndexTableMagic)
 	call OpenSRAM
 	ld hl, sPokemonIndexTableMagic
 	ld de, MonTableMagic
-	ld c, MON_TABLE_MAGIC_LENGTH
+	ld c, MON_TABLE_MAGIC_LENGTH - 1
 .check_magic
 	ld a, [de]
 	cp [hl]
@@ -388,11 +393,24 @@ InitMonTable::
 	inc hl
 	dec c
 	jr nz, .check_magic
+; its version: this one's, or 1's (to be repaired)
+	ld a, [hl]
+	cp MON_TABLE_VERSION
+	jr z, .got_table
+	cp 1
+	jr nz, .no_table
+	ld a, TRUE
+	ld [wMonRepairParty], a
+.got_table
 	ld hl, sPokemonIndexTable
 	ld de, wPokemonIndexTable
 	ld bc, wPokemonIndexTableEntriesEnd - wPokemonIndexTable
 	call CopyBytes
 	call CloseSRAM
+	ld a, [wMonRepairParty]
+	and a
+	jr z, .ready
+	farcall RepairFusedBoxes ; (and the party once it's loaded: see Continue)
 	jr .ready
 
 .no_table

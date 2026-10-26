@@ -289,6 +289,7 @@ INCLUDE "data/pokemon/base_stats.asm"
 SECTION "Pokemon Names", ROMX
 
 INCLUDE "data/pokemon/names.asm"
+INCLUDE "engine/16/repair_fused.asm"
 
 
 SECTION "Crystal Phone Text", ROMX

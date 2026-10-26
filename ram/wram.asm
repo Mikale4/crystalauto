@@ -3806,6 +3806,7 @@ wMonGCSkip:: db
 wMonGCCount:: db
 wBoxIndexBuffer:: ds 2 * MONS_PER_BOX ; a box's index array, on its way (see SaveBoxSpeciesIndexes)
 wMonProtectedBox:: db ; the box (1 to NUM_BOXES, or 0) whose species bytes are kept valid (see RefreshBoxSpecies)
+wMonRepairParty:: db ; the save continued needs RepairFusedParty (see InitMonTable)
 
 
 SECTION "Battle Tower RAM", WRAMX

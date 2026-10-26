@@ -5,8 +5,9 @@ _BillsPC:
 	call LoadStandardMenuHeader
 	farcall BoxScreen
 	push af
+; (the map's blocks, then its tiles and palettes: the screen took their places)
 	call ReturnToMapFromSubmenu
-	call CloseWindow
+	call CloseSubmenu
 	pop af
 	jr nc, .done
 ; It changed the boxes or the party: the game's saved, for the boxes are kept
