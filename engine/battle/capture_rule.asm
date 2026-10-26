@@ -122,19 +122,15 @@ WildMonWornOut::
 	jp BattleTextbox
 
 CaptureRule_HasRoom:
-; Return carry if the party and the current box are both full.
+; Return carry if the party and every box are full.
 	ld a, [wBattleType]
 	cp BATTLETYPE_CONTEST
 	jr z, .room ; (the contest has a slot of its own)
 	ld a, [wPartyCount]
 	cp PARTY_LENGTH
 	jr c, .room
-	ld a, BANK(sBoxCount)
-	call OpenSRAM
-	ld a, [sBoxCount]
-	cp MONS_PER_BOX
-	call CloseSRAM
-	jr nc, .full
+	farcall CheckRoomInBoxes ; (any box: the next with room takes it)
+	jr c, .full
 .room
 	and a
 	ret

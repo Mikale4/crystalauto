@@ -227,12 +227,8 @@ PokeBallEffect:
 	cp PARTY_LENGTH
 	jr nz, .room_in_party
 
-	ld a, BANK(sBoxCount)
-	call OpenSRAM
-	ld a, [sBoxCount]
-	cp MONS_PER_BOX
-	call CloseSRAM
-	jp z, Ball_BoxIsFullMessage
+	farcall CheckRoomInBoxes ; (any box: the next with room takes it)
+	jp c, Ball_BoxIsFullMessage
 
 .room_in_party
 ; BUG: Using a Park Ball in non-Contest battles has a corrupt animation (see docs/bugs_and_glitches.md)
@@ -621,15 +617,14 @@ PokeBallEffect:
 
 	farcall SetBoxMonCaughtData
 
-	ld a, BANK(sBoxCount)
-	call OpenSRAM
-
-	ld a, [sBoxCount]
-	cp MONS_PER_BOX
-	jr nz, .BoxNotFullYet
+	farcall CheckRoomInBoxes ; (BILL calls only when every box is full)
+	jr nc, .BoxNotFullYet
 	ld hl, wBattleResult
 	set BATTLERESULT_BOX_FULL, [hl]
 .BoxNotFullYet:
+	ld a, BANK(sBoxCount)
+	call OpenSRAM
+
 	ld a, [wCurItem]
 	cp FRIEND_BALL
 	jr nz, .SkipBoxMonFriendBall
@@ -684,6 +679,7 @@ PokeBallEffect:
 
 	call CloseSRAM
 
+	farcall GetCurBoxName
 	ld hl, BallSentToPCText
 	call PrintText
 

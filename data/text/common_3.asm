@@ -1233,7 +1233,9 @@ _WaitButtonText::
 _BallSentToPCText::
 	text_ram wMonOrItemNameBuffer
 	text " was"
-	line "sent to BILL's PC."
+	line "sent to @"
+	text_ram wStringBuffer2
+	text "."
 	prompt
 
 _NewDexDataText::
@@ -1394,7 +1396,7 @@ _ItemCantGetOnText::
 	prompt
 
 _BallBoxFullText::
-	text "The #MON BOX"
+	text "Every #MON BOX"
 	line "is full. That"
 	cont "can't be used now."
 	prompt

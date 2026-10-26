@@ -438,12 +438,8 @@ BossJoins::
 	predef SendMonIntoBox
 	jr nc, .done ; (no room at all)
 	farcall SetBoxMonCaughtData
-	ld a, BANK(sBoxCount)
-	call OpenSRAM
-	ld a, [sBoxCount]
-	cp MONS_PER_BOX
-	call CloseSRAM
-	jr nz, .box_not_full
+	farcall CheckRoomInBoxes ; (BILL calls only when every box is full)
+	jr nc, .box_not_full
 	ld hl, wBattleResult
 	set BATTLERESULT_BOX_FULL, [hl]
 .box_not_full
@@ -474,6 +470,7 @@ BossJoins::
 	call RotateThreePalettesRight
 	call LoadStandardFont
 .sent_to_pc
+	farcall GetCurBoxName
 	ld hl, BossSentToPCText
 	call PrintText
 .done
@@ -551,7 +548,9 @@ BossNicknameText:
 BossSentToPCText:
 	text_ram wEnemyMonNickname
 	text " was"
-	line "sent to BILL's PC."
+	line "sent to @"
+	text_ram wStringBuffer2
+	text "."
 	prompt
 
 CheckBeastsWillBattle::

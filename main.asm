@@ -516,6 +516,7 @@ INCLUDE "engine/pokemon/bills_pc.asm"
 SECTION "Box Screen", ROMX
 
 INCLUDE "engine/pokemon/box_screen.asm"
+INCLUDE "engine/pokemon/box_room.asm"
 
 
 SECTION "bank39", ROMX

@@ -9,7 +9,9 @@
 ; wLevelCapStep counts the steps done. It only goes up, so the ELITE FOUR's
 ; flags, which are cleared whenever the player comes back to INDIGO PLATEAU,
 ; don't bring the cap back down, and a step counts as done once any later step
-; is (so saves from before the level caps start in the right place).
+; is (so saves from before the level caps start in the right place). A step whose
+; ace is no stronger than one already beaten doesn't hold the cap back: the cap
+; is for the next step that raises it (see GetNextCapStep).
 
 LevelCapStepAces:
 ; the level of each step's strongest Pokémon
@@ -209,12 +211,12 @@ GetLevelCap::
 	push de
 	push hl
 	call UpdateLevelCapStep
-	ld a, [wLevelCapStep]
+	call GetNextCapStep
 	cp NUM_LEVEL_CAP_STEPS
 	ld a, MAX_LEVEL
 	jr nc, .done
-; the strongest ace up to and including the next step
-	ld a, [wLevelCapStep]
+; the strongest ace up to and including that step (its own)
+	call GetNextCapStep
 	inc a
 	ld c, a
 	call GetHighestCapAce
@@ -222,6 +224,47 @@ GetLevelCap::
 	pop hl
 	pop de
 	pop bc
+	ret
+
+GetNextCapStep:
+; a: the next step that raises the cap: the first that isn't done whose ace is
+; stronger than any done step's (so beating BUGSY raises it, though the next
+; step, your rival in AZALEA TOWN, has an ace no stronger than his); or
+; NUM_LEVEL_CAP_STEPS if there's none.
+	ld a, [wLevelCapStep]
+	cp NUM_LEVEL_CAP_STEPS
+	ret nc
+	ld c, a
+	ld hl, LevelCapStepAces
+	ld b, 0 ; (the strongest done step's ace)
+	and a
+	jr z, .find
+.done_steps
+	ld a, [hli]
+	cp b
+	jr c, .next_done
+	ld b, a
+.next_done
+	dec c
+	jr nz, .done_steps
+.find
+; hl: the first step not done's ace
+	ld a, [wLevelCapStep]
+	ld c, a
+.step
+	ld a, [hli]
+	cp b
+	jr z, .no_higher
+	jr nc, .found
+.no_higher
+	inc c
+	ld a, c
+	cp NUM_LEVEL_CAP_STEPS
+	jr c, .step
+	ret
+
+.found
+	ld a, c
 	ret
 
 GetLevelCapInB::
@@ -352,7 +395,8 @@ IsLevelCapStepDone:
 
 PrintLevelCapStepText:
 ; Who stands in the way of a higher cap (nothing once there's no cap).
-	ld a, [wLevelCapStep]
+	call UpdateLevelCapStep
+	call GetNextCapStep
 	cp NUM_LEVEL_CAP_STEPS
 	ret nc
 	ld e, a

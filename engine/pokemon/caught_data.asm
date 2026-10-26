@@ -86,6 +86,7 @@ CheckPartyFullAfterContest:
 	ret
 
 .TryAddToBox:
+	farcall MakeRoomInBoxOut ; (the next box with room, if the box out's full)
 	ld a, BANK(sBoxCount)
 	call OpenSRAM
 	ld hl, sBoxCount

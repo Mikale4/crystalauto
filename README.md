@@ -652,6 +652,10 @@ Catching works the way it does in PalletToPewter:
   the prompt counts them down. The Pokémon TEAM ROCKET disguises as items in their
   hideout never run off, so you can throw as many as you like at them.
 - A Pokémon you catch comes out of its BALL rested: full HP, no status, full PP.
+- With your party full, it goes to the PC, and **when the box is full it goes to
+  the next box with room**, as in the latest games (*RATTATA was sent to BOX2.*):
+  that box is the current one from then on. The same goes for a Pokémon you're
+  given. Only when every box is full is there no room.
 - In the BUG-CATCHING CONTEST it works the same way, with your PARK BALLS.
 
 ### The DUDE on ROUTE 29
@@ -704,22 +708,25 @@ As in PalletToPewter, your Pokémon only grow to **two levels below the stronges
 Pokémon of your next big battle**. The cap never goes back down, and once RED is
 beaten there is none. Your TRAINER CARD shows it.
 
-| Next big battle | Its strongest Pokémon | Level cap |
+| Until you beat | Its strongest Pokémon | Level cap |
 |---|---|---|
 | Your rival in CHERRYGROVE CITY | Lv 5 | 5 |
 | FALKNER | PIDGEOTTO, Lv 9 | 7 |
-| BUGSY, then your rival in AZALEA TOWN | SCYTHER and his starter, Lv 16 | 14 |
-| WHITNEY, then the odd tree on ROUTE 36 | MILTANK and SUDOWOODO, Lv 20 | 18 |
-| Your rival in the BURNED TOWER | his starter, Lv 22 | 20 |
+| BUGSY | SCYTHER, Lv 16 | 14 |
+| WHITNEY (your rival in AZALEA TOWN on the way) | MILTANK, Lv 20 | 18 |
+| Your rival in the BURNED TOWER (the odd tree on ROUTE 36 on the way) | his starter, Lv 22 | 20 |
 | MORTY | GENGAR, Lv 25 | 23 |
 | CHUCK, JASMINE and PRYCE (and the red GYARADOS and TEAM ROCKET's hideout on the way) | JASMINE's STEELIX, Lv 35 | 33 |
 | TEAM ROCKET in the RADIO TOWER | an EXECUTIVE's GOLBAT, Lv 36 | 34 |
-| CLAIR, then your rival on VICTORY ROAD | KINGDRA, Lv 40 | 38 |
-| WILL, KOGA, BRUNO, KAREN | Lv 42, 44, 46, 47 | 40, 42, 44, 45 |
+| CLAIR | KINGDRA, Lv 40 | 38 |
+| WILL (your rival on VICTORY ROAD on the way), KOGA, BRUNO, KAREN | Lv 42, 44, 46, 47 | 40, 42, 44, 45 |
 | LANCE | DRAGONITE, Lv 50 | 48 |
-| KANTO's other GYM LEADERS | BLAINE's RAPIDASH, Lv 50 | 48 |
-| BLUE | GYARADOS, Lv 58 | 56 |
+| BLUE (KANTO's other GYM LEADERS on the way) | GYARADOS, Lv 58 | 56 |
 | RED | PIKACHU, Lv 81 | 79 |
+
+A battle whose strongest Pokémon is no stronger than one you've already beaten
+doesn't hold the cap back: beat BUGSY and the cap goes up at once, though your rival
+in AZALEA TOWN (whose starter is Lv 16 too) is next.
 
 Where Crystal lets you take the battles in any order (the middle of JOHTO, the RADIO
 TOWER, KANTO's GYMS), they count as one, with the strongest Pokémon among them, the
@@ -910,7 +917,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 3c1ef4e407492c2b108e1d99df0bf4b7754193da`.
+The patched ROM has `sha1: 697828bc80266c9f76ba7d34fd2cff85f02d8a43`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1294,6 +1301,12 @@ IDs nothing holds any more to be taken back.
   party Pokémon's MAIL moves with it). A box other than the box out is made the box
   out first (`MoveMonWOMail_SaveGame`); one carried across boxes waits in
   `wBoxScreenStash1` by its species' and moves' indexes.
+- [`engine/pokemon/box_room.asm`](engine/pokemon/box_room.asm): `SendMonIntoBox`
+  (a catch, a gift, a boss that joins) first makes the next box with room the box
+  out if it's full (`MakeRoomInBoxOut`; in a battle, the battle's RAM that
+  `SaveBox` and `LoadBox` pass through, `wBoxPartialData`, is kept in WRAM bank 6
+  meanwhile). `CheckRoomInBoxes` says whether any box has room (BALLS, the capture
+  rule, and BILL's call that the boxes are full).
 
 
 ## Other changes

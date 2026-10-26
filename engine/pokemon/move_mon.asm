@@ -934,6 +934,7 @@ DepositBreedmon:
 SendMonIntoBox:
 ; Sends the mon into one of Bills Boxes
 ; the data comes mainly from 'wEnemyMon:'
+	farcall MakeRoomInBoxOut ; (the next box with room, if the box out's full)
 	ld a, BANK(sBoxCount)
 	call OpenSRAM
 	ld de, sBoxCount
@@ -1785,6 +1786,7 @@ GivePoke::
 	ld a, b
 	and a
 	ret z
+	farcall GetCurBoxName
 	ld hl, WasSentToBillsPCText
 	call PrintText
 	ld a, BANK(sBoxMonNicknames)
