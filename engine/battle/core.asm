@@ -286,6 +286,7 @@ HandleBetweenTurnEffects:
 	ret c
 
 .NoMoreFaintingConditions:
+	farcall HandleAutoRecovery ; (after FUTURE SIGHT, the weather, trapping moves)
 	call HandleLeftovers
 	call HandleMysteryberry
 	call HandleDefrost
@@ -1133,7 +1134,11 @@ ResidualDamage:
 .check_fainted
 	ld a, [hli]
 	or [hl]
-	ret nz
+	jr z, .fainted
+	farcall HandleAutoRecovery ; (its HP may be under half now)
+	ld a, 1
+	and a
+	ret
 
 .fainted
 	call RefreshBattleHuds
@@ -3583,6 +3588,7 @@ endr
 	ld [wEnemyWrapCount], a
 	ld [wEnemyTurnsTaken], a
 	ld [wEnemyFieldFlags], a
+	ld [wEnemyFieldFlags2], a
 	ld [wPlayerSpited], a
 	ld [wEnemySpited], a
 	ld hl, wPlayerSubStatus5
@@ -4077,6 +4083,7 @@ endr
 	ld [wPlayerWrapCount], a
 	ld [wPlayerTurnsTaken], a
 	ld [wPlayerFieldFlags], a
+	ld [wPlayerFieldFlags2], a
 	ld [wPlayerSpited], a
 	ld [wEnemySpited], a
 	ld hl, wEnemySubStatus5

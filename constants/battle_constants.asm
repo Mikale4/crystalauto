@@ -294,6 +294,10 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_AMNESIA_F      ; 6: AMNESIA
 	const FIELD_DISABLE_F      ; 7: its DISABLE has disabled an attack (see HandleAutoDisable)
 
+; wPlayerFieldFlags2 and wEnemyFieldFlags2 bits: since the POKéMON out came in
+	const_def
+	const FIELD2_RECOVERY_F ; 0: it has used a recovery move (see HandleAutoRecovery)
+
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 
 

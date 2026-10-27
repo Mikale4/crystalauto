@@ -438,7 +438,8 @@ UserHeldFlags:
 MarkFirstAttack::
 ; (BattleCommand_DoTurn) For KING'S ROCK: whether the move the user is using is
 ; the first attack it's used since it came in. (And a move it can use once while
-; it's out has been: see OnceOutMoves.)
+; it's out has been: see OnceOutFlag. Return carry if it had been already, when
+; ENCORE, SLEEP TALK or METRONOME brings it back: it fails.)
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	ld b, a
@@ -446,6 +447,11 @@ MarkFirstAttack::
 	ld c, a
 	call OnceOutFlag
 	jr nc, .not_once
+	ld b, a
+	and [hl]
+	scf
+	ret nz
+	ld a, b
 	or [hl]
 	ld [hl], a
 .not_once
@@ -488,7 +494,7 @@ HeldKingsRock::
 ResetEntryHeldFlags::
 ; A POKéMON coming in by BATON PASS (the user's side): no moves or attacks since,
 ; for its QUICK CLAW and KING'S ROCK, its entry moves to come, its COUNTER and
-; MIRROR COAT, and SPITE for both (see HandleAutoSpite).
+; MIRROR COAT, its recovery move, and SPITE for both (see HandleAutoSpite).
 	call UserHeldFlags
 	ld a, [hl]
 	and HELDFLAGS_ON_ENTRY
@@ -504,6 +510,10 @@ ResetEntryHeldFlags::
 	xor a
 	ld [hl], a
 	ld [de], a
+	inc de
+	inc de
+	assert wPlayerFieldFlags2 == wPlayerFieldFlags + 2 && wEnemyFieldFlags2 == wEnemyFieldFlags + 2
+	ld [de], a ; (and its recovery move: see HandleAutoRecovery)
 	ld [wPlayerSpited], a
 	ld [wEnemySpited], a
 	ret
@@ -517,6 +527,7 @@ HandleEntryTransform::
 	xor a
 	ld [wTurnActed], a
 	call HandleEntryMoves
+	call HandleAutoRecovery ; (one that came in under half its HP)
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -587,9 +598,11 @@ HandleEntryTransform::
 
 HandleEntryMoves:
 ; SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT,
-; SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB and LOCK-ON work as a POKéMON
-; comes in: at the start of its first turn out, it uses each of them it knows with
-; PP left (taking their PP), before it does anything else.
+; SPIKES, REFLECT, LIGHT SCREEN, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB and
+; LOCK-ON work as a POKéMON comes in: at the start of its first turn out, it uses
+; each of them it knows with PP left (taking their PP), before it does anything
+; else. (Each side puts up each screen once a battle: not when one of its POKéMON
+; has, see BattleCommand_Screen.)
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -659,11 +672,15 @@ HandleEntryMoves:
 	cpmove PSYCHIC_TERRAIN
 	jp z, .terrain
 	cpmove SPIKES
-	jr z, .spikes
+	jp z, .spikes
 	cpmove MEAN_LOOK
-	jr z, .mean_look
+	jp z, .mean_look
 	cpmove SPIDER_WEB
-	jr z, .mean_look
+	jp z, .mean_look
+	cpmove REFLECT
+	jr z, .reflect
+	cpmove LIGHT_SCREEN
+	jr z, .light_screen
 	cpmove SAFEGUARD
 	jr z, .safeguard
 	cpmove PSYCH_UP
@@ -687,15 +704,26 @@ HandleEntryMoves:
 	farcall AutoMove_Run
 	ret
 
+.reflect
+	ld c, 1 << SCREENS_REFLECT
+	jr .screen
+
+.light_screen
+	ld c, 1 << SCREENS_LIGHT_SCREEN
+	jr .screen
+
 .safeguard
-; (not when it's up already)
-	ld hl, wPlayerScreens
+	ld c, 1 << SCREENS_SAFEGUARD
+.screen
+; (not when its side has put it up this battle: it would fail)
+	ld hl, wPlayerScreensUsed
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .got_screens
-	ld hl, wEnemyScreens
-.got_screens
-	bit SCREENS_SAFEGUARD, [hl]
+	jr z, .got_used
+	ld hl, wEnemyScreensUsed
+.got_used
+	ld a, [hl]
+	and c
 	ret nz
 	jr .use
 
@@ -770,6 +798,8 @@ EntryMoves:
 	dw FORESIGHT
 	dw FUTURE_SIGHT
 	dw SPIKES
+	dw REFLECT
+	dw LIGHT_SCREEN
 	dw SAFEGUARD
 	dw PSYCH_UP
 	dw MEAN_LOOK
@@ -912,7 +942,7 @@ AfterTurn:
 	ld [hl], b
 	call HandleAutoCounter
 	call HandleAutoNightmare
-	jr HandleAutoEndOfTurn
+	jr .recovery
 
 .acted
 	call HandleAutoCounter
@@ -920,6 +950,8 @@ AfterTurn:
 	call HandleAutoMirrorMove
 	call HandleAutoSpite
 	call HandleAutoNightmare
+.recovery
+	call HandleAutoRecovery
 	; fallthrough
 
 HandleAutoEndOfTurn:
@@ -1542,9 +1574,22 @@ IsOnceOutMove::
 	; fallthrough
 
 OnceOutFlag:
-; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves):
-; then hl is its side's field flags (c: 0, the player's; 1, the foe's) and a the
-; flag for it.
+; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves,
+; or a recovery move: see HandleAutoRecovery): then hl is its side's field flags
+; (c: 0, the player's; 1, the foe's) and a the flag for it.
+	call IsRecoveryMove
+	jr nc, .not_recovery
+	ld hl, wPlayerFieldFlags2
+	dec c
+	inc c
+	jr z, .got_flags2
+	ld hl, wEnemyFieldFlags2
+.got_flags2
+	ld a, 1 << FIELD2_RECOVERY_F
+	scf
+	ret
+
+.not_recovery
 	push de
 	push bc
 	ld a, b
@@ -1589,6 +1634,204 @@ OnceOutFlag:
 	scf
 	ret
 
+IsRecoveryMove:
+; Return carry if move b is a recovery move (RecoveryEffects). Keeps bc, de, hl.
+	push hl
+	push de
+	push bc
+	ld l, b
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
+	ld hl, RecoveryEffects
+	ld de, 1
+	call IsInArray
+	pop bc
+	pop de
+	pop hl
+	ret
+
+RecoveryEffects:
+; RECOVER, SOFTBOILED, MILK DRINK and REST; MORNING SUN; SYNTHESIS; MOONLIGHT
+	db EFFECT_HEAL
+	db EFFECT_MORNING_SUN
+	db EFFECT_SYNTHESIS
+	db EFFECT_MOONLIGHT
+	db -1
+
+HandleAutoRecovery:
+; Recovery moves work by themselves too: once a POKéMON is under half its HP
+; (whatever brought it there: an attack, recoil, poison, the weather...), if it
+; knows one with PP left, it uses it (1 PP), unless it's used one since it came
+; in (they can be used once while it's out: see OnceOutFlag), it's asleep or
+; frozen, or either POKéMON has fainted, or it chose one this turn and is still to
+; move. REST only if it knows no other, and not when it would fail. The player's
+; POKéMON first (the foe's, linked as the other side).
+	ldh a, [hBattleTurn]
+	push af
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .reverse
+	xor a
+	call .Side
+	ld a, 1
+	call .Side
+	jr .done
+
+.reverse
+	ld a, 1
+	call .Side
+	xor a
+	call .Side
+.done
+	pop af
+	ldh [hBattleTurn], a
+	ret
+
+.Side:
+	ldh [hBattleTurn], a
+	call CantGoOn
+	ret nz
+	ld hl, wPlayerFieldFlags2
+	ld de, wBattleMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_side
+	ld hl, wEnemyFieldFlags2
+	ld de, wEnemyMonHP
+.got_side
+	bit FIELD2_RECOVERY_F, [hl]
+	ret nz
+; under half its HP: HP * 2 < max HP
+	ld a, [de]
+	ld h, a
+	inc de
+	ld a, [de]
+	ld l, a
+	add hl, hl
+	inc de ; (the max HP, after the HP)
+	ld a, [de]
+	ld b, a
+	inc de
+	ld a, [de]
+	ld c, a
+	ld a, l
+	sub c
+	ld a, h
+	sbc b
+	ret nc
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+	call .ChoseOne
+	ret z
+	call .FindMove
+	ret c
+	farcall AutoMove_Setup
+	ret c
+	ld hl, wPlayerFieldFlags2
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_flags
+	ld hl, wEnemyFieldFlags2
+.got_flags
+	set FIELD2_RECOVERY_F, [hl]
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+.ChoseOne:
+; Return z if it chose a recovery move this turn and is still to use it: the foe
+; has had its turn, it hasn't, and it isn't switching.
+	ld a, [wTurnActed]
+	and %11
+	ld c, a
+	ld b, %10 ; (the player's side: the foe has had its turn, it hasn't)
+	ld hl, wCurPlayerMove
+	ld de, wPlayerIsSwitching
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_choice
+	ld b, %01
+	ld hl, wCurEnemyMove
+	ld de, wEnemyIsSwitching
+.got_choice
+	ld a, [de]
+	and a
+	jr nz, .no
+	ld a, c
+	cp b
+	jr nz, .no
+	ld b, [hl]
+	call IsRecoveryMove
+	jr nc, .no
+	xor a
+	ret
+
+.no
+	or 1
+	ret
+
+.FindMove:
+; b: the first recovery move it knows with PP left, not REST (REST if it's the
+; only one, and won't fail); carry if none
+	ld hl, wBattleMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+.got_moves
+	ld c, NUM_MOVES
+	ld e, 0 ; (REST, if it knows it)
+.move
+	ld a, [hli]
+	and a
+	jr z, .next
+	ld b, a
+	push hl
+	push de
+	ld de, wBattleMonPP - wBattleMonMoves - 1
+	add hl, de
+	ld a, [hl]
+	pop de
+	pop hl
+	and PP_MASK
+	jr z, .next
+	call IsRecoveryMove
+	jr nc, .next
+	ld a, b
+	cpmove REST
+	jr z, .rest_known
+	and a ; (nc: this one)
+	ret
+
+.rest_known
+	ld e, b
+.next
+	dec c
+	jr nz, .move
+	ld a, e
+	and a
+	scf
+	ret z
+	ld b, a
+; (as RestFailsForTerrain, without its text: ELECTRIC or MISTY TERRAIN keeps it
+; awake on the ground)
+	ld a, [wBattleTerrain]
+	cp TERRAIN_MISTY
+	jr z, .terrain
+	cp TERRAIN_ELECTRIC
+	jr nz, .rest
+.terrain
+	push bc
+	call IsUserGrounded
+	pop bc
+	scf
+	ret z
+.rest
+	and a
+	ret
+
 AutoMoves:
 ; moves that work by themselves, so they can't be chosen (for the player, the foe
 ; and auto battle: see CantChooseMove)
@@ -1598,6 +1841,8 @@ AutoMoves:
 	dw MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
 	dw SPITE        ; (see HandleAutoSpite)
 	dw FUTURE_SIGHT ; as it comes in: see HandleEntryMoves
+	dw REFLECT
+	dw LIGHT_SCREEN
 	dw SAFEGUARD
 	dw MEAN_LOOK
 	dw SPIDER_WEB

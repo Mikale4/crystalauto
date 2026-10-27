@@ -654,10 +654,14 @@ wAutoMove:: db ; a move used by itself (see AutoMove): its PP, but not a turn
 wAutoMoveBackup:: ds 2 + MOVE_LENGTH ; the move the user chose (its number, the move, its struct)
 wPlayerFieldFlags:: db ; FIELD_*_F: since the POKéMON out came in
 wEnemyFieldFlags:: db
+wPlayerFieldFlags2:: db ; FIELD2_*_F: since the POKéMON out came in
+wEnemyFieldFlags2:: db
 wPlayerSpited:: db ; which of the foe's moves (bit 0: its first) the player's POKéMON's SPITE has had, since both came in
 wEnemySpited:: db ; (see HandleAutoSpite)
 wPlayerSpikes:: db ; layers of SPIKES on the player's side (with SCREENS_SPIKES)
 wEnemySpikes:: db
+wPlayerScreensUsed:: db ; SCREENS_REFLECT, _LIGHT_SCREEN and _SAFEGUARD: the screens the player's side has put up this battle (once each)
+wEnemyScreensUsed:: db
 wConversionMatchup:: db ; (HandleAutoConversion: the attack against the target as it is)
 wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
 wBattleInfoOK:: db ; whether START opens the battle info screen from the menu waiting now (see BattleInfoScreen)

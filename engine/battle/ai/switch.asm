@@ -22,7 +22,7 @@ CheckPlayerMoveTypeMatchups:
 	call GetMoveTypeIfDamaging
 	jr z, .next
 	ld hl, wEnemyMonType
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1 ; 1.0 + 0.1
 	jr nc, .super_effective
@@ -67,7 +67,7 @@ CheckPlayerMoveTypeMatchups:
 	ld a, [wBattleMonType1]
 	ld b, a
 	ld hl, wEnemyMonType1
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1 ; 1.0 + 0.1
 	jr c, .ok
@@ -76,7 +76,7 @@ CheckPlayerMoveTypeMatchups:
 	ld a, [wBattleMonType2]
 	cp b
 	jr z, .ok2
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1 ; 1.0 + 0.1
 	jr c, .ok2
@@ -109,7 +109,7 @@ CheckPlayerMoveTypeMatchups:
 	call GetMoveTypeIfDamaging
 	jr z, .loop2
 	ld hl, wBattleMonType1
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 
 	ld a, [wTypeMatchup]
 	; immune
@@ -363,7 +363,7 @@ FindEnemyMonsImmuneToLastCounterMove:
 	call GetMoveTypeIfDamaging
 	jr z, .next
 	ld hl, wBaseType
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	and a
 	jr nz, .next
@@ -446,7 +446,7 @@ FindEnemyMonsWithASuperEffectiveMove:
 	call GetMoveTypeIfDamaging
 	jr z, .nope
 	ld hl, wBattleMonType1
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 
 	; if immune or not very effective: continue
 	ld a, [wTypeMatchup]
@@ -542,7 +542,7 @@ FindEnemyMonsThatResistPlayer:
 .skip_move
 	ld a, [wBattleMonType1]
 	ld hl, wBaseType
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1
 	jr nc, .dont_choose_mon
@@ -550,7 +550,7 @@ FindEnemyMonsThatResistPlayer:
 
 .check_type
 	ld hl, wBaseType
-	call CheckTypeMatchup
+	call FarCheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1
 	jr nc, .dont_choose_mon
@@ -640,4 +640,13 @@ GetMoveTypeIfDamaging:
 	inc b
 	dec b
 	pop bc
+	ret
+
+FarCheckTypeMatchup:
+; CheckTypeMatchup, from this bank (hl: the target's types; wTypeMatchup)
+	push de
+	ld a, BANK(CheckTypeMatchup)
+	ld de, CheckTypeMatchup
+	call FarCall_de
+	pop de
 	ret

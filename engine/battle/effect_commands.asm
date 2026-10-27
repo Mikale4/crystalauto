@@ -680,6 +680,10 @@ BattleCommand_DoTurn:
 	farcall MarkFirstAttack
 	pop hl
 	pop de
+	jr nc, .pp
+; (a move it can use once while it's out, used again)
+	call MoveFailed
+	jp EndMoveEffect
 
 .pp
 	ld a, BATTLE_VARS_MOVE
@@ -1204,8 +1208,6 @@ BattleCommand_ResetTypeMatchup:
 .reset
 	ld [wTypeMatchup], a
 	ret
-
-INCLUDE "engine/battle/ai/switch.asm"
 
 INCLUDE "data/types/type_matchups.asm"
 
@@ -6015,13 +6017,16 @@ ResetActorDisable:
 	ret
 
 BattleCommand_Screen:
+; (each side puts up each screen once a battle: wPlayerScreensUsed)
 	ld hl, wPlayerScreens
 	ld bc, wPlayerLightScreenCount
+	ld de, wPlayerScreensUsed
 	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_screens_pointer
 	ld hl, wEnemyScreens
 	ld bc, wEnemyLightScreenCount
+	ld de, wEnemyScreensUsed
 
 .got_screens_pointer
 	ld a, BATTLE_VARS_MOVE_EFFECT
@@ -6031,6 +6036,11 @@ BattleCommand_Screen:
 
 	bit SCREENS_LIGHT_SCREEN, [hl]
 	jr nz, .failed
+	ld a, [de]
+	bit SCREENS_LIGHT_SCREEN, a
+	jr nz, .failed
+	set SCREENS_LIGHT_SCREEN, a
+	ld [de], a
 	set SCREENS_LIGHT_SCREEN, [hl]
 	ld a, 5
 	ld [bc], a
@@ -6040,6 +6050,11 @@ BattleCommand_Screen:
 .Reflect:
 	bit SCREENS_REFLECT, [hl]
 	jr nz, .failed
+	ld a, [de]
+	bit SCREENS_REFLECT, a
+	jr nz, .failed
+	set SCREENS_REFLECT, a
+	ld [de], a
 	set SCREENS_REFLECT, [hl]
 
 	; LightScreenCount -> ReflectCount
@@ -6054,6 +6069,7 @@ BattleCommand_Screen:
 	jp StdBattleTextbox
 
 .failed
+MoveFailed:
 	call AnimateFailedMove
 	jp PrintButItFailed
 
@@ -6305,6 +6321,7 @@ BattleCommand_TimeBasedHealContinue:
 
 .start
 ; Don't bother healing if HP is already full.
+	ld c, 2 ; (its two bytes)
 	call CompareBytes
 	jr z, .Full
 

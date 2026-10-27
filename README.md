@@ -158,8 +158,11 @@ and Disabled moves) and uses the best one:
     Present use typical values. False Swipe counts as sure to hit (a miss swipes
     again).
 - **Healing moves** (RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS,
-  MOONLIGHT) come first when the Pokémon is under half its HP (a third for REST) and
-  the foe can't take that back in a turn, unless an attack knocks the foe out now.
+  MOONLIGHT) work by themselves once the Pokémon is under half its HP (see
+  [Recovery moves](#reworked-moves)), so auto battle keeps them for then and never
+  chooses one above that. Under half (a third for REST), one that can still be chosen
+  comes first when the foe can't take that back in a turn, unless an attack knocks the
+  foe out now.
 - **Status and stat-raising moves**, against trainers only (wild battles are quicker
   without them), when the matchup calls for one: sleep when the fight will take three
   turns or more, paralysis against a faster foe, TOXIC in a long fight (not on POISON
@@ -313,7 +316,9 @@ Some moves work in new ways of their own:
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
 | BEAT UP | one of them now: 25 power, 2 to 5 hits |
 | DREAM EATER | works on a foe that's awake too |
-| SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT, SPIKES, REFLECT, LIGHT SCREEN, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
+| REFLECT, LIGHT SCREEN, SAFEGUARD | they can't be chosen: used only as the Pokémon comes in, and each side puts up each one once a battle (see below) |
+| RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS, MOONLIGHT | work by themselves right when the Pokémon falls under half its HP; one of them once while it's out (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -352,18 +357,43 @@ Some moves work in new ways of their own:
 | TELEPORT | as in the latest games: moves last, and in a trainer battle, the Pokémon switches out (in the wild, it still flees) (see below) |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, a
-terrain, FORESIGHT, FUTURE SIGHT, SPIKES, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB or
-LOCK-ON uses each of them as it comes in,
+terrain, FORESIGHT, FUTURE SIGHT, SPIKES, REFLECT, LIGHT SCREEN, SAFEGUARD, PSYCH UP,
+MEAN LOOK, SPIDER WEB or LOCK-ON uses each of them as it comes in,
 at the start of its first turn out, before anything else happens. Each takes 1 PP
 (none is used without PP left), and it doesn't count as the Pokémon's move (QUICK
 CLAW and KING'S ROCK still wait for that). LOCK-ON goes last, so its aim is for the
 next attack. None is used when it would do nothing: SANDSTORM, HAIL or a terrain
 while it's up already, FUTURE SIGHT while one is on its
-way, SPIKES with three layers down, SAFEGUARD while it's up, PSYCH UP when none of the
-foe's stats have gone up, MEAN LOOK and SPIDER WEB when the foe's trapped already. They
-can still be chosen as usual too, but FUTURE SIGHT, SAFEGUARD, MEAN LOOK and SPIDER
-WEB: like COUNTER and MIRROR COAT, they work only by themselves ("FUTURE SIGHT works by
-itself!"), and auto battle and the other side never choose them.
+way, SPIKES with three layers down, REFLECT, LIGHT SCREEN or SAFEGUARD when its side
+has put that one up already this battle, PSYCH UP when none of the foe's stats have
+gone up, MEAN LOOK and SPIDER WEB when the foe's trapped already. They can still be
+chosen as usual too, but FUTURE SIGHT, REFLECT, LIGHT SCREEN, SAFEGUARD, MEAN LOOK and
+SPIDER WEB: like COUNTER and MIRROR COAT, they work only by themselves ("REFLECT works
+by itself!"), and auto battle and the other side never choose them.
+
+**REFLECT, LIGHT SCREEN and SAFEGUARD.** Each side puts up each of them once a battle.
+The first Pokémon on a side that comes in knowing REFLECT puts it up (1 PP, five turns
+as before); after that, no Pokémon on that side does again, even once it's worn off or
+that Pokémon has gone back (a second one that knows REFLECT keeps its PP), and one
+brought out some other way (SLEEP TALK, METRONOME, MIRROR MOVE) fails. The same goes
+for LIGHT SCREEN and SAFEGUARD, each on its own. The other side has its own: a foe that
+knows REFLECT still puts up its REFLECT, once.
+
+**Recovery moves.** RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS and
+MOONLIGHT work by themselves: right when a Pokémon falls under half its HP, whatever
+brought it there (an attack, recoil, a hit to itself in its confusion, BELLY DRUM or
+SUBSTITUTE, poison, a burn, LEECH SEED, the weather, a trapping move, SPIKES as it came
+in), it uses one it knows with PP left (1 PP), unless it's asleep or frozen, or either
+Pokémon has fainted (then it's as the next turn starts). It heals as the move always
+did, and it doesn't count as the Pokémon's move. One of them works once while the
+Pokémon is out (one that knows RECOVER and REST uses only one), and again only after
+it has gone back and come out again (or another has come in by BATON PASS). REST goes
+only when it knows no other, and not when it would fail (ELECTRIC or MISTY TERRAIN
+keeping it awake on the ground). They can still be chosen too, once while out, as
+SWORDS DANCE is ("RECOVER works once while out!"): one chosen above half its HP is its
+one, and it won't work by itself after that. One that chose a recovery move and falls
+under half before its turn just uses the one it chose. Auto battle keeps them for when
+they work by themselves.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -422,7 +452,8 @@ Pokémon's move with the most power. As before, the move takes SKETCH's place fo
 **Once while out.** SWORDS DANCE, GROWTH and AMNESIA can each be used once while the
 Pokémon is out; then it can't choose it ("GROWTH works once while out!") until it has
 gone back and come out again. AMNESIA raises SPCL.ATK and SPCL.DEF by 2 stages each, as
-the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each.
+the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each. Brought back after
+that (by ENCORE, SLEEP TALK or METRONOME), the move fails.
 
 **TELEPORT.** As in the latest games, it moves after everything else, and in a trainer
 battle the Pokémon switches out (yours: you choose who comes in, or auto battle does),
@@ -1254,7 +1285,16 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   move is `ChooseSketchMove` (the player's menu is `MoveSelectionScreen` with
   `wMoveSelectionMenuType` 1, the foe's moves). GROWTH's and AMNESIA's second stat is
   the `secondstatup` command; SWORDS DANCE, GROWTH and AMNESIA set their field flag as
-  they're used (`OnceOutMoves`, in `MarkFirstAttack`). TELEPORT goes on to
+  they're used (`OnceOutMoves`, in `MarkFirstAttack`, which also tells
+  `BattleCommand_DoTurn` when one is used again: it fails). The recovery moves are
+  `HandleAutoRecovery` (`RecoveryEffects`; once while out: `FIELD2_RECOVERY_F` in
+  `wPlayerFieldFlags2` and `wEnemyFieldFlags2`), checked after each side's turn
+  (`AfterTurn`), after `ResidualDamage`, after the weather and the other end-of-turn
+  effects (`HandleBetweenTurnEffects`), and as each turn starts
+  (`HandleEntryTransform`). REFLECT, LIGHT SCREEN and SAFEGUARD keep the screens each
+  side has put up this battle in `wPlayerScreensUsed` and `wEnemyScreensUsed`
+  (`SCREENS_*` bits: `BattleCommand_Screen`, `BattleCommand_Safeguard`, and
+  `HandleEntryMoves.screen`). TELEPORT goes on to
   `BattleCommand_BatonPass` in a trainer battle (`TeleportSwitch` resets what comes in).
   The battle info screen is
   [`engine/battle/battle_info.asm`](engine/battle/battle_info.asm) (`BattleInfoScreen`,

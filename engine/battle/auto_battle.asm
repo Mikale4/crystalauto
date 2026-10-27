@@ -279,6 +279,13 @@ AutoBattle_RateMove:
 .GetRating:
 	call AutoBattle_RateSupportMove
 	ret c
+; a recovery move not worth using now: it works by itself under half its HP (see
+; HandleAutoRecovery), so it's kept for then
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld hl, AutoBattleHealEffects
+	ld de, 1
+	call IsInArray
+	jp c, .fails
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
 	cp EFFECT_SELFDESTRUCT
 	jp z, .last_resort
