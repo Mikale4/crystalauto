@@ -1080,7 +1080,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: d3af07bdc94568eb15634c4ac00e87f0b0940dee`.
+The patched ROM has `sha1: ac2e0287535cdb3c308dc3998f92e23da96ce2fc`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
