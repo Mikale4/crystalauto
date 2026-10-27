@@ -16,8 +16,11 @@ KurtsHouseKurtCallback:
 	iffalse .Done
 	checkevent EVENT_FOREST_IS_RESTLESS
 	iftrue .Done
+	checkevent EVENT_GAVE_GS_BALL_TO_KURT
+	iftrue .AtTheTable ; (a save from when he kept the GS BALL a day)
 	checkflag ENGINE_KURT_MAKING_BALLS
 	iftrue .MakingBalls
+.AtTheTable:
 	disappear KURTSHOUSE_KURT2
 	appear KURTSHOUSE_KURT1
 	disappear KURTSHOUSE_TWIN2
@@ -269,20 +272,15 @@ Kurt1:
 	closetext
 	setevent EVENT_GAVE_GS_BALL_TO_KURT
 	takeitem GS_BALL
-	setflag ENGINE_KURT_MAKING_BALLS
-	end
-
+; he checks it there and then (it used to take him till the next day)
+	pause 40
+	opentext
 .GaveGSBallToKurt:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iffalse .NotMakingBalls
 	writetext KurtsHouseKurtImCheckingItNowText
 	waitbutton
 	writetext KurtsHouseKurtAhHaISeeText
 	waitbutton
-	closetext
-	end
-
-.NotMakingBalls:
+.TheBallShakes:
 	writetext KurtsHouseKurtThisBallStartedToShakeText
 	waitbutton
 	closetext

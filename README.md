@@ -660,9 +660,10 @@ Every Pokémon can be had in one game, without trading with another one (see
 - **CELEBI**, as in the Virtual Console: once you've entered the HALL OF FAME, the
   woman at GOLDENROD's POKéMON CENTER stops you on your way out and gives you the GS
   BALL (the original game only did that with its Japanese mobile service). Give it to
-  KURT in AZALEA TOWN; the next day, talk to him again: he runs outside, gives it back
-  as you leave, and sends you to ILEX FOREST's shrine. Put the GS BALL in the shrine
-  and CELEBI comes, a level 30 boss; lose, and you get the GS BALL back to try again.
+  KURT in AZALEA TOWN: he checks it there and then (no waiting till the next day),
+  runs outside, gives it back as you leave, and sends you to ILEX FOREST's shrine. Put
+  the GS BALL in the shrine and CELEBI comes, a level 30 boss; lose, and you get the
+  GS BALL back to try again.
 - **The wild**: CRYSTAL had no MAREEP, VULPIX, MANKEY or GIRAFARIG. MAREEP are on
   ROUTE 32 in the morning and day, VULPIX on ROUTE 37 at night, MANKEY on ROUTE 42 and
   GIRAFARIG on ROUTE 43 in the morning and day. Their evolutions (FARIGIRAF too) come
@@ -1417,6 +1418,9 @@ IDs nothing holds any more to be taken back.
   which says it's there once `EVENT_BEAT_ELITE_FOUR` is set; before, only the Virtual
   Console set `sGSBallFlag` (its `vc_hook` in `AddHallOfFameEntry`). Losing to
   CELEBI gives the GS BALL back ([`maps/IlexForest.asm`](maps/IlexForest.asm)).
+  KURT ([`maps/KurtsHouse.asm`](maps/KurtsHouse.asm)) no longer sets
+  `ENGINE_KURT_MAKING_BALLS` (a daily flag) for it; in a save where he did, he's at
+  his table to go on with it.
 
 ### GEN 1's TMs
 
