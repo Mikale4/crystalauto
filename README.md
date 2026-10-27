@@ -9,7 +9,7 @@ evolution level** in battle, instead of waiting for the battle to end.
 Battles work the way they do in the latest games: the **physical/special split**,
 the **FAIRY type** and today's **type chart**, and **moves** with their modern power,
 accuracy, PP and effects. Pokémon have **natures**, shown with their DVs on a new
-page of the stats screen. **Evolutions are simpler** (no trading or friendship
+page of the stats screen, and a **MINT** changes one. **Evolutions are simpler** (no trading or friendship
 needed), and, as in PalletToPewter, **no items are used in battle**: the X items
 are held instead, and give their boost when the Pokémon comes in. Several **held
 items** work in new ways (QUICK CLAW, KING'S ROCK, FOCUS BAND, …), a team holds only
@@ -570,8 +570,9 @@ its moves instead.
 Every Pokémon has a **nature**, as in the latest games: it raises one stat by 10%
 and lowers another by 10% (HARDY, DOCILE, SERIOUS, BASHFUL and QUIRKY change
 nothing). The nature comes from the Pokémon's DVs, so every Pokémon already has
-one, those in your old saves too, and keeps it for good. Perfect DVs make a HARDY
-Pokémon, so EXTREME's trainers and the bosses aren't held back by theirs.
+one, those in your old saves too, and keeps it unless a [MINT](#mints) changes it.
+Perfect DVs make a HARDY Pokémon, so EXTREME's trainers and the bosses aren't held
+back by theirs.
 
 The stats screen has a fourth page, in orange: the Pokémon's nature, the stats it
 raises and lowers, and its DVs (HP, ATTACK, DEFENSE, SPEED and SPECIAL, 0 to 15;
@@ -580,6 +581,26 @@ the HP DV comes from the other four).
 A game saved before there were natures gets its party's stats updated the first
 time you CONTINUE. Pokémon in the PC or the DAY-CARE get theirs when you take them
 out, as they always have.
+
+### Mints
+
+A **MINT** changes a Pokémon's nature, as the latest games' mints do. It's one item
+for every nature: USE it from the PACK, choose the nature from the list (the box
+below it says which stat each one raises and lowers), then the Pokémon. Its stats are
+worked out again with that nature at once, and it keeps it for good: in the PC, the
+DAY-CARE, trades, through level-ups and evolutions. A MINT for the nature its DVs
+give takes it back to its own; one for the nature it has already does nothing (and
+is kept).
+
+MINTs are sold for ¥9800 with the vitamins, on the 4th floor of the GOLDENROD DEPT.
+STORE and the 5th of the CELADON DEPT. STORE. They grow by the fruit trees too: when
+you pick a tree's BERRY or APRICORN, 1 time in 4 there's a MINT as well.
+
+A MINT's nature is kept in the lowest bit of each of the Pokémon's five stat exps, so
+it needs no room in the save (and changes them by 1 at most, which a stat never
+shows). A game saved before there were MINTs has those bits cleared the first time
+you CONTINUE, for every Pokémon in the party, the DAY-CARE and the PC, so none looks
+as if it had been given one.
 
 
 ## Simpler evolutions
@@ -1342,6 +1363,17 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   page is `LoadOrangePage` in
   [`engine/pokemon/stats_screen.asm`](engine/pokemon/stats_screen.asm)
   (`ORANGE_PAGE`; the page number now takes three bits of `wStatsScreenFlags`).
+- The MINT is item `$93`, formerly unused (`MintEffect` in
+  [`engine/items/item_effects.asm`](engine/items/item_effects.asm); its list is
+  `ChooseMintNature` in [`engine/items/mint.asm`](engine/items/mint.asm)). Its nature
+  is `GetMint` and `SetMint` in `natures.asm`: the 5 stat exps' lowest bits, HP's
+  first, as the nature + 1 (0, or more than 25: none). `GetMonNature` is the one a
+  Pokémon has; `ApplyNature` uses it when its stat exp counts (`b` TRUE: its own,
+  not a wild one's), and so does the stats screen (`GetDVsNature`).
+  `GiveExperiencePoints` keeps those bits as the stat exp grows, and
+  `ClearOldMintBits` clears them once on CONTINUE (`EVENT_MINT_BITS_CLEARED`, set by
+  NEW GAME too). The fruit trees' MINT is in `FruitTreeScript`
+  ([`engine/events/fruit_trees.asm`](engine/events/fruit_trees.asm)).
 - The new evolutions are in
   [`data/pokemon/evos_attacks.asm`](data/pokemon/evos_attacks.asm) (`EVOLVE_ITEM`
   and `EVOLVE_LEVEL`), and the LINKING CORD is item `$19`, formerly unused.

@@ -204,7 +204,8 @@
 	const EVENT_ANSWERED_DRAGON_MASTER_QUIZ_WRONG
 	const EVENT_RENTAL_CHANSEY_FROM_HERE ; set on map load in the POKéMON CENTER the rented CHANSEY came from
 	const EVENT_NATURES_IN_STATS ; (formerly unused) the party's stats have natures (see ApplyNaturesToOldSave)
-; Unused: next 4 events
+	const EVENT_MINT_BITS_CLEARED ; (formerly unused) no stat exp's lowest bit looks like a MINT's (see ClearOldMintBits)
+; Unused: next 3 events
 
 	const_next 200
 ; Kanto story events

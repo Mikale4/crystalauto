@@ -128,6 +128,8 @@ DEF CAUGHT_BY_BOY     EQU 2
 
 DEF CAUGHT_EGG_LEVEL EQU 1
 
+DEF NUM_NATURES EQU 25 ; (see engine/pokemon/natures.asm)
+
 DEF MON_CRY_LENGTH EQU 6
 
 ; maximum number of party pokemon

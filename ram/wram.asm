@@ -826,6 +826,11 @@ wMoveRelearnerCount:: db
 wMoveRelearnerMoves:: ds MAX_RELEARNER_MOVES + 1
 
 NEXTU
+; a MINT's natures (see engine/items/mint.asm)
+wMintNatureCount:: db
+wMintNatures:: ds NUM_NATURES + 1
+
+NEXTU
 ; trade
 wPlayerTrademon:: trademon wPlayerTrademon
 wOTTrademon::     trademon wOTTrademon

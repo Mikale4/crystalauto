@@ -7039,7 +7039,7 @@ GiveExperiencePoints:
 	jp .got_exp
 
 .give_stat_exp
-; give stat exp
+; give stat exp (each one's lowest bit stays: a MINT's, see GetMint)
 	ld hl, MON_STAT_EXP + 1
 	add hl, bc
 	ld d, h
@@ -7049,6 +7049,9 @@ GiveExperiencePoints:
 	ld c, NUM_EXP_STATS
 .stat_exp_loop
 	inc hl
+	ld a, [de]
+	and 1
+	ld b, a
 	ld a, [de]
 	add [hl]
 	ld [de], a
@@ -7089,6 +7092,10 @@ GiveExperiencePoints:
 	ld [de], a
 
 .stat_exp_awarded
+	ld a, [de]
+	and ~1
+	or b
+	ld [de], a
 	inc de
 	inc de
 	dec c

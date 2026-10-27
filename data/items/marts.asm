@@ -130,12 +130,13 @@ MartGoldenrod3F:
 	db -1 ; end
 
 MartGoldenrod4F:
-	db 12 ; # items
+	db 13 ; # items
 	db PROTEIN
 	db IRON
 	db CARBOS
 	db CALCIUM
 	db HP_UP
+	db MINT
 	db LINKING_CORD
 	db FIRE_STONE
 	db WATER_STONE
@@ -341,12 +342,13 @@ MartCeladon4F:
 	db -1 ; end
 
 MartCeladon5F1:
-	db 12 ; # items
+	db 13 ; # items
 	db HP_UP
 	db PROTEIN
 	db IRON
 	db CARBOS
 	db CALCIUM
+	db MINT
 	db LINKING_CORD ; (the evolution items, as in GOLDENROD)
 	db FIRE_STONE
 	db WATER_STONE

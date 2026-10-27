@@ -82,6 +82,9 @@ NewGameWithDemoState:
 	call PlayerProfileSetup
 	call OakSpeech
 	call InitializeWorld
+	ld de, EVENT_MINT_BITS_CLEARED ; (see ClearOldMintBits)
+	ld b, SET_FLAG
+	call EventFlagAction
 
 	ld a, LANDMARK_NEW_BARK_TOWN
 	ld [wPrevLandmark], a
@@ -392,6 +395,7 @@ Continue:
 	call DelayFrames
 	farcall AskDifficultyIfUnset
 	farcall ApplyNaturesToOldSave
+	farcall ClearOldMintBits
 	farcall InitRoamMons
 	farcall JumpRoamMons
 	farcall CopyMysteryGiftReceivedDecorationsToPC

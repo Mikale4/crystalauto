@@ -146,7 +146,7 @@ ItemNames::
 	li "DRAGON FANG"
 	li "TERU-SAMA"
 	li "LEFTOVERS"
-	li "TERU-SAMA"
+	li "MINT"
 	li "TERU-SAMA"
 	li "TERU-SAMA"
 	li "MYSTERYBERRY"

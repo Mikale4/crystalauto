@@ -160,7 +160,7 @@ ItemEffects:
 	dw EvoStoneEffect      ; DRAGON_FANG
 	dw NoEffect            ; ITEM_91
 	dw NoEffect            ; LEFTOVERS
-	dw NoEffect            ; ITEM_93
+	dw MintEffect          ; MINT
 	dw NoEffect            ; ITEM_94
 	dw NoEffect            ; ITEM_95
 	dw RestorePPEffect     ; MYSTERYBERRY
@@ -1202,6 +1202,39 @@ NoEffectMessage:
 	ld hl, ItemWontHaveEffectText
 	call PrintText
 	jp ClearPalettes
+
+MintEffect:
+; a nature, from a list (see ChooseMintNature), then the POKéMON it's for
+	farcall ChooseMintNature
+	jr c, .cancel
+	push de
+	ld b, PARTYMENUACTION_HEALING_ITEM
+	call UseItem_SelectMon
+	pop de
+	jp c, RareCandy_StatBooster_ExitMenu
+	push de
+	call RareCandy_StatBooster_GetParameters
+	pop de
+	call GiveMintNature
+	jp c, NoEffectMessage ; (it has that nature)
+	call UpdateStatsAfterItem
+	call Play_SFX_FULL_HEAL
+	ld hl, .NatureText
+	call PrintText
+	jp UseDisposableItem
+
+.cancel
+	xor a
+	ld [wItemEffectSucceeded], a
+	ret
+
+.NatureText:
+	text_ram wStringBuffer1
+	text "'s"
+	line "nature is @"
+	text_ram wStringBuffer2
+	text "!"
+	prompt
 
 UpdateStatsAfterItem:
 	ld a, MON_MAXHP

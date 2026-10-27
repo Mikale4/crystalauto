@@ -22,6 +22,12 @@ FruitTreeScript::
 	callasm PickedFruitTree
 	specialsound
 	itemnotify
+; (1 in 4 times, a MINT has grown by the tree too: see engine/items/mint.asm)
+	random 4
+	ifnotequal 0, .end
+	writetext FoundMintText
+	promptbutton
+	verbosegiveitem MINT
 	sjump .end
 
 .packisfull
@@ -115,3 +121,8 @@ FruitPackIsFullText:
 NothingHereText:
 	text_far _NothingHereText
 	text_end
+
+FoundMintText:
+	text "Oh? A MINT has"
+	line "grown by it too!"
+	done

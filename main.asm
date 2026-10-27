@@ -780,6 +780,11 @@ SECTION "Save Repair", ROMX
 INCLUDE "engine/pokemon/save_repair.asm"
 
 
+SECTION "Mints", ROMX
+
+INCLUDE "engine/items/mint.asm"
+
+
 SECTION "AI Switch", ROMX
 
 INCLUDE "engine/battle/ai/switch.asm"

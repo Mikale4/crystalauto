@@ -992,14 +992,20 @@ LoadOrangePage:
 	db "SPECIAL@"
 
 GetNatureName:
-; de: the DVs; their nature's name to wStringBuffer1
+; de: a POKéMON's DVs (see GetDVsNature); its nature's name to wStringBuffer1
 	farcall GetDVsNature
+	ld de, wStringBuffer1
+	; fallthrough
+
+CopyNatureName::
+; c: a nature; its name to de
+	push de
 	ld a, c
 	ld hl, NatureNames
 	call GetNthString
 	ld d, h
 	ld e, l
-	ld hl, wStringBuffer1
+	pop hl
 	jp CopyName2
 
 INCLUDE "data/pokemon/nature_names.asm"
