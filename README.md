@@ -347,6 +347,7 @@ Some moves work in new ways of their own:
 | MEAN LOOK, SPIDER WEB | they can't be chosen: used only as the Pokémon comes in |
 | SWORDS DANCE, GROWTH, AMNESIA, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE (not a GHOST's), FOCUS ENERGY | they can't be chosen: used as the Pokémon comes in, each once a battle (see below) |
 | GROWL, CHARM, TAIL WHIP, LEER, SCREECH, STRING SHOT, COTTON SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN, KINESIS, FLASH, SWEET SCENT | the same: they can't be chosen, and lower the foe's stat as the Pokémon comes in, each once a battle (see below) |
+| MIST, HAZE | the same: as the Pokémon comes in, each once a battle; MIST before the other side's stat-lowering moves, HAZE after everything else (see below) |
 | BATON PASS | passes no stat changes (nor FOCUS ENERGY's): the Pokémon coming in starts with none, and the rest is passed as before |
 | AMNESIA | as in the first games: SPCL.ATK and SPCL.DEF, 2 stages each |
 | GROWTH | ATTACK and SPCL.ATK, 2 stages each |
@@ -453,12 +454,17 @@ Pokémon's move with the most power. As before, the move takes SKETCH's place fo
 HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE when the user
 isn't a GHOST, and FOCUS ENERGY) and the ones that lower the foe's (GROWL, CHARM, TAIL
 WHIP, LEER, SCREECH, STRING SHOT, COTTON SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN,
-KINESIS, FLASH, SWEET SCENT) work as a Pokémon comes in, at the start of its first turn
-out, before its other entry moves (so a foe's PSYCH UP takes them up): it uses each
-of them it knows with PP left (1 PP each), in the order it knows them. Each one once
-a battle, for each Pokémon: after it has gone back, it doesn't use them again when it
-comes back out (another Pokémon still uses its own). BELLY DRUM waits for more than
-half its HP (it would fail); a GHOST's CURSE still curses the foe, and can be chosen.
+KINESIS, FLASH, SWEET SCENT), and MIST and HAZE, work as a Pokémon comes in, at the
+start of its first turn out, before its other entry moves (so a foe's PSYCH UP takes
+them up): it uses each of them it knows with PP left (1 PP each), in the order it
+knows them. Each one once a battle, for each Pokémon: after it has gone back, it
+doesn't use them again when it comes back out (another Pokémon still uses its own).
+Both sides' MIST goes first, so it keeps off the other side's GROWL and the like as
+they come in; HAZE goes last, after both sides' others, and resets every stat change
+on both sides (its own side's too, as HAZE always has): it waits until a stat has been
+raised or lowered, on either side, and isn't used before. BELLY DRUM waits for more
+than half its HP (it would fail); a GHOST's CURSE still curses the foe, and can be
+chosen.
 They can't be chosen ("SWORDS DANCE works by itself!"), and one brought back by ENCORE
 or SLEEP TALK fails. AMNESIA raises SPCL.ATK and SPCL.DEF by 2 stages each, as the
 first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each.
@@ -1318,7 +1324,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   move is `ChooseSketchMove` (the player's menu is `MoveSelectionScreen` with
   `wMoveSelectionMenuType` 1, the foe's moves). GROWTH's and AMNESIA's second stat is
   the `secondstatup` command. The status moves that raise the user's stats or lower
-  the foe's are `HandleEntryStatMoves` (from `HandleEntryTransform`, before
+  the foe's, MIST and HAZE are `HandleEntryStatMoves` (three passes, `wEntryStatPhase`:
+  MIST, the rest, HAZE; from `HandleEntryTransform`, before
   `HandleEntryMoves`; `IsEntryStatMove` and `EntryStatEffects`), each POKéMON's used
   this battle in `wPlayerStatMovesUsed` and `wEnemyStatMovesUsed` (by party slot, a
   bit for each move slot). BATON PASS resets the stat levels and FOCUS ENERGY in

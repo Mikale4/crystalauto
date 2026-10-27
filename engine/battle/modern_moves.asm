@@ -629,12 +629,22 @@ HandleEntryTransform::
 
 HandleEntryStatMoves:
 ; The status moves that raise the user's own stats (SWORDS DANCE, GROWTH, AMNESIA...,
-; and FOCUS ENERGY) or lower the foe's (GROWL, LEER, SAND-ATTACK...) work as a
-; POKéMON comes in, before its other entry moves (so a PSYCH UP takes them up): at
-; the start of its first turn out, it uses each of them it knows with PP left (1 PP
-; each, in the order it knows them), each once a battle (wPlayerStatMovesUsed: each
-; POKéMON's, by move slot); BELLY DRUM only over half its HP (it would fail). They
-; can't be chosen (see CantChooseMove; IsEntryStatMove).
+; and FOCUS ENERGY) or lower the foe's (GROWL, LEER, SAND-ATTACK...), MIST and HAZE
+; work as a POKéMON comes in, before its other entry moves (so a PSYCH UP takes them
+; up): at the start of its first turn out, it uses each of them it knows with PP
+; left (1 PP each, in the order it knows them), each once a battle
+; (wPlayerStatMovesUsed: each POKéMON's, by move slot). Both sides' MIST first (to
+; keep the other side's off), then the rest, then HAZE (only when a stat has been
+; raised or lowered, on either side: it resets them all). BELLY DRUM only over half
+; its HP (it would fail). They can't be chosen (see CantChooseMove;
+; IsEntryStatMove).
+	xor a ; (MIST)
+	call .Phase
+	ld a, 1 ; (the rest)
+	call .Phase
+	ld a, 2 ; (HAZE)
+.Phase:
+	ld [wEntryStatPhase], a
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -756,10 +766,31 @@ HandleEntryStatMoves:
 	ret
 
 .WouldWork:
-; carry unless move b is BELLY DRUM and the user has half its HP or less
+; carry if move b is one for this phase (wEntryStatPhase: 0 MIST, 1 the rest,
+; 2 HAZE), unless it's BELLY DRUM and the user has half its HP or less, or HAZE and
+; no stat has been raised or lowered
 	ld l, b
 	ld a, MOVE_EFFECT
 	call GetMoveAttribute
+	ld e, a
+	ld c, 0
+	cp EFFECT_MIST
+	jr z, .got_phase
+	ld c, 2
+	cp EFFECT_RESET_STATS
+	jr z, .got_phase
+	ld c, 1
+.got_phase
+	ld a, [wEntryStatPhase]
+	cp c
+	jr z, .this_phase
+	and a
+	ret
+
+.this_phase
+	ld a, e
+	cp EFFECT_RESET_STATS
+	jr z, .haze
 	cp EFFECT_BELLY_DRUM
 	scf
 	ret nz
@@ -783,6 +814,24 @@ HandleEntryStatMoves:
 	sub e
 	ld a, b
 	sbc d
+	ret
+
+.haze
+; (a stat level that isn't BASE_STAT_LEVEL, on either side)
+	ld hl, wPlayerStatLevels
+	call .Changed
+	ret c
+	ld hl, wEnemyStatLevels
+.Changed:
+	ld c, NUM_LEVEL_STATS
+.level
+	ld a, [hli]
+	cp BASE_STAT_LEVEL
+	scf
+	ret nz
+	dec c
+	jr nz, .level
+	and a
 	ret
 
 IsEntryStatMove:
@@ -830,8 +879,8 @@ EntryStatEffects:
 ; the user's: SWORDS DANCE, GROWTH, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE,
 ; HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, AMNESIA, BELLY DRUM, FOCUS
 ; ENERGY; the foe's: GROWL, CHARM, TAIL WHIP, LEER, SCREECH, STRING SHOT, COTTON
-; SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN, KINESIS, FLASH, SWEET SCENT (see
-; IsEntryStatMove)
+; SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN, KINESIS, FLASH, SWEET SCENT; MIST and
+; HAZE (see IsEntryStatMove)
 	db EFFECT_ATTACK_UP
 	db EFFECT_DEFENSE_UP
 	db EFFECT_SPEED_UP
@@ -863,6 +912,8 @@ EntryStatEffects:
 	db EFFECT_SP_DEF_DOWN_2
 	db EFFECT_ACCURACY_DOWN_2
 	db EFFECT_EVASION_DOWN_2
+	db EFFECT_MIST
+	db EFFECT_RESET_STATS ; HAZE
 	db -1
 
 HandleEntryMoves:

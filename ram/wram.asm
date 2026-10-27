@@ -664,6 +664,7 @@ wPlayerScreensUsed:: db ; SCREENS_REFLECT, _LIGHT_SCREEN and _SAFEGUARD: the scr
 wEnemyScreensUsed:: db
 wPlayerStatMovesUsed:: ds PARTY_LENGTH ; each POKéMON's status moves that raise or lower stats (bit 0: its first) used this battle (see HandleEntryStatMoves)
 wEnemyStatMovesUsed:: ds PARTY_LENGTH
+wEntryStatPhase:: db ; (HandleEntryStatMoves) 0: MIST, 1: the rest, 2: HAZE
 wConversionMatchup:: db ; (HandleAutoConversion: the attack against the target as it is)
 wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
 wBattleInfoOK:: db ; whether START opens the battle info screen from the menu waiting now (see BattleInfoScreen)
