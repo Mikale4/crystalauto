@@ -1,15 +1,53 @@
 	object_const_def
 	const CINNABARISLAND_BLUE
+	const CINNABARISLAND_MEW
 
 CinnabarIsland_MapScripts:
 	def_scene_scripts
 
 	def_callbacks
 	callback MAPCALLBACK_NEWMAP, CinnabarIslandFlypointCallback
+	callback MAPCALLBACK_OBJECTS, CinnabarIslandMewCallback
 
 CinnabarIslandFlypointCallback:
 	setflag ENGINE_FLYPOINT_CINNABAR
 	endcallback
+
+CinnabarIslandMewCallback:
+; MEW plays where its mansion was once MEWTWO has joined the player, till it joins
+; too
+	disappear CINNABARISLAND_MEW
+	checkevent EVENT_FOUGHT_MEWTWO
+	iffalse .Done
+	checkevent EVENT_FOUGHT_MEW
+	iftrue .Done
+	appear CINNABARISLAND_MEW
+.Done:
+	endcallback
+
+CinnabarIslandMewScript:
+; a boss (see engine/battle/bosses.asm)
+	opentext
+	writetext CinnabarIslandMewText
+	cry MEW
+	waitsfx
+	closetext
+	loadwildmon MEW, 65
+	startbattle
+	ifequal LOSE, .Lost
+	disappear CINNABARISLAND_MEW
+	setevent EVENT_FOUGHT_MEW
+.Lost:
+	reloadmapafterbattle
+	end
+
+CinnabarIslandMewText:
+	text "MEW came looking"
+	line "for MEWTWO…"
+
+	para "It wants to play"
+	line "with <PLAYER>!"
+	done
 
 CinnabarIslandBlue:
 	faceplayer
@@ -141,3 +179,4 @@ CinnabarIsland_MapEvents:
 
 	def_object_events
 	object_event  9,  6, SPRITE_BLUE, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, CinnabarIslandBlue, EVENT_BLUE_IN_CINNABAR
+	object_event  7,  1, SPRITE_MEW, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, CinnabarIslandMewScript, EVENT_CINNABAR_ISLAND_MEW

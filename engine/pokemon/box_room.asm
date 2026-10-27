@@ -18,6 +18,21 @@ CheckRoomInBoxes::
 	ccf
 	ret
 
+CheckRoomForGiftMon::
+; (callasm) wScriptVar: TRUE if a POKéMON given would have somewhere to go (the
+; party, or a box)
+	ld a, [wPartyCount]
+	cp PARTY_LENGTH
+	jr c, .room
+	call CheckRoomInBoxes
+	ld a, FALSE
+	jr c, .done
+.room
+	ld a, TRUE
+.done
+	ld [wScriptVar], a
+	ret
+
 MakeRoomInBoxOut::
 ; If the box out is full, make the next box with room the box out (the full one
 ; is put back where it belongs, as BILL's PC always did). Return carry if there's

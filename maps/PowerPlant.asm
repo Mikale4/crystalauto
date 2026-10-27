@@ -7,6 +7,7 @@
 	const POWERPLANT_MANAGER
 	const POWERPLANT_FOREST
 	const POWERPLANT_ZAPDOS_G
+	const POWERPLANT_ZAPDOS
 
 PowerPlant_MapScripts:
 	def_scene_scripts
@@ -14,6 +15,7 @@ PowerPlant_MapScripts:
 	scene_script PowerPlantNoop2Scene, SCENE_POWERPLANT_GUARD_GETS_PHONE_CALL
 
 	def_callbacks
+	callback MAPCALLBACK_OBJECTS, PowerPlantZapdosCallback
 
 PowerPlantNoop1Scene:
 	end
@@ -399,6 +401,7 @@ PowerPlantZapdosScript:
 	ifequal LOSE, .Lost
 	disappear POWERPLANT_ZAPDOS_G
 	setevent EVENT_FOUGHT_ZAPDOS_G
+	appear POWERPLANT_ZAPDOS ; (see PowerPlantZapdosCallback)
 .Lost:
 	reloadmapafterbattle
 	end
@@ -408,6 +411,40 @@ PowerPlantZapdosText:
 	line "from a faraway"
 	cont "land! It's raring"
 	cont "to fight!"
+	done
+
+PowerPlantZapdosCallback:
+; ZAPDOS is back once GALARIAN ZAPDOS has joined the player,
+; till it joins too
+	disappear POWERPLANT_ZAPDOS
+	checkevent EVENT_FOUGHT_ZAPDOS_G
+	iffalse .Done
+	checkevent EVENT_FOUGHT_ZAPDOS
+	iftrue .Done
+	appear POWERPLANT_ZAPDOS
+.Done:
+	endcallback
+
+PowerPlantKantoZapdosScript:
+; a boss too (see engine/battle/bosses.asm)
+	opentext
+	writetext PowerPlantKantoZapdosText
+	cry ZAPDOS
+	waitsfx
+	closetext
+	loadwildmon ZAPDOS, 50
+	startbattle
+	ifequal LOSE, .Lost
+	disappear POWERPLANT_ZAPDOS
+	setevent EVENT_FOUGHT_ZAPDOS
+.Lost:
+	reloadmapafterbattle
+	end
+
+PowerPlantKantoZapdosText:
+	text "ZAPDOS has come"
+	line "back to the POWER"
+	cont "PLANT!"
 	done
 
 PowerPlant_MapEvents:
@@ -433,3 +470,4 @@ PowerPlant_MapEvents:
 	object_event 14, 10, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, PowerPlantManager, -1
 	object_event  5,  5, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, Forest, -1
 	object_event 18,  2, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, PowerPlantZapdosScript, EVENT_FOUGHT_ZAPDOS_G
+	object_event 18,  2, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, PowerPlantKantoZapdosScript, EVENT_POWER_PLANT_ZAPDOS

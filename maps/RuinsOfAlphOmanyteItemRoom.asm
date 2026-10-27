@@ -3,6 +3,7 @@
 	const RUINSOFALPHOMANYTEITEMROOM_POKE_BALL2
 	const RUINSOFALPHOMANYTEITEMROOM_POKE_BALL3
 	const RUINSOFALPHOMANYTEITEMROOM_POKE_BALL4
+	const RUINSOFALPHOMANYTEITEMROOM_HELIX_FOSSIL
 
 RuinsOfAlphOmanyteItemRoom_MapScripts:
 	def_scene_scripts
@@ -20,6 +21,9 @@ RuinsOfAlphOmanyteItemRoomStardust:
 
 RuinsOfAlphOmanyteItemRoomStarPiece:
 	itemball STAR_PIECE
+
+RuinsOfAlphOmanyteItemRoomHelixFossil:
+	itemball HELIX_FOSSIL
 
 RuinsOfAlphOmanyteItemRoomAncientReplica:
 	jumptext RuinsOfAlphOmanyteItemRoomAncientReplicaText
@@ -50,3 +54,4 @@ RuinsOfAlphOmanyteItemRoom_MapEvents:
 	object_event  5,  6, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphOmanyteItemRoomMysticWater, EVENT_PICKED_UP_MYSTIC_WATER_FROM_OMANYTE_ITEM_ROOM
 	object_event  2,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphOmanyteItemRoomStardust, EVENT_PICKED_UP_STARDUST_FROM_OMANYTE_ITEM_ROOM
 	object_event  5,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphOmanyteItemRoomStarPiece, EVENT_PICKED_UP_STAR_PIECE_FROM_OMANYTE_ITEM_ROOM
+	object_event  3,  2, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphOmanyteItemRoomHelixFossil, EVENT_RUINS_OF_ALPH_HELIX_FOSSIL

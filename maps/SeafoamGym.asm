@@ -2,12 +2,14 @@
 	const SEAFOAMGYM_BLAINE
 	const SEAFOAMGYM_GYM_GUIDE
 	const SEAFOAMGYM_ARTICUNO_G
+	const SEAFOAMGYM_ARTICUNO
 
 SeafoamGym_MapScripts:
 	def_scene_scripts
 	scene_script SeafoamGymNoopScene ; unusable
 
 	def_callbacks
+	callback MAPCALLBACK_OBJECTS, SeafoamGymArticunoCallback
 
 SeafoamGymNoopScene:
 	end
@@ -168,6 +170,7 @@ SeafoamGymArticunoScript:
 	ifequal LOSE, .Lost
 	disappear SEAFOAMGYM_ARTICUNO_G
 	setevent EVENT_FOUGHT_ARTICUNO_G
+	appear SEAFOAMGYM_ARTICUNO ; (see SeafoamGymArticunoCallback)
 .Lost:
 	reloadmapafterbattle
 	end
@@ -177,6 +180,39 @@ SeafoamGymArticunoText:
 	line "from a faraway"
 	cont "land! Its eyes"
 	cont "glow…"
+	done
+
+SeafoamGymArticunoCallback:
+; ARTICUNO is back once GALARIAN ARTICUNO has joined the player,
+; till it joins too
+	disappear SEAFOAMGYM_ARTICUNO
+	checkevent EVENT_FOUGHT_ARTICUNO_G
+	iffalse .Done
+	checkevent EVENT_FOUGHT_ARTICUNO
+	iftrue .Done
+	appear SEAFOAMGYM_ARTICUNO
+.Done:
+	endcallback
+
+SeafoamGymKantoArticunoScript:
+; a boss too (see engine/battle/bosses.asm)
+	opentext
+	writetext SeafoamGymKantoArticunoText
+	cry ARTICUNO
+	waitsfx
+	closetext
+	loadwildmon ARTICUNO, 50
+	startbattle
+	ifequal LOSE, .Lost
+	disappear SEAFOAMGYM_ARTICUNO
+	setevent EVENT_FOUGHT_ARTICUNO
+.Lost:
+	reloadmapafterbattle
+	end
+
+SeafoamGymKantoArticunoText:
+	text "ARTICUNO has come"
+	line "back to SEAFOAM!"
 	done
 
 SeafoamGym_MapEvents:
@@ -193,3 +229,4 @@ SeafoamGym_MapEvents:
 	object_event  5,  2, SPRITE_BLAINE, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, SeafoamGymBlaineScript, -1
 	object_event  6,  5, SPRITE_GYM_GUIDE, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SeafoamGymGuideScript, EVENT_SEAFOAM_GYM_GYM_GUIDE
 	object_event  2,  4, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_PINK, OBJECTTYPE_SCRIPT, 0, SeafoamGymArticunoScript, EVENT_FOUGHT_ARTICUNO_G
+	object_event  2,  4, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, SeafoamGymKantoArticunoScript, EVENT_SEAFOAM_GYM_ARTICUNO

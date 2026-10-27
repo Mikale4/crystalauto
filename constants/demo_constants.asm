@@ -113,7 +113,7 @@ DEF DEMO_EDGE_LENGTH EQU 5
 	const DEMOSEARCH_HOP    ; 3: a region it's going round to (wDemoHopNodes; see DemoStartHop)
 DEF DEMO_HOP_KEY EQU $fffe ; (wDemoRouteTo for DEMOSEARCH_HOP)
 DEF DEMO_ROUTE_HERE EQU -2 ; (wDemoRouteKind: it's in one of them)
-DEF NUM_DEMO_TARGETS EQU 592
+DEF NUM_DEMO_TARGETS EQU 595
 
 ; DemoTargets kinds
 	const_def

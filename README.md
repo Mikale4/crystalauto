@@ -38,6 +38,11 @@ trainers' teams, and the GALARIAN birds wait as bosses. Every Pokémon's **level
 moves and EGG moves combine GEN 1's and GEN 2's**, and **GEN 1's TMs** are back
 beside this game's.
 
+**Every Pokémon can be caught in one game**, no trading needed: PROF.OAK gives the
+KANTO starters, the PEWTER MUSEUM's scientist revives FOSSILS from the RUINS OF ALPH,
+the KANTO birds, MEWTWO and MEW wait as bosses, and MAREEP, VULPIX, MANKEY and
+GIRAFARIG live in the wild.
+
 It is built from the [pret/pokecrystal][pokecrystal] disassembly. The rest of the
 game is unchanged, and so is the save format, so saves from the original game
 carry over.
@@ -633,6 +638,34 @@ The [list of the new Pokémon](docs/new_pokemon.md) credits each sprite's artist
 Their pics aren't animated.
 
 
+## Catch them all
+
+Every Pokémon can be had in one game, without trading with another one (see
+[`tools/check_obtainable.py`](tools/check_obtainable.py)):
+
+- **PROF.OAK's KANTO Pokémon**: in his lab in PALLET TOWN, three POKé BALLs on the
+  table hold BULBASAUR, CHARMANDER and SQUIRTLE, each at level 5. Take one once he
+  has welcomed you to KANTO, and the other two once you have all of KANTO's BADGES.
+- **FOSSILS**: each of the RUINS OF ALPH's item rooms has one more POKé BALL: the
+  DOME FOSSIL in KABUTO's, the HELIX FOSSIL in OMANYTE's, the OLD AMBER in
+  AERODACTYL's (they're KEY ITEMS). The PEWTER MUSEUM is still closed, but its
+  scientist stands outside and brings a FOSSIL back to life: KABUTO, OMANYTE or
+  AERODACTYL, at level 20.
+- **The KANTO birds**: once a GALARIAN bird has joined you, the KANTO one is back in
+  its place: ARTICUNO at the SEAFOAM ISLANDS, ZAPDOS in the POWER PLANT, MOLTRES in
+  VICTORY ROAD. They're level 50 [bosses](#boss-pokémon).
+- **MEWTWO** waits deep in SILVER CAVE (at the far end of a side room) once you
+  have beaten RED: a level 70 boss. Once it has joined you, **MEW** plays on CINNABAR
+  ISLAND, where its mansion stood: a level 65 boss.
+- **The wild**: CRYSTAL had no MAREEP, VULPIX, MANKEY or GIRAFARIG. MAREEP are on
+  ROUTE 32 in the morning and day, VULPIX on ROUTE 37 at night, MANKEY on ROUTE 42 and
+  GIRAFARIG on ROUTE 43 in the morning and day. Their evolutions (FARIGIRAF too) come
+  as usual.
+
+A complete POKéDEX earns the diploma from the GAME FREAK designer in CELADON
+MANSION, as it always did.
+
+
 ## GEN 1 and GEN 2 moves together
 
 - **Level-up moves**: every Pokémon learns its CRYSTAL moves, and the ones RED and
@@ -702,6 +735,11 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | GALARIAN ARTICUNO (SEAFOAM ISLANDS) | 50 | GALARIAN MR. MIME, GALARIAN SLOWPOKE, GALARIAN PONYTA, NATU, GIRAFARIG |
 | GALARIAN ZAPDOS (POWER PLANT) | 50 | GALARIAN FARFETCH'D, MACHOP, MANKEY, HERACROSS, TYROGUE |
 | GALARIAN MOLTRES (VICTORY ROAD) | 50 | MURKROW, SNEASEL, HOUNDOUR, ALOLAN MEOWTH, ALOLAN RATTATA |
+| ARTICUNO (SEAFOAM ISLANDS, after GALARIAN ARTICUNO) | 50 | SEEL, SHELLDER, SWINUB, SNEASEL, DELIBIRD |
+| ZAPDOS (POWER PLANT, after GALARIAN ZAPDOS) | 50 | PIKACHU, MAGNEMITE, ELEKID, MAREEP, DODUO |
+| MOLTRES (VICTORY ROAD, after GALARIAN MOLTRES) | 50 | PONYTA, SLUGMA, MAGBY, SPEAROW, SANDSHREW |
+| MEWTWO (SILVER CAVE, after RED) | 70 | ABRA, GASTLY, DROWZEE, CHANSEY, DITTO |
+| MEW (CINNABAR ISLAND, after MEWTWO) | 65 | GRIMER, KOFFING, PONYTA, VULPIX, MAGBY |
 
 On NORMAL the allies are two levels under the boss. On HARD and EXTREME they're at
 the level cap, and the boss at least two above it; on EXTREME they also have their
@@ -830,7 +868,7 @@ UP and DOWN pick one, LEFT, RIGHT and A change it, and DONE (or START) sets off.
   Pokémon from it evolves as that line does, as far as its level allows.
 
 The other Pokémon you meet only once (SUDOWOODO, the red GYARADOS, SNORLAX, …),
-gifts, EGGS and trades stay as they are. A swarm is random too, though the news of
+gifts (PROF.OAK's and the FOSSILS' too), EGGS and trades stay as they are. A swarm is random too, though the news of
 it still names the Pokémon that would have swarmed.
 
 
@@ -1344,6 +1382,30 @@ IDs nothing holds any more to be taken back.
   the other two, formerly unused event flags), with their teams in `BossTeams`.
 - [`docs/new_pokemon.md`](docs/new_pokemon.md) lists them, where to find them, and
   who drew their sprites.
+
+### Catch them all
+
+- [`tools/check_obtainable.py`](tools/check_obtainable.py) lists every species
+  nothing gives: not in the wild tables, the gifts (`givepoke`, `giveegg`, a
+  `setmonval` before `givepoke 0`, the ODD EGG, SHUCKIE), the trades or the
+  `loadwildmon` bosses, nor evolving or hatching from one that is (a species that
+  can breed lays its family's first stage; a genderless one needs DITTO).
+- PROF.OAK's table is three POKé BALL objects in
+  [`maps/OaksLab.asm`](maps/OaksLab.asm); the FOSSILS are `HELIX_FOSSIL`,
+  `DOME_FOSSIL` and `OLD_AMBER` (formerly unused items, KEY ITEMS), found in the
+  RUINS OF ALPH's item rooms and revived in
+  [`maps/PewterCity.asm`](maps/PewterCity.asm). Gift scripts first ask
+  `CheckRoomForGiftMon` (in [`engine/pokemon/box_room.asm`](engine/pokemon/box_room.asm))
+  whether the party or a box has room.
+- The KANTO birds share their GALARIAN counterparts' places; a
+  `MAPCALLBACK_OBJECTS` callback shows one once its counterpart has joined you
+  (and the counterpart's script makes it appear at once). MEWTWO is in
+  [`maps/SilverCaveItemRooms.asm`](maps/SilverCaveItemRooms.asm) and MEW in
+  [`maps/CinnabarIsland.asm`](maps/CinnabarIsland.asm), with `SPRITE_MEWTWO` and
+  `SPRITE_MEW` (their menu icons, like the other Pokémon sprites); outdoors, MEW and
+  PEWTER's scientist take the TEACHER's place in their map groups' sprite sets
+  ([`data/maps/outdoor_sprites.asm`](data/maps/outdoor_sprites.asm)), unused there.
+  Their teams are in `BossTeams`, and the event flags are formerly unused ones.
 
 ### GEN 1's TMs
 

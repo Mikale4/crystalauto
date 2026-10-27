@@ -1324,7 +1324,7 @@ JohtoGrassWildMons:
 	dbw 4, EKANS
 	dbw 5, RATTATA
 	dbw 7, BELLSPROUT
-	dbw 6, HOPPIP
+	dbw 6, MAREEP
 	dbw 7, PIDGEY
 	dbw 6, AZURILL
 	dbw 7, AZURILL
@@ -1332,7 +1332,7 @@ JohtoGrassWildMons:
 	dbw 4, EKANS
 	dbw 5, RATTATA
 	dbw 7, BELLSPROUT
-	dbw 6, HOPPIP
+	dbw 6, MAREEP
 	dbw 7, PIDGEY
 	dbw 6, AZURILL
 	dbw 7, AZURILL
@@ -1480,7 +1480,7 @@ JohtoGrassWildMons:
 	dbw 13, SPINARAK
 	dbw 14, STANTLER
 	dbw 15, HOOTHOOT
-	dbw 16, STANTLER
+	dbw 16, VULPIX
 	dbw 15, NOCTOWL
 	dbw 15, PONYTA_G
 	dbw 15, PONYTA_G
@@ -1547,7 +1547,7 @@ JohtoGrassWildMons:
 	; morn
 	dbw 13, EKANS
 	dbw 14, SPEAROW
-	dbw 15, RATTATA
+	dbw 15, MANKEY
 	dbw 16, RATICATE
 	dbw 15, ARBOK
 	dbw 16, FEAROW
@@ -1555,7 +1555,7 @@ JohtoGrassWildMons:
 	; day
 	dbw 13, EKANS
 	dbw 14, SPEAROW
-	dbw 15, RATTATA
+	dbw 15, MANKEY
 	dbw 16, RATICATE
 	dbw 15, ARBOK
 	dbw 16, FEAROW
@@ -1574,7 +1574,7 @@ JohtoGrassWildMons:
 	db 10 percent, 10 percent, 10 percent ; encounter rates: morn/day/nite
 	; morn
 	dbw 15, SENTRET
-	dbw 16, PIDGEOTTO
+	dbw 16, GIRAFARIG
 	dbw 16, FARFETCH_D
 	dbw 16, FARFETCH_D_G
 	dbw 17, RATICATE
@@ -1582,7 +1582,7 @@ JohtoGrassWildMons:
 	dbw 17, FURRET
 	; day
 	dbw 15, SENTRET
-	dbw 16, PIDGEOTTO
+	dbw 16, GIRAFARIG
 	dbw 16, FARFETCH_D
 	dbw 16, FARFETCH_D_G
 	dbw 17, RATICATE

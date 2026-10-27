@@ -3,6 +3,9 @@
 	const OAKSLAB_SCIENTIST1
 	const OAKSLAB_SCIENTIST2
 	const OAKSLAB_SCIENTIST3
+	const OAKSLAB_BULBASAUR_BALL
+	const OAKSLAB_CHARMANDER_BALL
+	const OAKSLAB_SQUIRTLE_BALL
 
 OaksLab_MapScripts:
 	def_scene_scripts
@@ -16,13 +19,18 @@ Oak:
 	faceplayer
 	opentext
 	checkevent EVENT_OPENED_MT_SILVER
-	iftrue .CheckPokedex
+	iftrue .CheckStarters
 	checkevent EVENT_TALKED_TO_OAK_IN_KANTO
 	iftrue .CheckBadges
 	writetext OakWelcomeKantoText
 	promptbutton
 	setevent EVENT_TALKED_TO_OAK_IN_KANTO
 .CheckBadges:
+	checkevent EVENT_GOT_A_KANTO_STARTER
+	iftrue .Badges
+	writetext OakKantoStartersText
+	promptbutton
+.Badges:
 	readvar VAR_BADGES
 	ifequal NUM_BADGES, .OpenMtSilver
 	ifequal NUM_JOHTO_BADGES, .Complain
@@ -41,6 +49,17 @@ Oak:
 	writetext OakOpenMtSilverText
 	promptbutton
 	setevent EVENT_OPENED_MT_SILVER
+.CheckStarters:
+; with all of KANTO's BADGES, every POKéMON on the table may go
+	checkevent EVENT_GOT_BULBASAUR_FROM_OAK
+	iffalse .StartersLeft
+	checkevent EVENT_GOT_CHARMANDER_FROM_OAK
+	iffalse .StartersLeft
+	checkevent EVENT_GOT_SQUIRTLE_FROM_OAK
+	iftrue .CheckPokedex
+.StartersLeft:
+	writetext OakKantoStartersAllText
+	promptbutton
 	sjump .CheckPokedex
 
 .Complain:
@@ -52,6 +71,109 @@ Oak:
 	writetext OakYesKantoBadgesText
 	promptbutton
 	sjump .CheckPokedex
+
+OaksLabBulbasaurBallScript:
+	scall OaksLabStarterBallCheckScript
+	refreshscreen
+	pokepic BULBASAUR
+	cry BULBASAUR
+	waitbutton
+	closepokepic
+	opentext
+	writetext OaksLabTakeBulbasaurText
+	yesorno
+	iffalse OaksLabStarterBallNoScript
+	callasm CheckRoomForGiftMon
+	iffalse OaksLabStarterBallNoRoomScript
+	setmonval BULBASAUR
+	scall OaksLabGiveStarterScript
+	disappear OAKSLAB_BULBASAUR_BALL
+	end
+
+OaksLabCharmanderBallScript:
+	scall OaksLabStarterBallCheckScript
+	refreshscreen
+	pokepic CHARMANDER
+	cry CHARMANDER
+	waitbutton
+	closepokepic
+	opentext
+	writetext OaksLabTakeCharmanderText
+	yesorno
+	iffalse OaksLabStarterBallNoScript
+	callasm CheckRoomForGiftMon
+	iffalse OaksLabStarterBallNoRoomScript
+	setmonval CHARMANDER
+	scall OaksLabGiveStarterScript
+	disappear OAKSLAB_CHARMANDER_BALL
+	end
+
+OaksLabSquirtleBallScript:
+	scall OaksLabStarterBallCheckScript
+	refreshscreen
+	pokepic SQUIRTLE
+	cry SQUIRTLE
+	waitbutton
+	closepokepic
+	opentext
+	writetext OaksLabTakeSquirtleText
+	yesorno
+	iffalse OaksLabStarterBallNoScript
+	callasm CheckRoomForGiftMon
+	iffalse OaksLabStarterBallNoRoomScript
+	setmonval SQUIRTLE
+	scall OaksLabGiveStarterScript
+	disappear OAKSLAB_SQUIRTLE_BALL
+	end
+
+OaksLabStarterBallCheckScript:
+; Go on only if the player may take one of PROF.OAK's KANTO POKéMON: after he
+; offers them (on the first visit), one; with all of KANTO's BADGES, the rest.
+	checkevent EVENT_TALKED_TO_OAK_IN_KANTO
+	iffalse .NotOffered
+	checkevent EVENT_GOT_A_KANTO_STARTER
+	iffalse .Yes
+	checkevent EVENT_OPENED_MT_SILVER
+	iftrue .Yes
+	opentext
+	writetext OaksLabOnlyOneStarterText
+	waitbutton
+	closetext
+	endall
+
+.NotOffered:
+	opentext
+	writetext OaksLabStarterBallText
+	waitbutton
+	closetext
+	endall
+
+.Yes:
+	end
+
+OaksLabGiveStarterScript:
+; The KANTO POKéMON whose ID is wScriptVar, at level 5
+	getmonname STRING_BUFFER_3, 0
+	writetext OaksLabReceivedStarterText
+	playsound SFX_CAUGHT_MON
+	waitsfx
+	promptbutton
+	givepoke 0, 5
+	setevent EVENT_GOT_A_KANTO_STARTER
+	closetext
+	end
+
+OaksLabStarterBallNoScript:
+	writetext OaksLabStarterBallNoText
+	waitbutton
+	closetext
+	end
+
+OaksLabStarterBallNoRoomScript:
+	writetext OaksLabStarterBallNoRoomText
+	waitbutton
+	closetext
+	end
 
 OaksAssistant1Script:
 	jumptextfaceplayer OaksAssistant1Text
@@ -89,6 +211,80 @@ OakWelcomeKantoText:
 
 	para "out here?"
 	line "Pretty tough, huh?"
+	done
+
+OakKantoStartersText:
+	text "Oh, and see those"
+	line "# BALLS on my"
+	cont "table?"
+
+	para "They hold #MON"
+	line "from KANTO, the"
+	cont "kind I give to new"
+	cont "trainers here."
+
+	para "You won't find"
+	line "them in the wild."
+
+	para "Take one with you,"
+	line "<PLAY_G>!"
+	done
+
+OakKantoStartersAllText:
+	text "The #MON on my"
+	line "table are yours,"
+	cont "too."
+
+	para "A trainer like you"
+	line "should have them!"
+	done
+
+OaksLabStarterBallText:
+	text "It's a # BALL."
+
+	para "PROF.OAK must be"
+	line "keeping it."
+	done
+
+OaksLabOnlyOneStarterText:
+	text "OAK: One is enough"
+	line "for now!"
+
+	para "Come back with all"
+	line "of KANTO's BADGES."
+	done
+
+OaksLabTakeBulbasaurText:
+	text "OAK: BULBASAUR,"
+	line "the grass #MON?"
+	done
+
+OaksLabTakeCharmanderText:
+	text "OAK: CHARMANDER,"
+	line "the fire #MON?"
+	done
+
+OaksLabTakeSquirtleText:
+	text "OAK: SQUIRTLE,"
+	line "the water #MON?"
+	done
+
+OaksLabReceivedStarterText:
+	text "<PLAYER> received"
+	line "@"
+	text_ram wStringBuffer3
+	text "!"
+	done
+
+OaksLabStarterBallNoText:
+	text "OAK: Take your"
+	line "time."
+	done
+
+OaksLabStarterBallNoRoomText:
+	text "OAK: You have no"
+	line "room for it, even"
+	cont "in your PC!"
 	done
 
 OakLabDexCheckText:
@@ -286,3 +482,6 @@ OaksLab_MapEvents:
 	object_event  1,  8, SPRITE_SCIENTIST, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, OaksAssistant1Script, -1
 	object_event  8,  9, SPRITE_SCIENTIST, SPRITEMOVEDATA_WALK_UP_DOWN, 0, 1, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, OaksAssistant2Script, -1
 	object_event  1,  4, SPRITE_SCIENTIST, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, OaksAssistant3Script, -1
+	object_event  6,  3, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OaksLabBulbasaurBallScript, EVENT_GOT_BULBASAUR_FROM_OAK
+	object_event  7,  3, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OaksLabCharmanderBallScript, EVENT_GOT_CHARMANDER_FROM_OAK
+	object_event  8,  3, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OaksLabSquirtleBallScript, EVENT_GOT_SQUIRTLE_FROM_OAK

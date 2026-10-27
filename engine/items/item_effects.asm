@@ -149,13 +149,13 @@ ItemEffects:
 	dw BasementKeyEffect   ; BASEMENT_KEY
 	dw NoEffect            ; PASS
 	dw NoEffect            ; ITEM_87
-	dw NoEffect            ; ITEM_88
+	dw NoEffect            ; HELIX_FOSSIL
 	dw RareCandyEffect     ; ENDLESS_CANDY
 	dw NoEffect            ; CHARCOAL
 	dw RestoreHPEffect     ; BERRY_JUICE
 	dw NoEffect            ; SCOPE_LENS
-	dw NoEffect            ; ITEM_8D
-	dw NoEffect            ; ITEM_8E
+	dw NoEffect            ; DOME_FOSSIL
+	dw NoEffect            ; OLD_AMBER
 	dw EvoStoneEffect      ; METAL_COAT
 	dw EvoStoneEffect      ; DRAGON_FANG
 	dw NoEffect            ; ITEM_91

@@ -4,6 +4,7 @@
 	const PEWTERCITY_GRAMPS
 	const PEWTERCITY_FRUIT_TREE1
 	const PEWTERCITY_FRUIT_TREE2
+	const PEWTERCITY_SCIENTIST
 
 PewterCity_MapScripts:
 	def_scene_scripts
@@ -35,6 +36,80 @@ PewterCityGrampsScript:
 
 .GotSilverWing:
 	writetext PewterCityGrampsText_GotSilverWing
+	waitbutton
+	closetext
+	end
+
+PewterCityFossilScientistScript:
+; The PEWTER MUSEUM's scientist brings FOSSILS back to life (they're found in the
+; RUINS OF ALPH's item rooms).
+	faceplayer
+	opentext
+	checkitem HELIX_FOSSIL
+	iftrue .Helix
+	checkitem DOME_FOSSIL
+	iftrue .Dome
+	checkitem OLD_AMBER
+	iftrue .Amber
+	writetext PewterCityFossilScientistText
+	waitbutton
+	closetext
+	end
+
+.Helix:
+	writetext PewterCityHelixFossilText
+	yesorno
+	iffalse .No
+	callasm CheckRoomForGiftMon
+	iffalse .NoRoom
+	takeitem HELIX_FOSSIL
+	setmonval OMANYTE
+	sjump .Revive
+
+.Dome:
+	writetext PewterCityDomeFossilText
+	yesorno
+	iffalse .No
+	callasm CheckRoomForGiftMon
+	iffalse .NoRoom
+	takeitem DOME_FOSSIL
+	setmonval KABUTO
+	sjump .Revive
+
+.Amber:
+	writetext PewterCityOldAmberText
+	yesorno
+	iffalse .No
+	callasm CheckRoomForGiftMon
+	iffalse .NoRoom
+	takeitem OLD_AMBER
+	setmonval AERODACTYL
+.Revive:
+	writetext PewterCityRevivingText
+	waitbutton
+	closetext
+	special FadeOutToWhite
+	playsound SFX_WARP_FROM
+	waitsfx
+	special FadeInFromWhite
+	opentext
+	getmonname STRING_BUFFER_3, 0
+	writetext PewterCityRevivedText
+	playsound SFX_CAUGHT_MON
+	waitsfx
+	promptbutton
+	givepoke 0, 20
+	closetext
+	end
+
+.No:
+	writetext PewterCityFossilNoText
+	waitbutton
+	closetext
+	end
+
+.NoRoom:
+	writetext PewterCityFossilNoRoomText
 	waitbutton
 	closetext
 	end
@@ -135,6 +210,76 @@ PewterMuseumSignText:
 	para "PEWTER MUSEUM OF"
 	line "SCIENCE is closed"
 	cont "for renovations…"
+
+	para "Our scientist will"
+	line "revive FOSSILS"
+	cont "outside meanwhile."
+	done
+
+PewterCityFossilScientistText:
+	text "The MUSEUM may be"
+	line "closed, but my lab"
+	cont "isn't!"
+
+	para "I can bring a"
+	line "FOSSIL back to"
+	cont "life!"
+
+	para "They say FOSSILS"
+	line "turn up in the"
+	cont "RUINS OF ALPH."
+	done
+
+PewterCityHelixFossilText:
+	text "That's a HELIX"
+	line "FOSSIL! It's from"
+	cont "an OMANYTE."
+
+	para "Shall I bring it"
+	line "back to life?"
+	done
+
+PewterCityDomeFossilText:
+	text "That's a DOME"
+	line "FOSSIL! It's from"
+	cont "a KABUTO."
+
+	para "Shall I bring it"
+	line "back to life?"
+	done
+
+PewterCityOldAmberText:
+	text "That's OLD AMBER!"
+	line "There's AERODACTYL"
+	cont "DNA in it."
+
+	para "Shall I bring it"
+	line "back to life?"
+	done
+
+PewterCityRevivingText:
+	text "Leave it to me!"
+	line "Here goes…"
+	done
+
+PewterCityRevivedText:
+	text "It's alive!"
+
+	para "<PLAYER> received"
+	line "@"
+	text_ram wStringBuffer3
+	text "!"
+	done
+
+PewterCityFossilNoText:
+	text "Come back if you"
+	line "change your mind."
+	done
+
+PewterCityFossilNoRoomText:
+	text "You've no room for"
+	line "a #MON, even in"
+	cont "your PC!"
 	done
 
 PewterCityMtMoonGiftShopSignText:
@@ -177,3 +322,4 @@ PewterCity_MapEvents:
 	object_event 29, 17, SPRITE_GRAMPS, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 2, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, PewterCityGrampsScript, -1
 	object_event 32,  3, SPRITE_FRUIT_TREE, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, PewterCityFruitTree1, -1
 	object_event 30,  3, SPRITE_FRUIT_TREE, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, PewterCityFruitTree2, -1
+	object_event 16, 10, SPRITE_SCIENTIST, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, PewterCityFossilScientistScript, -1

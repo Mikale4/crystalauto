@@ -141,13 +141,13 @@
 	const BASEMENT_KEY ; 85
 	const PASS         ; 86
 	const ITEM_87      ; 87
-	const ITEM_88      ; 88
+	const HELIX_FOSSIL ; 88 (formerly unused, see maps/PewterCity.asm)
 	const ENDLESS_CANDY ; 89 (formerly unused, see engine/events/difficulty.asm)
 	const CHARCOAL     ; 8a
 	const BERRY_JUICE  ; 8b
 	const SCOPE_LENS   ; 8c
-	const ITEM_8D      ; 8d
-	const ITEM_8E      ; 8e
+	const DOME_FOSSIL ; 8d (formerly unused)
+	const OLD_AMBER   ; 8e (formerly unused)
 	const METAL_COAT   ; 8f
 	const DRAGON_FANG  ; 90
 	const ITEM_91      ; 91

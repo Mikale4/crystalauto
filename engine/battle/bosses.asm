@@ -31,6 +31,11 @@ BossTeams:
 	dw ARTICUNO_G, MR__MIME_G, SLOWPOKE_G, PONYTA_G, NATU,      GIRAFARIG ; GALAR's psychic wind
 	dw ZAPDOS_G,  FARFETCH_D_G, MACHOP,  MANKEY,     HERACROSS, TYROGUE    ; GALAR's kicking thunder
 	dw MOLTRES_G, MURKROW,   SNEASEL,   HOUNDOUR,   MEOWTH_A,  RATTATA_A  ; GALAR's dark fire
+	dw ARTICUNO,  SEEL,      SHELLDER,  SWINUB,     SNEASEL,   DELIBIRD   ; SEAFOAM's ice
+	dw ZAPDOS,    PIKACHU,   MAGNEMITE, ELEKID,     MAREEP,    DODUO      ; the POWER PLANT
+	dw MOLTRES,   PONYTA,    SLUGMA,    MAGBY,      SPEAROW,   SANDSHREW  ; VICTORY ROAD's fire
+	dw MEWTWO,    ABRA,      GASTLY,    DROWZEE,    CHANSEY,   DITTO      ; CERULEAN CAVE's
+	dw MEW,       GRIMER,    KOFFING,   PONYTA,     VULPIX,    MAGBY      ; the burned mansion's
 	dw -1
 
 FindBossTeam:

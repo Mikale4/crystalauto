@@ -6,6 +6,7 @@
 	const VICTORYROAD_POKE_BALL4
 	const VICTORYROAD_POKE_BALL5
 	const VICTORYROAD_MOLTRES_G
+	const VICTORYROAD_MOLTRES
 
 VictoryRoad_MapScripts:
 	def_scene_scripts
@@ -13,6 +14,7 @@ VictoryRoad_MapScripts:
 	scene_script VictoryRoadNoop2Scene, SCENE_VICTORYROAD_NOOP
 
 	def_callbacks
+	callback MAPCALLBACK_OBJECTS, VictoryRoadMoltresCallback
 
 VictoryRoadNoop1Scene:
 	end
@@ -250,6 +252,7 @@ VictoryRoadMoltresScript:
 	ifequal LOSE, .Lost
 	disappear VICTORYROAD_MOLTRES_G
 	setevent EVENT_FOUGHT_MOLTRES_G
+	appear VICTORYROAD_MOLTRES ; (see VictoryRoadMoltresCallback)
 .Lost:
 	reloadmapafterbattle
 	end
@@ -259,6 +262,40 @@ VictoryRoadMoltresText:
 	line "from a faraway"
 	cont "land! Its flames"
 	cont "are sinister…"
+	done
+
+VictoryRoadMoltresCallback:
+; MOLTRES is back once GALARIAN MOLTRES has joined the player,
+; till it joins too
+	disappear VICTORYROAD_MOLTRES
+	checkevent EVENT_FOUGHT_MOLTRES_G
+	iffalse .Done
+	checkevent EVENT_FOUGHT_MOLTRES
+	iftrue .Done
+	appear VICTORYROAD_MOLTRES
+.Done:
+	endcallback
+
+VictoryRoadKantoMoltresScript:
+; a boss too (see engine/battle/bosses.asm)
+	opentext
+	writetext VictoryRoadKantoMoltresText
+	cry MOLTRES
+	waitsfx
+	closetext
+	loadwildmon MOLTRES, 50
+	startbattle
+	ifequal LOSE, .Lost
+	disappear VICTORYROAD_MOLTRES
+	setevent EVENT_FOUGHT_MOLTRES
+.Lost:
+	reloadmapafterbattle
+	end
+
+VictoryRoadKantoMoltresText:
+	text "MOLTRES has come"
+	line "back to VICTORY"
+	cont "ROAD!"
 	done
 
 VictoryRoad_MapEvents:
@@ -292,3 +329,4 @@ VictoryRoad_MapEvents:
 	object_event 15, 48, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, VictoryRoadFullHeal, EVENT_VICTORY_ROAD_FULL_HEAL
 	object_event  7, 38, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, VictoryRoadHPUp, EVENT_VICTORY_ROAD_HP_UP
 	object_event  2, 26, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, VictoryRoadMoltresScript, EVENT_FOUGHT_MOLTRES_G
+	object_event  2, 26, SPRITE_MOLTRES, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, VictoryRoadKantoMoltresScript, EVENT_VICTORY_ROAD_MOLTRES

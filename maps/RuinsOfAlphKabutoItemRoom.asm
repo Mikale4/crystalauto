@@ -3,6 +3,7 @@
 	const RUINSOFALPHKABUTOITEMROOM_POKE_BALL2
 	const RUINSOFALPHKABUTOITEMROOM_POKE_BALL3
 	const RUINSOFALPHKABUTOITEMROOM_POKE_BALL4
+	const RUINSOFALPHKABUTOITEMROOM_DOME_FOSSIL
 
 RuinsOfAlphKabutoItemRoom_MapScripts:
 	def_scene_scripts
@@ -20,6 +21,9 @@ RuinsOfAlphKabutoItemRoomHealPowder:
 
 RuinsOfAlphKabutoItemRoomEnergypowder:
 	itemball ENERGYPOWDER
+
+RuinsOfAlphKabutoItemRoomDomeFossil:
+	itemball DOME_FOSSIL
 
 RuinsOfAlphKabutoItemRoomAncientReplica:
 	jumptext RuinsOfAlphKabutoItemRoomAncientReplicaText
@@ -50,3 +54,4 @@ RuinsOfAlphKabutoItemRoom_MapEvents:
 	object_event  5,  6, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphKabutoItemRoomPsncureberry, EVENT_PICKED_UP_PSNCUREBERRY_FROM_KABUTO_ITEM_ROOM
 	object_event  2,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphKabutoItemRoomHealPowder, EVENT_PICKED_UP_HEAL_POWDER_FROM_KABUTO_ITEM_ROOM
 	object_event  5,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphKabutoItemRoomEnergypowder, EVENT_PICKED_UP_ENERGYPOWDER_FROM_KABUTO_ITEM_ROOM
+	object_event  3,  2, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphKabutoItemRoomDomeFossil, EVENT_RUINS_OF_ALPH_DOME_FOSSIL

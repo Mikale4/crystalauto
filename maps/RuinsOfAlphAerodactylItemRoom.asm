@@ -3,6 +3,7 @@
 	const RUINSOFALPHAERODACTYLITEMROOM_POKE_BALL2
 	const RUINSOFALPHAERODACTYLITEMROOM_POKE_BALL3
 	const RUINSOFALPHAERODACTYLITEMROOM_POKE_BALL4
+	const RUINSOFALPHAERODACTYLITEMROOM_OLD_AMBER
 
 RuinsOfAlphAerodactylItemRoom_MapScripts:
 	def_scene_scripts
@@ -20,6 +21,9 @@ RuinsOfAlphAerodactylItemRoomHealPowder:
 
 RuinsOfAlphAerodactylItemRoomEnergyRoot:
 	itemball ENERGY_ROOT
+
+RuinsOfAlphAerodactylItemRoomOldAmber:
+	itemball OLD_AMBER
 
 RuinsOfAlphAerodactylItemRoomAncientReplica:
 	jumptext RuinsOfAlphAerodactylItemRoomAncientReplicaText
@@ -50,3 +54,4 @@ RuinsOfAlphAerodactylItemRoom_MapEvents:
 	object_event  5,  6, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphAerodactylItemRoomMoonStone, EVENT_PICKED_UP_MOON_STONE_FROM_AERODACTYL_ITEM_ROOM
 	object_event  2,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphAerodactylItemRoomHealPowder, EVENT_PICKED_UP_HEAL_POWDER_FROM_AERODACTYL_ITEM_ROOM
 	object_event  5,  4, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphAerodactylItemRoomEnergyRoot, EVENT_PICKED_UP_ENERGY_ROOT_FROM_AERODACTYL_ITEM_ROOM
+	object_event  3,  2, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, RuinsOfAlphAerodactylItemRoomOldAmber, EVENT_RUINS_OF_ALPH_OLD_AMBER

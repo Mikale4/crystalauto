@@ -136,13 +136,13 @@ ItemDescriptions:
 	dw BasementKeyDesc
 	dw PassDesc
 	dw TeruSama9Desc
-	dw TeruSama10Desc
+	dw HelixFossilDesc
 	dw EndlessCandyDesc
 	dw CharcoalDesc
 	dw BerryJuiceDesc
 	dw ScopeLensDesc
-	dw TeruSama12Desc
-	dw TeruSama13Desc
+	dw DomeFossilDesc
+	dw OldAmberDesc
 	dw MetalCoatDesc
 	dw DragonFangDesc
 	dw TeruSama14Desc
@@ -785,8 +785,9 @@ PassDesc:
 TeruSama9Desc:
 	db   "?@"
 
-TeruSama10Desc:
-	db   "?@"
+HelixFossilDesc:
+	db   "A seashell FOSSIL"
+	next "of an old #MON.@"
 
 EndlessCandyDesc:
 	db   "A RARE CANDY that"
@@ -804,11 +805,13 @@ ScopeLensDesc:
 	db   "Raises critical"
 	next "hit ratio. (HOLD)@"
 
-TeruSama12Desc:
-	db   "?@"
+DomeFossilDesc:
+	db   "A shell FOSSIL of"
+	next "an old #MON.@"
 
-TeruSama13Desc:
-	db   "?@"
+OldAmberDesc:
+	db   "AMBER that holds"
+	next "old #MON genes.@"
 
 MetalCoatDesc:
 	db   "Powers up steel-"

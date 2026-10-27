@@ -297,41 +297,41 @@
 	const EVENT_GAVEN_ASKED_FOR_PHONE_NUMBER
 	const EVENT_FOUGHT_MOLTRES_G ; (formerly unused)
 	const EVENT_BETH_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_GOT_BULBASAUR_FROM_OAK ; (formerly unused)
 	const EVENT_JOSE_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_GOT_CHARMANDER_FROM_OAK ; (formerly unused)
 	const EVENT_REENA_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_GOT_SQUIRTLE_FROM_OAK ; (formerly unused)
 	const EVENT_JOEY_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_GOT_A_KANTO_STARTER ; (formerly unused)
 	const EVENT_WADE_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_RUINS_OF_ALPH_DOME_FOSSIL ; (formerly unused)
 	const EVENT_RALPH_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_RUINS_OF_ALPH_HELIX_FOSSIL ; (formerly unused)
 	const EVENT_LIZ_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_RUINS_OF_ALPH_OLD_AMBER ; (formerly unused)
 	const EVENT_ANTHONY_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_ARTICUNO ; (formerly unused)
 	const EVENT_TODD_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_ZAPDOS ; (formerly unused)
 	const EVENT_GINA_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_MOLTRES ; (formerly unused)
 	const EVENT_IRWIN_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_MEWTWO ; (formerly unused)
 	const EVENT_ARNIE_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_FOUGHT_MEW ; (formerly unused)
 	const EVENT_ALAN_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_SEAFOAM_GYM_ARTICUNO ; (formerly unused)
 	const EVENT_FOUGHT_RAIKOU ; (formerly unused)
 	const EVENT_FOUGHT_ENTEI ; (formerly unused)
 	const EVENT_DANA_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_POWER_PLANT_ZAPDOS ; (formerly unused)
 	const EVENT_CHAD_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_VICTORY_ROAD_MOLTRES ; (formerly unused)
 	const EVENT_DEREK_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_SILVER_CAVE_MEWTWO ; (formerly unused)
 	const EVENT_TULLY_ASKED_FOR_PHONE_NUMBER
-	const_skip ; unused in Crystal
+	const EVENT_CINNABAR_ISLAND_MEW ; (formerly unused)
 	const EVENT_BRENT_ASKED_FOR_PHONE_NUMBER
 	const_skip ; unused
 	const EVENT_TIFFANY_ASKED_FOR_PHONE_NUMBER
