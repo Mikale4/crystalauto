@@ -205,6 +205,25 @@ RepairFusedParty::
 	inc a
 	jp .mon
 
+FindSpeciesByName::
+; (FindFusedSpecies for farcall: the nickname in wStringBuffer1)
+	ld hl, wStringBuffer1
+	jr FindFusedSpecies
+
+GetSpeciesNameFromIndex::
+; wStringBuffer1: the name of species de (a 16-bit index; 0, EGG's), as a nickname
+	call FindFusedSpecies.NameOf
+	ld hl, wStringBuffer1
+	ld c, MON_NAME_LENGTH - 1
+.copy
+	ld a, [de]
+	ld [hli], a
+	inc de
+	dec c
+	jr nz, .copy
+	ld [hl], '@'
+	ret
+
 FindFusedSpecies:
 ; Carry if the nickname at hl isn't the name of species de (a 16-bit index) but is
 ; another's: de, that species (the first, for names forms share).

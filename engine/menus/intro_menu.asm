@@ -354,9 +354,11 @@ LoadOrRegenerateLuckyIDNumber:
 Continue:
 	farcall InitMoveTable
 	farcall InitMonTable
+	farcall SanitizeBoxes
 	farcall TryLoadSaveFile
 	jp c, .FailToLoad
 	farcall RepairFusedParty
+	farcall SanitizeParty
 	farcall _LoadData
 	call LoadStandardMenuHeader
 	call DisplaySaveInfoOnContinue

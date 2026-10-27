@@ -775,6 +775,11 @@ SECTION "Randomizer", ROMX
 INCLUDE "engine/events/randomizer.asm"
 
 
+SECTION "Save Repair", ROMX
+
+INCLUDE "engine/pokemon/save_repair.asm"
+
+
 SECTION "Bosses", ROMX
 
 INCLUDE "engine/battle/bosses.asm"

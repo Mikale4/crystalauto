@@ -942,6 +942,18 @@ BOX and MOVE PKMN W/O MAIL:
 - **Leaving the PC saves the game** if you changed anything (*SAVING... DON'T TURN
   OFF THE POWER.*), since the boxes are kept on the cartridge. Before your first
   save, only the first box is there.
+- **Saves hurt by an older version's PC are repaired when you CONTINUE.** A box
+  whose Pokémon list was cut short (a Pokémon whose species was lost in an older
+  version) looked less full than it was, and that PC let a full box take a 21st
+  Pokémon. The 21st overwrote the box's other data: its first Pokémon's nickname
+  became another's OT name (such as KYLE), and Pokémon could show nonsense (a
+  wrong name and species, level 255), or crash the game when moved. A full box now
+  refuses more Pokémon by its real count. On CONTINUE, every box gets its first 20
+  back, with their species and moves; the first one's nickname is its species'
+  name again, and the first OT names are yours again. A Pokémon past level 100
+  gets the level its EXP gives, and its stats with it. What was written over can't
+  come back: a Pokémon with nothing left to tell its species is taken out of the
+  box, and one whose data was scrambled keeps what's left (you can release it).
 
 
 ## Going to a rematch
@@ -1371,6 +1383,21 @@ IDs nothing holds any more to be taken back.
   `SaveBox` and `LoadBox` pass through, `wBoxPartialData`, is kept in WRAM bank 6
   meanwhile). `CheckRoomInBoxes` says whether any box has room (BALLS, the capture
   rule, and BILL's call that the boxes are full).
+- A box's species list can end early, at a species byte of 0 (an index lost to an
+  older version's garbage collection), so the box screen counts a box by its count
+  byte (`BoxScreen_BoxCount`): that decides whether it's full, and the list shown
+  stops there; `BoxScreen_PutIntoBox` puts nothing past the box's last. Before,
+  a full box that looked less full took a 21st Pokémon, past the box's end.
+- [`engine/pokemon/save_repair.asm`](engine/pokemon/save_repair.asm) repairs such
+  saves on every CONTINUE: `SanitizeBoxes` (before the box out is loaded) brings a
+  count over 20 back to 20, gives each Pokémon with no index one (by its nickname
+  if a species' name, then its species byte, then its species list's byte, as the
+  saved table had them; with none, it's taken out), ends each species list and
+  name, and for a box that overflowed makes the first nickname and the first three
+  OT names again and its moves indexes (`SaveBox` had left them IDs). Then it gives
+  levels past 100 their EXP's (`CalcLevel`). `SanitizeParty` (after the save is
+  loaded) does the same for the party, with the species list's byte made the
+  species byte's and the stats worked out again.
 
 
 ## Other changes

@@ -118,7 +118,7 @@ BoxScreen_InitScreen:
 
 BoxScreen_LoadBoxList:
 ; The shown box's POKéMON's species in wBillsPCPokemonList (see
-; CopyBoxmonSpecies), and how many in wBoxScreenCount.
+; CopyBoxmonSpecies), and how many in wBoxScreenCount (no more than its count).
 	ld a, [wBoxScreenBox]
 	ld b, a
 	dec a
@@ -133,9 +133,24 @@ BoxScreen_LoadBoxList:
 .got_box
 	ld [wBillsPC_LoadedBox], a
 	farcall CopyBoxmonSpecies
+	ld a, [wBoxScreenBox]
+	call BoxScreen_BoxCount
+	ld c, a
 	ld a, [wBillsPC_NumMonsInBox]
 	dec a ; (its CANCEL)
+	cp c
+	jr c, .got_count
+	ld a, c
+.got_count
 	ld [wBoxScreenCount], a
+; (the list ends there)
+	ld c, a
+	ld b, 0
+	ld hl, wBillsPCPokemonList
+rept BOXLIST_SIZE
+	add hl, bc
+endr
+	ld [hl], -1
 	ret
 
 .empty
@@ -143,6 +158,34 @@ BoxScreen_LoadBoxList:
 	ld [wBillsPCPokemonList], a
 	xor a
 	ld [wBoxScreenCount], a
+	ret
+
+BoxScreen_BoxCount:
+; a: how many POKéMON box a (1 to NUM_BOXES) has, by its count (its species list
+; can end early, at a species byte of 0: a box that only looks less full must
+; still be full); no more than MONS_PER_BOX
+	ld b, a
+	dec a
+	ld hl, wCurBox
+	cp [hl]
+	jr z, .box_out
+	ld a, [wSavedAtLeastOnce]
+	and a
+	ret z ; (the boxes aren't made yet)
+	farcall GetBoxPointer ; b: its bank, hl: it
+	ld a, b
+	jr .got_box
+
+.box_out
+	ld a, BANK(sBoxCount)
+	ld hl, sBoxCount
+.got_box
+	call OpenSRAM
+	ld a, [hl]
+	call CloseSRAM
+	cp MONS_PER_BOX + 1
+	ret c
+	ld a, MONS_PER_BOX
 	ret
 
 BoxScreen_ClearCanvas:
@@ -1831,7 +1874,8 @@ BoxScreen_BoxToBox:
 	ld a, [wBoxScreenTarget + 3]
 	and a
 	jr nz, .swap
-	ld a, [wBoxScreenCount]
+	ld a, [wBoxScreenTarget + 1]
+	call BoxScreen_BoxCount
 	cp MONS_PER_BOX
 	jp nc, BoxScreen_BoxIsFull
 	ld a, [wBoxScreenHeldBox]
@@ -1940,7 +1984,8 @@ BoxScreen_PartyToBox:
 	ld a, [wBoxScreenHeldIndex]
 	call BoxScreen_CheckPartyLeaves
 	ret c
-	ld a, [wBoxScreenCount]
+	ld a, [wBoxScreenTarget + 1]
+	call BoxScreen_BoxCount
 	cp MONS_PER_BOX
 	jp nc, BoxScreen_BoxIsFull
 	ld a, [wBoxScreenTarget + 1]
@@ -2142,7 +2187,17 @@ BoxScreen_TakeFromParty:
 	ret
 
 BoxScreen_PutIntoBox:
-; wBufferMon (and so on) into the box out, as its POKéMON a
+; wBufferMon (and so on) into the box out, as its POKéMON a (no further than
+; after its last)
+	ld b, a
+	ld a, BANK(sBoxCount)
+	call OpenSRAM
+	ld a, [sBoxCount]
+	call CloseSRAM
+	cp b
+	jr c, .got_place
+	ld a, b
+.got_place
 	ld [wCurPartyMon], a
 	farcall InsertPokemonIntoBox
 	ret
