@@ -444,7 +444,8 @@ SanitizeParty::
 ; each POKéMON's species byte one (from its nickname if a species' name, or its
 ; species list's), and its species list's the same (an EGG's aside); its level 1
 ; to MAX_LEVEL (its EXP's), and its stats then; its HP no more than its max; its
-; names ended.
+; moves' PP no more than theirs (a move's max can go down: the trapping moves'
+; did); its names ended.
 	ld hl, wPartyCount
 	ld a, [hl]
 	cp PARTY_LENGTH + 1
@@ -469,6 +470,7 @@ SanitizeParty::
 	jr .mon
 
 .Mon:
+	call .MovesPP
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames + MON_NAME_LENGTH - 1
 	ld bc, MON_NAME_LENGTH
@@ -599,6 +601,49 @@ SanitizeParty::
 	inc de
 	ld a, [hl]
 	ld [de], a
+	ret
+
+.MovesPP:
+	ld a, [wMenuCursorY]
+	push af
+	xor a ; PARTYMON
+	ld [wMonType], a
+.move
+	ld [wMenuCursorY], a
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1Moves
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld a, [wMenuCursorY]
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	and a
+	jr z, .next_move
+	push hl
+	farcall GetMaxPPOfMove ; (wTempPP)
+	pop hl
+	ld bc, MON_PP - MON_MOVES
+	add hl, bc
+	ld a, [hl]
+	and PP_MASK
+	ld b, a
+	ld a, [wTempPP]
+	cp b
+	jr nc, .next_move
+	ld b, a
+	ld a, [hl]
+	and PP_UP_MASK
+	or b
+	ld [hl], a
+.next_move
+	ld a, [wMenuCursorY]
+	inc a
+	cp NUM_MOVES
+	jr c, .move
+	pop af
+	ld [wMenuCursorY], a
 	ret
 
 .StructSpecies:

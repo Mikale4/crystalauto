@@ -333,7 +333,7 @@ Some moves work in new ways of their own:
 | MIRROR MOVE | works by itself, like COUNTER: right after the foe uses a move, the Pokémon uses that move too (see below) |
 | SPIKES | used as the Pokémon comes in too; as in the latest games, up to three layers: a Pokémon coming in on that side (not a FLYING type) loses 1/8, 1/6 or 1/4 of its max HP |
 | FLAIL, REVERSAL | 60 power; twice that when the user moves after the foe that turn (or the foe switched out) |
-| BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate (and they still trap the foe) |
+| BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate, 5 PP (and they still trap the foe) |
 | DOUBLE KICK, BONEMERANG, TWINEEDLE | 50 power, for each of the two hits |
 | LOW KICK | as in the first games (50 power, 90% accurate, 30% to flinch), and twice the power when the target's DEFENSE is higher than the user's ATTACK |
 | ATTRACT | works whatever the genders |
@@ -1459,7 +1459,8 @@ IDs nothing holds any more to be taken back.
   OT names again and its moves indexes (`SaveBox` had left them IDs). Then it gives
   levels past 100 their EXP's (`CalcLevel`). `SanitizeParty` (after the save is
   loaded) does the same for the party, with the species list's byte made the
-  species byte's and the stats worked out again.
+  species byte's and the stats worked out again; it also brings a move's PP down
+  to its max if that went down (the trapping moves' did, to 5).
 
 
 ## Other changes
