@@ -222,7 +222,7 @@ SpeedUp:
 
 SpecialAttackUp:
 ; GROWTH: ATTACK and SPCL.ATK, by 2 each (as the POKéMON comes in: see
-; HandleEntryBoosts)
+; HandleEntryStatMoves)
 	checkobedience
 	usedmovetext
 	doturn
@@ -324,7 +324,7 @@ SpecialAttackUp2:
 
 SpecialDefenseUp2:
 ; AMNESIA: SPCL.ATK and SPCL.DEF, by 2 each, as the first games' SPECIAL (as the
-; POKéMON comes in: see HandleEntryBoosts)
+; POKéMON comes in: see HandleEntryStatMoves)
 	checkobedience
 	usedmovetext
 	doturn

@@ -662,8 +662,8 @@ wPlayerSpikes:: db ; layers of SPIKES on the player's side (with SCREENS_SPIKES)
 wEnemySpikes:: db
 wPlayerScreensUsed:: db ; SCREENS_REFLECT, _LIGHT_SCREEN and _SAFEGUARD: the screens the player's side has put up this battle (once each)
 wEnemyScreensUsed:: db
-wPlayerBoostsUsed:: ds PARTY_LENGTH ; each POKéMON's moves (bit 0: its first) that raise its own stats it has used this battle (see HandleEntryBoosts)
-wEnemyBoostsUsed:: ds PARTY_LENGTH
+wPlayerStatMovesUsed:: ds PARTY_LENGTH ; each POKéMON's status moves that raise or lower stats (bit 0: its first) used this battle (see HandleEntryStatMoves)
+wEnemyStatMovesUsed:: ds PARTY_LENGTH
 wConversionMatchup:: db ; (HandleAutoConversion: the attack against the target as it is)
 wTurnActed:: db ; who's had their turn this turn: bit 0 the player, bit 1 the foe
 wBattleInfoOK:: db ; whether START opens the battle info screen from the menu waiting now (see BattleInfoScreen)

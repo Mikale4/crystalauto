@@ -167,13 +167,9 @@ and Disabled moves) and uses the best one:
   without them), when the matchup calls for one: sleep when the fight will take three
   turns or more, paralysis against a faster foe, TOXIC in a long fight (not on POISON
   or STEEL Pokémon). A status move is never used on a foe that already has a status,
-  a SUBSTITUTE or SAFEGUARD, or a type it can't affect. (Moves that raise its own
-  stats aren't chosen: they work as it comes in, see [Reworked moves](#reworked-moves).)
-- **Moves that lower the foe's stats**, against trainers only, when they're worth the
-  turn they take: lowering the foe's accuracy (SAND-ATTACK, SMOKESCREEN) or ATTACK
-  (GROWL, against physical attacks) when the Pokémon is losing the race to a knockout
-  and that would turn it around; lowering the foe's DEFENSE (LEER, TAIL WHIP) when
-  that saves a turn and still wins it. Never more than two stages.
+  a SUBSTITUTE or SAFEGUARD, or a type it can't affect. (Status moves that raise its
+  own stats or lower the foe's aren't chosen: they work as it comes in, see
+  [Reworked moves](#reworked-moves).)
 - **Other status moves** (and Bide and Future Sight, whose damage can't be
   predicted) are only used when no damaging move can hurt the foe.
 - **Self-Destruct and Explosion** are a last resort.
@@ -349,7 +345,9 @@ Some moves work in new ways of their own:
 | CONVERSION, CONVERSION 2 | work by themselves, as in PokeSquad Battler: just before an attack's damage, the Pokémon becomes a type that resists it (CONVERSION 2: one it doesn't affect) (see below) |
 | SKETCH | copies the foe's move you choose, from a menu of its moves (see below) |
 | MEAN LOOK, SPIDER WEB | they can't be chosen: used only as the Pokémon comes in |
-| SWORDS DANCE, GROWTH, AMNESIA, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE (not a GHOST's) | they can't be chosen: used as the Pokémon comes in, each once a battle (see below) |
+| SWORDS DANCE, GROWTH, AMNESIA, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE (not a GHOST's), FOCUS ENERGY | they can't be chosen: used as the Pokémon comes in, each once a battle (see below) |
+| GROWL, CHARM, TAIL WHIP, LEER, SCREECH, STRING SHOT, COTTON SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN, KINESIS, FLASH, SWEET SCENT | the same: they can't be chosen, and lower the foe's stat as the Pokémon comes in, each once a battle (see below) |
+| BATON PASS | passes no stat changes (nor FOCUS ENERGY's): the Pokémon coming in starts with none, and the rest is passed as before |
 | AMNESIA | as in the first games: SPCL.ATK and SPCL.DEF, 2 stages each |
 | GROWTH | ATTACK and SPCL.ATK, 2 stages each |
 | TELEPORT | as in the latest games: moves last, and in a trainer battle, the Pokémon switches out (in the wild, it still flees) (see below) |
@@ -450,18 +448,24 @@ the type lasts until it's switched out.
 them (not one it knows already, nor SKETCH or STRUGGLE); a foe's SKETCH takes your
 Pokémon's move with the most power. As before, the move takes SKETCH's place for good.
 
-**Moves that raise the user's stats.** SWORDS DANCE, GROWTH, AMNESIA, MEDITATE,
-SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID
-ARMOR, BELLY DRUM and CURSE (when the user isn't a GHOST: a GHOST's still curses the
-foe, and can be chosen) work as a Pokémon comes in, at the start of its first turn
+**Status moves that change stats.** The ones that raise the user's own stats
+(SWORDS DANCE, GROWTH, AMNESIA, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE,
+HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE when the user
+isn't a GHOST, and FOCUS ENERGY) and the ones that lower the foe's (GROWL, CHARM, TAIL
+WHIP, LEER, SCREECH, STRING SHOT, COTTON SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN,
+KINESIS, FLASH, SWEET SCENT) work as a Pokémon comes in, at the start of its first turn
 out, before its other entry moves (so a foe's PSYCH UP takes them up): it uses each
 of them it knows with PP left (1 PP each), in the order it knows them. Each one once
 a battle, for each Pokémon: after it has gone back, it doesn't use them again when it
 comes back out (another Pokémon still uses its own). BELLY DRUM waits for more than
-half its HP (it would fail). They can't be chosen ("SWORDS DANCE works by itself!"),
-and one brought back by ENCORE or SLEEP TALK fails. AMNESIA raises SPCL.ATK and
-SPCL.DEF by 2 stages each, as the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by
-2 each.
+half its HP (it would fail); a GHOST's CURSE still curses the foe, and can be chosen.
+They can't be chosen ("SWORDS DANCE works by itself!"), and one brought back by ENCORE
+or SLEEP TALK fails. AMNESIA raises SPCL.ATK and SPCL.DEF by 2 stages each, as the
+first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each.
+
+**BATON PASS** passes no stat changes any more (nor FOCUS ENERGY's): the Pokémon
+coming in starts with none, as with any switch, and uses its own entry moves. The
+rest is passed as before (a SUBSTITUTE, confusion, LEECH SEED, CURSE, MEAN LOOK...).
 
 **TELEPORT.** As in the latest games, it moves after everything else, and in a trainer
 battle the Pokémon switches out (yours: you choose who comes in, or auto battle does),
@@ -1313,10 +1317,12 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   guesses, which call `BattleCommand_Stab` themselves); its PP is `SpendPP`. SKETCH's
   move is `ChooseSketchMove` (the player's menu is `MoveSelectionScreen` with
   `wMoveSelectionMenuType` 1, the foe's moves). GROWTH's and AMNESIA's second stat is
-  the `secondstatup` command. The moves that raise the user's stats are
-  `HandleEntryBoosts` (from `HandleEntryTransform`, before `HandleEntryMoves`;
-  `IsEntryBoost` and `BoostEffects`), each POKéMON's used this battle in
-  `wPlayerBoostsUsed` and `wEnemyBoostsUsed` (by party slot, a bit for each move slot).
+  the `secondstatup` command. The status moves that raise the user's stats or lower
+  the foe's are `HandleEntryStatMoves` (from `HandleEntryTransform`, before
+  `HandleEntryMoves`; `IsEntryStatMove` and `EntryStatEffects`), each POKéMON's used
+  this battle in `wPlayerStatMovesUsed` and `wEnemyStatMovesUsed` (by party slot, a
+  bit for each move slot). BATON PASS resets the stat levels and FOCUS ENERGY in
+  `TeleportSwitch` ([`baton_pass.asm`](engine/battle/move_effects/baton_pass.asm)).
   `CheckSpentMove`, first in `BattleCommand_DoTurn` (before SLEEP TALK's move stops
   there), fails one of them, or a recovery move used once while out, that ENCORE or
   SLEEP TALK brings back. The recovery moves are
@@ -1339,7 +1345,7 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `wBattleInfoOK` says it's the battle menu or the move menu.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction`, `AIChooseMove` and
   auto battle don't choose the moves that work by themselves (`AutoMoves`, and
-  `IsEntryBoost`), nor those used once while out (`CantChooseMove`).
+  `IsEntryStatMove`), nor those used once while out (`CantChooseMove`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

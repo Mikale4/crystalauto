@@ -76,7 +76,7 @@ BattleCommand_BatonPass:
 	ld hl, SpikesDamage
 	call CallBattleCore
 
-	jr ResetBatonPassStatus
+	jp ResetBatonPassStatus
 
 BatonPass_LinkPlayerSwitch:
 	ld a, [wLinkMode]
@@ -122,11 +122,24 @@ BatonPass_LinkEnemySwitch:
 
 TeleportSwitch:
 ; TELEPORT (see BattleCommand_Teleport): the POKéMON coming in has none of the
-; user's stat changes or status (as with any switch).
+; user's stat changes or status (as with any switch). BATON PASS passes no stat
+; changes either (nor FOCUS ENERGY's), only the rest.
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
 	cpmove TELEPORT
-	ret nz
+	jr z, .teleport
+	ld a, BATTLE_VARS_SUBSTATUS4
+	call GetBattleVarAddr
+	res SUBSTATUS_FOCUS_ENERGY, [hl]
+	ldh a, [hBattleTurn]
+	and a
+	ld hl, ResetPlayerStatLevels
+	jr z, .stat_levels
+	ld hl, ResetEnemyStatLevels
+.stat_levels
+	jp CallBattleCore
+
+.teleport
 	ldh a, [hBattleTurn]
 	and a
 	jr nz, .enemy

@@ -438,7 +438,7 @@ UserHeldFlags:
 CheckSpentMove::
 ; (BattleCommand_DoTurn, first: SLEEP TALK's and METRONOME's move goes no further)
 ; Return carry if the move the user is using fails: one of its own moves that raise
-; its stats, used only as it comes in (see HandleEntryBoosts), or a recovery move
+; its stats, used only as it comes in (see HandleEntryStatMoves), or a recovery move
 ; that it can use once while it's out and has (see OnceOutFlag), brought back by
 ; ENCORE or SLEEP TALK. Else the once while out move is marked used now. (Not a
 ; move used by itself: see AutoMove_Run.)
@@ -450,7 +450,7 @@ CheckSpentMove::
 	ld b, a
 	ldh a, [hBattleTurn]
 	ld c, a
-	call IsEntryBoost
+	call IsEntryStatMove
 	jr nc, .not_boost
 	ld hl, wBattleMonMoves
 	ld a, c
@@ -556,7 +556,7 @@ HandleEntryTransform::
 ; (A new turn: no one has had theirs yet, see MovedLastPower.)
 	xor a
 	ld [wTurnActed], a
-	call HandleEntryBoosts
+	call HandleEntryStatMoves
 	call HandleEntryMoves
 	call HandleAutoRecovery ; (one that came in under half its HP)
 	ldh a, [hSerialConnectionStatus]
@@ -627,13 +627,14 @@ HandleEntryTransform::
 	ld [hl], a
 	ret
 
-HandleEntryBoosts:
-; SWORDS DANCE, GROWTH, AMNESIA and every other move that raises the user's own
-; stats (IsEntryBoost) work as a POKéMON comes in, before its other entry moves
-; (so a PSYCH UP takes them up): at the start of its first turn out, it uses each of
-; them it knows with PP left (1 PP each), each once a battle (wPlayerBoostsUsed:
-; each POKéMON's, by move slot); BELLY DRUM only over half its HP (it would fail).
-; They can't be chosen (see CantChooseMove).
+HandleEntryStatMoves:
+; The status moves that raise the user's own stats (SWORDS DANCE, GROWTH, AMNESIA...,
+; and FOCUS ENERGY) or lower the foe's (GROWL, LEER, SAND-ATTACK...) work as a
+; POKéMON comes in, before its other entry moves (so a PSYCH UP takes them up): at
+; the start of its first turn out, it uses each of them it knows with PP left (1 PP
+; each, in the order it knows them), each once a battle (wPlayerStatMovesUsed: each
+; POKéMON's, by move slot); BELLY DRUM only over half its HP (it would fail). They
+; can't be chosen (see CantChooseMove; IsEntryStatMove).
 	ldh a, [hSerialConnectionStatus]
 	cp USING_EXTERNAL_CLOCK
 	jr z, .reverse
@@ -699,7 +700,7 @@ HandleEntryBoosts:
 	push bc
 	ldh a, [hBattleTurn]
 	ld c, a
-	call IsEntryBoost
+	call IsEntryStatMove
 	pop bc
 	ret nc
 	call .UsedFlag
@@ -724,15 +725,15 @@ HandleEntryBoosts:
 	ret
 
 .UsedFlag:
-; hl: the POKéMON's byte in wPlayerBoostsUsed or wEnemyBoostsUsed (a wild one's:
+; hl: the POKéMON's byte in wPlayerStatMovesUsed or wEnemyStatMovesUsed (a wild one's:
 ; the first); a: the bit for its move slot c
 	push bc
 	ldh a, [hBattleTurn]
 	and a
-	ld hl, wPlayerBoostsUsed
+	ld hl, wPlayerStatMovesUsed
 	ld a, [wCurBattleMon]
 	jr z, .got_mon
-	ld hl, wEnemyBoostsUsed
+	ld hl, wEnemyStatMovesUsed
 	ld a, [wBattleMode]
 	dec a
 	ld a, 0
@@ -784,10 +785,10 @@ HandleEntryBoosts:
 	sbc d
 	ret
 
-IsEntryBoost:
-; Return carry if move b raises the user's own stats: BoostEffects, or CURSE when
-; the user (c: 0, the player's POKéMON; 1, the foe's) isn't a GHOST. Keeps bc, de,
-; hl.
+IsEntryStatMove:
+; Return carry if move b is a status move that raises the user's own stats or
+; lowers the foe's (EntryStatEffects), or CURSE when the user (c: 0, the player's
+; POKéMON; 1, the foe's) isn't a GHOST. Keeps bc, de, hl.
 	push hl
 	push de
 	push bc
@@ -796,7 +797,7 @@ IsEntryBoost:
 	call GetMoveAttribute
 	cp EFFECT_CURSE
 	jr z, .curse
-	ld hl, BoostEffects
+	ld hl, EntryStatEffects
 	ld de, 1
 	call IsInArray
 	jr .done
@@ -825,9 +826,12 @@ IsEntryBoost:
 	pop hl
 	ret
 
-BoostEffects:
-; SWORDS DANCE, GROWTH, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN,
-; WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, AMNESIA, BELLY DRUM (see IsEntryBoost)
+EntryStatEffects:
+; the user's: SWORDS DANCE, GROWTH, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE,
+; HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, AMNESIA, BELLY DRUM, FOCUS
+; ENERGY; the foe's: GROWL, CHARM, TAIL WHIP, LEER, SCREECH, STRING SHOT, COTTON
+; SPORE, SCARY FACE, SAND-ATTACK, SMOKESCREEN, KINESIS, FLASH, SWEET SCENT (see
+; IsEntryStatMove)
 	db EFFECT_ATTACK_UP
 	db EFFECT_DEFENSE_UP
 	db EFFECT_SPEED_UP
@@ -844,6 +848,21 @@ BoostEffects:
 	db EFFECT_EVASION_UP_2
 	db EFFECT_DEFENSE_CURL
 	db EFFECT_BELLY_DRUM
+	db EFFECT_FOCUS_ENERGY
+	db EFFECT_ATTACK_DOWN
+	db EFFECT_DEFENSE_DOWN
+	db EFFECT_SPEED_DOWN
+	db EFFECT_SP_ATK_DOWN
+	db EFFECT_SP_DEF_DOWN
+	db EFFECT_ACCURACY_DOWN
+	db EFFECT_EVASION_DOWN
+	db EFFECT_ATTACK_DOWN_2
+	db EFFECT_DEFENSE_DOWN_2
+	db EFFECT_SPEED_DOWN_2
+	db EFFECT_SP_ATK_DOWN_2
+	db EFFECT_SP_DEF_DOWN_2
+	db EFFECT_ACCURACY_DOWN_2
+	db EFFECT_EVASION_DOWN_2
 	db -1
 
 HandleEntryMoves:
@@ -1801,13 +1820,13 @@ MovedLastPower::
 CantChooseMove::
 ; b: a move; c: whose (0: the player's POKéMON, 1: the foe's). Return z if it can't
 ; be chosen: it works by itself (AutoMoves, and the moves that raise the user's
-; stats: see HandleEntryBoosts), or it can be used once while the POKéMON is out
+; stats: see HandleEntryStatMoves), or it can be used once while the POKéMON is out
 ; and has been (see OnceOutFlag). b and c are kept.
 	ld a, b
 	ld hl, AutoMoves
 	call CheckMoveInList
 	jr c, .cant
-	call IsEntryBoost
+	call IsEntryStatMove
 	jr c, .cant
 	call OnceOutFlag
 	jr nc, .can
