@@ -221,7 +221,8 @@ SpeedUp:
 	endmove
 
 SpecialAttackUp:
-; GROWTH: ATTACK and SPCL.ATK, by 2 each (once while it's out: see OnceOutMoves)
+; GROWTH: ATTACK and SPCL.ATK, by 2 each (as the POKéMON comes in: see
+; HandleEntryBoosts)
 	checkobedience
 	usedmovetext
 	doturn
@@ -322,8 +323,8 @@ SpecialAttackUp2:
 	endmove
 
 SpecialDefenseUp2:
-; AMNESIA: SPCL.ATK and SPCL.DEF, by 2 each, as the first games' SPECIAL (once
-; while it's out: see OnceOutMoves)
+; AMNESIA: SPCL.ATK and SPCL.DEF, by 2 each, as the first games' SPECIAL (as the
+; POKéMON comes in: see HandleEntryBoosts)
 	checkobedience
 	usedmovetext
 	doturn

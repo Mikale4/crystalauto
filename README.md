@@ -166,16 +166,14 @@ and Disabled moves) and uses the best one:
 - **Status and stat-raising moves**, against trainers only (wild battles are quicker
   without them), when the matchup calls for one: sleep when the fight will take three
   turns or more, paralysis against a faster foe, TOXIC in a long fight (not on POISON
-  or STEEL Pokémon), and a stat boost that suits its best attack when the foe can
-  barely hurt it. A status move is never used on a foe that already has a status, a
-  SUBSTITUTE or SAFEGUARD, or a type it can't affect.
-- **Moves that lower the foe's stats or raise its own guard**, against trainers only,
-  when they're worth the turn they take: lowering the foe's accuracy (SAND-ATTACK,
-  SMOKESCREEN) or ATTACK (GROWL, against physical attacks), or raising its own
-  DEFENSE (DEFENSE CURL, HARDEN, against physical attacks), SP.DEF (AMNESIA, against
-  special ones) or evasion (DOUBLE TEAM), when the Pokémon is losing the race to a
-  knockout and that would turn it around; lowering the foe's DEFENSE (LEER, TAIL
-  WHIP) when that saves a turn and still wins it. Never more than two stages.
+  or STEEL Pokémon). A status move is never used on a foe that already has a status,
+  a SUBSTITUTE or SAFEGUARD, or a type it can't affect. (Moves that raise its own
+  stats aren't chosen: they work as it comes in, see [Reworked moves](#reworked-moves).)
+- **Moves that lower the foe's stats**, against trainers only, when they're worth the
+  turn they take: lowering the foe's accuracy (SAND-ATTACK, SMOKESCREEN) or ATTACK
+  (GROWL, against physical attacks) when the Pokémon is losing the race to a knockout
+  and that would turn it around; lowering the foe's DEFENSE (LEER, TAIL WHIP) when
+  that saves a turn and still wins it. Never more than two stages.
 - **Other status moves** (and Bide and Future Sight, whose damage can't be
   predicted) are only used when no damaging move can hurt the foe.
 - **Self-Destruct and Explosion** are a last resort.
@@ -351,9 +349,9 @@ Some moves work in new ways of their own:
 | CONVERSION, CONVERSION 2 | work by themselves, as in PokeSquad Battler: just before an attack's damage, the Pokémon becomes a type that resists it (CONVERSION 2: one it doesn't affect) (see below) |
 | SKETCH | copies the foe's move you choose, from a menu of its moves (see below) |
 | MEAN LOOK, SPIDER WEB | they can't be chosen: used only as the Pokémon comes in |
-| AMNESIA | as in the first games: SPCL.ATK and SPCL.DEF, 2 stages each; once while it's out (see below) |
-| GROWTH | ATTACK and SPCL.ATK, 2 stages each; once while it's out |
-| SWORDS DANCE | once while it's out |
+| SWORDS DANCE, GROWTH, AMNESIA, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, BELLY DRUM, CURSE (not a GHOST's) | they can't be chosen: used as the Pokémon comes in, each once a battle (see below) |
+| AMNESIA | as in the first games: SPCL.ATK and SPCL.DEF, 2 stages each |
+| GROWTH | ATTACK and SPCL.ATK, 2 stages each |
 | TELEPORT | as in the latest games: moves last, and in a trainer battle, the Pokémon switches out (in the wild, it still flees) (see below) |
 
 **Entry moves.** A Pokémon that knows SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, a
@@ -393,10 +391,10 @@ healed it, the next waits until it has been back at half its HP or more and fall
 under half again (MORNING SUN in the rain may leave it under half: RECOVER doesn't
 follow right away). REST goes last, and not when it would fail (ELECTRIC or MISTY
 TERRAIN keeping it awake on the ground). They can still be chosen too, each once while
-out, as SWORDS DANCE is ("RECOVER works once while out!"): one chosen above half its
-HP won't work by itself after that, but the others still do. One that chose a
-recovery move and falls under half before its turn just uses the one it chose. Auto
-battle keeps them for when they work by themselves.
+out ("RECOVER works once while out!"): one chosen above half its HP won't work by
+itself after that, but the others still do; brought back again by ENCORE or SLEEP
+TALK, it fails. One that chose a recovery move and falls under half before its turn
+just uses the one it chose. Auto battle keeps them for when they work by themselves.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -452,11 +450,18 @@ the type lasts until it's switched out.
 them (not one it knows already, nor SKETCH or STRUGGLE); a foe's SKETCH takes your
 Pokémon's move with the most power. As before, the move takes SKETCH's place for good.
 
-**Once while out.** SWORDS DANCE, GROWTH and AMNESIA can each be used once while the
-Pokémon is out; then it can't choose it ("GROWTH works once while out!") until it has
-gone back and come out again. AMNESIA raises SPCL.ATK and SPCL.DEF by 2 stages each, as
-the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by 2 each. Brought back after
-that (by ENCORE, SLEEP TALK or METRONOME), the move fails.
+**Moves that raise the user's stats.** SWORDS DANCE, GROWTH, AMNESIA, MEDITATE,
+SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN, WITHDRAW, DEFENSE CURL, BARRIER, ACID
+ARMOR, BELLY DRUM and CURSE (when the user isn't a GHOST: a GHOST's still curses the
+foe, and can be chosen) work as a Pokémon comes in, at the start of its first turn
+out, before its other entry moves (so a foe's PSYCH UP takes them up): it uses each
+of them it knows with PP left (1 PP each), in the order it knows them. Each one once
+a battle, for each Pokémon: after it has gone back, it doesn't use them again when it
+comes back out (another Pokémon still uses its own). BELLY DRUM waits for more than
+half its HP (it would fail). They can't be chosen ("SWORDS DANCE works by itself!"),
+and one brought back by ENCORE or SLEEP TALK fails. AMNESIA raises SPCL.ATK and
+SPCL.DEF by 2 stages each, as the first games' SPECIAL; GROWTH, ATTACK and SPCL.ATK by
+2 each.
 
 **TELEPORT.** As in the latest games, it moves after everything else, and in a trainer
 battle the Pokémon switches out (yours: you choose who comes in, or auto battle does),
@@ -1308,9 +1313,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   guesses, which call `BattleCommand_Stab` themselves); its PP is `SpendPP`. SKETCH's
   move is `ChooseSketchMove` (the player's menu is `MoveSelectionScreen` with
   `wMoveSelectionMenuType` 1, the foe's moves). GROWTH's and AMNESIA's second stat is
-  the `secondstatup` command; SWORDS DANCE, GROWTH and AMNESIA set their field flag as
-  they're used (`OnceOutMoves`, in `MarkFirstAttack`, which also tells
-  `BattleCommand_DoTurn` when one is used again: it fails). The recovery moves are
+  the `secondstatup` command. The moves that raise the user's stats are
+  `HandleEntryBoosts` (from `HandleEntryTransform`, before `HandleEntryMoves`;
+  `IsEntryBoost` and `BoostEffects`), each POKéMON's used this battle in
+  `wPlayerBoostsUsed` and `wEnemyBoostsUsed` (by party slot, a bit for each move slot).
+  `CheckSpentMove`, first in `BattleCommand_DoTurn` (before SLEEP TALK's move stops
+  there), fails one of them, or a recovery move used once while out, that ENCORE or
+  SLEEP TALK brings back. The recovery moves are
   `HandleAutoRecovery` (`RecoveryEffects`; each once while out, by its move slot:
   `FIELD2_RECOVERY_F` and the 3 bits after it in `wPlayerFieldFlags2` and
   `wEnemyFieldFlags2`; one at a time: `FIELD2_RECOVERED_F`), checked after each side's turn
@@ -1329,8 +1338,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   auto battle's waits, and the 2D menus' (`Menu_WasButtonPressed`) while
   `wBattleInfoOK` says it's the battle menu or the move menu.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction`, `AIChooseMove` and
-  auto battle don't choose the moves that work by themselves (`AutoMoves`), nor those
-  used once while out (`CantChooseMove`).
+  auto battle don't choose the moves that work by themselves (`AutoMoves`, and
+  `IsEntryBoost`), nor those used once while out (`CantChooseMove`).
 - `ConsumeTM` in [`engine/items/tmhm.asm`](engine/items/tmhm.asm) no longer uses up
   a TM. `CheckPartyMove` in [`engine/events/overworld.asm`](engine/events/overworld.asm),
   which every field move asks, falls back on `FieldMoveItems` (each field move's HM

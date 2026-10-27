@@ -650,6 +650,12 @@ CheckUserIsCharging:
 	ret
 
 BattleCommand_DoTurn:
+	farcall CheckSpentMove
+	jr nc, .not_spent
+	call MoveFailed
+	jp EndMoveEffect
+
+.not_spent
 	call CheckUserIsCharging
 	ret nz
 
@@ -680,10 +686,6 @@ BattleCommand_DoTurn:
 	farcall MarkFirstAttack
 	pop hl
 	pop de
-	jr nc, .pp
-; (a move it can use once while it's out, used again)
-	call MoveFailed
-	jp EndMoveEffect
 
 .pp
 	ld a, BATTLE_VARS_MOVE

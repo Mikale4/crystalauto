@@ -435,18 +435,43 @@ UserHeldFlags:
 	ld hl, wEnemyHeldFlags
 	ret
 
-MarkFirstAttack::
-; (BattleCommand_DoTurn) For KING'S ROCK: whether the move the user is using is
-; the first attack it's used since it came in. (And a move it can use once while
-; it's out has been: see OnceOutFlag. Return carry if it had been already, when
-; ENCORE, SLEEP TALK or METRONOME brings it back: it fails.)
+CheckSpentMove::
+; (BattleCommand_DoTurn, first: SLEEP TALK's and METRONOME's move goes no further)
+; Return carry if the move the user is using fails: one of its own moves that raise
+; its stats, used only as it comes in (see HandleEntryBoosts), or a recovery move
+; that it can use once while it's out and has (see OnceOutFlag), brought back by
+; ENCORE or SLEEP TALK. Else the once while out move is marked used now. (Not a
+; move used by itself: see AutoMove_Run.)
+	ld a, [wAutoMove]
+	and a
+	ret nz
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	ld b, a
 	ldh a, [hBattleTurn]
 	ld c, a
+	call IsEntryBoost
+	jr nc, .not_boost
+	ld hl, wBattleMonMoves
+	ld a, c
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+.got_moves
+	ld a, b
+	ld c, NUM_MOVES
+.knows
+	cp [hl]
+	scf
+	ret z
+	inc hl
+	dec c
+	jr nz, .knows
+	ldh a, [hBattleTurn]
+	ld c, a
+.not_boost
 	call OnceOutFlag
-	jr nc, .not_once
+	ret nc
 	ld c, a
 	and [hl]
 	scf
@@ -454,10 +479,12 @@ MarkFirstAttack::
 	ld a, c
 	or [hl]
 	ld [hl], a
-	call IsRecoveryMove
-	jr nc, .not_once
 	set FIELD2_RECOVERED_F, [hl] ; (the next one when it falls under half again)
-.not_once
+	ret
+
+MarkFirstAttack::
+; (BattleCommand_DoTurn) For KING'S ROCK: whether the move the user is using is
+; the first attack it's used since it came in.
 	call UserHeldFlags
 	res HELDFLAG_KINGS_ROCK_F, [hl]
 	bit HELDFLAG_ATTACKED_F, [hl]
@@ -529,6 +556,7 @@ HandleEntryTransform::
 ; (A new turn: no one has had theirs yet, see MovedLastPower.)
 	xor a
 	ld [wTurnActed], a
+	call HandleEntryBoosts
 	call HandleEntryMoves
 	call HandleAutoRecovery ; (one that came in under half its HP)
 	ldh a, [hSerialConnectionStatus]
@@ -598,6 +626,225 @@ HandleEntryTransform::
 	pop hl
 	ld [hl], a
 	ret
+
+HandleEntryBoosts:
+; SWORDS DANCE, GROWTH, AMNESIA and every other move that raises the user's own
+; stats (IsEntryBoost) work as a POKéMON comes in, before its other entry moves
+; (so a PSYCH UP takes them up): at the start of its first turn out, it uses each of
+; them it knows with PP left (1 PP each), each once a battle (wPlayerBoostsUsed:
+; each POKéMON's, by move slot); BELLY DRUM only over half its HP (it would fail).
+; They can't be chosen (see CantChooseMove).
+	ldh a, [hSerialConnectionStatus]
+	cp USING_EXTERNAL_CLOCK
+	jr z, .reverse
+	xor a
+	call .Side
+	ld a, 1
+	jr .Side
+
+.reverse
+	ld a, 1
+	call .Side
+	xor a
+	; fallthrough
+
+.Side:
+	ldh [hBattleTurn], a
+	ld hl, wPlayerFieldFlags
+	and a
+	jr z, .got_flags
+	ld hl, wEnemyFieldFlags
+.got_flags
+	bit FIELD_ENTRY_DONE_F, [hl]
+	ret nz
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ld c, 0 ; (its first move)
+.slot
+	push bc
+	call .Try
+	pop bc
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr nz, .slot
+	ret
+
+.Try:
+; its move in slot c, if it's one of them, with PP left, not used this battle
+	ldh a, [hBattleTurn]
+	and a
+	ld hl, wBattleMonMoves
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+.got_moves
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	and a
+	ret z
+	ld b, a
+	ld de, wBattleMonPP - wBattleMonMoves
+	assert wEnemyMonPP - wEnemyMonMoves == wBattleMonPP - wBattleMonMoves
+	add hl, de
+	ld a, [hl]
+	and PP_MASK
+	ret z
+	push bc
+	ldh a, [hBattleTurn]
+	ld c, a
+	call IsEntryBoost
+	pop bc
+	ret nc
+	call .UsedFlag
+	ld e, a
+	and [hl]
+	ret nz
+	push hl
+	push de
+	push bc
+	call .WouldWork
+	pop bc
+	pop de
+	pop hl
+	ret nc
+	ld a, e
+	or [hl]
+	ld [hl], a
+	farcall AutoMove_Setup
+	ret c
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+.UsedFlag:
+; hl: the POKéMON's byte in wPlayerBoostsUsed or wEnemyBoostsUsed (a wild one's:
+; the first); a: the bit for its move slot c
+	push bc
+	ldh a, [hBattleTurn]
+	and a
+	ld hl, wPlayerBoostsUsed
+	ld a, [wCurBattleMon]
+	jr z, .got_mon
+	ld hl, wEnemyBoostsUsed
+	ld a, [wBattleMode]
+	dec a
+	ld a, 0
+	jr z, .got_mon
+	ld a, [wCurOTMon]
+.got_mon
+	ld c, a
+	ld b, 0
+	add hl, bc
+	pop bc
+	ld a, 1
+	inc c
+	jr .next_bit
+
+.bit
+	add a
+.next_bit
+	dec c
+	jr nz, .bit
+	ret
+
+.WouldWork:
+; carry unless move b is BELLY DRUM and the user has half its HP or less
+	ld l, b
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
+	cp EFFECT_BELLY_DRUM
+	scf
+	ret nz
+	ld hl, wBattleMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wEnemyMonHP
+.got_hp
+; (HP * 2 > max HP, the max HP after the HP)
+	ld a, [hli]
+	ld d, a
+	ld a, [hli]
+	ld e, a
+	sla e
+	rl d
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	ld a, c
+	sub e
+	ld a, b
+	sbc d
+	ret
+
+IsEntryBoost:
+; Return carry if move b raises the user's own stats: BoostEffects, or CURSE when
+; the user (c: 0, the player's POKéMON; 1, the foe's) isn't a GHOST. Keeps bc, de,
+; hl.
+	push hl
+	push de
+	push bc
+	ld l, b
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
+	cp EFFECT_CURSE
+	jr z, .curse
+	ld hl, BoostEffects
+	ld de, 1
+	call IsInArray
+	jr .done
+
+.curse
+	ld hl, wBattleMonType1
+	dec c
+	inc c
+	jr z, .got_types
+	ld hl, wEnemyMonType1
+.got_types
+	ld a, [hli]
+	cp GHOST
+	jr z, .not
+	ld a, [hl]
+	cp GHOST
+	jr z, .not
+	scf
+	jr .done
+
+.not
+	and a
+.done
+	pop bc
+	pop de
+	pop hl
+	ret
+
+BoostEffects:
+; SWORDS DANCE, GROWTH, MEDITATE, SHARPEN, AGILITY, DOUBLE TEAM, MINIMIZE, HARDEN,
+; WITHDRAW, DEFENSE CURL, BARRIER, ACID ARMOR, AMNESIA, BELLY DRUM (see IsEntryBoost)
+	db EFFECT_ATTACK_UP
+	db EFFECT_DEFENSE_UP
+	db EFFECT_SPEED_UP
+	db EFFECT_SP_ATK_UP
+	db EFFECT_SP_DEF_UP
+	db EFFECT_ACCURACY_UP
+	db EFFECT_EVASION_UP
+	db EFFECT_ATTACK_UP_2
+	db EFFECT_DEFENSE_UP_2
+	db EFFECT_SPEED_UP_2
+	db EFFECT_SP_ATK_UP_2
+	db EFFECT_SP_DEF_UP_2
+	db EFFECT_ACCURACY_UP_2
+	db EFFECT_EVASION_UP_2
+	db EFFECT_DEFENSE_CURL
+	db EFFECT_BELLY_DRUM
+	db -1
 
 HandleEntryMoves:
 ; SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT,
@@ -1553,11 +1800,14 @@ MovedLastPower::
 
 CantChooseMove::
 ; b: a move; c: whose (0: the player's POKéMON, 1: the foe's). Return z if it can't
-; be chosen: it works by itself (AutoMoves), or it can be used once while the
-; POKéMON is out and has been (OnceOutMoves). b and c are kept.
+; be chosen: it works by itself (AutoMoves, and the moves that raise the user's
+; stats: see HandleEntryBoosts), or it can be used once while the POKéMON is out
+; and has been (see OnceOutFlag). b and c are kept.
 	ld a, b
 	ld hl, AutoMoves
 	call CheckMoveInList
+	jr c, .cant
+	call IsEntryBoost
 	jr c, .cant
 	call OnceOutFlag
 	jr nc, .can
@@ -1577,12 +1827,12 @@ IsOnceOutMove::
 	; fallthrough
 
 OnceOutFlag:
-; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves,
-; or a recovery move it knows, each one of its own: see HandleAutoRecovery): then
-; hl is its side's field flags (c: 0, the player's; 1, the foe's) and a the flag
-; for it. Keeps bc and de.
+; Return carry if move b can be used once while the POKéMON is out (a recovery
+; move it knows, each one of its own: see HandleAutoRecovery): then hl is its
+; side's field flags (c: 0, the player's; 1, the foe's) and a the flag for it.
+; Keeps bc and de.
 	call IsRecoveryMove
-	jr nc, .not_recovery
+	ret nc
 	push de
 	ld de, wBattleMonMoves
 	ld hl, wPlayerFieldFlags2
@@ -1610,51 +1860,6 @@ OnceOutFlag:
 .found_slot
 	pop af
 	pop de
-	scf
-	ret
-
-.not_recovery
-	push de
-	push bc
-	ld a, b
-	call GetMoveIndexFromID
-	ld d, h
-	ld e, l
-	ld hl, OnceOutMoves
-.loop
-	ld a, [hli]
-	ld c, a
-	ld a, [hli]
-	ld b, a
-	and c
-	inc a
-	jr z, .none ; (-1: the end)
-	ld a, c
-	cp e
-	jr nz, .next
-	ld a, b
-	cp d
-	jr z, .found
-.next
-	inc hl
-	jr .loop
-
-.none
-	pop bc
-	pop de
-	and a
-	ret
-
-.found
-	pop bc
-	pop de
-	ld a, [hl]
-	ld hl, wPlayerFieldFlags
-	dec c
-	inc c
-	jr z, .got_flags
-	ld hl, wEnemyFieldFlags
-.got_flags
 	scf
 	ret
 
@@ -1895,14 +2100,6 @@ AutoMoves:
 	dw NIGHTMARE    ; when the foe is asleep: see HandleAutoNightmare
 	dw CONVERSION   ; just before an attack's damage: see HandleAutoConversion
 	dw CONVERSION2
-	dw -1
-
-OnceOutMoves:
-; moves that can be used once while the POKéMON is out (see MarkFirstAttack), and
-; their FIELD_*_F flags
-	dwb SWORDS_DANCE, 1 << FIELD_SWORDS_DANCE_F
-	dwb GROWTH,       1 << FIELD_GROWTH_F
-	dwb AMNESIA,      1 << FIELD_AMNESIA_F
 	dw -1
 
 HandleAutoConversion::
