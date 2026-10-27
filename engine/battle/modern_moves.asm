@@ -447,13 +447,16 @@ MarkFirstAttack::
 	ld c, a
 	call OnceOutFlag
 	jr nc, .not_once
-	ld b, a
+	ld c, a
 	and [hl]
 	scf
 	ret nz
-	ld a, b
+	ld a, c
 	or [hl]
 	ld [hl], a
+	call IsRecoveryMove
+	jr nc, .not_once
+	set FIELD2_RECOVERED_F, [hl] ; (the next one when it falls under half again)
 .not_once
 	call UserHeldFlags
 	res HELDFLAG_KINGS_ROCK_F, [hl]
@@ -1575,17 +1578,38 @@ IsOnceOutMove::
 
 OnceOutFlag:
 ; Return carry if move b can be used once while the POKéMON is out (OnceOutMoves,
-; or a recovery move: see HandleAutoRecovery): then hl is its side's field flags
-; (c: 0, the player's; 1, the foe's) and a the flag for it.
+; or a recovery move it knows, each one of its own: see HandleAutoRecovery): then
+; hl is its side's field flags (c: 0, the player's; 1, the foe's) and a the flag
+; for it. Keeps bc and de.
 	call IsRecoveryMove
 	jr nc, .not_recovery
+	push de
+	ld de, wBattleMonMoves
 	ld hl, wPlayerFieldFlags2
 	dec c
 	inc c
-	jr z, .got_flags2
+	jr z, .got_moves
+	ld de, wEnemyMonMoves
 	ld hl, wEnemyFieldFlags2
-.got_flags2
+.got_moves
 	ld a, 1 << FIELD2_RECOVERY_F
+.slot
+	push af
+	ld a, [de]
+	inc de
+	cp b
+	jr z, .found_slot
+	pop af
+	add a
+	cp 1 << (FIELD2_RECOVERY_F + NUM_MOVES)
+	jr nz, .slot
+	pop de
+	and a ; (nc: one it doesn't know, as METRONOME's)
+	ret
+
+.found_slot
+	pop af
+	pop de
 	scf
 	ret
 
@@ -1661,11 +1685,13 @@ RecoveryEffects:
 HandleAutoRecovery:
 ; Recovery moves work by themselves too: once a POKéMON is under half its HP
 ; (whatever brought it there: an attack, recoil, poison, the weather...), if it
-; knows one with PP left, it uses it (1 PP), unless it's used one since it came
-; in (they can be used once while it's out: see OnceOutFlag), it's asleep or
+; knows one with PP left that it hasn't used since it came in (each one works once
+; while it's out: see OnceOutFlag), it uses it (1 PP), unless it's asleep or
 ; frozen, or either POKéMON has fainted, or it chose one this turn and is still to
-; move. REST only if it knows no other, and not when it would fail. The player's
-; POKéMON first (the foe's, linked as the other side).
+; move. One at a time: after one has healed it, the next waits until it's been
+; back at half its HP or more and falls under half again (FIELD2_RECOVERED_F).
+; REST last, and not when it would fail. The player's POKéMON first (the foe's,
+; linked as the other side).
 	ldh a, [hBattleTurn]
 	push af
 	ldh a, [hSerialConnectionStatus]
@@ -1691,16 +1717,12 @@ HandleAutoRecovery:
 	ldh [hBattleTurn], a
 	call CantGoOn
 	ret nz
-	ld hl, wPlayerFieldFlags2
 	ld de, wBattleMonHP
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .got_side
-	ld hl, wEnemyFieldFlags2
+	jr z, .got_hp
 	ld de, wEnemyMonHP
-.got_side
-	bit FIELD2_RECOVERY_F, [hl]
-	ret nz
+.got_hp
 ; under half its HP: HP * 2 < max HP
 	ld a, [de]
 	ld h, a
@@ -1718,7 +1740,16 @@ HandleAutoRecovery:
 	sub c
 	ld a, h
 	sbc b
-	ret nc
+	jr c, .under_half
+; (at half its HP or more: the next time it falls under half, it can heal again)
+	call .Flags
+	res FIELD2_RECOVERED_F, [hl]
+	ret
+
+.under_half
+	call .Flags
+	bit FIELD2_RECOVERED_F, [hl]
+	ret nz
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
 	and SLP_MASK | 1 << FRZ
@@ -1727,17 +1758,25 @@ HandleAutoRecovery:
 	ret z
 	call .FindMove
 	ret c
+	ldh a, [hBattleTurn]
+	ld c, a
+	call OnceOutFlag ; (b: the move)
+	or [hl]
+	set FIELD2_RECOVERED_F, a
+	ld [hl], a
 	farcall AutoMove_Setup
 	ret c
+	ld de, 0 ; (its own effect script)
+	farcall AutoMove_Run
+	ret
+
+.Flags:
+; hl: its wPlayerFieldFlags2 or wEnemyFieldFlags2
 	ld hl, wPlayerFieldFlags2
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .got_flags
+	ret z
 	ld hl, wEnemyFieldFlags2
-.got_flags
-	set FIELD2_RECOVERY_F, [hl]
-	ld de, 0 ; (its own effect script)
-	farcall AutoMove_Run
 	ret
 
 .ChoseOne:
@@ -1773,8 +1812,10 @@ HandleAutoRecovery:
 	ret
 
 .FindMove:
-; b: the first recovery move it knows with PP left, not REST (REST if it's the
-; only one, and won't fail); carry if none
+; b: the first recovery move it knows with PP left that it hasn't used since it
+; came in, not REST (REST if it's the only one, and won't fail); carry if none
+	call .Flags
+	ld d, [hl] ; (bit 0: its first move used)
 	ld hl, wBattleMonMoves
 	ldh a, [hBattleTurn]
 	and a
@@ -1782,11 +1823,13 @@ HandleAutoRecovery:
 	ld hl, wEnemyMonMoves
 .got_moves
 	ld c, NUM_MOVES
-	ld e, 0 ; (REST, if it knows it)
+	ld e, 0 ; (REST, if it can use it)
 .move
 	ld a, [hli]
 	and a
 	jr z, .next
+	bit FIELD2_RECOVERY_F, d
+	jr nz, .next
 	ld b, a
 	push hl
 	push de
@@ -1808,6 +1851,7 @@ HandleAutoRecovery:
 .rest_known
 	ld e, b
 .next
+	srl d
 	dec c
 	jr nz, .move
 	ld a, e

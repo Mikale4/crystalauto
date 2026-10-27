@@ -296,7 +296,9 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 
 ; wPlayerFieldFlags2 and wEnemyFieldFlags2 bits: since the POKéMON out came in
 	const_def
-	const FIELD2_RECOVERY_F ; 0: it has used a recovery move (see HandleAutoRecovery)
+	const FIELD2_RECOVERY_F  ; 0-3: it has used the recovery move in that move slot (bit 0: the first; see OnceOutFlag)
+	const_skip NUM_MOVES - 1
+	const FIELD2_RECOVERED_F ; 4: one has healed it, and it hasn't been back at half its HP since (see HandleAutoRecovery)
 
 DEF TYPICAL_FIXED_DAMAGE EQU 60 ; SONICBOOM and the like (see FixedDamageRolls)
 

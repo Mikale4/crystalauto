@@ -318,7 +318,7 @@ Some moves work in new ways of their own:
 | DREAM EATER | works on a foe that's awake too |
 | SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT, SPIKES, REFLECT, LIGHT SCREEN, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | REFLECT, LIGHT SCREEN, SAFEGUARD | they can't be chosen: used only as the Pokémon comes in, and each side puts up each one once a battle (see below) |
-| RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS, MOONLIGHT | work by themselves right when the Pokémon falls under half its HP; one of them once while it's out (see below) |
+| RECOVER, SOFTBOILED, MILK DRINK, REST, MORNING SUN, SYNTHESIS, MOONLIGHT | work by themselves right when the Pokémon falls under half its HP; each one once while it's out, one at a time (see below) |
 | PURSUIT | 15 power; hits a foe switching out by itself (see below) |
 | FALSE SWIPE | 60 power, 90% accurate; a miss swipes again, for double the damage (not when the foe is protected, out of reach or immune). It no longer leaves the foe 1 HP |
 | RAGE | as RAGE FIST: 50 power, and 50 more for every time the user was hit this battle (up to 250) |
@@ -385,15 +385,18 @@ brought it there (an attack, recoil, a hit to itself in its confusion, BELLY DRU
 SUBSTITUTE, poison, a burn, LEECH SEED, the weather, a trapping move, SPIKES as it came
 in), it uses one it knows with PP left (1 PP), unless it's asleep or frozen, or either
 Pokémon has fainted (then it's as the next turn starts). It heals as the move always
-did, and it doesn't count as the Pokémon's move. One of them works once while the
-Pokémon is out (one that knows RECOVER and REST uses only one), and again only after
-it has gone back and come out again (or another has come in by BATON PASS). REST goes
-only when it knows no other, and not when it would fail (ELECTRIC or MISTY TERRAIN
-keeping it awake on the ground). They can still be chosen too, once while out, as
-SWORDS DANCE is ("RECOVER works once while out!"): one chosen above half its HP is its
-one, and it won't work by itself after that. One that chose a recovery move and falls
-under half before its turn just uses the one it chose. Auto battle keeps them for when
-they work by themselves.
+did, and it doesn't count as the Pokémon's move. Each one works once while the
+Pokémon is out, and again only after it has gone back and come out again (or another
+has come in by BATON PASS); one at a time: a Pokémon that knows RECOVER and REST
+RECOVERs the first time it falls under half, and RESTs the next time. After one has
+healed it, the next waits until it has been back at half its HP or more and falls
+under half again (MORNING SUN in the rain may leave it under half: RECOVER doesn't
+follow right away). REST goes last, and not when it would fail (ELECTRIC or MISTY
+TERRAIN keeping it awake on the ground). They can still be chosen too, each once while
+out, as SWORDS DANCE is ("RECOVER works once while out!"): one chosen above half its
+HP won't work by itself after that, but the others still do. One that chose a
+recovery move and falls under half before its turn just uses the one it chose. Auto
+battle keeps them for when they work by themselves.
 
 **PURSUIT.** When a foe switches out, a Pokémon that knows PURSUIT hits it by itself
 on its way out, for double damage (1 PP), unless it's asleep or frozen. Then it still
@@ -1287,8 +1290,9 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   the `secondstatup` command; SWORDS DANCE, GROWTH and AMNESIA set their field flag as
   they're used (`OnceOutMoves`, in `MarkFirstAttack`, which also tells
   `BattleCommand_DoTurn` when one is used again: it fails). The recovery moves are
-  `HandleAutoRecovery` (`RecoveryEffects`; once while out: `FIELD2_RECOVERY_F` in
-  `wPlayerFieldFlags2` and `wEnemyFieldFlags2`), checked after each side's turn
+  `HandleAutoRecovery` (`RecoveryEffects`; each once while out, by its move slot:
+  `FIELD2_RECOVERY_F` and the 3 bits after it in `wPlayerFieldFlags2` and
+  `wEnemyFieldFlags2`; one at a time: `FIELD2_RECOVERED_F`), checked after each side's turn
   (`AfterTurn`), after `ResidualDamage`, after the weather and the other end-of-turn
   effects (`HandleBetweenTurnEffects`), and as each turn starts
   (`HandleEntryTransform`). REFLECT, LIGHT SCREEN and SAFEGUARD keep the screens each
