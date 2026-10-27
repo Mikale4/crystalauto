@@ -1175,11 +1175,22 @@ BattleTowerAction_0A:
 	ret
 
 BattleTowerAction_GSBall:
+; GS_BALL_AVAILABLE once the player has entered the HALL OF FAME, as the Virtual
+; Console made it (a vc_hook in AddHallOfFameEntry); else as sGSBallFlag has it (the
+; mobile event's)
+	ld de, EVENT_BEAT_ELITE_FOUR
+	ld b, CHECK_FLAG
+	call EventFlagAction
+	ld a, c
+	and a
+	ld a, GS_BALL_AVAILABLE
+	jr nz, .got_flag
 	ld a, BANK(sGSBallFlag)
 	call OpenSRAM
 	ld a, [sGSBallFlag]
-	ld [wScriptVar], a
 	call CloseSRAM
+.got_flag
+	ld [wScriptVar], a
 	ret
 
 BattleTowerAction_0C:

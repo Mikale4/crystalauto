@@ -657,6 +657,12 @@ Every Pokémon can be had in one game, without trading with another one (see
 - **MEWTWO** waits deep in SILVER CAVE (at the far end of a side room) once you
   have beaten RED: a level 70 boss. Once it has joined you, **MEW** plays on CINNABAR
   ISLAND, where its mansion stood: a level 65 boss.
+- **CELEBI**, as in the Virtual Console: once you've entered the HALL OF FAME, the
+  woman at GOLDENROD's POKéMON CENTER stops you on your way out and gives you the GS
+  BALL (the original game only did that with its Japanese mobile service). Give it to
+  KURT in AZALEA TOWN; the next day, talk to him again: he runs outside, gives it back
+  as you leave, and sends you to ILEX FOREST's shrine. Put the GS BALL in the shrine
+  and CELEBI comes, a level 30 boss; lose, and you get the GS BALL back to try again.
 - **The wild**: CRYSTAL had no MAREEP, VULPIX, MANKEY or GIRAFARIG. MAREEP are on
   ROUTE 32 in the morning and day, VULPIX on ROUTE 37 at night, MANKEY on ROUTE 42 and
   GIRAFARIG on ROUTE 43 in the morning and day. Their evolutions (FARIGIRAF too) come
@@ -731,7 +737,7 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | ENTEI (BURNED TOWER) | 40 | GROWLITHE, MAGBY, HOUNDOUR, VULPIX, EXEGGCUTE |
 | LUGIA (WHIRL ISLANDS) | 60 | HORSEA, CHINCHOU, MANTINE, SLOWPOKE, SKARMORY |
 | HO-OH (TIN TOWER's roof) | 60 | FLAREON, VAPOREON, JOLTEON, ESPEON, UMBREON |
-| CELEBI (ILEX FOREST) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
+| CELEBI (ILEX FOREST's shrine, with the GS BALL) | 30 | PINECO, ODDISH, FARFETCH'D, HERACROSS, HOOTHOOT |
 | GALARIAN ARTICUNO (SEAFOAM ISLANDS) | 50 | GALARIAN MR. MIME, GALARIAN SLOWPOKE, GALARIAN PONYTA, NATU, GIRAFARIG |
 | GALARIAN ZAPDOS (POWER PLANT) | 50 | GALARIAN FARFETCH'D, MACHOP, MANKEY, HERACROSS, TYROGUE |
 | GALARIAN MOLTRES (VICTORY ROAD) | 50 | MURKROW, SNEASEL, HOUNDOUR, ALOLAN MEOWTH, ALOLAN RATTATA |
@@ -1406,6 +1412,11 @@ IDs nothing holds any more to be taken back.
   PEWTER's scientist take the TEACHER's place in their map groups' sprite sets
   ([`data/maps/outdoor_sprites.asm`](data/maps/outdoor_sprites.asm)), unused there.
   Their teams are in `BossTeams`, and the event flags are formerly unused ones.
+- The GS BALL's scene in GOLDENROD's POKéMON CENTER asks `BattleTowerAction_GSBall`
+  ([`engine/events/battle_tower/battle_tower.asm`](engine/events/battle_tower/battle_tower.asm)),
+  which says it's there once `EVENT_BEAT_ELITE_FOUR` is set; before, only the Virtual
+  Console set `sGSBallFlag` (its `vc_hook` in `AddHallOfFameEntry`). Losing to
+  CELEBI gives the GS BALL back ([`maps/IlexForest.asm`](maps/IlexForest.asm)).
 
 ### GEN 1's TMs
 

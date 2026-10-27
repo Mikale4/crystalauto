@@ -465,6 +465,7 @@ IlexForestShrineScript:
 	special CelebiShrineEvent
 	loadwildmon CELEBI, 30
 	startbattle
+	ifequal LOSE, .Lost
 	reloadmapafterbattle
 	pause 20
 	special CheckCaughtCelebi
@@ -478,6 +479,14 @@ IlexForestShrineScript:
 	applymovement ILEXFOREST_KURT, IlexForestKurtStepsDownMovement
 	disappear ILEXFOREST_KURT
 .DidntCatchCelebi:
+	end
+
+.Lost:
+; a boss: the GS BALL comes back, to try again (see engine/battle/bosses.asm)
+	giveitem GS_BALL
+	setevent EVENT_FOREST_IS_RESTLESS
+	setflag ENGINE_FOREST_IS_RESTLESS
+	reloadmapafterbattle
 	end
 
 MovementData_Farfetchd_Pos1_Pos2:
