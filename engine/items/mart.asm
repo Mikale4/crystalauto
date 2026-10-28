@@ -785,10 +785,15 @@ SellMenu:
 	ret
 
 .try_sell
+; (nor a TM, which never runs out: GEN 1's and the HMs can't be tossed)
+	ld a, [wCurItem]
+	cp TM01
+	jr nc, .cant_sell
 	farcall _CheckTossableItem
 	ld a, [wItemAttributeValue]
 	and a
 	jr z, .okay_to_sell
+.cant_sell
 	ld hl, MartCantBuyText
 	call PrintText
 	and a
