@@ -824,9 +824,12 @@ wPokegearRadioChannelAddr:: dw
 wPokegearRadioMusicPlaying:: db
 
 NEXTU
-; move reminder and tutor (see engine/events/move_relearner.asm)
+; move reminder and tutor (see engine/events/move_relearner.asm), and the TM
+; shops' lists (see engine/events/gen1_tm_shop.asm and tm_shop.asm)
 wMoveRelearnerCount:: db
 wMoveRelearnerMoves:: ds MAX_RELEARNER_MOVES + 1
+wTMShopCoins:: db ; TRUE: its prices are in coins
+wTMShopItem:: db ; the TM chosen
 
 NEXTU
 ; a MINT's natures (see engine/items/mint.asm)

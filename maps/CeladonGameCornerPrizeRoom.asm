@@ -1,6 +1,3 @@
-DEF CELADONGAMECORNERPRIZEROOM_TM32_COINS     EQU 1500
-DEF CELADONGAMECORNERPRIZEROOM_TM29_COINS     EQU 3500
-DEF CELADONGAMECORNERPRIZEROOM_TM15_COINS     EQU 7500
 DEF CELADONGAMECORNERPRIZEROOM_PIKACHU_COINS  EQU 2222
 DEF CELADONGAMECORNERPRIZEROOM_PORYGON_COINS  EQU 5555
 DEF CELADONGAMECORNERPRIZEROOM_LARVITAR_COINS EQU 8888
@@ -27,61 +24,14 @@ CeladonGameCornerPrizeRoomTMVendor:
 	waitbutton
 	checkitem COIN_CASE
 	iffalse CeladonPrizeRoom_NoCoinCase
-	writetext CeladonPrizeRoom_AskWhichPrizeText
-CeladonPrizeRoom_tmcounterloop:
-	special DisplayCoinCaseBalance
-	loadmenu CeladonPrizeRoom_TMMenuHeader
-	verticalmenu
-	closewindow
-	ifequal 1, .DoubleTeam
-	ifequal 2, .Psychic
-	ifequal 3, .HyperBeam
+	setval TMPRIZES_CELADON
+	special TMPrizes ; (shown as GEN 1's TM clerk shows his)
 	sjump CeladonPrizeRoom_CancelPurchaseScript
-
-.DoubleTeam:
-	checkcoins CELADONGAMECORNERPRIZEROOM_TM32_COINS
-	ifequal HAVE_LESS, CeladonPrizeRoom_notenoughcoins
-	getitemname STRING_BUFFER_3, TM_DOUBLE_TEAM
-	scall CeladonPrizeRoom_askbuy
-	iffalse CeladonPrizeRoom_CancelPurchaseScript
-	giveitem TM_DOUBLE_TEAM
-	iffalse CeladonPrizeRoom_notenoughroom
-	takecoins CELADONGAMECORNERPRIZEROOM_TM32_COINS
-	sjump CeladonPrizeRoom_purchased
-
-.Psychic:
-	checkcoins CELADONGAMECORNERPRIZEROOM_TM29_COINS
-	ifequal HAVE_LESS, CeladonPrizeRoom_notenoughcoins
-	getitemname STRING_BUFFER_3, TM_PSYCHIC_M
-	scall CeladonPrizeRoom_askbuy
-	iffalse CeladonPrizeRoom_CancelPurchaseScript
-	giveitem TM_PSYCHIC_M
-	iffalse CeladonPrizeRoom_notenoughroom
-	takecoins CELADONGAMECORNERPRIZEROOM_TM29_COINS
-	sjump CeladonPrizeRoom_purchased
-
-.HyperBeam:
-	checkcoins CELADONGAMECORNERPRIZEROOM_TM15_COINS
-	ifequal HAVE_LESS, CeladonPrizeRoom_notenoughcoins
-	getitemname STRING_BUFFER_3, TM_HYPER_BEAM
-	scall CeladonPrizeRoom_askbuy
-	iffalse CeladonPrizeRoom_CancelPurchaseScript
-	giveitem TM_HYPER_BEAM
-	iffalse CeladonPrizeRoom_notenoughroom
-	takecoins CELADONGAMECORNERPRIZEROOM_TM15_COINS
-	sjump CeladonPrizeRoom_purchased
 
 CeladonPrizeRoom_askbuy:
 	writetext CeladonPrizeRoom_ConfirmPurchaseText
 	yesorno
 	end
-
-CeladonPrizeRoom_purchased:
-	waitsfx
-	playsound SFX_TRANSACTION
-	writetext CeladonPrizeRoom_HereYouGoText
-	waitbutton
-	sjump CeladonPrizeRoom_tmcounterloop
 
 CeladonPrizeRoom_notenoughcoins:
 	writetext CeladonPrizeRoom_NotEnoughCoinsText
@@ -106,20 +56,6 @@ CeladonPrizeRoom_NoCoinCase:
 	waitbutton
 	closetext
 	end
-
-CeladonPrizeRoom_TMMenuHeader:
-	db MENU_BACKUP_TILES ; flags
-	menu_coords 0, 2, 15, TEXTBOX_Y - 1
-	dw .MenuData
-	db 1 ; default option
-
-.MenuData:
-	db STATICMENU_CURSOR ; flags
-	db 4 ; items
-	db "TM32    {d:CELADONGAMECORNERPRIZEROOM_TM32_COINS}@"
-	db "TM29    {d:CELADONGAMECORNERPRIZEROOM_TM29_COINS}@"
-	db "TM15    {d:CELADONGAMECORNERPRIZEROOM_TM15_COINS}@"
-	db "CANCEL@"
 
 CeladonGameCornerPrizeRoomPokemonVendor:
 	faceplayer

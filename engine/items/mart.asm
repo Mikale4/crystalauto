@@ -193,9 +193,38 @@ StandardMart:
 .Buy:
 	call ExitMenu
 	call FarReadMart
+	call .TMsOnly
+	jr nc, .buy_menu
+	farcall TMMartBuy ; (shown as GEN 1's TM clerk shows his)
+	jr .bought
+
+.buy_menu
 	call BuyMenu
+.bought
 	and a
 	ld a, STANDARDMART_ANYTHINGELSE
+	ret
+
+.TMsOnly:
+; carry if the mart sells TMs, and nothing else
+	ld hl, wCurMartItems
+	ld a, [hl]
+	cp -1
+	ret z ; (nc)
+.tm
+	ld a, [hli]
+	cp -1
+	jr z, .yes
+	cp TM01
+	ccf
+	ret nc
+	cp HM01
+	jr c, .tm
+	and a
+	ret
+
+.yes
+	scf
 	ret
 
 .Sell:

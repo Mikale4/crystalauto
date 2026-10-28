@@ -335,3 +335,9 @@ DEF UNOWN_WALL_MENU_HEADER_SIZE EQU 5
 	const GEN1TMSHOP_GOLDENROD ; 0
 	const GEN1TMSHOP_CELADON   ; 1
 DEF NUM_GEN1TMSHOPS EQU const_value
+
+; TMPrizes setval arguments (see engine/events/tm_shop.asm)
+	const_def
+	const TMPRIZES_GOLDENROD ; 0
+	const TMPRIZES_CELADON   ; 1
+DEF NUM_TMPRIZES EQU const_value

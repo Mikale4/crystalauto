@@ -1015,6 +1015,16 @@ As in PalletToPewter:
   show in your Pokémon's menu. ROCK SMASH and HEADBUTT work the same way with their
   TMs.
 - **HM moves can be forgotten** like any other move, to make room for a new one.
+- **Every TM shop lists its TMs the same way**, as GEN 1's TM clerks do. Each TM
+  shows its number and move (*TM41 THUNDERPUNCH*), and under it the price, or
+  **BOUGHT** once you have it. The box below shows the highlighted move's category,
+  PP, power and accuracy. Since a TM never runs out, you buy one of each. This goes
+  for:
+  - the clerks at the GOLDENROD DEPT. STORE's 5th floor and the CELADON DEPT.
+    STORE's 3rd floor, through BUY (SELL is still there);
+  - the MOVE TUTOR inside the GOLDENROD GAME CORNER, when he sells his TMs;
+  - the TM prize counters at both GAME CORNERs. Their prices are in coins, with
+    your COIN CASE's balance shown above the list.
 
 
 ## The MOVE REMINDER and the MOVE TUTOR
@@ -1134,7 +1144,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: e200927535c4ef4990ced591f05761c5fdb89c63`.
+The patched ROM has `sha1: a8027af642e5da447eac29e687ea3f48df3606d6`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1575,6 +1585,15 @@ IDs nothing holds any more to be taken back.
   number; the `GEN1_TM` item (`wCurGen1TM`) stands for the one picked.
 - [`engine/events/gen1_tm_shop.asm`](engine/events/gen1_tm_shop.asm) has the two
   clerks (`Gen1TMShop`), with their lists and RED and BLUE's prices.
+- [`engine/events/tm_shop.asm`](engine/events/tm_shop.asm) shows GEN 2's TMs the
+  same way:
+  - `TMMartBuy` takes over a mart's BUY when it sells nothing but TMs
+    (`StandardMart.Buy` in [`engine/items/mart.asm`](engine/items/mart.asm)), at
+    their PACK prices.
+  - The `TMPrizes` special is the GAME CORNERs' TM prize counters, with their coin
+    prices in `TMPrizeTables`.
+  - Both share `TMShop`, `ChooseTMForSale` and the MOVE REMINDER's details box, and
+    keep their list in `wMoveRelearnerMoves`.
 
 
 ### BILL's PC
