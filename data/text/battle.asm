@@ -915,6 +915,14 @@ CoinsScatteredText:
 	line "everywhere!"
 	prompt
 
+AutoGuardText:
+; (UseAutoGuard: PROTECT, DETECT or ENDURE, by itself)
+	text "<USER>"
+	line "used @"
+	text_ram wStringBuffer2
+	text "!"
+	done
+
 ConversionAutoText:
 ; (HandleAutoConversion)
 	text "<USER>'s"

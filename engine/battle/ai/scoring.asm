@@ -1920,6 +1920,10 @@ AI_Smart_Curse:
 	ret
 
 AI_Smart_Protect:
+; PROTECT and DETECT work by themselves right before an attack hits (see
+; HandleAutoProtect): greatly discourage them, they're kept for then.
+	jr .greatly_discourage
+
 ; Greatly discourage this move if the enemy already used Protect.
 	ld a, [wEnemyProtectCount]
 	and a

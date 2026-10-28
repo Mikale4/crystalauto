@@ -994,8 +994,8 @@ PowderSnowDescription:
 	next "cause freezing.@"
 
 ProtectDescription:
-	db   "Foils attack that"
-	next "turn. It may fail.@"
+	db   "Foils an attack by"
+	next "itself, once out.@"
 
 MachPunchDescription:
 	db   "A fast punch that"
@@ -1054,8 +1054,8 @@ IcyWindDescription:
 	next "lowers SPEED.@"
 
 DetectDescription:
-	db   "Evades attack that"
-	next "turn. It may fail.@"
+	db   "Evades an attack"
+	next "by itself, once.@"
 
 BoneRushDescription:
 	db   "An attack that"
@@ -1078,8 +1078,8 @@ GigaDrainDescription:
 	next "damage inflicted.@"
 
 EndureDescription:
-	db   "Always leaves at"
-	next "least 1HP.@"
+	db   "Leaves 1HP when a"
+	next "hit would KO it.@"
 
 CharmDescription:
 	db   "Sharply lowers the"

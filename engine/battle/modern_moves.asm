@@ -438,10 +438,10 @@ UserHeldFlags:
 CheckSpentMove::
 ; (BattleCommand_DoTurn, first: SLEEP TALK's and METRONOME's move goes no further)
 ; Return carry if the move the user is using fails: one of its own moves that raise
-; its stats, used only as it comes in (see HandleEntryStatMoves), or a recovery move
-; that it can use once while it's out and has (see OnceOutFlag), brought back by
-; ENCORE or SLEEP TALK. Else the once while out move is marked used now. (Not a
-; move used by itself: see AutoMove_Run.)
+; its stats, used only as it comes in (see HandleEntryStatMoves), or a recovery move,
+; PROTECT or DETECT that it can use once while it's out and has (see OnceOutFlag),
+; brought back by ENCORE or SLEEP TALK. Else the once while out move is marked used
+; now. (Not a move used by itself: see AutoMove_Run.)
 	ld a, [wAutoMove]
 	and a
 	ret nz
@@ -479,7 +479,10 @@ CheckSpentMove::
 	ld a, c
 	or [hl]
 	ld [hl], a
+	call IsRecoveryMove
+	ret nc ; (PROTECT, DETECT)
 	set FIELD2_RECOVERED_F, [hl] ; (the next one when it falls under half again)
+	and a
 	ret
 
 MarkFirstAttack::
@@ -1898,10 +1901,10 @@ IsOnceOutMove::
 
 OnceOutFlag:
 ; Return carry if move b can be used once while the POKéMON is out (a recovery
-; move it knows, each one of its own: see HandleAutoRecovery): then hl is its
-; side's field flags (c: 0, the player's; 1, the foe's) and a the flag for it.
-; Keeps bc and de.
-	call IsRecoveryMove
+; move, PROTECT or DETECT it knows, each one of its own: see HandleAutoRecovery and
+; HandleAutoProtect): then hl is its side's field flags (c: 0, the player's; 1, the
+; foe's) and a the flag for it. Keeps bc and de.
+	call IsOnceOutEffect
 	ret nc
 	push de
 	ld de, wBattleMonMoves
@@ -1936,12 +1939,25 @@ OnceOutFlag:
 IsRecoveryMove:
 ; Return carry if move b is a recovery move (RecoveryEffects). Keeps bc, de, hl.
 	push hl
+	ld hl, RecoveryEffects
+	jr IsMoveEffectIn
+
+IsOnceOutEffect:
+; Return carry if move b is one used once while the POKéMON is out: a recovery
+; move, PROTECT or DETECT (OnceOutEffects). Keeps bc, de, hl.
+	push hl
+	ld hl, OnceOutEffects
+	; fallthrough
+
+IsMoveEffectIn:
+; (hl, pushed: a list of effects) Return carry if move b's effect is in hl's list.
 	push de
 	push bc
+	push hl
 	ld l, b
 	ld a, MOVE_EFFECT
 	call GetMoveAttribute
-	ld hl, RecoveryEffects
+	pop hl
 	ld de, 1
 	call IsInArray
 	pop bc
@@ -1949,6 +1965,9 @@ IsRecoveryMove:
 	pop hl
 	ret
 
+OnceOutEffects:
+; PROTECT and DETECT (see HandleAutoProtect), then the recovery moves
+	db EFFECT_PROTECT
 RecoveryEffects:
 ; RECOVER, SOFTBOILED, MILK DRINK and REST; MORNING SUN; SYNTHESIS; MOONLIGHT
 	db EFFECT_HEAL
@@ -2170,7 +2189,268 @@ AutoMoves:
 	dw NIGHTMARE    ; when the foe is asleep: see HandleAutoNightmare
 	dw CONVERSION   ; just before an attack's damage: see HandleAutoConversion
 	dw CONVERSION2
+	dw ENDURE       ; when an attack would make it faint: see HandleAutoEndure
 	dw -1
+
+HandleAutoProtect::
+; (BattleCommand_CheckHit, as an attack is to hit; BattleCommand_AutoGuard) PROTECT
+; and DETECT work by themselves: right before an attack (not a status move) hits a
+; POKéMON (not its SUBSTITUTE), if it knows one with PP left that it hasn't used
+; since it came in (each one works once while it's out: see OnceOutFlag), it uses
+; it (1 PP) and the attack misses, unless it's asleep or frozen. (One chosen goes
+; before any attack: see MovePriorities.) Return carry if it did: it's protected,
+; for that move only (see EndAutoGuard).
+	ld a, BATTLE_VARS_MOVE_TYPE
+	call GetBattleVar
+	and ~TYPE_MASK
+	cp STATUS
+	jr z, .no
+	ld a, BATTLE_VARS_SUBSTATUS4_OPP
+	call GetBattleVar
+	bit SUBSTATUS_SUBSTITUTE, a
+	jr nz, .no
+; (as the one attacked)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Protect
+	pop bc
+	ld a, b
+	ldh [hBattleTurn], a
+	ret nc
+	call RestoreMoveName
+	scf
+	ret
+
+.no
+	and a
+	ret
+
+.Protect:
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+; the first it knows
+	ld hl, wBattleMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+.got_moves
+	ld e, NUM_MOVES
+.find
+	ld a, [hli]
+	ld b, a
+	push hl
+	push de
+	call .Usable
+	pop de
+	pop hl
+	jr nc, .use
+	dec e
+	jr nz, .find
+	and a
+	ret
+
+.use
+; b: the move, c: its slot
+	push bc
+	ldh a, [hBattleTurn]
+	ld c, a
+	call OnceOutFlag
+	or [hl]
+	ld [hl], a
+	pop bc
+	ld a, BATTLE_VARS_SUBSTATUS1
+	call GetBattleVarAddr
+	set SUBSTATUS_PROTECT, [hl]
+	call UseAutoGuard
+	scf
+	ret
+
+.Usable:
+; Return nc, with c its slot, if move b is a PROTECT or DETECT the user knows with
+; PP left, and hasn't used since it came in.
+	ld a, b
+	and a
+	jr z, .cant
+	ld l, b
+	ld a, MOVE_EFFECT
+	call GetMoveAttribute
+	cp EFFECT_PROTECT
+	jr nz, .cant
+	ldh a, [hBattleTurn]
+	ld c, a
+	call OnceOutFlag
+	jr nc, .cant ; (not its own: METRONOME's)
+	and [hl]
+	jr z, GuardMoveSlot
+.cant
+	scf
+	ret
+
+HandleAutoEndure::
+; (BattleCommand_ApplyDamage) ENDURE works by itself: when an attack is to make a
+; POKéMON faint (not its SUBSTITUTE), if it knows ENDURE with PP left, it uses it (1
+; PP) and is left with 1 HP; once while it's out (FIELD_ENDURE_F), unless it's
+; asleep or frozen. It lasts for that move only (see EndAutoGuard).
+	ld a, [wAttackMissed]
+	and a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS1_OPP
+	call GetBattleVar
+	bit SUBSTATUS_ENDURE, a
+	ret nz
+	ld a, BATTLE_VARS_SUBSTATUS4_OPP
+	call GetBattleVar
+	bit SUBSTATUS_SUBSTITUTE, a
+	ret nz
+; would it faint? (the damage is at least its HP)
+	ld hl, wEnemyMonHP
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_hp
+	ld hl, wBattleMonHP
+.got_hp
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+	ld a, [wCurDamage + 1]
+	sub c
+	ld a, [wCurDamage]
+	sbc b
+	ret c
+; (as the one attacked)
+	ldh a, [hBattleTurn]
+	push af
+	xor 1
+	ldh [hBattleTurn], a
+	call .Endure
+	pop bc
+	ld a, b
+	ldh [hBattleTurn], a
+	ret nc
+	jp RestoreMoveName
+
+.Endure:
+	ld a, BATTLE_VARS_STATUS
+	call GetBattleVar
+	and SLP_MASK | 1 << FRZ
+	ret nz
+	call UserFieldFlags
+	bit FIELD_ENDURE_F, [hl]
+	ret nz
+	ldbmove ENDURE
+	call GuardMoveSlot
+	ccf
+	ret nc
+	call UserFieldFlags
+	set FIELD_ENDURE_F, [hl]
+	ld a, BATTLE_VARS_SUBSTATUS1
+	call GetBattleVarAddr
+	set SUBSTATUS_ENDURE, [hl]
+	call UseAutoGuard
+	scf
+	ret
+
+GuardMoveSlot:
+; c: the slot of the user's move b, if it has PP left (else carry). Keeps b.
+	ld hl, wBattleMonMoves
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+.got_moves
+	ld c, 0
+.find
+	ld a, [hli]
+	cp b
+	jr z, .found
+	inc c
+	ld a, c
+	cp NUM_MOVES
+	jr c, .find
+	scf
+	ret
+
+.found
+	push bc
+	ld bc, wBattleMonPP - wBattleMonMoves - 1
+	add hl, bc
+	pop bc
+	ld a, [hl]
+	and PP_MASK
+	ret nz
+	scf
+	ret
+
+UseAutoGuard:
+; The user uses PROTECT, DETECT or ENDURE (b, its move in slot c) by itself, for
+; the move under way only (see EndAutoGuard): its PP, "<USER> used PROTECT!", and
+; its animation.
+	call SpendPP
+	call UserFieldFlags
+	set FIELD_AUTO_GUARD_F, [hl]
+	ld a, b
+	ld [wNamedObjectIndex], a
+	push bc
+	call GetMoveName
+	call CopyName1
+	ld hl, AutoGuardText
+	call StdBattleTextbox
+	pop bc
+	ld a, b
+	call GetMoveIndexFromID
+	ld a, l
+	ld [wFXAnimID], a
+	ld a, h
+	ld [wFXAnimID + 1], a
+	xor a
+	ld [wBattleAfterAnim], a
+	ld a, [wBattleAnimParam]
+	push af
+	xor a
+	ld [wBattleAnimParam], a
+	farcall PlayBattleAnim
+	pop af
+	ld [wBattleAnimParam], a
+	ret
+
+EndAutoGuard::
+; (DoMoveScript, as each move ends) A PROTECT, DETECT or ENDURE used by itself (see
+; UseAutoGuard) was for that move only.
+	ld hl, wPlayerFieldFlags
+	ld de, wPlayerSubStatus1
+	call .Side
+	ld hl, wEnemyFieldFlags
+	ld de, wEnemySubStatus1
+.Side:
+	bit FIELD_AUTO_GUARD_F, [hl]
+	ret z
+	res FIELD_AUTO_GUARD_F, [hl]
+	ld a, [de]
+	and ~(1 << SUBSTATUS_PROTECT | 1 << SUBSTATUS_ENDURE)
+	ld [de], a
+	ret
+
+UserFieldFlags:
+; hl: the user's wPlayerFieldFlags or wEnemyFieldFlags
+	ld hl, wPlayerFieldFlags
+	ldh a, [hBattleTurn]
+	and a
+	ret z
+	ld hl, wEnemyFieldFlags
+	ret
+
+RestoreMoveName:
+; (after another move's) the name of the move under way, as it was
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	ld [wNamedObjectIndex], a
+	call GetMoveName
+	jp CopyName1
 
 HandleAutoConversion::
 ; (the stab and resettypematchup commands) CONVERSION and CONVERSION 2 work by

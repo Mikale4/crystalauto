@@ -249,7 +249,8 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
   confused Pokémon hurts itself a third of the time.
 - WRAP, BIND, FIRE SPIN, CLAMP and WHIRLPOOL last four or five turns and take 1/8 of
   the max HP a turn. DISABLE lasts four turns, ENCORE three, SPITE takes 4 PP, and
-  PROTECT, DETECT and ENDURE are a third as likely to work each time in a row.
+  PROTECT and DETECT, chosen, are a third as likely to work each time in a row (they
+  work by themselves too: see [Reworked moves](#reworked-moves)).
 - HIDDEN POWER is a special move with 60 power.
 - **Weather** favors some types, besides the rain's WATER and the sun's FIRE moves
   (1.5×): in a sandstorm, GROUND, ROCK and STEEL moves do 1.5× damage too, and
@@ -322,6 +323,8 @@ Some moves work in new ways of their own:
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
 | COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out (see below) |
 | DISABLE | works by itself: right after the foe's attack hits, that attack is disabled; once each time the Pokémon is out (see below) |
+| PROTECT, DETECT | work by themselves: right before an attack hits the Pokémon, it protects itself from it; each one once while it's out. They can still be chosen, once while out (see below) |
+| ENDURE | works by itself: when an attack would make the Pokémon faint, it endures the hit with 1 HP; once while it's out. It can't be chosen (see below) |
 | WHIRLWIND, ROAR | 60-power special attacks, then the foe is driven off (in the wild, the battle ends) |
 | PAY DAY | while a Pokémon in your party (not an EGG) knows it, a battle's money is doubled: a trainer's prize and PAY DAY's coins (with an AMULET COIN as well, 4×) |
 | RAZOR WIND | no turn to charge: it hits right away (still with a high critical-hit ratio) |
@@ -413,6 +416,21 @@ turns. Once while the Pokémon is out, and again only after it has gone back and
 out again. Not when it fainted, is asleep or frozen, the foe has a move disabled
 already, or the attack isn't one of the foe's own moves with PP left (METRONOME's).
 A status move (GROWL) doesn't set it off. Like COUNTER, it can't be chosen.
+
+**PROTECT, DETECT and ENDURE.** Right before an attack (not a status move) hits a
+Pokémon that knows PROTECT or DETECT (not its SUBSTITUTE), it uses one by itself (1
+PP), and the attack misses ("MEW used PROTECT!", "MEW's PROTECTING itself!"), unless
+it's asleep or frozen. Not against an attack that misses anyway or wouldn't affect
+it. It's for that attack only (every hit of it), COUNTER and MIRROR COAT hitting back
+too. Each one works once while the Pokémon is out, and again only after it has gone
+back and come out again (or another has come in by BATON PASS): one that knows both
+PROTECTs the first time, and DETECTs the next. They can still be chosen, each once
+while out ("PROTECT works once while out!"): chosen, one goes first, as before, and
+keeps off status moves too; after, it doesn't work by itself. Auto battle and the
+trainers keep them for when they work by themselves. ENDURE works by itself the same
+way, when an attack would make the Pokémon faint: it uses ENDURE (1 PP) and is left
+with 1 HP ("MEW ENDURED the hit!"); once while it's out. It can't be chosen ("ENDURE
+works by itself!").
 
 **MIRROR MOVE.** Right after the foe uses a move (not when it slept, flinched or
 couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back by itself
@@ -1407,6 +1425,13 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `InitAutoBattle`), from the text waits (`PromptButton`, `WaitPressAorB_BlinkCursor`),
   auto battle's waits, and the 2D menus' (`Menu_WasButtonPressed`) while
   `wBattleInfoOK` says it's the battle menu or the move menu.
+  PROTECT and DETECT are `HandleAutoProtect`, from `BattleCommand_CheckHit` once an
+  attack is to hit (and from the `autoguard` command in `AutoCounter`, COUNTER and
+  MIRROR COAT hitting back), and ENDURE is `HandleAutoEndure`, from
+  `BattleCommand_ApplyDamage`; `UseAutoGuard` marks either one as for that move only
+  (`FIELD_AUTO_GUARD_F`), and `EndAutoGuard` takes it down as each move's script ends
+  (`DoMoveScript`). PROTECT and DETECT are used once while out by their move slots,
+  as the recovery moves are (`OnceOutEffects`); ENDURE has `FIELD_ENDURE_F`.
   `CheckPlayerHasUsableMoves`, the move menu, `ParseEnemyAction`, `AIChooseMove` and
   auto battle don't choose the moves that work by themselves (`AutoMoves`, and
   `IsEntryStatMove`), nor those used once while out (`CantChooseMove`).

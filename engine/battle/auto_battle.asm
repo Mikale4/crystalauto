@@ -280,13 +280,16 @@ AutoBattle_RateMove:
 	call AutoBattle_RateSupportMove
 	ret c
 ; a recovery move not worth using now: it works by itself under half its HP (see
-; HandleAutoRecovery), so it's kept for then
+; HandleAutoRecovery), so it's kept for then; and PROTECT and DETECT, which work
+; by themselves right before an attack hits (see HandleAutoProtect)
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
 	ld hl, AutoBattleHealEffects
 	ld de, 1
 	call IsInArray
 	jp c, .fails
 	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	cp EFFECT_PROTECT
+	jp z, .fails
 	cp EFFECT_SELFDESTRUCT
 	jp z, .last_resort
 	cp EFFECT_SLEEP_TALK

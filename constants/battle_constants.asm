@@ -289,12 +289,14 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_COUNTER_F     ; 1: its COUNTER has hit back (see HandleAutoCounter)
 	const FIELD_MIRROR_COAT_F ; 2: its MIRROR COAT has
 	const FIELD_MIRROR_MOVE_F ; 3: its MIRROR MOVE has (see HandleAutoMirrorMove)
-	const_skip 3              ; 4-6: (unused)
+	const FIELD_ENDURE_F      ; 4: its ENDURE has kept it from fainting (see HandleAutoEndure)
+	const FIELD_AUTO_GUARD_F  ; 5: its PROTECT or ENDURE, used by itself, is for the move under way only (see EndAutoGuard)
+	const_skip 1              ; 6: (unused)
 	const FIELD_DISABLE_F      ; 7: its DISABLE has disabled an attack (see HandleAutoDisable)
 
 ; wPlayerFieldFlags2 and wEnemyFieldFlags2 bits: since the POKéMON out came in
 	const_def
-	const FIELD2_RECOVERY_F  ; 0-3: it has used the recovery move in that move slot (bit 0: the first; see OnceOutFlag)
+	const FIELD2_RECOVERY_F  ; 0-3: it has used the recovery move, PROTECT or DETECT in that move slot (bit 0: the first; see OnceOutFlag)
 	const_skip NUM_MOVES - 1
 	const FIELD2_RECOVERED_F ; 4: one has healed it, and it hasn't been back at half its HP since (see HandleAutoRecovery)
 

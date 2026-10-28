@@ -867,6 +867,7 @@ AutoCounter::
 ; sets the damage)
 	usedmovetext
 	doturn
+	autoguard
 	moveanim
 	applydamage
 	checkfaint

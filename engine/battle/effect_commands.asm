@@ -87,7 +87,7 @@ DoMoveScript:
 
 ; endturn_command (-2) is used to terminate branches without ending the read cycle.
 	cp endturn_command
-	ret nc
+	jr nc, .done
 
 ; The rest of the commands (01-af) are read from BattleCommandPointers.
 	push bc
@@ -108,6 +108,11 @@ DoMoveScript:
 
 .DoMoveEffectCommand:
 	jp hl
+
+.done
+; (a PROTECT or ENDURE used by itself was for this move only)
+	farcall EndAutoGuard
+	ret
 
 CheckTurn:
 BattleCommand_CheckTurn:
@@ -1264,6 +1269,17 @@ BattleCommand_DamageVariation:
 	ret
 
 BattleCommand_CheckHit:
+	call .Check
+; an attack that hits: its target may PROTECT itself now (see HandleAutoProtect)
+	ld a, [wAttackMissed]
+	and a
+	ret nz
+	farcall HandleAutoProtect
+	ret nc
+	call .Protect
+	jr .Miss
+
+.Check:
 	call .Protect
 	jp nz, .Miss
 
@@ -1807,6 +1823,7 @@ BattleCommand_FailureText:
 
 BattleCommand_ApplyDamage:
 	farcall HeldKingsRock
+	farcall HandleAutoEndure ; (an attack that would make it faint)
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVar
 	bit SUBSTATUS_ENDURE, a
@@ -3277,6 +3294,17 @@ DoSubstituteDamage:
 	call RefreshBattleHuds
 .done
 	jp ResetDamage
+
+BattleCommand_AutoGuard:
+; (AutoCounter: COUNTER and MIRROR COAT hitting back, with no checkhit) Its target
+; may PROTECT itself now (see HandleAutoProtect).
+	farcall HandleAutoProtect
+	ret nc
+	call BattleCommand_CheckHit.Protect
+	call ResetDamage
+	ld a, 1
+	ld [wAttackMissed], a
+	jp BattleCommand_FailureText
 
 AutoMove_Setup::
 ; Get the user (hBattleTurn) ready to use its move b by itself, outside of its
