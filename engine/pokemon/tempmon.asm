@@ -39,6 +39,16 @@ CalcBufferMonStats:
 CalcTempmonStats:
 	ld bc, wTempMon
 _TempMonStatsCalculation:
+; (its own species' base stats first, not whatever species' were loaded last, as
+; the box screen's cursor's: wCurPartySpecies, or for an EGG, its species byte)
+	ld a, [wCurPartySpecies]
+	cp EGG
+	jr nz, .got_species
+	assert MON_SPECIES == 0
+	ld a, [bc]
+.got_species
+	ld [wCurSpecies], a
+	call GetBaseData
 	ld hl, MON_LEVEL
 	add hl, bc
 	ld a, [hl]

@@ -1102,6 +1102,11 @@ BOX and MOVE PKMN W/O MAIL:
   gets the level its EXP gives, and its stats with it. What was written over can't
   come back: a Pokémon with nothing left to tell its species is taken out of the
   box, and one whose data was scrambled keeps what's left (you can release it).
+- **A Pokémon moved into your party has its own stats.** The box screen once worked
+  out its stats from the base stats of the last Pokémon its panel showed (the one
+  the cursor went over last), so a WOBBUFFET could come out with 97 HP and
+  another's ATTACK. On CONTINUE, your party's stats are worked out again, so any
+  that came out wrong are right again (one at full HP is still at full HP).
 
 
 ## Going to a rematch
@@ -1666,8 +1671,13 @@ IDs nothing holds any more to be taken back.
   OT names again and its moves indexes (`SaveBox` had left them IDs). Then it gives
   levels past 100 their EXP's (`CalcLevel`). `SanitizeParty` (after the save is
   loaded) does the same for the party, with the species list's byte made the
-  species byte's and the stats worked out again; it also brings a move's PP down
-  to its max if that went down (the trapping moves' did, to 5).
+  species byte's; it works out each one's stats again, every time (a full HP stays
+  full); it also brings a move's PP down to its max if that went down (the trapping
+  moves' did, to 5). `CalcBufferMonStats` and `CalcTempmonStats`
+  ([`engine/pokemon/tempmon.asm`](engine/pokemon/tempmon.asm)) load the POKéMON's
+  own base stats first (`wCurPartySpecies`): the box screen's
+  `BoxScreen_TakeFromBox` and `BoxScreen_Unstash` had left them to whatever its
+  panel last loaded.
 - [`engine/games/slot_machine.asm`](engine/games/slot_machine.asm): the SEVEN entries
   of `Slots_InitBias`' tables are wider (32 and 64 of 256), with the other symbols'
   widths kept. `SlotsAction_BetAndStart` gives a spin biased to SEVEN reel

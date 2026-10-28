@@ -13,7 +13,6 @@ DEF REPAIR_INDEXES    EQUS "wStringBuffer2 + 3" ; (dw) its index array
 DEF REPAIR_OVERFLOW   EQUS "wStringBuffer2 + 5" ; its count was more than MONS_PER_BOX
 DEF REPAIR_MON        EQUS "wStringBuffer2 + 6" ; its POKéMON looked at
 DEF REPAIR_BOXES_LEFT EQUS "wStringBuffer2 + 7"
-DEF REPAIR_RESTAT     EQUS "wStringBuffer2"     ; (SanitizeParty) its stats are to be worked out again
 
 SanitizeBoxes::
 ; (the player's ID and name, to know their POKéMON's OT names: see SanitizeBox)
@@ -443,9 +442,10 @@ SanitizeParty::
 ; The party made sound: no more than PARTY_LENGTH, then its species list's end;
 ; each POKéMON's species byte one (from its nickname if a species' name, or its
 ; species list's), and its species list's the same (an EGG's aside); its level 1
-; to MAX_LEVEL (its EXP's), and its stats then; its HP no more than its max; its
-; moves' PP no more than theirs (a move's max can go down: the trapping moves'
-; did); its names ended.
+; to MAX_LEVEL (its EXP's); its stats worked out again (the box screen once worked
+; some out from another species' base stats: see _TempMonStatsCalculation), at
+; full HP still full, else its HP no more than its max; its moves' PP no more than
+; theirs (a move's max can go down: the trapping moves' did); its names ended.
 	ld hl, wPartyCount
 	ld a, [hl]
 	cp PARTY_LENGTH + 1
@@ -481,8 +481,6 @@ SanitizeParty::
 	ld bc, NAME_LENGTH
 	call AddNTimes
 	ld [hl], '@'
-	xor a
-	ld [REPAIR_RESTAT], a
 ; its species byte
 	call .StructSpecies
 	call GetPokemonIndexFromID
@@ -516,8 +514,6 @@ SanitizeParty::
 	call .StructSpecies
 	pop af
 	ld [hl], a
-	ld a, TRUE
-	ld [REPAIR_RESTAT], a
 .got_species
 ; its species list's (an EGG's aside)
 	call .ListSpecies
@@ -549,13 +545,23 @@ SanitizeParty::
 	farcall CalcLevel
 	pop hl
 	ld [hl], d
-	ld a, TRUE
-	ld [REPAIR_RESTAT], a
 .got_level
-	ld a, [REPAIR_RESTAT]
-	and a
-	jr z, .hp
-; its stats
+; its stats (z: it was at full HP)
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1HP
+	call GetPartyLocation
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	inc hl
+	assert MON_MAXHP == MON_HP + 2
+	ld a, [hli]
+	cp d
+	jr nz, .got_full
+	ld a, [hl]
+	cp e
+.got_full
+	push af
 	call .StructSpecies
 	ld [wCurSpecies], a
 	push hl
@@ -573,6 +579,22 @@ SanitizeParty::
 	add hl, bc
 	ld b, TRUE
 	predef CalcMonStats
+	pop af
+	jr nz, .hp
+; (at full HP, still full)
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1HP
+	call GetPartyLocation
+	ld d, h
+	ld e, l
+	inc hl
+	inc hl ; (its max HP)
+	ld a, [hli]
+	ld [de], a
+	inc de
+	ld a, [hl]
+	ld [de], a
+	ret
 .hp
 ; its HP no more than its max
 	ld a, [wCurPartyMon]
