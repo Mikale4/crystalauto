@@ -854,6 +854,9 @@ it's still there to try again.
 they come back to where you first saw them and wait there. They won't battle you
 until SUICUNE has joined you; after that, each is a boss. (A game saved while they
 roamed stops them roaming; if you already caught one, it doesn't come back.)
+Their sprites have one frame, so as they wait they hold it (`SetFacingBounce` leaves
+a still sprite as it is; its other frame would have been the next sprite's tiles,
+so RAIKOU kept turning into ENTEI and back).
 
 ## Level caps
 

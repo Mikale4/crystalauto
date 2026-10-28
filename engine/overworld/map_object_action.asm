@@ -218,6 +218,15 @@ SetFacingBounce:
 	ld [hl], a
 	and %00001000
 	jr z, SetFacingFreezeBounce
+; (a still sprite, as the legendary beasts', has no other frame: that one's tiles
+; would be the next sprite's)
+	ld hl, OBJECT_SPRITE
+	add hl, bc
+	ld a, [hl]
+	push bc
+	call DoesSpriteHaveFacings
+	pop bc
+	jr c, SetFacingFreezeBounce
 	ld hl, OBJECT_FACING
 	add hl, bc
 	ld [hl], FACING_STEP_UP_0
