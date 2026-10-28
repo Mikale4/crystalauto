@@ -1080,6 +1080,22 @@ the trainer, facing them. You arrive on foot, even if you were surfing or on the
 BICYCLE, and going ends the Bug-Catching Contest, as flying away would.
 
 
+## The slot machines
+
+7-7-7 (300 coins) comes up far more often in the GOLDENROD and CELADON GAME CORNERs.
+Each spin, a machine picks what it's aiming for. It now aims for 7s on **1 spin in
+8**, and **1 in 4** when you sit at a lucky machine; it used to be 1 in 128, and 1
+in 85 on a lucky one. The other symbols' chances are as they were.
+
+A spin aimed at 7s now always lines them up, wherever you stop the reels: each reel
+can slide round to its 7. Before, they could slide only 4 slots, and often missed.
+That goes for any bet. With 1 coin, the 7s land on the middle row, the only row it
+pays on. Before, a 1-coin bet aimed at 7s almost never won.
+
+As before, the machine keeps aiming for 7s until they come up, and after 7-7-7 it
+sometimes aims for them again on the next spin.
+
+
 ## Playing it
 
 You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
@@ -1090,7 +1106,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 8880e9f257756c6bf7a8d3bc734bd5e9a99ab499`.
+The patched ROM has `sha1: 27b8eec0720cd231e8a74ede2653a44cad7bbe9e`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1574,6 +1590,12 @@ IDs nothing holds any more to be taken back.
   loaded) does the same for the party, with the species list's byte made the
   species byte's and the stats worked out again; it also brings a move's PP down
   to its max if that went down (the trapping moves' did, to 5).
+- [`engine/games/slot_machine.asm`](engine/games/slot_machine.asm): the SEVEN entries
+  of `Slots_InitBias`' tables are wider (32 and 64 of 256), with the other symbols'
+  widths kept. `SlotsAction_BetAndStart` gives a spin biased to SEVEN reel
+  manipulation counters of `REEL_SIZE - 1` (others keep 4), and
+  `ReelAction_StopReel1` stops reel 1 for the bias symbol only on the middle row
+  when the bet is 1 coin.
 
 
 ## Other changes

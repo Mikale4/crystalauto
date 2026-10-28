@@ -328,7 +328,15 @@ SlotsAction_BetAndStart:
 	ld [wReel1ReelAction], a
 	ld [wReel2ReelAction], a
 	ld [wReel3ReelAction], a
+; A spin biased to SEVEN can move each reel round to its SEVEN, so it lines them
+; up wherever the reels are stopped; any other, up to 4 slots.
+	assert SLOTS_SEVEN == 0
+	ld a, [wSlotBias]
+	and a
 	ld a, 4
+	jr nz, .got_manip_counter
+	ld a, REEL_SIZE - 1
+.got_manip_counter
 	ld [wReel1ManipCounter], a
 	ld [wReel2ManipCounter], a
 	ld [wReel3ManipCounter], a
@@ -978,8 +986,8 @@ ReelAction_StopReelIgnoreJoypad:
 ReelAction_StopReel1:
 ; If no bias: don't manipulate reel.
 ; If bias: manipulate reel up to wReel1ManipCounter (i.e. 4) slots,
-; stoping early if the biased symbol shows up anywhere in reel #1,
-; even if the current bet won't allow lining it up.
+; stoping early if the biased symbol shows up in reel #1 on a row
+; the current bet allows lining it up on (with 1 coin, the middle one).
 
 	ld a, [wSlotBias]
 	cp SLOTS_NO_BIAS
@@ -1000,6 +1008,15 @@ ReelAction_StopReel1:
 	call Slots_GetCurrentReelState
 	ld a, [wSlotBias]
 	ld e, a
+	ld a, [wSlotBet]
+	dec a
+	jr nz, .any_row
+	inc hl
+	ld a, [hl]
+	cp e
+	ret
+
+.any_row
 	ld a, [hli]
 	cp e
 	ret z
@@ -1663,23 +1680,25 @@ Slots_InitBias:
 	ld [wSlotBias], a
 	ret
 
+; SEVEN is far likelier than it was (1 spin in 8, and 1 in 4 on a lucky machine,
+; from 2 and 3 in 256); the others have the chances they had.
 .Normal:
-	db   1 percent - 1, SLOTS_SEVEN
-	db   1 percent + 1, SLOTS_POKEBALL
-	db   4 percent,     SLOTS_STARYU
-	db   8 percent,     SLOTS_SQUIRTLE
-	db  16 percent,     SLOTS_PIKACHU
-	db  19 percent,     SLOTS_CHERRY
-	db 100 percent,     SLOTS_NO_BIAS
+	db  31, SLOTS_SEVEN    ; 32/256
+	db  33, SLOTS_POKEBALL ;  2/256
+	db  40, SLOTS_STARYU   ;  7/256
+	db  50, SLOTS_SQUIRTLE ; 10/256
+	db  70, SLOTS_PIKACHU  ; 20/256
+	db  78, SLOTS_CHERRY   ;  8/256
+	db 255, SLOTS_NO_BIAS
 
 .Lucky:
-	db   1 percent,     SLOTS_SEVEN
-	db   1 percent + 1, SLOTS_POKEBALL
-	db   3 percent + 1, SLOTS_STARYU
-	db   6 percent + 1, SLOTS_SQUIRTLE
-	db  12 percent,     SLOTS_PIKACHU
-	db  31 percent + 1, SLOTS_CHERRY
-	db 100 percent,     SLOTS_NO_BIAS
+	db  63, SLOTS_SEVEN    ; 64/256
+	db  64, SLOTS_POKEBALL ;  1/256
+	db  69, SLOTS_STARYU   ;  5/256
+	db  77, SLOTS_SQUIRTLE ;  8/256
+	db  91, SLOTS_PIKACHU  ; 14/256
+	db 141, SLOTS_CHERRY   ; 50/256
+	db 255, SLOTS_NO_BIAS
 
 Slots_IlluminateBetLights:
 	ld b, $14 ; turned on
