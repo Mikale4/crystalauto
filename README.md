@@ -321,7 +321,7 @@ Some moves work in new ways of their own:
 | GUILLOTINE, HORN DRILL, FISSURE | as RUINATION: they halve the foe's HP, 90% accurate |
 | PSYWAVE | its power varies as MAGNITUDE's does ("Psywave 8!") |
 | RETURN, FRUSTRATION | 102 power, whatever the Pokémon's friendship |
-| COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out (see below) |
+| COUNTER, MIRROR COAT | work by themselves, once each time the Pokémon is out, or every time if it has no attack to choose (see below) |
 | DISABLE | works by itself: right after the foe's attack hits, that attack is disabled; once each time the Pokémon is out (see below) |
 | PROTECT, DETECT | work by themselves: right before an attack hits the Pokémon, it protects itself from it; each one once while it's out. They can still be chosen, once while out (see below) |
 | ENDURE | works by itself: when an attack would make the Pokémon faint, it endures the hit with 1 HP; once while it's out. It can't be chosen (see below) |
@@ -332,7 +332,7 @@ Some moves work in new ways of their own:
 | SOLARBEAM | no turn to charge; 1.5× damage in the sun, 0.5× in rain, sandstorms and HAIL |
 | SKY ATTACK | no turn to charge; instead, as HYPER BEAM, a turn to recharge after (still with a high critical-hit ratio and a 30% chance to flinch) |
 | HYPER BEAM, SKY ATTACK | as in the first games: no turn to recharge after knocking the foe out or breaking its SUBSTITUTE (nor after a miss) |
-| MIRROR MOVE | works by itself, like COUNTER: right after the foe uses a move, the Pokémon uses that move too (see below) |
+| MIRROR MOVE, MIMIC | work by themselves, like COUNTER: right after the foe uses a move, the Pokémon uses that move too; once each time it's out, or every time if it has no attack to choose (see below) |
 | SPIKES | used as the Pokémon comes in too; as in the latest games, up to three layers: a Pokémon coming in on that side (not a FLYING type) loses 1/8, 1/6 or 1/4 of its max HP |
 | FLAIL, REVERSAL | 60 power; twice that when the user moves after the foe that turn (or the foe switched out) |
 | BIND, WRAP, FIRE SPIN, CLAMP, WHIRLPOOL | as MAGMA STORM: 100 power, 75% accurate, 5 PP (and they still trap the foe) |
@@ -406,9 +406,12 @@ does what it chose (if it chose PURSUIT, that was it).
 COUNTER (a special one, MIRROR COAT), it hits back by itself for twice the damage
 (1 PP), unless it fainted, is asleep or frozen, or the attacker is immune. Each one
 hits back once while the Pokémon is out, and again only after it has gone back and
-come out again (or another one has come in by BATON PASS). They can't be chosen
-("COUNTER works by itself!"); a Pokémon with nothing else left to choose STRUGGLEs.
-A Pokémon can know both, and attacks too.
+come out again (or another one has come in by BATON PASS); but a Pokémon with no
+attack to choose (none with PP left that isn't DISABLED, not counting moves that work
+by themselves), as a WOBBUFFET that knows COUNTER, MIRROR COAT, SAFEGUARD and DESTINY
+BOND, hits back every time. They can't be chosen ("COUNTER works by itself!"); a
+Pokémon with nothing else left to choose STRUGGLEs. A Pokémon can know both, and
+attacks too.
 
 **DISABLE.** Right after an attack hits a Pokémon that knows DISABLE (not its
 SUBSTITUTE), it disables that attack by itself (1 PP): the foe can't use it for four
@@ -432,12 +435,15 @@ way, when an attack would make the Pokémon faint: it uses ENDURE (1 PP) and is 
 with 1 HP ("MEW ENDURED the hit!"); once while it's out. It can't be chosen ("ENDURE
 works by itself!").
 
-**MIRROR MOVE.** Right after the foe uses a move (not when it slept, flinched or
-couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back by itself
-(1 PP of MIRROR MOVE's), once each time it's out, unless it's asleep, frozen or busy
-with a move of its own. It doesn't take up moves that go on for turns (FLY, DIG,
-ROLLOUT, THRASH, BIDE), call another (METRONOME, SLEEP TALK) or work by themselves.
-Like COUNTER, it can't be chosen.
+**MIRROR MOVE and MIMIC.** Right after the foe uses a move (not when it slept,
+flinched or couldn't move), a Pokémon that knows MIRROR MOVE uses that same move back
+by itself (1 PP of MIRROR MOVE's), once each time it's out (every time, like COUNTER,
+if it has no attack to choose), unless it's asleep, frozen or busy with a move of its
+own. It doesn't take up moves that go on for turns (FLY, DIG, ROLLOUT, THRASH,
+BIDE), call another (METRONOME, SLEEP TALK) or work by themselves. MIMIC works just
+the same way now (it no longer copies a move into its place); a Pokémon that knows
+both uses MIRROR MOVE first, and MIMIC once MIRROR MOVE has had its turn. Like
+COUNTER, they can't be chosen.
 
 **SPITE.** Right after the foe uses a move, a Pokémon that knows SPITE takes 4 PP from
 that move by itself (1 PP of SPITE's), unless it's asleep or frozen or the move has no
@@ -1360,7 +1366,7 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `HandleAutoCounter` (after each move, from `DoPlayerTurnAndCounter` and
   `DoEnemyTurnAndCounter`, with the damage `CountHitTaken` keeps in `wHitDamage` from
   `BattleCommand_ApplyDamage`; once each per Pokémon out: `FIELD_COUNTER_F` and
-  `FIELD_MIRROR_COAT_F`).
+  `FIELD_MIRROR_COAT_F`, unless `CanChooseAnAttack` finds no attack it could choose).
   `CountHitTaken` also counts each Pokémon's hits (`wPlayerTimesHit`,
   `wEnemyTimesHit`) for RAGE (`GetRagePower`, the `ragepower` command). FALSE SWIPE's
   miss is the `swipeagain` command (`FalseSwipeAgain`). PAY DAY's doubling is
@@ -1390,6 +1396,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   `BattleCommand_RechargeNextTurn` skips the recharge after a KO or a broken
   SUBSTITUTE. MIRROR MOVE is `HandleAutoMirrorMove`: the turn's side gets a
   `NOT_ACTED` last move first (`AfterTurn`), so it's only taken up when one was used.
+  MIMIC is the same, with MIRROR MOVE's script (`FIELD_MIMIC_F`; both once while out
+  unless `CanChooseAnAttack` finds no attack it could choose).
   SPIKES' layers are `wPlayerSpikes` and `wEnemySpikes` (`SpikesFraction` for the
   damage). FLAIL and REVERSAL's power is the `movedlast` command (`MovedLastPower`,
   with `wTurnActed`). TRIPLE KICK aims each kick after the first with

@@ -674,8 +674,8 @@ NightShadeDescription:
 	next "20 to 100 HP.@"
 
 MimicDescription:
-	db   "Copies a move used"
-	next "by the foe.@"
+	db   "Uses the foe's"
+	next "move by itself.@"
 
 ScreechDescription:
 	db   "Sharply reduces"
@@ -743,7 +743,7 @@ MetronomeDescription:
 
 MirrorMoveDescription:
 	db   "Uses the foe's"
-	next "move back, once.@"
+	next "move by itself.@"
 
 SelfdestructDescription:
 	db   "Powerful but makes"

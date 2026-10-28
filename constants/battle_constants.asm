@@ -291,7 +291,7 @@ DEF BATTLERESULT_BITMASK EQU (1 << BATTLERESULT_CAUGHT_CELEBI) | (1 << BATTLERES
 	const FIELD_MIRROR_MOVE_F ; 3: its MIRROR MOVE has (see HandleAutoMirrorMove)
 	const FIELD_ENDURE_F      ; 4: its ENDURE has kept it from fainting (see HandleAutoEndure)
 	const FIELD_AUTO_GUARD_F  ; 5: its PROTECT or ENDURE, used by itself, is for the move under way only (see EndAutoGuard)
-	const_skip 1              ; 6: (unused)
+	const FIELD_MIMIC_F       ; 6: its MIMIC has (as MIRROR MOVE: see HandleAutoMirrorMove)
 	const FIELD_DISABLE_F      ; 7: its DISABLE has disabled an attack (see HandleAutoDisable)
 
 ; wPlayerFieldFlags2 and wEnemyFieldFlags2 bits: since the POKéMON out came in

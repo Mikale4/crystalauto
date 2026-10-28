@@ -1462,8 +1462,8 @@ HandleAutoCounter:
 ; POKéMON, not its SUBSTITUTE: wHitDamage), its target hits back for twice the
 ; damage, if it knows the one for the attack's category (COUNTER for a physical
 ; one, MIRROR COAT for a special one) with PP left: each one once while the
-; POKéMON is out. Not if it fainted, is asleep or frozen, or the attacker is
-; immune or fainted.
+; POKéMON is out, or every time if it has no attack to choose (CanChooseAnAttack).
+; Not if it fainted, is asleep or frozen, or the attacker is immune or fainted.
 	ld a, [wHitDamage]
 	ld b, a
 	ld a, [wHitDamage + 1]
@@ -1504,7 +1504,10 @@ HandleAutoCounter:
 .Counter:
 	call AutoMoveFieldFlag
 	and [hl]
+	jr z, .not_yet
+	call CanChooseAnAttack
 	ret nz ; (it has, since it came in)
+.not_yet
 	farcall AutoMove_Setup
 	ret c
 	farcall BattleCheckTypeMatchup
@@ -1623,7 +1626,7 @@ HandleAutoDisable:
 
 AutoMoveFieldFlag:
 ; hl: the user's wPlayerFieldFlags or wEnemyFieldFlags; a: the flag for move b
-; (COUNTER, MIRROR COAT or MIRROR MOVE: once each while it's out)
+; (COUNTER, MIRROR COAT, MIRROR MOVE or MIMIC: once each while it's out)
 	ld hl, wPlayerFieldFlags
 	ldh a, [hBattleTurn]
 	and a
@@ -1638,14 +1641,20 @@ AutoMoveFieldFlag:
 	cpmove MIRROR_COAT
 	ld a, 1 << FIELD_MIRROR_COAT_F
 	ret z
+	ld a, b
+	cpmove MIMIC
+	ld a, 1 << FIELD_MIMIC_F
+	ret z
 	ld a, 1 << FIELD_MIRROR_MOVE_F
 	ret
 
 HandleAutoMirrorMove:
 ; MIRROR MOVE works by itself: right after the foe used a move, a POKéMON that
-; knows MIRROR MOVE (with PP left) uses that move too, once while it's out. Not if
-; either fainted, it's asleep, frozen or busy (charging, recharging, locked into a
-; move), or the move is one it can't take up (MirrorMoveCant).
+; knows MIRROR MOVE (with PP left) uses that move too, once while it's out, or
+; every time if it has no attack to choose (CanChooseAnAttack). MIMIC works the
+; same way (with MIRROR MOVE's script), when MIRROR MOVE doesn't. Not if either
+; fainted, it's asleep, frozen or busy (charging, recharging, locked into a move),
+; or the move is one it can't take up (MirrorMoveCant).
 	call CantGoOn
 	ret nz
 ; (as the other side)
@@ -1659,10 +1668,6 @@ HandleAutoMirrorMove:
 	ret
 
 .Mirror:
-	ldbmove MIRROR_MOVE
-	call AutoMoveFieldFlag
-	and [hl]
-	ret nz ; (it has, since it came in)
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
 	and SLP_MASK | 1 << FRZ
@@ -1693,11 +1698,18 @@ HandleAutoMirrorMove:
 	ld de, 1
 	call IsInArray
 	ret c
-; then, MIRROR MOVE
+; then, MIRROR MOVE, or else MIMIC
 	ldbmove MIRROR_MOVE
-	farcall AutoMove_Setup
+	call .Usable
+	jr nc, .use
+	ldbmove MIMIC
+	call .Usable
 	ret c
-	ldbmove MIRROR_MOVE
+.use
+	push bc
+	farcall AutoMove_Setup
+	pop bc
+	ret c
 	call AutoMoveFieldFlag
 	or [hl]
 	ld [hl], a
@@ -1712,11 +1724,82 @@ HandleAutoMirrorMove:
 	ld a, [hl]
 	push af
 	push hl
-	ld de, 0 ; (its own effect script)
+	ld de, MirrorMove ; (MIRROR MOVE's script, MIMIC's too)
 	farcall AutoMove_Run
 	pop hl
 	pop af
 	ld [hl], a
+	ret
+
+.Usable:
+; Return nc if the user can use move b by itself now: it knows it with PP left,
+; and hasn't used it since it came in (or has no attack to choose). Keeps b.
+	call GuardMoveSlot
+	ret c
+	call AutoMoveFieldFlag
+	and [hl]
+	ret z
+	call CanChooseAnAttack
+	scf
+	ret nz ; (it has, since it came in)
+	and a
+	ret
+
+CanChooseAnAttack:
+; Return nz if the user knows an attack (not a status move) that it can choose
+; (not one that works by itself: see CantChooseMove), with PP left and not
+; DISABLEd; z if it has none: then COUNTER, MIRROR COAT, MIRROR MOVE and MIMIC
+; work every time, not once while it's out. Keeps bc.
+	push bc
+	ld hl, wBattleMonMoves
+	ld a, [wDisabledMove]
+	ld e, a
+	ldh a, [hBattleTurn]
+	ld c, a
+	and a
+	jr z, .got_moves
+	ld hl, wEnemyMonMoves
+	ld a, [wEnemyDisabledMove]
+	ld e, a
+.got_moves
+	ld d, NUM_MOVES
+.move
+	ld a, [hli]
+	and a
+	jr z, .next
+	cp e
+	jr z, .next
+	ld b, a
+	push hl
+	push de
+	ld de, wBattleMonPP - wBattleMonMoves - 1
+	add hl, de
+	ld a, [hl]
+	and PP_MASK
+	jr z, .no
+	ld l, b
+	ld a, MOVE_TYPE
+	call GetMoveAttribute
+	and ~TYPE_MASK
+	cp STATUS
+	jr z, .no
+	call CantChooseMove
+	jr nz, .found
+.no
+	pop de
+	pop hl
+.next
+	dec d
+	jr nz, .move
+	pop bc
+	xor a
+	ret
+
+.found
+	pop de
+	pop hl
+	pop bc
+	or 1
 	ret
 
 MirrorMoveCant:
@@ -1729,6 +1812,7 @@ MirrorMoveCant:
 	db EFFECT_COUNTER
 	db EFFECT_MIRROR_COAT
 	db EFFECT_MIRROR_MOVE
+	db EFFECT_MIMIC
 	db EFFECT_FUTURE_SIGHT
 	db EFFECT_METRONOME
 	db EFFECT_SLEEP_TALK
@@ -2177,6 +2261,7 @@ AutoMoves:
 	dw MIRROR_COAT
 	dw DISABLE      ; (see HandleAutoDisable)
 	dw MIRROR_MOVE  ; right after the foe's move: see HandleAutoMirrorMove
+	dw MIMIC
 	dw SPITE        ; (see HandleAutoSpite)
 	dw FUTURE_SIGHT ; as it comes in: see HandleEntryMoves
 	dw REFLECT
