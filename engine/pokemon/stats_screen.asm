@@ -773,7 +773,7 @@ LoadGreenPage:
 	db "MOVE@"
 
 LoadBluePage:
-	call .PlaceOTInfo
+	call .PlaceBaseStats
 	hlcoord 10, 8
 	ld de, SCREEN_WIDTH
 	ld b, 10
@@ -788,43 +788,86 @@ LoadBluePage:
 	predef PrintTempMonStats
 	ret
 
-.PlaceOTInfo:
-	ld de, IDNoString
-	hlcoord 0, 9
+.PlaceBaseStats:
+; on the left (in place of its ID No. and OT): its species' base stats, as its
+; stats are on the right, and their total
+	ld a, [wTempMonSpecies]
+	ld [wCurSpecies], a
+	call GetBaseData
+	ld de, .BaseStatsString
+	hlcoord 0, 8
 	call PlaceString
-	ld de, OTString
-	hlcoord 0, 12
+	ld de, .BaseStatNames
+	hlcoord 0, 10
 	call PlaceString
-	hlcoord 2, 10
-	lb bc, PRINTNUM_LEADINGZEROS | 2, 5
-	ld de, wTempMonID
+	xor a
+	ldh [hMoneyTemp], a
+	ldh [hMoneyTemp + 1], a
+	ld hl, .BaseStats
+	decoord 7, 10
+.stat
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld b, a
+	or c
+	jr z, .total
+	push hl
+	push de
+; (the total)
+	ld a, [bc]
+	ld l, a
+	ldh a, [hMoneyTemp + 1]
+	add l
+	ldh [hMoneyTemp + 1], a
+	ldh a, [hMoneyTemp]
+	adc 0
+	ldh [hMoneyTemp], a
+	ld h, d
+	ld l, e
+	ld d, b
+	ld e, c
+	lb bc, 1, 3
 	call PrintNum
-	ld hl, .OTNamePointers
-	call GetNicknamePointer
-	call CopyNickname
-	farcall CorrectNickErrors
-	hlcoord 2, 13
-	call PlaceString
-	ld a, [wTempMonCaughtGender]
-	and a
-	jr z, .done
-	cp $7f
-	jr z, .done
-	and CAUGHT_GENDER_MASK
-	ld a, '♂'
-	jr z, .got_gender
-	ld a, '♀'
-.got_gender
-	hlcoord 9, 13
-	ld [hl], a
-.done
-	ret
+	pop hl
+	ld bc, SCREEN_WIDTH
+	add hl, bc
+	ld d, h
+	ld e, l
+	pop hl
+	jr .stat
 
-.OTNamePointers:
-	dw wPartyMonOTs
-	dw wOTPartyMonOTs
-	dw sBoxMonOTs
-	dw wBufferMonOT
+.total
+	ld de, .TotalString
+	hlcoord 0, 17
+	call PlaceString
+	hlcoord 7, 17
+	ld de, hMoneyTemp
+	lb bc, 2, 3
+	jp PrintNum
+
+.BaseStats:
+	dw wBaseHP
+	dw wBaseAttack
+	dw wBaseDefense
+	dw wBaseSpecialAttack
+	dw wBaseSpecialDefense
+	dw wBaseSpeed
+	dw 0 ; end
+
+.BaseStatsString:
+	db "BASE STATS@"
+
+.BaseStatNames:
+	db "HP<LF>"
+	db "ATK<LF>"
+	db "DEF<LF>"
+	db "SP.ATK<LF>"
+	db "SP.DEF<LF>"
+	db "SPEED@"
+
+.TotalString:
+	db "TOTAL@"
 
 LoadOrangePage:
 ; its nature (see engine/pokemon/natures.asm) and its DVs

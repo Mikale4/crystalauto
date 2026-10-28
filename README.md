@@ -609,7 +609,9 @@ back by theirs.
 
 The stats screen has a fourth page, in orange: the Pokémon's nature, the stats it
 raises and lowers, and its DVs (HP, ATTACK, DEFENSE, SPEED and SPECIAL, 0 to 15;
-the HP DV comes from the other four).
+the HP DV comes from the other four). The blue page shows its species' base stats
+on the left (HP, ATTACK, DEFENSE, SPCL.ATK, SPCL.DEF and SPEED, and their total), in
+place of its ID No. and OT, beside its own stats.
 
 A game saved before there were natures gets its party's stats updated the first
 time you CONTINUE. Pokémon in the PC or the DAY-CARE get theirs when you take them
@@ -1466,7 +1468,8 @@ python3 tools/make_ips_bps.py baserom11.gbc pokecrystal11.gbc patches/pokecrysta
   (`EVENT_NATURES_IN_STATS`, a formerly unused event flag). The stats screen's new
   page is `LoadOrangePage` in
   [`engine/pokemon/stats_screen.asm`](engine/pokemon/stats_screen.asm)
-  (`ORANGE_PAGE`; the page number now takes three bits of `wStatsScreenFlags`).
+  (`ORANGE_PAGE`; the page number now takes three bits of `wStatsScreenFlags`), and
+  the blue page's base stats `LoadBluePage.PlaceBaseStats`.
 - The MINT is item `$93`, formerly unused (`MintEffect` in
   [`engine/items/item_effects.asm`](engine/items/item_effects.asm); its list is
   `ChooseMintNature` in [`engine/items/mint.asm`](engine/items/mint.asm)). Its nature
