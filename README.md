@@ -1009,8 +1009,9 @@ The CHANSEY and its heals are saved with your game.
 As in PalletToPewter:
 
 - **TMs never run out.** Teach a TM's move to as many Pokémon as you like. So you
-  can't buy a TM you already have (the shops mark it **BOUGHT**), and marts won't
-  buy TMs from you (*Sorry, I can't buy that from you.*).
+  can't buy a TM you already have (the shops mark it **BOUGHT**); a TM can't be
+  tossed, given to a Pokémon to hold, or sold (*Sorry, I can't buy that from you.*),
+  as with an HM; and the TM pocket shows no count beside a TM.
 - **HMs work without the move.** With an HM in your PACK (and the badge it needs),
   your team can use its field move though no Pokémon knows it: walk up to a tree to
   CUT it, to the water to SURF, to a boulder for STRENGTH, and so on. FLY and FLASH
@@ -1146,7 +1147,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 2c344d7de31e789cca50157bfcfc5c40222eecd9`.
+The patched ROM has `sha1: e173567c4bcb41b86cb8cd3fe1cf5d21e8597feb`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1591,8 +1592,7 @@ IDs nothing holds any more to be taken back.
   same way:
   - `TMMartBuy` takes over a mart's BUY when it sells nothing but TMs
     (`StandardMart.Buy` in [`engine/items/mart.asm`](engine/items/mart.asm)), at
-    their PACK prices. `SellMenu.TryToSellItem` there refuses anything from TM01 up
-    (TMs, and HMs, which can't be tossed anyway).
+    their PACK prices.
   - The `TMPrizes` special is the GAME CORNERs' TM prize counters, with their coin
     prices in `TMPrizeTables`.
   - Both share `TMShop`, `ChooseTMForSale` and the MOVE REMINDER's details box, and

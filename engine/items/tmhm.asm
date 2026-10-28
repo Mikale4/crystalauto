@@ -414,27 +414,13 @@ TMHM_DisplayPocketItems:
 	add hl, bc
 	call PlaceString
 	pop hl
-; below: which GEN's (when both have a TM of its number), and how many
+; below: which GEN's (when both have a TM of its number); no count, as a TM never
+; runs out
 	pop bc
 	push bc
 	ld de, SCREEN_WIDTH + 3
 	add hl, de
 	call TMHM_PlaceEntryGen
-	call TMHM_GetEntry
-	bit GEN1_TM_ENTRY_F, a
-	jr nz, .no_count ; (GEN 1's: one, or none)
-	cp NUM_TMS + 1
-	jr nc, .no_count ; (an HM)
-	ld de, 9
-	add hl, de
-	ld [hl], '×'
-	inc hl
-	ld a, b
-	ld [wTempTMHM], a
-	ld de, wTempTMHM
-	lb bc, 1, 2
-	call PrintNum
-.no_count
 	pop bc
 	pop de
 	dec d

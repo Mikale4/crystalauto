@@ -32,6 +32,14 @@ ChooseMintNature::
 	jr nz, .list
 	ld [hl], -1
 	call LoadStandardMenuHeader
+; a plain screen, in the text's palette: none of the PACK's colors (its cursor's
+; column, its pocket's name) under the list (they're back with the PACK: .Done)
+	hlcoord 0, 0, wAttrmap
+	ld bc, SCREEN_AREA
+	xor a
+	call ByteFill
+	call ClearTilemap
+	call WaitBGMap2
 	xor a
 	ld [wMenuScrollPosition], a
 	inc a
@@ -51,15 +59,20 @@ ChooseMintNature::
 	jr z, .cancel
 	ld e, a
 	push de
-	call Call_ExitMenu
+	call .Done
 	pop de
 	and a
 	ret
 
 .cancel
-	call Call_ExitMenu
+	call .Done
 	scf
 	ret
+
+.Done:
+; the PACK's screen back, colors and all
+	call Call_ExitMenu
+	jp WaitBGMap2
 
 .MenuHeader:
 ; (as the MOVE REMINDER's: see ChooseRelearnerMove)
