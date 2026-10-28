@@ -323,7 +323,7 @@ RazorWindDescription:
 
 SwordsDanceDescription:
 	db   "A dance: ATTACK +2"
-	next "once while out.@"
+	next "as it comes in.@"
 
 CutDescription:
 	db   "Cuts using claws,"
@@ -563,7 +563,7 @@ LeechSeedDescription:
 
 GrowthDescription:
 	db   "ATTACK & SP.ATK"
-	next "+2, once while out@"
+	next "+2 as it comes in.@"
 
 RazorLeafDescription:
 	db   "Has a high criti-"
@@ -799,7 +799,7 @@ ConstrictDescription:
 
 AmnesiaDescription:
 	db   "SP.ATK & SP.DEF"
-	next "+2, once while out@"
+	next "+2 as it comes in.@"
 
 KinesisDescription:
 	db   "Reduces the foe's"
