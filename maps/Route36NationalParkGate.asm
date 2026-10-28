@@ -45,17 +45,8 @@ Route36NationalParkGateCheckIfContestRunningCallback:
 Route36NationalParkGateCheckIfContestAvailableCallback:
 	checkevent EVENT_WARPED_FROM_ROUTE_35_NATIONAL_PARK_GATE
 	iftrue .Return
-	readvar VAR_WEEKDAY
-	ifequal TUESDAY, .SetContestOfficer
-	ifequal THURSDAY, .SetContestOfficer
-	ifequal SATURDAY, .SetContestOfficer
-	checkflag ENGINE_BUG_CONTEST_TIMER
-	iftrue .SetContestOfficer
-	disappear ROUTE36NATIONALPARKGATE_OFFICER1
-	appear ROUTE36NATIONALPARKGATE_OFFICER2
-	endcallback
-
-.SetContestOfficer:
+; The contest is on every day (it used to be only on Tuesdays, Thursdays and
+; Saturdays).
 	appear ROUTE36NATIONALPARKGATE_OFFICER1
 	disappear ROUTE36NATIONALPARKGATE_OFFICER2
 .Return:
@@ -139,14 +130,17 @@ Route36NationalParkGateLeavingContestEarlyScript:
 	end
 
 Route36OfficerScriptContest:
-	readvar VAR_WEEKDAY
-	ifequal SUNDAY, _ContestNotOn
-	ifequal MONDAY, _ContestNotOn
-	ifequal WEDNESDAY, _ContestNotOn
-	ifequal FRIDAY, _ContestNotOn
 	faceplayer
 	opentext
-	checkflag ENGINE_DAILY_BUG_CONTEST
+; You can enter again after you've been in one today; a prize he holds for you
+; (your bag was full) comes first.
+	checkevent EVENT_CONTEST_OFFICER_HAS_SUN_STONE
+	iftrue Route36Officer_ContestHasConcluded
+	checkevent EVENT_CONTEST_OFFICER_HAS_EVERSTONE
+	iftrue Route36Officer_ContestHasConcluded
+	checkevent EVENT_CONTEST_OFFICER_HAS_GOLD_BERRY
+	iftrue Route36Officer_ContestHasConcluded
+	checkevent EVENT_CONTEST_OFFICER_HAS_BERRY
 	iftrue Route36Officer_ContestHasConcluded
 	scall Route36ParkGate_DayToText
 	writetext Route36NationalParkGateOfficer1AskToParticipateText
@@ -285,9 +279,6 @@ Route36Officer_ContestHasConcluded:
 	waitbutton
 	closetext
 	end
-
-_ContestNotOn:
-	jumptextfaceplayer Route36NationalParkGateOfficer1SomeMonOnlySeenInParkText
 
 Route36NationalParkGateOfficerScript:
 	faceplayer

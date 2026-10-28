@@ -799,7 +799,7 @@ for a long moment, and comes along, rested (to the PC if your party is full).
 | Boss | Lv | Allies (each as evolved as its level allows) |
 |---|---|---|
 | SUDOWOODO (ROUTE 36) | 20 | GEODUDE, ONIX, BELLSPROUT, HOPPIP, PINECO |
-| LAPRAS (UNION CAVE, Fridays) | 20 | SHELLDER, SEEL, WOOPER, ZUBAT, SLOWPOKE |
+| LAPRAS (UNION CAVE, every day) | 20 | SHELLDER, SEEL, WOOPER, ZUBAT, SLOWPOKE |
 | the red GYARADOS (LAKE OF RAGE) | 30 | MAGIKARP, WOOPER, POLIWAG, TENTACOOL, GOLDEEN |
 | ELECTRODE ×3 (TEAM ROCKET's hideout) | 23 | VOLTORB, MAGNEMITE, PIKACHU, ZUBAT, KOFFING |
 | SNORLAX (VERMILION CITY) | 50 | SLOWBRO, WIGGLYTUFF, LICKITUNG, HYPNO, KANGASKHAN |
@@ -1096,6 +1096,34 @@ As before, the machine keeps aiming for 7s until they come up, and after 7-7-7 i
 sometimes aims for them again on the next spin.
 
 
+## No waiting for a day
+
+- **KURT makes your BALLs there and then.** Hand him APRICORNs ("Hang on. I'll get
+  right to it!") and after a moment he gives you the BALLs, as many as the APRICORNs
+  you gave; there's no coming back the next day. In a save where he was still at
+  them, they're ready when you visit.
+- **Everyone who was there only on some days is there every day:**
+  - the weekday siblings: MONICA (ROUTE 40), TUSCANY (ROUTE 29, once you have the
+    ZEPHYRBADGE), WESLEY (LAKE OF RAGE), ARTHUR (ROUTE 36), FRIEDA (ROUTE 32), SANTOS
+    (BLACKTHORN CITY) and SUNNY (ROUTE 37). Each gives their gift on any day.
+  - LAPRAS in UNION CAVE (it was there on Fridays). Once it has joined you, it's
+    back the next day.
+  - GOLDENROD:
+    - the Dept. Store 5F lady who gives RETURN or FRUSTRATION, once a day;
+    - in the Underground, the BARGAIN merchant (at any hour, not just Monday
+      mornings), both HAIRCUT BROTHERs (one haircut a day between them) and the herb
+      shop;
+    - after the Elite Four, the MOVE TUTOR outside the GAME CORNER, once a day.
+  - your rival: in DRAGON'S DEN, and for a rematch at the INDIGO PLATEAU, once a day.
+  - the CLEFAIRY dance at MT. MOON's square: once a day, at any time (it was on
+    Monday nights).
+- **The Bug-Catching Contest is on every day**, and you can enter it again straight
+  after one, as often as you like. If he's holding a prize for you (your bag was
+  full), the officer at the ROUTE 36 gate hands it over first.
+- **The FAST SHIP S.S. AQUA sails every day** from OLIVINE and VERMILION, not only
+  on the days it used to.
+
+
 ## Playing it
 
 You need your own Pokémon Crystal (USA/Europe) **Rev 1** ROM
@@ -1106,7 +1134,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 27b8eec0720cd231e8a74ede2653a44cad7bbe9e`.
+The patched ROM has `sha1: e200927535c4ef4990ced591f05761c5fdb89c63`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
@@ -1533,8 +1561,8 @@ IDs nothing holds any more to be taken back.
   Console set `sGSBallFlag` (its `vc_hook` in `AddHallOfFameEntry`). Losing to
   CELEBI gives the GS BALL back ([`maps/IlexForest.asm`](maps/IlexForest.asm)).
   KURT ([`maps/KurtsHouse.asm`](maps/KurtsHouse.asm)) no longer sets
-  `ENGINE_KURT_MAKING_BALLS` (a daily flag) for it; in a save where he did, he's at
-  his table to go on with it.
+  `ENGINE_KURT_MAKING_BALLS` (a daily flag), for it or for APRICORNs; his map's
+  callback clears it, so in a save where he did, he's at his table to go on.
 
 ### GEN 1's TMs
 
@@ -1596,6 +1624,14 @@ IDs nothing holds any more to be taken back.
   manipulation counters of `REEL_SIZE - 1` (others keep 4), and
   `ReelAction_StopReel1` stops reel 1 for the bias symbol only on the middle row
   when the bet is 1 coin.
+- No map script reads `VAR_WEEKDAY` any more to decide who's there or what's open
+  (the siblings', UNION CAVE's, GOLDENROD's, the park gates', the ports', DRAGON'S
+  DEN's, the INDIGO PLATEAU's and MT. MOON SQUARE's), and their "not today" scripts
+  and texts are gone. The park gates' contest officers no longer check
+  `ENGINE_DAILY_BUG_CONTEST` (still set after a contest, for the phone);
+  `Route36OfficerScriptContest` hands over a held prize (`EVENT_CONTEST_OFFICER_HAS_*`)
+  first. KURT's `.GaveKurtApricorns` goes straight on to giving the BALLs. The daily
+  flags that limit some of them to once a day are kept.
 
 
 ## Other changes

@@ -84,12 +84,7 @@ VermilionPortWalkUpToShipScript:
 	iftrue .skip
 	turnobject PLAYER, LEFT
 	opentext
-	readvar VAR_WEEKDAY
-	ifequal MONDAY, .NextShipWednesday
-	ifequal TUESDAY, .NextShipWednesday
-	ifequal THURSDAY, .NextShipSunday
-	ifequal FRIDAY, .NextShipSunday
-	ifequal SATURDAY, .NextShipSunday
+; (it sails every day: it used to be only on Wednesdays and Sundays)
 	writetext VermilionPortAskBoardingText
 	yesorno
 	iffalse VermilionPortNotRidingMoveAwayScript
@@ -106,20 +101,6 @@ VermilionPortWalkUpToShipScript:
 
 .NoTicket:
 	writetext VermilionPortNoTicketText
-	waitbutton
-	closetext
-	applymovement PLAYER, VermilionPortCannotEnterFastShipMovement
-	end
-
-.NextShipWednesday:
-	writetext VermilionPortSailWednesdayText
-	waitbutton
-	closetext
-	applymovement PLAYER, VermilionPortCannotEnterFastShipMovement
-	end
-
-.NextShipSunday:
-	writetext VermilionPortSailSundayText
 	waitbutton
 	closetext
 	applymovement PLAYER, VermilionPortCannotEnterFastShipMovement
@@ -146,12 +127,7 @@ VermilionPortSailorScript:
 	opentext
 	checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_1
 	iftrue VermilionPortAlreadyRodeScript
-	readvar VAR_WEEKDAY
-	ifequal MONDAY, .NextShipWednesday
-	ifequal TUESDAY, .NextShipWednesday
-	ifequal THURSDAY, .NextShipSunday
-	ifequal FRIDAY, .NextShipSunday
-	ifequal SATURDAY, .NextShipSunday
+; (it sails every day: it used to be only on Wednesdays and Sundays)
 	writetext VermilionPortAskBoardingText
 	yesorno
 	iffalse VermilionPortNotRidingScript
@@ -168,18 +144,6 @@ VermilionPortSailorScript:
 
 .NoTicket:
 	writetext VermilionPortNoTicketText
-	waitbutton
-	closetext
-	end
-
-.NextShipWednesday:
-	writetext VermilionPortSailWednesdayText
-	waitbutton
-	closetext
-	end
-
-.NextShipSunday:
-	writetext VermilionPortSailSundayText
 	waitbutton
 	closetext
 	end
@@ -275,16 +239,6 @@ VermilionPortNoTicketText:
 
 	para "if you have an"
 	line "S.S.TICKET."
-	done
-
-VermilionPortSailWednesdayText:
-	text "The FAST SHIP will"
-	line "sail on Wednesday."
-	done
-
-VermilionPortSailSundayText:
-	text "The FAST SHIP will"
-	line "sail next Sunday."
 	done
 
 VermilionPortSuperNerdText:

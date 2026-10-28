@@ -34,18 +34,8 @@ Route35NationalParkBugContestIsRunningScript:
 	endcallback
 
 Route35NationalParkGateCheckIfContestAvailableCallback:
-	readvar VAR_WEEKDAY
-	ifequal TUESDAY, .SetContestOfficer
-	ifequal THURSDAY, .SetContestOfficer
-	ifequal SATURDAY, .SetContestOfficer
-	checkflag ENGINE_BUG_CONTEST_TIMER
-	iftrue Route35NationalParkBugContestIsRunningScript
-	disappear ROUTE35NATIONALPARKGATE_OFFICER1
-	appear ROUTE35NATIONALPARKGATE_YOUNGSTER
-	appear ROUTE35NATIONALPARKGATE_OFFICER2
-	endcallback
-
-.SetContestOfficer:
+; The contest is on every day (it used to be only on Tuesdays, Thursdays and
+; Saturdays).
 	appear ROUTE35NATIONALPARKGATE_OFFICER1
 	disappear ROUTE35NATIONALPARKGATE_YOUNGSTER
 	disappear ROUTE35NATIONALPARKGATE_OFFICER2
@@ -78,15 +68,9 @@ Route35NationalParkGateLeavingContestEarlyScript:
 	end
 
 Route35OfficerScriptContest:
-	readvar VAR_WEEKDAY
-	ifequal SUNDAY, Route35NationalParkGate_NoContestToday
-	ifequal MONDAY, Route35NationalParkGate_NoContestToday
-	ifequal WEDNESDAY, Route35NationalParkGate_NoContestToday
-	ifequal FRIDAY, Route35NationalParkGate_NoContestToday
+; (and again after you've been in one today)
 	faceplayer
 	opentext
-	checkflag ENGINE_DAILY_BUG_CONTEST
-	iftrue Route35NationalParkGate_ContestIsOver
 	scall Route35NationalParkGate_GetDayOfWeek
 	writetext Route35NationalParkGateOfficer1AskToParticipateText
 	yesorno
@@ -183,9 +167,6 @@ Route35NationalParkGate_ContestIsOver:
 	waitbutton
 	closetext
 	end
-
-Route35NationalParkGate_NoContestToday:
-	jumptextfaceplayer Route35NationalParkGateOfficer1WeHoldContestsText
 
 Route35NationalParkGateOfficerScript:
 	faceplayer
@@ -417,10 +398,8 @@ Route35NationalParkGateYoungsterText:
 
 BugCatchingContestExplanationText:
 	text "The Bug-Catching"
-	line "Contest is held on"
-
-	para "Tuesday, Thursday"
-	line "and Saturday."
+	line "Contest is held"
+	cont "every day."
 
 	para "Not only do you"
 	line "earn a prize just"

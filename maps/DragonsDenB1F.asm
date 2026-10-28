@@ -30,13 +30,7 @@ DragonsDenB1FCheckRivalCallback:
 	endcallback
 
 .CheckDay:
-	readvar VAR_WEEKDAY
-	ifequal TUESDAY, .AppearRival
-	ifequal THURSDAY, .AppearRival
-	disappear DRAGONSDENB1F_RIVAL
-	endcallback
-
-.AppearRival:
+; (every day: it used to be only on Tuesdays and Thursdays)
 	appear DRAGONSDENB1F_RIVAL
 	endcallback
 

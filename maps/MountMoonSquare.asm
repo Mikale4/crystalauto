@@ -25,10 +25,7 @@ MountMoonSquareDisappearRockCallback:
 ClefairyDance:
 	checkflag ENGINE_MT_MOON_SQUARE_CLEFAIRY
 	iftrue .NoDancing
-	readvar VAR_WEEKDAY
-	ifnotequal MONDAY, .NoDancing
-	checktime NITE
-	iffalse .NoDancing
+; (once a day, any day, any time: it used to be only on Monday nights)
 	appear MOUNTMOONSQUARE_FAIRY1
 	appear MOUNTMOONSQUARE_FAIRY2
 	applymovement PLAYER, PlayerWalksUpToDancingClefairies

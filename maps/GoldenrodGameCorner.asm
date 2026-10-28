@@ -30,18 +30,15 @@ GoldenrodGameCornerMoveTutorCallback:
 	iffalse .finish
 	checkitem COIN_CASE
 	iffalse .move_tutor_inside
-	readvar VAR_WEEKDAY
-	ifequal WEDNESDAY, .move_tutor_outside
-	ifequal SATURDAY, .move_tutor_outside
-.move_tutor_inside
-	appear GOLDENRODGAMECORNER_MOVETUTOR
-	endcallback
-
-.move_tutor_outside
+; (he's outside every day: it used to be only on Wednesdays and Saturdays)
 	checkflag ENGINE_DAILY_MOVE_TUTOR
 	iftrue .finish
 	disappear GOLDENRODGAMECORNER_MOVETUTOR
 .finish
+	endcallback
+
+.move_tutor_inside
+	appear GOLDENRODGAMECORNER_MOVETUTOR
 	endcallback
 
 MoveTutorInsideScript:

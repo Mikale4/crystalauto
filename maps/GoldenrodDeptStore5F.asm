@@ -13,12 +13,7 @@ GoldenrodDeptStore5F_MapScripts:
 	callback MAPCALLBACK_OBJECTS, GoldenrodDeptStore5FCheckIfSundayCallback
 
 GoldenrodDeptStore5FCheckIfSundayCallback:
-	readvar VAR_WEEKDAY
-	ifequal SUNDAY, .yes
-	disappear GOLDENRODDEPTSTORE5F_RECEPTIONIST
-	endcallback
-
-.yes
+; (every day: it used to be only on Sundays)
 	appear GOLDENRODDEPTSTORE5F_RECEPTIONIST
 	endcallback
 
@@ -59,8 +54,6 @@ GoldenrodDeptStore5FClerkScript:
 GoldenrodDeptStore5FReceptionistScript:
 	faceplayer
 	opentext
-	readvar VAR_WEEKDAY
-	ifnotequal SUNDAY, .EventIsOver
 	checkflag ENGINE_GOLDENROD_DEPT_STORE_TM27_RETURN
 	iftrue .EventIsOver
 	special GetFirstPokemonHappiness
@@ -188,7 +181,7 @@ GoldenrodDeptStore5FCarrieMysteryGiftRequiresGBCText:
 	done
 
 GoldenrodDeptStore5FLassText:
-	text "On Sundays, a lady"
+	text "Every day, a lady"
 	line "comes to check out"
 	cont "#MON."
 

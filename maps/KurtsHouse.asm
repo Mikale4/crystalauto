@@ -12,26 +12,17 @@ KurtsHouse_MapScripts:
 	callback MAPCALLBACK_OBJECTS, KurtsHouseKurtCallback
 
 KurtsHouseKurtCallback:
+; He makes BALLs there and then (it used to take him till the next day): a save
+; from when he was at it has them ready, and he's at his table, as with the GS BALL.
+	clearflag ENGINE_KURT_MAKING_BALLS
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
 	iffalse .Done
 	checkevent EVENT_FOREST_IS_RESTLESS
 	iftrue .Done
-	checkevent EVENT_GAVE_GS_BALL_TO_KURT
-	iftrue .AtTheTable ; (a save from when he kept the GS BALL a day)
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue .MakingBalls
-.AtTheTable:
 	disappear KURTSHOUSE_KURT2
 	appear KURTSHOUSE_KURT1
 	disappear KURTSHOUSE_TWIN2
 	appear KURTSHOUSE_TWIN1
-	endcallback
-
-.MakingBalls:
-	disappear KURTSHOUSE_KURT1
-	appear KURTSHOUSE_KURT2
-	disappear KURTSHOUSE_TWIN1
-	appear KURTSHOUSE_TWIN2
 .Done:
 	endcallback
 
@@ -75,8 +66,6 @@ Kurt1:
 	iffalse .NoRoomForBall
 	setevent EVENT_KURT_GAVE_YOU_LURE_BALL
 .GotLureBall:
-	checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_1
-	iftrue .WaitForApricorns
 	checkevent EVENT_GAVE_KURT_RED_APRICORN
 	iftrue .GiveLevelBall
 	checkevent EVENT_GAVE_KURT_BLU_APRICORN
@@ -169,13 +158,13 @@ Kurt1:
 	sjump .GaveKurtApricorns
 
 .GaveKurtApricorns:
-	setevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_1
-	setflag ENGINE_KURT_MAKING_BALLS
-.WaitForApricorns:
-	writetext KurtsHouseKurtItWillTakeADayText
+; he makes them there and then (it used to take him till the next day)
+	writetext KurtsHouseKurtRightAwayText
 	waitbutton
 	closetext
-	end
+	pause 40
+	opentext
+	sjump .GotLureBall
 
 .Cancel:
 	writetext KurtsHouseKurtThatsALetdownText
@@ -193,8 +182,6 @@ Kurt1:
 	end
 
 .GiveLevelBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar LEVEL_BALL, VAR_KURT_APRICORNS
@@ -203,8 +190,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveLureBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar LURE_BALL, VAR_KURT_APRICORNS
@@ -213,8 +198,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveMoonBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar MOON_BALL, VAR_KURT_APRICORNS
@@ -223,8 +206,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveFriendBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar FRIEND_BALL, VAR_KURT_APRICORNS
@@ -233,8 +214,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveFastBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar FAST_BALL, VAR_KURT_APRICORNS
@@ -243,8 +222,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveHeavyBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar HEAVY_BALL, VAR_KURT_APRICORNS
@@ -253,8 +230,6 @@ Kurt1:
 	sjump ._ThatTurnedOutGreat
 
 .GiveLoveBall:
-	checkflag ENGINE_KURT_MAKING_BALLS
-	iftrue KurtMakingBallsScript
 	writetext KurtsHouseKurtJustFinishedYourBallText
 	promptbutton
 	verbosegiveitemvar LOVE_BALL, VAR_KURT_APRICORNS
@@ -526,12 +501,10 @@ KurtsHouseKurtAskYouHaveAnApricornText:
 	line "into a BALL."
 	done
 
-KurtsHouseKurtItWillTakeADayText:
-	text "KURT: It'll take a"
-	line "day to make you a"
-
-	para "BALL. Come back"
-	line "for it later."
+KurtsHouseKurtRightAwayText:
+	text "KURT: Hang on."
+	line "I'll get right to"
+	cont "it!"
 	done
 
 KurtsHouseKurtThatsALetdownText:

@@ -36,18 +36,15 @@ GoldenrodCityMoveTutorCallback:
 	iffalse .MoveTutorDone
 	checkitem COIN_CASE
 	iffalse .MoveTutorDisappear
-	readvar VAR_WEEKDAY
-	ifequal WEDNESDAY, .MoveTutorAppear
-	ifequal SATURDAY, .MoveTutorAppear
-.MoveTutorDisappear:
-	disappear GOLDENRODCITY_MOVETUTOR
-	endcallback
-
-.MoveTutorAppear:
+; (every day: it used to be only on Wednesdays and Saturdays)
 	checkflag ENGINE_DAILY_MOVE_TUTOR
 	iftrue .MoveTutorDone
 	appear GOLDENRODCITY_MOVETUTOR
 .MoveTutorDone:
+	endcallback
+
+.MoveTutorDisappear:
+	disappear GOLDENRODCITY_MOVETUTOR
 	endcallback
 
 MoveTutorScript:

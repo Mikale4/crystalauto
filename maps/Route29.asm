@@ -31,8 +31,7 @@ Route29TuscanyCallback:
 	endcallback
 
 .DoesTuscanyAppear:
-	readvar VAR_WEEKDAY
-	ifnotequal TUESDAY, .TuscanyDisappears
+; (every day: it used to be only on Tuesdays)
 	appear ROUTE29_TUSCANY
 	endcallback
 
@@ -183,8 +182,6 @@ TuscanyScript:
 	opentext
 	checkevent EVENT_GOT_PINK_BOW_FROM_TUSCANY
 	iftrue TuscanyTuesdayScript
-	readvar VAR_WEEKDAY
-	ifnotequal TUESDAY, TuscanyNotTuesdayScript
 	checkevent EVENT_MET_TUSCANY_OF_TUESDAY
 	iftrue .MetTuscany
 	writetext MeetTuscanyText
@@ -205,12 +202,6 @@ TuscanyTuesdayScript:
 	writetext TuscanyTuesdayText
 	waitbutton
 TuscanyDoneScript:
-	closetext
-	end
-
-TuscanyNotTuesdayScript:
-	writetext TuscanyNotTuesdayText
-	waitbutton
 	closetext
 	end
 
@@ -422,12 +413,6 @@ TuscanyTuesdayText:
 
 	para "I am the second of"
 	line "seven children."
-	done
-
-TuscanyNotTuesdayText:
-	text "TUSCANY: Today is"
-	line "not Tuesday. That"
-	cont "is unfortunate…"
 	done
 
 Route29Sign1Text:

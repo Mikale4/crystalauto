@@ -13,16 +13,14 @@ UnionCaveB2F_MapScripts:
 	callback MAPCALLBACK_OBJECTS, UnionCaveB2FLaprasCallback
 
 UnionCaveB2FLaprasCallback:
+; Every day, unless it joined you today (it used to be only on Fridays).
 	checkflag ENGINE_UNION_CAVE_LAPRAS
 	iftrue .NoAppear
-	readvar VAR_WEEKDAY
-	ifequal FRIDAY, .Appear
-.NoAppear:
-	disappear UNIONCAVEB2F_LAPRAS
+	appear UNIONCAVEB2F_LAPRAS
 	endcallback
 
-.Appear:
-	appear UNIONCAVEB2F_LAPRAS
+.NoAppear:
+	disappear UNIONCAVEB2F_LAPRAS
 	endcallback
 
 UnionCaveLapras:
