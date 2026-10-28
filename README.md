@@ -308,7 +308,7 @@ Some moves work in new ways of their own:
 | Move | What it does |
 |---|---|
 | DOUBLESLAP, COMET PUNCH, FURY ATTACK, PIN MISSILE, SPIKE CANNON, BARRAGE, FURY SWIPES, BONE RUSH | 25 power, 2 to 5 hits |
-| BEAT UP | one of them now: 25 power, 2 to 5 hits |
+| BEAT UP | one of them now: 25 power, 2 to 5 hits. Its animation keeps the user's own pic up (it no longer puts a party Pokémon's pic in its place) |
 | DREAM EATER | works on a foe that's awake too |
 | SUNNY DAY, RAIN DANCE, SANDSTORM, HAIL, the terrains, FORESIGHT, FUTURE SIGHT, SPIKES, REFLECT, LIGHT SCREEN, SAFEGUARD, PSYCH UP, MEAN LOOK, SPIDER WEB, LOCK-ON | used as the Pokémon comes in, like TRANSFORM (see below) |
 | REFLECT, LIGHT SCREEN, SAFEGUARD | they can't be chosen: used only as the Pokémon comes in, and each side puts up each one once a battle (see below) |
@@ -1090,7 +1090,7 @@ with a patcher such as [Rom Patcher JS][rompatcher] or Floating IPS:
   (checks that the ROM is the right one)
 - [`patches/pokecrystal11_auto_battle.ips`](patches/pokecrystal11_auto_battle.ips)
 
-The patched ROM has `sha1: 7451f059d85002d4230fe4486eb8eec068692556`.
+The patched ROM has `sha1: 8880e9f257756c6bf7a8d3bc734bd5e9a99ab499`.
 
 A save from an earlier version keeps working: copy it to the new ROM's name (the
 `.sav` beside it). On CONTINUE, its moves and Pokémon are taken over as they were
