@@ -11,7 +11,7 @@ DEF BASE_STAT_LEVEL EQU 7
 DEF MAX_STAT_LEVEL EQU 13
 
 ; turns that sleep lasts
-DEF REST_SLEEP_TURNS EQU 2
+DEF REST_SLEEP_TURNS EQU 1 ; (it was 2)
 DEF TREEMON_SLEEP_TURNS EQU 7
 
 ; default move priority

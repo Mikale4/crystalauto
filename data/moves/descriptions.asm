@@ -890,7 +890,7 @@ BonemerangDescription:
 	next "strikes twice.@"
 
 RestDescription:
-	db   "Sleep for 2 turns"
+	db   "Sleep for 1 turn"
 	next "to fully recover.@"
 
 RockSlideDescription:

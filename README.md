@@ -245,8 +245,9 @@ THUNDER 110, HYPNOSIS 60% accurate, …), and these work as they do now:
 - New added effects: ACID lowers Special Defense, CRUNCH lowers Defense, and
   WATERFALL can make the foe flinch.
 - **Status**: a burn takes 1/16 of the max HP a turn, paralysis halves Speed, a
-  frozen Pokémon thaws out 20% of the time, sleep lasts one to three turns, and a
-  confused Pokémon hurts itself a third of the time.
+  frozen Pokémon thaws out 20% of the time, sleep lasts one to three turns (REST's,
+  one turn: it wakes up and moves on the turn after), and a confused Pokémon hurts
+  itself a third of the time.
 - WRAP, BIND, FIRE SPIN, CLAMP and WHIRLPOOL last four or five turns and take 1/8 of
   the max HP a turn. DISABLE lasts four turns, ENCORE three, SPITE takes 4 PP, and
   PROTECT and DETECT, chosen, are a third as likely to work each time in a row (they
